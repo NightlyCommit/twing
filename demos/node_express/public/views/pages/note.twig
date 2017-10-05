@@ -1,0 +1,16 @@
+{% extends json is defined?"../inline.twig":"../layout.twig" %}
+
+{% block title %}{{ title }} :: Twig.Notebook{% endblock %}
+
+{% block body %}
+	<nav>
+		<a class="button ajax_link" href="/notes">Back</a>
+		<a class="button right ajax_link" href="/edit/{{ id }}">Edit</a>
+	</nav>
+    <h2>{{ title }}</h2>
+    <div class="note">
+        <div class="text">
+            {{ markdown }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{
+  "author": "Eric MORAND <eric.morand@gmail,com>",
+  "name": "twing",
+  "description": "JS port of the Twig templating language.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/ericmorand/twing",
+  "licenses": [
+    {
+      "type": "BSD-2-Clause",
+      "url": "https://raw.github.com/twigjs/twig.js/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ericmorand/twing"
+  },
+  "main": "twig.js",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "scripts": {
+    "test": "npm run build && mocha -r should"
+  },
+  "dependencies": {
+    "locutus": "^2.0.5",
+    "minimatch": "3.0.x",
+    "source-map": "^0.6.1",
+    "walk": "2.3.x"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "3.1.x",
+    "require-uncached": "^1.0.3",
+    "should": "11.1.x",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
+    "tokenizer": "1.1.x"
+  }
+}
