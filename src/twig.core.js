@@ -1500,40 +1500,38 @@ module.exports = function (Twig) {
             Twig.forEach(tokens, function (token) {
                 // console.log('MAP TOKEN', token);
 
-                var tokenChildren = token.children;
-                var tokenPosition = token.position;
-
                 if (token.markup) {
-                    generatedOutputParts.push(token.markup);
-                }
+                    var tokenMarkup = String(token.markup);
+                    var numberOfLines = tokenMarkup.split('\n').length;
 
-                generatedOutput = generatedOutputParts.join('');
-                generatedOutputLines = generatedOutput.split('\n');
+                    // console.log('GENERATED CODE "' + JSON.stringify(childChildren) + '" AT GENERATED POSITION', {
+                    //     line: generatedLine,
+                    //     column: generatedColumn
+                    // }, 'IS COMING FROM', sourcePosition, that.path);
 
-                // console.log('GENERATED CODE "' + JSON.stringify(childChildren) + '" AT GENERATED POSITION', {
-                //     line: generatedLine,
-                //     column: generatedColumn
-                // }, 'IS COMING FROM', sourcePosition, that.path);
+                    sourceMapGenerator.addMapping({
+                        source: path.relative(sourceRoot, token.position.source),
+                        original: {
+                            line: token.position.line + 1,
+                            column: token.position.column
+                        },
+                        generated: {
+                            line: generatedLine + 1, // 1-based
+                            column: generatedColumn  // 0-based
+                        },
+                        name: tokenMarkup
+                    });
 
-                sourceMapGenerator.addMapping({
-                    source: path.relative(sourceRoot, tokenPosition.source),
-                    original: {
-                        line: tokenPosition.line + 1,
-                        column: tokenPosition.column
-                    },
-                    generated: {
-                        line: generatedLine + 1,
-                        column: generatedColumn
+                    if (numberOfLines > 1) {
+                        generatedLine += (numberOfLines - 1);
+                        generatedColumn = 0;
                     }
-                });
+                    else {
+                        generatedColumn += tokenMarkup.length;
+                    }
+                }
 
-                if (generatedLine !== generatedOutputLines.length - 1) {
-                    generatedLine = (generatedOutputLines.length - 1);
-                    generatedColumn = 0;
-                }
-                else {
-                    generatedColumn += (token.markup ? String(token.markup).length : 0);
-                }
+                var tokenChildren = token.children;
 
                 if (Array.isArray(tokenChildren)) {
                     processTokens(tokenChildren);
