@@ -19,7 +19,11 @@
     "node": ">=4.0"
   },
   "scripts": {
-    "test": "npm run build && mocha -r should"
+    "postversion": "git push origin master --tags",
+    "test": "npm run build && mocha -r should",
+    "build-node": "webpack",
+    "build-browser": "WEBPACK_ENV=browser webpack",
+    "build": "npm run build-node && npm run build-browser"
   },
   "dependencies": {
     "locutus": "^2.0.5",
