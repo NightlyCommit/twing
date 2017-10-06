@@ -532,17 +532,22 @@ module.exports = function (Twig) {
                     isImported = Twig.indexOf(this.importedBlocks, token.block) > -1,
                     hasParent = false;
 
-                if (that.blocks[token.block]) {
-                    that.blocks[token.block].forEach(function (token) {
-                        if (token.markup && token.markup.indexOf(Twig.placeholders.parent) > -1) {
-                            hasParent = true;
-                        }
-                    });
+                try {
+                    if (that.blocks[token.block]) {
+                        that.blocks[token.block].forEach(function (token) {
+                            if (token.markup && token.markup.indexOf(Twig.placeholders.parent) > -1) {
+                                hasParent = true;
+                            }
+                        });
+                    }
+                }
+                catch (err) {
+
                 }
 
                 // Don't override previous blocks unless they're imported with "use"
                 // Loops should be exempted as well.
-                if (this.blocks[token.block] === undefined || isImported || hasParent || context.loop || token.overwrite) {
+                if (this.blocks[token.block] === undefined || isImported || hasParent || (context.loop && context.loop.length > 1) || token.overwrite) {
                     if (token.expression) {
                         promise = Twig.expression.parseAsync.call(this, token.output, context)
                             .then(function(value) {
@@ -575,12 +580,12 @@ module.exports = function (Twig) {
                         }
 
                         if (hasParent) {
-                                that.blocks[token.block].forEach(function (token) {
-                                    if (token.markup.indexOf(Twig.placeholders.parent) > -1) {
-                                        token.markup = null;
-                                        token.children = block_output;
-                                    }
-                                });
+                            that.blocks[token.block].forEach(function (token) {
+                                if (token.markup.indexOf(Twig.placeholders.parent) > -1) {
+                                    token.markup = null;
+                                    token.children = block_output;
+                                }
+                            });
                         }
                         else {
                             that.blocks[token.block] = block_output;

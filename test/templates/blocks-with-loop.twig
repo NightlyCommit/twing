@@ -1,0 +1,9 @@
+HEADER
+
+{% block one %}
+    PARENT
+{% endblock %}
+
+{% for i in 1..2 %}
+    {% block msg %}A{{ i }}{% endblock msg %}
+{% endfor %}
