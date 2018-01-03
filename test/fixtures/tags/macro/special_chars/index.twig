@@ -1,0 +1,8 @@
+
+{% import _self as macros %}
+
+{{ macros.§('foo') }}
+
+{% macro §(foo) %}
+  §{{ foo }}§
+{% endmacro %}

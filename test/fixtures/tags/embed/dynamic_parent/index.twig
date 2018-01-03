@@ -1,0 +1,10 @@
+
+FOO
+{% embed foo %}
+    {% block c1 %}
+        {{ parent() }}
+        block1extended
+    {% endblock %}
+{% endembed %}
+
+BAR

@@ -1,0 +1,68 @@
+{
+  "author": "Eric MORAND <eric.morand@gmail,com>",
+  "name": "twing",
+  "description": "TypeScript port of the Twig templating language.",
+  "version": "0.1.3",
+  "homepage": "https://github.com/ericmorand/twing",
+  "licenses": [
+    {
+      "type": "BSD-2-Clause",
+      "url": "https://raw.github.com/twigjs/twig.js/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ericmorand/twing"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "scripts": {
+    "postversion": "git push origin master --tags",
+    "test": "nyc --reporter=none --check-coverage --lines 100 --functions 100 --branches 100 ts-node node_modules/tape/bin/tape test/*.ts | tap-mocha-reporter spec && nyc report",
+    "build": "tsc -p .",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "htmlspecialchars": "^1.0.5",
+    "levenshtein": "^1.0.5",
+    "locutus": "^2.0.9",
+    "merge": "^1.2.0",
+    "object-hash": "^1.2.0",
+    "secure-filters": "^1.1.0",
+    "sha.js": "^2.4.9",
+    "source-map": "^0.6.1",
+    "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.33",
+    "@types/tape": "^4.2.30",
+    "coveralls": "^3.0.0",
+    "fs-finder": "^1.8.1",
+    "node-hook": "^1.0.0",
+    "nyc": "^11.4.1",
+    "tap": "^11.0.1",
+    "tap-diff": "^0.1.1",
+    "tap-mocha-reporter": "^3.0.6",
+    "tap-nyc": "^1.0.3",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0",
+    "tokenizer": "1.1.x",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.5.3"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ]
+  }
+}

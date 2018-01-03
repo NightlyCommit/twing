@@ -1,0 +1,12 @@
+
+{% spaceless %}
+    {% block element -%}
+        <div>
+            {%- if item.children is defined %}
+                {%- for item in item.children %}
+                    {{- block('element') -}}
+                {% endfor %}
+            {%- endif -%}
+        </div>
+    {%- endblock %}
+{% endspaceless %}

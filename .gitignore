@@ -1,0 +1,8 @@
+.idea/
+.nyc_output
+coverage
+node_modules/
+src/**/*.js
+dist
+actual.html
+npm-debug.log

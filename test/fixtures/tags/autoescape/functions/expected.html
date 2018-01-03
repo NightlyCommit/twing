@@ -1,0 +1,36 @@
+
+
+autoescape false
+
+    safe_br
+    <br />
+
+    unsafe_br
+    <br />
+
+
+autoescape 'html'
+
+    safe_br
+    <br />
+
+    unsafe_br
+    &lt;br /&gt;
+
+    unsafe_br()|raw
+    <br />
+
+    safe_br()|escape
+    &lt;br /&gt;
+
+    safe_br()|raw
+    <br />
+
+    unsafe_br()|escape
+    &lt;br /&gt;
+
+
+autoescape js
+
+    safe_br
+    \x3Cbr\x20\x2F\x3E

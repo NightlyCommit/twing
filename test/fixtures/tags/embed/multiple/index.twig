@@ -1,0 +1,17 @@
+
+FOO
+{% embed "foo.twig" %}
+    {% block c1 %}
+        {{ parent() }}
+        block1extended
+    {% endblock %}
+{% endembed %}
+
+{% embed "foo.twig" %}
+    {% block c1 %}
+        {{ parent() }}
+        block1extended
+    {% endblock %}
+{% endembed %}
+
+BAR

@@ -1,0 +1,19 @@
+
+{% extends "base.twig" %}
+
+{% block c1 %}
+    {{ parent() }}
+    blockc1baseextended
+{% endblock %}
+
+{% block c2 %}
+    {{ parent() }}
+
+    {% embed "foo.twig" %}
+        {% block c1 %}
+            {{ parent() }}
+            block1extended
+        {% endblock %}
+    {% endembed %}
+    {{ parent() }}
+{% endblock %}
