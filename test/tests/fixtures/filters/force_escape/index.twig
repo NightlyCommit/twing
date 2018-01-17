@@ -1,0 +1,10 @@
+
+{% set foo %}
+    foo<br />
+{% endset %}
+
+{{ foo|e('html') -}}
+{{ foo|e('js') }}
+{% autoescape true %}
+    {{ foo }}
+{% endautoescape %}

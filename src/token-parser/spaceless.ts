@@ -13,14 +13,14 @@ import TwingTokenParser from "../token-parser";
 import TwingNode from "../node";
 import TwingToken from "../token";
 import TwingTokenType from "../token-type";
-import TwingNodeSpaceless = require("../node/spaceless");
+import TwingNodeSpaceless from "../node/spaceless";
 
 class TwingTokenParserSpaceless extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
 
         this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
-        let body = this.parser.subparse(this.decideSpacelessEnd, true);
+        let body = this.parser.subparse([this, this.decideSpacelessEnd], true);
         this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
 
         return new TwingNodeSpaceless(body, lineno, this.getTag());
@@ -35,4 +35,4 @@ class TwingTokenParserSpaceless extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserSpaceless;
+export default TwingTokenParserSpaceless;

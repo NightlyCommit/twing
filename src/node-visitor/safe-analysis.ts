@@ -1,17 +1,16 @@
-import TwingBaseNodeVisitor = require("../base-node-visitor");
+import TwingBaseNodeVisitor from "../base-node-visitor";
 import TwingNode from "../node";
-import TwingEnvironment = require("../environment");
+import TwingEnvironment from "../environment";
 import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionBlockReference = require("../node/expression/block-reference");
+import TwingNodeExpressionBlockReference from "../node/expression/block-reference";
 import TwingNodeExpressionParent from "../node/expression/parent";
 import TwingNodeExpressionConditional from "../node/expression/conditional";
 import TwingNodeExpressionFilter from "../node/expression/filter";
-import TwingNodeExpressionFunction = require("../node/expression/function");
+import TwingNodeExpressionFunction from "../node/expression/function";
 import TwingNodeExpressionMethodCall from "../node/expression/method-call";
 import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
 import TwingNodeExpressionName from "../node/expression/name";
 import TwingMap from "../map";
-import has = Reflect.has;
 
 var objectHash = require('object-hash');
 
@@ -182,4 +181,4 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
     }
 }
 
-export = TwingNodeVisitorSafeAnalysis;
+export default TwingNodeVisitorSafeAnalysis;

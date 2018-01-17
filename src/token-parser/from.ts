@@ -5,6 +5,7 @@ import TwingTokenType from "../token-type";
 import TwingNodeImport from "../node/import";
 import TwingNodeExpressionAssignName from "../node/expression/assign-name";
 import TwingNodeExpression from "../node/expression";
+import TwingNodeExpressionName from "../node/expression/name";
 
 /**
  * Imports macros.
@@ -15,8 +16,6 @@ import TwingNodeExpression from "../node/expression";
  */
 class TwingTokenParserFrom extends TwingTokenParser {
     parse(token: TwingToken) {
-        let self = this;
-
         let macro = this.parser.getExpressionParser().parseExpression();
         let stream = this.parser.getStream();
 
@@ -41,11 +40,13 @@ class TwingTokenParserFrom extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.getLine()), token.getLine(), this.getTag());
+        let varName = this.parser.getVarName();
+        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(varName, token.getLine()), token.getLine(), this.getTag());
 
-        targets.forEach(function (alias, name) {
-            self.parser.addImportedSymbol('function', alias, 'macro_' + name, <TwingNodeExpression>node.getNode('var'));
-        });
+        for (let [name, alias] of targets) {
+            // DISCREPANCY: TwingNodeExpressionAssignName is incorrectly used in the PHP version instead of TwingNodeExpressionName.
+            this.parser.addImportedSymbol('function', alias, `macro_${name}`, new TwingNodeExpressionName(varName, token.getLine()));
+        }
 
         return node;
     }

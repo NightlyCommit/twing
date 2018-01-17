@@ -28,7 +28,7 @@ class TwingTokenParserMacro extends TwingTokenParser {
 
         this.parser.pushLocalScope();
 
-        let body = this.parser.subparse(this.decideBlockEnd, true);
+        let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
         if (token = stream.nextIf(TwingTokenType.NAME_TYPE)) {
             let value = token.getValue();

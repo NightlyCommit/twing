@@ -11,19 +11,19 @@ import TwingNodeExpressionBinaryConcat from "./node/expression/binary/concat";
 import TwingNodeExpressionGetAttr from "./node/expression/get-attr";
 import TwingNodeExpressionMethodCall from "./node/expression/method-call";
 import TwingNodeExpressionArray from "./node/expression/array";
-import TwingNodeExpressionType from "./node/expression-type";
 import TwingMap from "./map";
 import TwingNodeExpressionConditional from "./node/expression/conditional";
-import TwingEnvironment = require("./environment");
-import TwingTemplate = require("./template");
+import TwingEnvironment from "./environment";
+import TwingTemplate from "./template";
 import TwingNodeExpressionAssignName from "./node/expression/assign-name";
-import TwingOperatorDefinitionInterface = require("./operator-definition-interface");
+import TwingOperatorDefinitionInterface from "./operator-definition-interface";
 import TwingTest from "./test";
 import TwingNodeExpressionParent from "./node/expression/parent";
-import TwingNodeExpressionBlockReference = require("./node/expression/block-reference");
-import TwingNodeExpressionHash = require("./node/expression/hash");
-import TwingNodeExpressionUnaryNot = require("./node/expression/unary/not");
-import TwingNodeExpressionMacroCall = require("./node/expression/macro-call");
+import TwingNodeExpressionBlockReference from "./node/expression/block-reference";
+import TwingNodeExpressionHash from "./node/expression/hash";
+import TwingNodeExpressionUnaryNot from "./node/expression/unary/not";
+import TwingNodeExpressionUnaryNeg from "./node/expression/unary/neg";
+import TwingNodeExpressionUnaryPos from "./node/expression/unary/pos";
 
 class TwingExpressionParser {
     private parser: TwingParser;
@@ -212,19 +212,19 @@ class TwingExpressionParser {
             case 'block':
                 let blockArgs = this.parseArguments();
 
-                if (blockArgs.getNodes().length() < 1) {
+                if (blockArgs.getNodes().size < 1) {
                     throw new TwingErrorSyntax('The "block" function takes one argument (the block name).', line, this.parser.getStream().getSourceContext());
                 }
 
-                return new TwingNodeExpressionBlockReference(blockArgs.getNode(0), blockArgs.getNodes().length() > 1 ? blockArgs.getNode(1) : null, line);
+                return new TwingNodeExpressionBlockReference(blockArgs.getNode(0), blockArgs.getNodes().size > 1 ? blockArgs.getNode(1) : null, line);
             case 'attribute':
                 let attributeArgs = this.parseArguments();
 
-                if (attributeArgs.getNodes().length() < 2) {
+                if (attributeArgs.getNodes().size < 2) {
                     throw new TwingErrorSyntax('The "attribute" function takes at least two arguments (the variable and the attributes).', line, this.parser.getStream().getSourceContext());
                 }
 
-                return new TwingNodeExpressionGetAttr(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().length() > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line);
+                return new TwingNodeExpressionGetAttr(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().size > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line);
             default:
                 let alias = this.parser.getImportedSymbol('function', name);
 
@@ -394,7 +394,7 @@ class TwingExpressionParser {
             }
 
             if ((node.constructor.name === 'TwingNodeExpressionName') && this.parser.getImportedSymbol('template', node.getAttribute('name'))) {
-                if (arg.getExpressionType() !== TwingNodeExpressionType.CONSTANT) {
+                if (!(arg instanceof TwingNodeExpressionConstant)) {
                     throw new TwingErrorSyntax(`Dynamic macro names are not supported (called on "${node.getAttribute('name')}").`, token.getLine(), stream.getSourceContext());
                 }
 
@@ -415,7 +415,8 @@ class TwingExpressionParser {
             if (stream.test(TwingTokenType.PUNCTUATION_TYPE, ':')) {
                 slice = true;
                 arg = new TwingNodeExpressionConstant(0, token.getLine());
-            } else {
+            }
+            else {
                 arg = this.parseExpression();
             }
 
@@ -428,15 +429,14 @@ class TwingExpressionParser {
 
                 if (stream.test(TwingTokenType.PUNCTUATION_TYPE, ']')) {
                     length = new TwingNodeExpressionConstant(null, token.getLine());
-                } else {
+                }
+                else {
                     length = this.parseExpression();
                 }
 
                 let factory = this.getFilterExpressionFactory('slice', token.getLine());
-                let nodes = new TwingMap();
-                let factoryArguments = new TwingNode(nodes);
-
-                let filter = factory.call(this, node, new TwingNodeExpressionConstant('slice', token.getLine()), factoryArguments, token.getLine());
+                let filterArguments = new TwingNode(new TwingMap([[0, arg], [1, length]]));
+                let filter = factory.call(this, node, new TwingNodeExpressionConstant('slice', token.getLine()), filterArguments, token.getLine());
 
                 stream.expect(TwingTokenType.PUNCTUATION_TYPE, ']');
 
@@ -557,13 +557,13 @@ class TwingExpressionParser {
     parseFilterExpressionRaw(node: TwingNodeExpression, tag: string = null): TwingNodeExpression {
         while (true) {
             let token = this.parser.getStream().expect(TwingTokenType.NAME_TYPE);
-
             let name = new TwingNodeExpressionConstant(token.getValue(), token.getLine());
             let methodArguments;
 
             if (!this.parser.getStream().test(TwingTokenType.PUNCTUATION_TYPE, '(')) {
                 methodArguments = new TwingNode();
-            } else {
+            }
+            else {
                 methodArguments = this.parseArguments(true);
             }
 
@@ -600,7 +600,7 @@ class TwingExpressionParser {
         stream.expect(TwingTokenType.PUNCTUATION_TYPE, '(', 'A list of arguments must begin with an opening parenthesis');
 
         while (!stream.test(TwingTokenType.PUNCTUATION_TYPE, ')')) {
-            if (parsedArguments.length() > 0) {
+            if (parsedArguments.size > 0) {
                 stream.expect(TwingTokenType.PUNCTUATION_TYPE, ',', 'Arguments must be separated by a comma');
             }
 
@@ -616,7 +616,7 @@ class TwingExpressionParser {
             let name = null;
 
             if (namedArguments && (token = stream.nextIf(TwingTokenType.OPERATOR_TYPE, '='))) {
-                if (value.getExpressionType() !== TwingNodeExpressionType.NAME) {
+                if (!(value instanceof TwingNodeExpressionName)) {
                     throw new TwingErrorSyntax(`A parameter name must be a string, "${typeof value}" given.`, token.getLine(), stream.getSourceContext());
                 }
                 name = value.getAttribute('name');
@@ -718,7 +718,7 @@ class TwingExpressionParser {
             //
             // @trigger_error(message, E_USER_DEPRECATED);
 
-            console.log(message);
+            console.warn(message);
         }
 
         return function_.getExpressionFactory();
@@ -749,26 +749,25 @@ class TwingExpressionParser {
             //
             // @trigger_error(message, E_USER_DEPRECATED);
 
-            console.log(message);
+            console.warn(message);
         }
 
         return filter.getExpressionFactory();
     }
 
     // checks that the node only contains "constant" elements
-    checkConstantExpression(node: TwingNodeExpression) {
-        if (!(node.getExpressionType() === TwingNodeExpressionType.CONSTANT ||
-                node.getExpressionType() === TwingNodeExpressionType.ARRAY ||
-                node.getExpressionType() === TwingNodeExpressionType.UNARY_NEG ||
-                node.getExpressionType() === TwingNodeExpressionType.UNARY_POS)) {
+    checkConstantExpression(node: TwingNode) {
+        let self = this;
+
+        if (!(node instanceof TwingNodeExpressionConstant || node instanceof TwingNodeExpressionArray || node instanceof TwingNodeExpressionUnaryNeg || node instanceof TwingNodeExpressionUnaryPos)) {
             return false;
         }
 
-        node.getNodes().forEach(function (n) {
-            if (!this.checkConstantExpression(n)) {
+        for (let [k, n] of node.getNodes()) {
+            if (!self.checkConstantExpression(n)) {
                 return false;
             }
-        });
+        }
 
         return true;
     }

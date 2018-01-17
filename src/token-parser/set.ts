@@ -36,19 +36,19 @@ class TwingTokenParserSet extends TwingTokenParser {
 
             stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-            if (names.getNodes().length() !== values.getNodes().length()) {
+            if (names.getNodes().size !== values.getNodes().size) {
                 throw new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', stream.getCurrent().getLine(), stream.getSourceContext());
             }
         } else {
             capture = true;
 
-            if (names.getNodes().length() > 1) {
+            if (names.getNodes().size > 1) {
                 throw new TwingErrorSyntax('When using set with a block, you cannot have a multi-target.', stream.getCurrent().getLine(), stream.getSourceContext());
             }
 
             stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-            values = this.parser.subparse(this.decideBlockEnd, true);
+            values = this.parser.subparse([this, this.decideBlockEnd], true);
 
             stream.expect(TwingTokenType.BLOCK_END_TYPE);
         }

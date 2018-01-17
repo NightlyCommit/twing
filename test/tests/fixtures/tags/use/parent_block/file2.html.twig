@@ -1,0 +1,6 @@
+
+{% use 'file1.html.twig' with foobar as base_foobar %}
+{% block foobar %}
+    {{- block('base_foobar') -}}
+    Content of block (first override)
+{% endblock foobar %}

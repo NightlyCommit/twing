@@ -1,12 +1,12 @@
 import TwingTokenParserInterface from "./token-parser-interface";
 import TwingFilter from "./filter";
 import TwingFunction from "./function";
-import TwingTest from "./test";
 import TwingNodeVisitorInterface from "./node-visitor-interface";
 import TwingExtensionInterface from "./extension-interface";
 import TwingExtensionStaging from "./extension/staging";
 import TwingMap from "./map";
-import TwingOperatorDefinitionInterface = require("./operator-definition-interface");
+import TwingOperatorDefinitionInterface from "./operator-definition-interface";
+import TwingTest from "./test";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
 
@@ -38,6 +38,30 @@ class TwingExtensionSet {
 
     getExtension(name: string) {
         return this.extensions.get(name);
+    }
+
+    /**
+     * Registers an array of extensions.
+     *
+     * @param array $extensions An array of extensions
+     */
+    setExtensions(extensions: Array<TwingExtensionInterface>) {
+        for (let extension of extensions) {
+            this.addExtension(extension);
+        }
+    }
+
+    /**
+     * Returns all registered extensions.
+     *
+     * @return array An array of extensions
+     */
+    getExtensions() {
+        return this.extensions;
+    }
+
+    getSignature() {
+        return JSON.stringify([...this.extensions.keys()]);
     }
 
     isInitialized() {
@@ -163,8 +187,8 @@ class TwingExtensionSet {
         });
 
         // tests
-        extension.getTests().forEach(function (test: TwingTest, name: string) {
-            self.tests.set(name, test);
+        extension.getTests().forEach(function (test: TwingTest) {
+            self.tests.set(test.getName(), test);
         });
 
         // token parsers
@@ -220,27 +244,34 @@ class TwingExtensionSet {
             return this.functions.get(name);
         }
 
-        this.functions.forEach(function (function_, pattern) {
+        let twingFunction: TwingFunction;
+        let pattern: string;
+
+        for ([pattern, twingFunction] of this.functions) {
             let count: number = 0;
 
-            pattern = preg_quote(pattern, '#').replace('\\*', function () {
+            pattern = pattern.replace(/\*/g, function (match: string, value: string) {
                 count++;
 
                 return '(.*?)';
             });
 
-            let regExp = new RegExp('#^' + pattern + '$#');
-            let matches = regExp.exec(name);
+            if (count) {
+                let regExp = new RegExp('^' + pattern, 'g');
+                let match: RegExpExecArray = regExp.exec(name);
+                let matches = [];
 
-            if (count && matches) {
-                matches.shift();
+                if (match) {
+                    for (let i = 1; i <= count; i++) {
+                        matches.push(match[i]);
+                    }
 
-                function_.setArguments(matches);
+                    twingFunction.setArguments(matches);
 
-                return function_;
+                    return twingFunction;
+                }
             }
-
-        });
+        }
 
         this.functionCallbacks.forEach(function (callback) {
             let function_ = callback(name);
@@ -292,42 +323,34 @@ class TwingExtensionSet {
             return this.filters.get(name);
         }
 
-        this.filters.forEach(function (filter: TwingFilter, pattern: string) {
-            // foreach (this.filters as pattern => filter) {
-            //     pattern = str_replace('\\*', '(.*?)', preg_quote(pattern, '#'), count);
-            //
-            //     if (count && preg_match('#^'.pattern.'#', name, matches)) {
-            //         array_shift(matches);
-            //         filter.setArguments(matches);
-            //
-            //         return filter;
-            //     }
-            // }
+        let filter: TwingFilter;
+        let pattern: string;
 
-            pattern = preg_quote(pattern, '#').replace('\\*', '(.*?)');
+        for ([pattern, filter] of this.filters) {
+            let count: number = 0;
 
-            let regExp = new RegExp('\\*', 'g');
-
-            let match: RegExpExecArray;
-            let count = 0;
-
-            while ((match = regExp.exec(pattern)) !== null) {
+            pattern = pattern.replace(/\*/g, function (match: string, value: string) {
                 count++;
 
-                let regExp2 = new RegExp('#^' + pattern + '#');
+                return '(.*?)';
+            });
 
-                let match2: RegExpExecArray;
+            if (count) {
+                let regExp = new RegExp('^' + pattern, 'g');
+                let match: RegExpExecArray = regExp.exec(name);
                 let matches = [];
 
-                while ((match2 = regExp2.exec(name)) !== null) {
-                    matches.push(match[0]);
+                if (match) {
+                    for (let i = 1; i <= count; i++) {
+                        matches.push(match[i]);
+                    }
+
+                    filter.setArguments(matches);
+
+                    return filter;
                 }
-
-                filter.setArguments(matches);
-
-                return filter;
             }
-        });
+        }
 
         this.filterCallbacks.forEach(function (callback: Function) {
             let filter = callback.call(this, name);
@@ -345,12 +368,12 @@ class TwingExtensionSet {
     }
 
 
-    addTest(name: string, test: TwingTest) {
+    addTest(test: TwingTest) {
         if (this.initialized) {
-            // throw new LogicException(sprintf('Unable to add test "%s" as extensions have already been initialized.', $test->getTemplateName()));
+            throw new Error(`Unable to add test "${test.getName()}" as extensions have already been initialized.`);
         }
 
-        this.staging.addTest(name, test);
+        this.staging.addTest(test);
     }
 
     /**
@@ -369,9 +392,9 @@ class TwingExtensionSet {
      * Gets a test by name.
      *
      * @param {string} name The test name
-     * @returns {TwingTest|false} A TwingTest instance or false if the test does not exist
+     * @returns {TwingTest} A TwingTest instance or null if the test does not exist
      */
-    getTest(name: string) {
+    getTest(name: string): TwingTest {
         if (!this.initialized) {
             this.initExtensions();
         }
@@ -380,7 +403,7 @@ class TwingExtensionSet {
             return this.tests.get(name);
         }
 
-        return false;
+        return null;
     }
 }
 

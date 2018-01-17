@@ -13,7 +13,7 @@ class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
 
         if (filterName.getAttribute('value') === 'default' && (node instanceof TwingNodeExpressionName || node instanceof TwingNodeExpressionGetAttr)) {
             let test = new TwingNodeExpressionTestDefined(node.clone() as TwingNodeExpression, 'defined', new TwingNode(), node.getTemplateLine());
-            let falseNode = methodArguments.getNodes().length() ? methodArguments.getNode(0) : new TwingNodeExpressionConstant('', node.getTemplateLine());
+            let falseNode = methodArguments.getNodes().size ? methodArguments.getNode(0) : new TwingNodeExpressionConstant('', node.getTemplateLine());
 
             node = new TwingNodeExpressionConditional(test, defaultNode, falseNode as TwingNodeExpression, node.getTemplateLine());
         }
@@ -25,4 +25,4 @@ class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
     }
 }
 
-export = TwingNodeExpressionFilterDefault;
+export default TwingNodeExpressionFilterDefault;

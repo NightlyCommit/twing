@@ -1,7 +1,7 @@
-import TwingBaseNodeVisitor = require("../base-node-visitor");
+import TwingBaseNodeVisitor from "../base-node-visitor";
 import TwingNode from "../node";
-import TwingEnvironment = require("../environment");
-import TwingNodeVisitorSafeAnalysis = require("./safe-analysis");
+import TwingEnvironment from "../environment";
+import TwingNodeVisitorSafeAnalysis from "./safe-analysis";
 import TwingNodeTraverser from "../node-traverser";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingMap from "../map";
@@ -15,10 +15,10 @@ import TwingNodeImport from "../node/import";
 
 class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
-    private blocks: Map<string, TwingNode | string | false> = new Map();
+    private blocks: Map<string, any> = new Map();
     private safeAnalysis: TwingNodeVisitorSafeAnalysis;
     private traverser: TwingNodeTraverser;
-    private defaultStrategy: string | false = false;
+    private defaultStrategy: string | Function | false = false;
     private safeVars: Array<TwingNode> = [];
 
     constructor() {
@@ -28,7 +28,8 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node instanceof TwingNodeModule) {
+        // @see https://github.com/Microsoft/TypeScript/issues/10422
+        if (node as any instanceof TwingNodeModule) {
             if (env.hasExtension('TwingExtensionEscaper')) {
                 this.defaultStrategy = env.getExtension('TwingExtensionEscaper').getDefaultStrategy(node.getTemplateName());
             }
@@ -36,13 +37,13 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
             this.safeVars = [];
             this.blocks = new Map();
         }
-        else if (node instanceof TwingNodeAutoEscape) {
+        else if (node as any instanceof TwingNodeAutoEscape) {
             this.statusStack.push(node.getAttribute('value'));
         }
-        else if (node instanceof TwingNodeBlock) {
+        else if (node as any instanceof TwingNodeBlock) {
             this.statusStack.push(this.blocks.has(node.getAttribute('name')) ? this.blocks.get(node.getAttribute('name')) : this.needEscaping(env));
         }
-        else if (node instanceof TwingNodeImport) {
+        else if (node as any instanceof TwingNodeImport) {
             this.safeVars.push(node.getNode('var').getAttribute('name'));
         }
 
@@ -50,29 +51,30 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node instanceof TwingNodeModule) {
+        // @see https://github.com/Microsoft/TypeScript/issues/10422
+        if (node as any instanceof TwingNodeModule) {
             this.defaultStrategy = false;
             this.safeVars = [];
             this.blocks = new Map();
         }
-        else if (node instanceof TwingNodeExpressionFilter) {
+        else if (node as any instanceof TwingNodeExpressionFilter) {
             return this.preEscapeFilterNode(node as TwingNodeExpressionFilter, env);
         }
-        else if (node instanceof TwingNodePrint) {
+        else if (node as any instanceof TwingNodePrint) {
             return this.escapePrintNode(node, env, this.needEscaping(env));
         }
 
-        if (node instanceof TwingNodeAutoEscape || node instanceof TwingNodeBlock) {
+        if (node as any instanceof TwingNodeAutoEscape || node as any instanceof TwingNodeBlock) {
             this.statusStack.pop();
         }
-        else if (node instanceof TwingNodeBlockReference) {
+        else if (node as any instanceof TwingNodeBlockReference) {
             this.blocks.set(node.getAttribute('name'), this.needEscaping(env));
         }
 
         return node;
     }
 
-    private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: TwingNode | string | false) {
+    private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: any) {
 
         if (!type) {
             return node;
@@ -128,7 +130,7 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     /**
      *
      * @param {TwingEnvironment} env
-     * @returns TwingNode | string | false
+     * @returns string | Function | false
      */
     needEscaping(env: TwingEnvironment) {
         if (this.statusStack.length) {
@@ -138,7 +140,7 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         return this.defaultStrategy ? this.defaultStrategy : false;
     }
 
-    private getEscaperFilter(type: TwingNode | string | false, node: TwingNode) {
+    private getEscaperFilter(type: any, node: TwingNode) {
         let line = node.getTemplateLine();
 
         let nodes = new TwingMap();
@@ -159,4 +161,4 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 }
 
-export = TwingNodeVisitorEscaper;
+export default TwingNodeVisitorEscaper;

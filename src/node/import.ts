@@ -3,14 +3,14 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-
 import TwingNode from "../node";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
 import TwingNodeExpressionName from "./expression/name";
-import TwingNodeMacro from "./macro";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
+import {type} from "os";
 
 class TwingNodeImport extends TwingNode {
     constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, tag: string = null) {
@@ -22,22 +22,32 @@ class TwingNodeImport extends TwingNode {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let importedTemplateName = this.getNode('var').compile(context, template, blocks);
-        let importedTemplate: TwingTemplate;
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let exprHandler = compiler.subcompile(this.getNode('expr'));
+        let varHandler = compiler.subcompile(this.getNode('var'));
+        let importedTemplateHandler: DoDisplayHandler;
 
         if ((this.getNode('expr') instanceof TwingNodeExpressionName) && (this.getNode('expr').getAttribute('name') === '_self')) {
-            importedTemplate = template;
+            importedTemplateHandler = (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
+                return template;
+            }
         }
         else {
-            importedTemplate = template.loadTemplate(this.getNode('expr').compile(context, template, blocks), this.getTemplateName(), this.getTemplateLine());
-            // todo: this is not very nice. If the template was already loaded, the macros are compiled twice or more
-            importedTemplate.compileMacros(context, importedTemplate, blocks);
+            importedTemplateHandler = (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
+                return template.loadTemplate(
+                    exprHandler(template, context, blocks),
+                    this.getTemplateName(),
+                    this.getTemplateLine()
+                );
+            }
         }
 
-        context[importedTemplateName] = importedTemplate;
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
+            let var_ = varHandler(template, context, blocks);
+            let importedTemplate = importedTemplateHandler(template, context, blocks);
 
-        return null;
+            var_.value = importedTemplate;
+        }
     }
 }
 

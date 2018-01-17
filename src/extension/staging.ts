@@ -2,15 +2,15 @@ import TwingExtension from "../extension";
 import TwingTokenParserInterface from "../token-parser-interface";
 import TwingFilter from "../filter";
 import TwingMap from "../map";
-import TwingTest from "../test";
 import TwingFunction from "../function";
+import TwingTest from "../test";
 
 class TwingExtensionStaging extends TwingExtension {
     private functions: Array<TwingFunction> = [];
     private filters: Array<TwingFilter> = [];
     // private visitors = array();
     private tokenParsers: Map<string, TwingTokenParserInterface> = new Map();
-    private tests: Map<string, TwingTest> = new Map();
+    private tests: Array<TwingTest> = [];
 
     // todo: staging extension is conceptually wrong in TwigPHP: it considers this.functions as a hash while other extensions consider it as an array
     addFunction(twingFunction: TwingFunction) {
@@ -41,8 +41,8 @@ class TwingExtensionStaging extends TwingExtension {
         return this.filters;
     }
 
-    addTest(name: string, test: TwingTest) {
-        this.tests.set(name, test);
+    addTest(test: TwingTest) {
+        this.tests.push(test);
     }
 
     getTests() {

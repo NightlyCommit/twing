@@ -1,9 +1,10 @@
 import TwingNode from "../node";
 import TwingNodeType from "../node-type";
 import TwingMap from "../map";
-import TwingMarkup = require("../markup");
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingMarkup from "../markup";
+import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
@@ -26,9 +27,11 @@ class TwingNodeSet extends TwingNode {
         }
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): string {
+    compile(compiler: TwingCompiler): DoDisplayHandler {
         let namesNode = this.getNode('names');
         let valuesNode = this.getNode('values');
+
+        let handlers: Array<any> = [];
 
         if (!this.getAttribute('capture')) {
             let names = [...namesNode.getNodes().values()];
@@ -41,18 +44,35 @@ class TwingNodeSet extends TwingNode {
                 let name = names[i];
                 let value = values[i];
 
-                context[name.compile(context, template, blocks)] = value.compile(context, template, blocks);
+                handlers.push({
+                    name: compiler.subcompile(name),
+                    value: compiler.subcompile(value)
+                });
             }
         }
         else {
-            let values: string = valuesNode.compile(context, template, blocks);
-
-            namesNode.getNodes().forEach(function (nameNode) {
-                context[nameNode.compile(context, template, blocks)] = new TwingMarkup(values, template.getEnvironment().getCharset());
-            });
+            for (let [k, nameNode] of namesNode.getNodes()) {
+                handlers.push({
+                    name: compiler.subcompile(nameNode),
+                    value: compiler.subcompile(valuesNode)
+                });
+            }
         }
 
-        return '';
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            for (let handler of handlers) {
+                let nameHandler = handler.name;
+                let valueHandler = handler.value;
+
+                let value = valueHandler(template, context, blocks);
+
+                if (this.getAttribute('capture')) {
+                    value = value ? new TwingMarkup(value, compiler.getEnvironment().getCharset()) : '';
+                }
+
+                nameHandler(template, context, blocks).value = value;
+            }
+        }
     }
 }
 

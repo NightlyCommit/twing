@@ -1,0 +1,10 @@
+
+{% extends "parent.twig" %}
+
+{% use 'blocks.twig' %}
+
+{% block body %}
+    {{ parent() -}}
+    CHILD
+    {{ block('content') }}
+{% endblock %}

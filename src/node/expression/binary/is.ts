@@ -1,4 +1,4 @@
-import TwingNodeExpressionBinary = require("../binary");
+import TwingNodeExpressionBinary from "../binary";
 
 class TwingNodeExpressionBinaryIs extends TwingNodeExpressionBinary {
     execute(left: any, right: any): any {
@@ -6,4 +6,4 @@ class TwingNodeExpressionBinaryIs extends TwingNodeExpressionBinary {
     }
 }
 
-export = TwingNodeExpressionBinaryIs;
+export default TwingNodeExpressionBinaryIs;

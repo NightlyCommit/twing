@@ -47,13 +47,13 @@ class TwingNodeTraverser {
         let self = this;
         let result: TwingNode | false = node;
 
-        this.visitors.sortByKey();
+        this.visitors.sortByKeys();
 
-        this.visitors.forEach(function (visitors: TwingMap<string, TwingNodeVisitorInterface>) {
-            visitors.forEach(function (visitor) {
+        for (let [index, visitors] of this.visitors) {
+            for (let [index, visitor] of visitors) {
                 result = self.traverseForVisitor(visitor, node);
-            });
-        });
+            }
+        }
 
         return result;
     }
@@ -63,14 +63,14 @@ class TwingNodeTraverser {
 
         node = visitor.enterNode(node, this.env);
 
-        node.getNodes().forEach(function (n, k) {
+        for (let [k, n] of node.getNodes()) {
             if (n = self.traverseForVisitor(visitor, n)) {
                 node.setNode(k, n);
             }
             else {
                 node.removeNode(k);
             }
-        });
+        }
 
         return visitor.leaveNode(node, this.env);
     }

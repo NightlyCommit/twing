@@ -1,12 +1,17 @@
 import TwingNodeExpressionTest from "../test";
-import TwingTemplate = require("../../../template");
+import TwingTemplate from "../../../template";
 import TwingMap from "../../../map";
-import TwingTemplateBlock from "../../../template-block";
+import TwingCompiler from "../../../compiler";
+import DoDisplayHandler from "../../../do-display-handler";
 
 class TwingNodeExpressionTestOdd extends TwingNodeExpressionTest {
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        return this.getNode('node').compile(context, template, blocks) % 2 === 1;
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let nodeHandler = compiler.subcompile(this.getNode('node'));
+
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
+            return nodeHandler(template, context, blocks) % 2 === 1;
+        }
     }
 }
 
-export = TwingNodeExpressionTestOdd;
+export default TwingNodeExpressionTestOdd;

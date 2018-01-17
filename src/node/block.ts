@@ -1,29 +1,25 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
+import TwingTemplate from "../template";
 
 class TwingNodeBlock extends TwingNode {
     constructor(name: string, body: TwingNode, lineno: number, tag: string = null) {
         super(new TwingMap([['body', body]]), new TwingMap([['name', name]]), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let self = this;
-        let blockName = this.getAttribute('name');
+    // in PHP a block add a function to the template named block_...
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let handler = compiler.subcompile(this.getNode('body'));
+        let name = this.getAttribute('name');
 
-        let block = function (context: any, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap) {
-            let output = self.getNode('body').compile(context, template, blocks);
-
-            return output;
-        };
-
-        template.setBlock(blockName, {
-            block: block,
-            template: template
+        compiler.setBlock(name, (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
+            return handler(template, context, blocks);
         });
 
-        return '';
+        return () => {
+        }
     }
 }
 

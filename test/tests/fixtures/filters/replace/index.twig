@@ -1,0 +1,4 @@
+
+{{ "I liké %this% and %that%."|replace({'%this%': "foo", '%that%': "bar"}) }}
+{{ 'I like single replace operation only %that%'|replace({'%that%' : '%that%1'}) }}
+{{ 'I like %this% and %that%.'|replace(traversable) }}

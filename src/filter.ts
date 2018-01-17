@@ -1,19 +1,17 @@
-import TwingNodeExpression from "./node/expression";
 import TwingNodeExpressionFilter from "./node/expression/filter";
 import TwingNode from "./node";
 import TwingNodeExpressionConstant from "./node/expression/constant";
-import TwingFilterOptions = require("./filter-options");
-import TwingEnvironment = require("./environment");
+import TwingFilterOptions from "./filter-options";
+import TwingEnvironment from "./environment";
 
 let merge = require('merge');
 
-class TwingFilter {
+export class TwingFilter {
     private name: string;
     private callable: Function;
     private options: TwingFilterOptions;
     private methodArguments: Array<any>;
 
-    // todo: remove callable
     constructor(name: string, callable: Function, options: TwingFilterOptions = {}) {
         this.name = name;
         this.callable = callable;

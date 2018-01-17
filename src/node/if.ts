@@ -1,7 +1,8 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeIf extends TwingNode {
     constructor(tests: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {
@@ -16,34 +17,40 @@ class TwingNodeIf extends TwingNode {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap) {
-        let result = '';
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let tests: Array<any> = [];
 
         let i = 0;
-        let count = this.getNode('tests').getNodes().length();
 
-        let condition = false;
-        let conditionNode = null;
-        let valueNode = null;
-
-        while (!condition && i < count) {
-            conditionNode = this.getNode('tests').getNode(i);
-            valueNode = this.getNode('tests').getNode(i + 1);
-
-            condition = conditionNode.compile(context, template, blocks);
+        while (i < this.getNode('tests').getNodes().size) {
+            tests.push({
+                conditionHandler: compiler.subcompile(this.getNode('tests').getNode(i)),
+                valueHandler: compiler.subcompile(this.getNode('tests').getNode(i + 1))
+            });
 
             i += 2;
         }
 
-        if (condition) {
-            result = valueNode.compile(context, template, blocks);
+        let elseHandler: DoDisplayHandler;
+
+        if (this.hasNode('else')) {
+            elseHandler = compiler.subcompile(this.getNode('else'));
         }
-        else if (this.hasNode('else')) {
-            result = this.getNode('else').compile(context, template, blocks);
+        else {
+            elseHandler = () => {
+            }
         }
 
-        return result;
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            for (let test of tests) {
+                if (test.conditionHandler(template, context, blocks)) {
+                    return test.valueHandler(template, context, blocks);
+                }
+            }
+
+            return compiler.repr(elseHandler(template, context, blocks));
+        }
     }
 }
 
-export = TwingNodeIf;
+export default TwingNodeIf;

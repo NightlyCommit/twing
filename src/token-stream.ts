@@ -1,4 +1,4 @@
-import Token, {default as TwingToken} from "./token";
+import TwingToken from "./token";
 import Source from "./source";
 import TokenType from "./token-type";
 import TwingSyntaxError from "./error/syntax";
@@ -6,11 +6,11 @@ import TwingSyntaxError from "./error/syntax";
 const array_merge = require('locutus/php/array/array_merge');
 
 class TwingTokenStream {
-    tokens: Array<Token>;
+    tokens: Array<TwingToken>;
     current: number = 0;
     source: Source;
 
-    constructor(tokens: Array<Token>, source: Source = null) {
+    constructor(tokens: Array<TwingToken>, source: Source = null) {
         this.tokens = tokens;
         this.source = source ? source : new Source('', '');
     }
@@ -19,7 +19,7 @@ class TwingTokenStream {
         return this.tokens.join('\n');
     }
 
-    injectTokens(tokens: Array<Token>) {
+    injectTokens(tokens: Array<TwingToken>) {
         this.tokens = array_merge(this.tokens.slice(0, this.current), tokens, this.tokens.slice(this.current));
     }
 

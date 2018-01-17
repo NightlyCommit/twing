@@ -1,7 +1,8 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeSpaceless extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag = 'spaceless') {
@@ -12,11 +13,13 @@ class TwingNodeSpaceless extends TwingNode {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let result = this.getNode('body').compile(context, template, blocks);
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let bodyHandler = compiler.subcompile(this.getNode('body'));
 
-        return result.replace(/>\s+</g, '><').trim();
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            return bodyHandler(template, context, blocks).replace(/>\s+</g, '><').trim();
+        }
     }
 }
 
-export = TwingNodeSpaceless;
+export default TwingNodeSpaceless;

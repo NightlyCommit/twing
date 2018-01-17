@@ -1,5 +1,5 @@
 import TwingEnvironment from "./environment";
-import TokenStream, {default as TwingTokenStream} from "./token-stream";
+import TwingTokenStream from "./token-stream";
 import TwingNodeBlock from "./node/block";
 import TwingTokenParserInterface from "./token-parser-interface";
 import TwingNodeVisitorInterface from "./node-visitor-interface";
@@ -18,17 +18,12 @@ import TwingNodeModule from "./node/module";
 import TwingNodeTraverser from "./node-traverser";
 import TwingNodeMacro from "./node/macro";
 import TwingNodeBlockReference from "./node/block-reference";
-import set = Reflect.set;
+import TwingTokenParser from "./token-parser";
 
 let ctype_space = require('locutus/php/ctype/ctype_space');
 let md5 = require('locutus/php/strings/md5');
 let uniqid = require('locutus/php/misc/uniqid');
 let mt_rand = require('locutus/php/math/mt_rand');
-
-interface FunctionAlias {
-    node: TwingNodeExpression;
-    name: string;
-}
 
 class TwingParserStackEntry {
     stream: TwingTokenStream;
@@ -36,7 +31,7 @@ class TwingParserStackEntry {
     blocks: TwingMap<string, TwingNodeBlock>;
     blockStack: Array<string>;
     macros: TwingMap<string, string>;
-    importedSymbols: Array<Map<string, Map<string, FunctionAlias>>>;
+    importedSymbols: Array<Map<string, Map<string, {node: TwingNodeExpression, name: string}>>>;
     traits: TwingMap<string, TwingNode>;
     embeddedTemplates: Array<TwingNodeModule>;
 
@@ -52,7 +47,7 @@ class TwingParserStackEntry {
     }
 }
 
-class TwingParser {
+export class TwingParser {
     private stack: Array<TwingParserStackEntry> = [];
     private stream: TwingTokenStream;
     private parent: TwingNode;
@@ -75,7 +70,7 @@ class TwingParser {
         return `__internal_${md5(uniqid(mt_rand(), true))}`;
     }
 
-    parse(stream: TokenStream, test: Function = null, dropNeedle: boolean = false): TwingNodeModule {
+    parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
         let self = this;
 
         // console.warn(stream);
@@ -181,7 +176,7 @@ class TwingParser {
         this.parent = parent;
     }
 
-    subparse(test: Function = null, dropNeedle: boolean = false): TwingNode {
+    subparse(test: Array<any>, dropNeedle: boolean = false): TwingNode {
         let lineno = this.getCurrentToken().getLine();
         let rv = new TwingMap();
         let token;
@@ -209,12 +204,12 @@ class TwingParser {
                         throw new TwingSyntaxError('A block must start with a tag name', token.getLine(), this.stream.getSourceContext());
                     }
 
-                    if (test !== null && test(token)) {
+                    if (test !== null && test[1](token)) {
                         if (dropNeedle) {
                             this.stream.next();
                         }
 
-                        if (rv.length() === 1) {
+                        if (rv.size === 1) {
                             return rv.first();
                         }
 
@@ -231,10 +226,9 @@ class TwingParser {
                                 this.stream.getSourceContext()
                             );
 
-                            // @todo: this thing is conceptually false
-                            // if (Array.isArray(test) && (test.length > 1) && (test[0] instanceof TwingTokenParserInterface)) {
-                            //     e.appendMessage(` (expecting closing tag for the "${test[0].getTag()}" tag defined near line ${lineno}).`);
-                            // }
+                            if (Array.isArray(test) && (test.length > 1) && (test[0] instanceof TwingTokenParser)) {
+                                e.appendMessage(` (expecting closing tag for the "${test[0].getTag()}" tag defined near line ${lineno}).`);
+                            }
                         }
                         else {
                             e = new TwingSyntaxError(
@@ -269,7 +263,7 @@ class TwingParser {
             }
         }
 
-        if (rv.length() === 1) {
+        if (rv.size === 1) {
             return rv.first();
         }
 
@@ -313,11 +307,11 @@ class TwingParser {
     }
 
     hasTraits() {
-        return this.traits.length() > 0;
+        return this.traits.size > 0;
     }
 
     embedTemplate(template: TwingNodeModule) {
-        template.setIndex(Math.random());
+        template.setIndex(mt_rand());
 
         this.embeddedTemplates.push(template);
     }
@@ -349,7 +343,7 @@ class TwingParser {
         localScopeType.set(alias, {name: name, node: node});
     }
 
-    getImportedSymbol(type: string, alias: string): FunctionAlias {
+    getImportedSymbol(type: string, alias: string): {node: TwingNodeExpression, name: string} {
         let result = null;
 
         this.importedSymbols.forEach(function (importedSymbol) {
@@ -393,11 +387,8 @@ class TwingParser {
     filterBodyNodes(node: any): TwingNode {
         let self = this;
 
-        if (
-            (node instanceof TwingNodeText && !ctype_space(node.getAttribute('data')))
-            ||
-            (!(node instanceof TwingNodeText) && !(node instanceof TwingNodeBlockReference) && (node.getType() === TwingNodeType.OUTPUT))
-        ) {
+        if ((node as any instanceof TwingNodeText && !ctype_space(node.getAttribute('data'))) ||
+            (!(node  as any instanceof TwingNodeText) && !(node  as any instanceof TwingNodeBlockReference) && (node.getType() === TwingNodeType.OUTPUT))) {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingSyntaxError(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,

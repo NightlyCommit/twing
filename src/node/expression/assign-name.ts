@@ -1,11 +1,26 @@
 import TwingNodeExpressionName from "./name";
-import TwingTemplate = require("../../template");
-import TwingMap from "../../map";
-import TwingTemplateBlock from "../../template-block";
+import TwingCompiler from "../../compiler";
+import DoDisplayHandler from "../../do-display-handler";
+import TwingTemplate from "../../template";
 
 class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        return this.getAttribute('name');
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let name = this.getAttribute('name');
+
+        return (template: TwingTemplate, context: any) => {
+            return new Proxy({}, {
+                set(target, property, value) {
+                    if (property === 'value') {
+                        context[name] = value;
+
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            });
+        }
     }
 }
 

@@ -1,0 +1,10 @@
+
+{% use 'file1.html.twig' %}
+{% block foo %}
+    {{- parent() -}}
+    Content of foo (first override)
+{% endblock foo %}
+{% block bar %}
+    {{- parent() -}}
+    Content of bar (first override)
+{% endblock bar %}

@@ -2,10 +2,10 @@ import TwingTokenParser from "../token-parser";
 import TwingToken from "../token";
 import TwingTokenType from "../token-type";
 import TwingNodeInclude from "../node/include";
-import TwingTokenParserInclude = require("./include");
+import TwingTokenParserInclude from "./include";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeExpressionName from "../node/expression/name";
-import TwingNodeEmbed = require("../node/embed");
+import TwingNodeEmbed from "../node/embed";
 import TwingNodeModule from "../node/module";
 
 class TwingTokenParserEmbed extends TwingTokenParserInclude {
@@ -25,10 +25,11 @@ class TwingTokenParserEmbed extends TwingTokenParserInclude {
 
         parentToken = fakeParentToken = new TwingToken(TwingTokenType.STRING_TYPE, '__parent__', token.getLine());
 
-        if (parent instanceof TwingNodeExpressionConstant) {
+        // @see https://github.com/Microsoft/TypeScript/issues/10422
+        if (parent as any instanceof TwingNodeExpressionConstant) {
             parentToken = new TwingToken(TwingTokenType.STRING_TYPE, parent.getAttribute('value'), token.getLine());
         }
-        else if (parent instanceof TwingNodeExpressionName) {
+        else if (parent as any instanceof TwingNodeExpressionName) {
             parentToken = new TwingToken(TwingTokenType.NAME_TYPE, parent.getAttribute('name'), token.getLine());
         }
 
@@ -40,7 +41,7 @@ class TwingTokenParserEmbed extends TwingTokenParserInclude {
             new TwingToken(TwingTokenType.BLOCK_END_TYPE, '', token.getLine()),
         ]);
 
-        let module = this.parser.parse(stream, this.decideBlockEnd, true);
+        let module = this.parser.parse(stream, [this, this.decideBlockEnd], true);
 
         // override the parent with the correct one
         if (fakeParentToken === parentToken) {
@@ -63,4 +64,4 @@ class TwingTokenParserEmbed extends TwingTokenParserInclude {
     }
 }
 
-export = TwingTokenParserEmbed;
+export default TwingTokenParserEmbed;

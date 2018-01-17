@@ -1,6 +1,6 @@
 import TwingSource from "./source";
 
-interface TwingLoaderInterface {
+export interface TwingLoaderInterface {
     /**
      * Returns the source context for a given template logical name.
      *

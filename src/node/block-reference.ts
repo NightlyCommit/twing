@@ -1,8 +1,10 @@
 import TwingNode from "../node";
 import TwingNodeType from "../node-type";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
+import TwingErrorRuntime from "../error/runtime";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 /**
  * Represents a block call node.
@@ -16,9 +18,21 @@ class TwingNodeBlockReference extends TwingNode {
         this.type = TwingNodeType.OUTPUT;
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap()): any {
-        // todo: refactor displayBlock as renderBlock
-        return template.displayBlock(this.getAttribute('name'), context, blocks);
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
+            try {
+                return template.renderBlock(this.getAttribute('name'), context, blocks);
+            }
+            catch (e) {
+                if (e instanceof TwingErrorRuntime) {
+                    if (e.getTemplateLine() === -1) {
+                        e.setTemplateLine(this.getTemplateLine());
+                    }
+                }
+
+                throw e;
+            }
+        }
     }
 }
 

@@ -1,8 +1,9 @@
 import TwingNode from "../node";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 /**
  * Represents a do node.
@@ -18,9 +19,13 @@ class TwingNodeDo extends TwingNode {
         super(new TwingMap([['expr', expr]]), new TwingMap(), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        this.getNode('expr').compile(context, template, blocks);
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let exprHandler = compiler.subcompile(this.getNode('expr'));
+
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            exprHandler(template, context, blocks);
+        }
     }
 }
 
-export = TwingNodeDo;
+export default TwingNodeDo;

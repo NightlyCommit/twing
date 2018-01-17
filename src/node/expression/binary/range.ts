@@ -1,4 +1,4 @@
-import TwingNodeExpressionBinary = require("../binary");
+import TwingNodeExpressionBinary from "../binary";
 
 const range = require('locutus/php/array/range');
 
@@ -8,4 +8,4 @@ class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
     }
 }
 
-export = TwingNodeExpressionBinaryRange;
+export default TwingNodeExpressionBinaryRange;

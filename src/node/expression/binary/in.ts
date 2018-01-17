@@ -1,9 +1,14 @@
-import TwingNodeExpressionBinary = require("../binary");
+import TwingNodeExpressionBinary from "../binary";
+import twingIn from '../../../util/in';
+
+const isNumber = require('is-number');
 
 class TwingNodeExpressionBinaryIn extends TwingNodeExpressionBinary {
-    execute(left: any, right: any): any {
-        return undefined;
+    execute(value: any, compare: any): any {
+        let result = twingIn(value, compare);
+
+        return result;
     }
 }
 
-export = TwingNodeExpressionBinaryIn;
+export default TwingNodeExpressionBinaryIn;

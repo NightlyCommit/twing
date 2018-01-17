@@ -1,8 +1,9 @@
-.idea/
+.idea
 .nyc_output
+.rpt2_cache
+build
 coverage
-node_modules/
-src/**/*.js
-dist
+lib
+node_modules
 actual.html
 npm-debug.log

@@ -9,4 +9,4 @@ interface TwingFunctionOptions {
     alternative?: string;
 }
 
-export = TwingFunctionOptions;
+export default TwingFunctionOptions;

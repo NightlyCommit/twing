@@ -37,7 +37,7 @@ class TwingTokenParserBlock extends TwingTokenParser {
         let body;
 
         if (stream.nextIf(TwingTokenType.BLOCK_END_TYPE)) {
-            body = this.parser.subparse(this.decideBlockEnd, true);
+            body = this.parser.subparse([this, this.decideBlockEnd], true);
 
             let token = stream.nextIf(TwingTokenType.NAME_TYPE);
 
@@ -76,4 +76,4 @@ class TwingTokenParserBlock extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserBlock;
+export default TwingTokenParserBlock;

@@ -14,21 +14,23 @@ import TwingMap from "./map";
 import TwingTest from "./test";
 import TwingFunction from "./function";
 import TwingErrorSyntax from "./error/syntax";
-import TwingEnvironmentOptions from "./environment-options";
-import TwingOperatorDefinitionInterface = require("./operator-definition-interface");
-import TwingCacheInterface = require("./cache-interface");
-import TwingCacheFilesystem = require("./cache/filesystem");
-import TwingCacheNull = require("./cache/null");
-import TwingExtensionEscaper = require("./extension/escaper");
-import TwingNodeModule from "./node/module";
-import TwingTemplate = require("./template");
+import TwingOperatorDefinitionInterface from "./operator-definition-interface";
+import TwingExtensionEscaper from "./extension/escaper";
+import TwingTemplate from "./template";
 import TwingError from "./error";
+import TwingTemplateWrapper from "./template-wrapper";
+import TwingEnvironmentOptions from "./environment-options";
+import {TwingLoaderArray} from "./loader/array";
+import TwingLoaderChain from "./loader/chain";
+import TwingExtensionOptimizer from "./extension/optimizer";
+import TwingCompiler from "./compiler";
+import TwingNode from "./node";
+import TwingNodeModule from "./node/module";
 
 let merge = require('merge');
-let fs = require('fs');
-let path = require('path');
+let hash = require('hash.js');
 
-class TwingEnvironment {
+export class TwingEnvironment {
     // const VERSION = '2.4.5-DEV';
     // const VERSION_ID = 20405;
     // const MAJOR_VERSION = 2;
@@ -40,21 +42,20 @@ class TwingEnvironment {
     private loader: TwingLoaderInterface = null;
     private debug: boolean;
     private autoReload: boolean;
-    private cache: TwingCacheInterface;
-    private lexer: TwingLexer = null;
-    private parser: TwingParser = null;
+    private lexer: TwingLexer;
+    private parser: TwingParser;
     private baseTemplateClass: string;
     private globals: any = {};
     private resolvedGlobals: any;
-    private loadedTemplates: Map<string, TwingTemplate> = new Map();
     private strictVariables: boolean;
-    private templateClassPrefix: string = '__TwigTemplate_';
-    // private originalCache;
+    private templateClassPrefix = '__TwingTemplate_';
     private extensionSet: TwingExtensionSet = null;
     // private runtimeLoaders = array();
     // private runtimes = array();
-    // private optionsHash;
+    private optionsHash: string;
     // private loading = array();
+
+    protected loadedTemplates: Map<string, TwingTemplate> = new Map();
 
     /**
      * Constructor.
@@ -68,34 +69,75 @@ class TwingEnvironment {
         options = merge({}, {
             debug: false,
             charset: 'UTF-8',
-            base_template_class: 'TwingTemplate',
+            base_template_class: 'TwingTemplateImpl',
             strict_variables: false,
             autoescape: 'html',
-            cache: false,
             auto_reload: null,
             optimizations: -1,
         }, options);
 
-//     $this.debug = (bool) $options['debug'];
+        this.debug = options.debug;
         this.setCharset(options.charset);
         this.baseTemplateClass = options.base_template_class;
-//     $this.autoReload = null === $options['auto_reload'] ? $this.debug : (bool) $options['auto_reload'];
+        this.autoReload = options.auto_reload === null ? this.debug : options.auto_reload;
         this.strictVariables = options.strict_variables;
-        this.setCache(options.cache);
         this.extensionSet = new TwingExtensionSet();
 
         this.addExtension(new TwingExtensionCore());
         this.addExtension(new TwingExtensionEscaper(options.autoescape));
-        // $this.addExtension(new Twig_Extension_Optimizer($options['optimizations']));
+        this.addExtension(new TwingExtensionOptimizer(options.optimizations));
+    }
+
+    /**
+     *
+     * @returns {TwingExtensionCore}
+     */
+    getCoreExtension(): TwingExtensionCore {
+        return this.getExtension('TwingExtensionCore') as TwingExtensionCore;
     }
 
     /**
      * Gets the base template class for compiled templates.
      *
-     * @return string The base template class name
+     * @returns {string} The base template class name
      */
     getBaseTemplateClass() {
         return this.baseTemplateClass;
+    }
+
+    /**
+     * Sets the base template class for compiled templates.
+     *
+     * @param {string} templateClass The base template class name
+     */
+    public setBaseTemplateClass(templateClass: string) {
+        this.baseTemplateClass = templateClass;
+        this.updateOptionsHash();
+    }
+
+    /**
+     * Enables debugging mode.
+     */
+    enableDebug() {
+        this.debug = true;
+        this.updateOptionsHash();
+    }
+
+    /**
+     * Disables debugging mode.
+     */
+    disableDebug() {
+        this.debug = false;
+        this.updateOptionsHash();
+    }
+
+    /**
+     * Checks if debug mode is enabled.
+     *
+     * @returns {boolean} true if debug mode is enabled, false otherwise
+     */
+    isDebug() {
+        return this.debug;
     }
 
     /**
@@ -112,7 +154,7 @@ class TwingEnvironment {
      */
     enableStrictVariables() {
         this.strictVariables = true;
-        // this.updateOptionsHash();
+        this.updateOptionsHash();
     }
 
     /**
@@ -120,25 +162,22 @@ class TwingEnvironment {
      */
     disableStrictVariables() {
         this.strictVariables = false;
-        // this.updateOptionsHash();
+        this.updateOptionsHash();
     }
 
     /**
      * Registers a Test.
      *
-     * @param {string} name
      * @param {TwingTest} test
      */
-    addTest(name: string, test: TwingTest) {
-        this.extensionSet.addTest(name, test);
+    addTest(test: TwingTest) {
+        this.extensionSet.addTest(test);
     }
 
     /**
      * Gets the registered Tests.
      *
-     * @return TwingTest[]
-     *
-     * @internal
+     * @returns {TwingMap<string, TwingTest>}
      */
     getTests() {
         return this.extensionSet.getTests();
@@ -148,9 +187,9 @@ class TwingEnvironment {
      * Gets a test by name.
      *
      * @param {string} name The test name
-     * @returns {TwingTest|false} A TwingTest instance or false if the test does not exist
+     * @returns {TwingTest} A TwingTest instance or null if the test does not exist
      */
-    getTest(name: string) {
+    getTest(name: string): TwingTest {
         return this.extensionSet.getTest(name);
     }
 
@@ -164,9 +203,9 @@ class TwingEnvironment {
      * Subclasses may override this method and load functions differently;
      * so no list of functions is available.
      *
-     * @param string $name function name
+     * @param {string} name function name
      *
-     * @return Twig_Function|false A Twig_Function instance or false if the function does not exist
+     * @returns {TwingFunction} A TwingFunction instance or null if the function does not exist
      *
      * @internal
      */
@@ -234,7 +273,7 @@ class TwingEnvironment {
 
     addExtension(extension: TwingExtensionInterface) {
         this.extensionSet.addExtension(extension);
-        // this.updateOptionsHash();
+        this.updateOptionsHash();
     }
 
     /**
@@ -362,19 +401,27 @@ class TwingEnvironment {
         return this.extensionSet.getFilters();
     }
 
-    getCache(): TwingCacheInterface {
-        return this.cache;
-    }
+    /**
+     * Gets the template class associated with the given string.
+     *
+     * The generated template class is based on the following parameters:
+     *
+     *  * The cache key for the given template;
+     *  * The currently enabled extensions;
+     *  * Whether the Twig C extension is available or not;
+     *  * PHP version;
+     *  * Twig version;
+     *  * Options with what environment was created.
+     *
+     * @param {string} name The name for which to calculate the template class name
+     * @param {number|null} index The index if it is an embedded template
+     *
+     * @return string The template class name
+     */
+    getTemplateClass(name: string, index: number = null) {
+        let key = this.getLoader().getCacheKey(name) + this.optionsHash;
 
-    setCache(cache: TwingCacheInterface | string | false) {
-        if (typeof cache === 'string') {
-            cache = new TwingCacheFilesystem(cache);
-        }
-        else if (cache === false) {
-            cache = new TwingCacheNull();
-        }
-
-        this.cache = cache;
+        return this.templateClassPrefix + hash.sha256().update(key).digest('hex') + (index === null ? '' : '_' + index);
     }
 
     /**
@@ -389,33 +436,113 @@ class TwingEnvironment {
     }
 
     /**
+     * Loads a template.
+     *
+     * @param {string | TwingTemplateWrapper | TwingTemplate} name The template name
+     *
+     * @throws {TwingErrorLoader}  When the template cannot be found
+     * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
+     * @throws {TwingErrorSyntax}  When an error occurred during compilation
+     *
+     * @returns {TwingTemplateWrapper}
+     */
+    load(name: string | TwingTemplateWrapper | TwingTemplate) {
+        if (name instanceof TwingTemplateWrapper) {
+            return name;
+        }
+
+        if (name instanceof TwingTemplate) {
+            return new TwingTemplateWrapper(this, name);
+        }
+
+        return new TwingTemplateWrapper(this, this.loadTemplate(name as string));
+    }
+
+    /**
      * Loads a template internal representation.
      *
      * This method is for internal use only and should never be called
      * directly.
      *
-     * @param string $name  The template name
-     * @param int    $index The index if it is an embedded template
+     * @param {string} name  The template name
+     * @param {number} index The index if it is an embedded template
      *
-     * @return Twig_Template A template instance representing the given template name
+     * @returns {TwingTemplate} A template instance representing the given template name
      *
-     * @throws Twig_Error_Loader  When the template cannot be found
-     * @throws Twig_Error_Runtime When a previously generated cache is corrupted
-     * @throws Twig_Error_Syntax  When an error occurred during compilation
+     * @throws {TwingErrorLoader} When the template cannot be found
+     * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
+     * @throws {TwingErrorSyntax} When an error occurred during compilation
      *
      * @internal
      */
     loadTemplate(name: string, index: number = null): TwingTemplate {
-        if (this.loadedTemplates.has(name)) {
-            return this.loadedTemplates.get(name);
+        let cls = this.getTemplateClass(name);
+
+        if (index !== null) {
+            cls = `${cls}_${index}`;
+        }
+
+        if (this.loadedTemplates.has(cls)) {
+            return this.loadedTemplates.get(cls);
         }
 
         let source = this.getLoader().getSourceContext(name);
-        let template = this.compileSource(source);
+        let templates: Map<number, TwingTemplate>;
 
-        this.loadedTemplates.set(name, template);
+        try {
+            templates = this.compileSource(source);
 
-        return template;
+            for (let [index, template] of templates) {
+                let cls = this.getTemplateClass(name, index);
+
+                this.loadedTemplates.set(cls, template);
+            }
+
+            return templates.get(null);
+        }
+        catch (e) {
+            if (e instanceof TwingError) {
+                if (!e.getSourceContext()) {
+                    e.setSourceContext(source);
+                }
+            }
+
+            throw e;
+        }
+    }
+
+    /**
+     * Creates a template from source.
+     *
+     * This method should not be used as a generic way to load templates.
+     *
+     * @param {string} template The template name
+     *
+     * @returns {TwingTemplate} A template instance representing the given template name
+     *
+     * @throws TwingErrorLoader When the template cannot be found
+     * @throws TwingErrorSyntax When an error occurred during compilation
+     */
+    createTemplate(template: string) {
+        let result: TwingTemplate;
+        let name = `__string_template__${hash.sha256().update(template).digest('hex')}`;
+        let current = this.getLoader();
+
+        let loader = new TwingLoaderChain([
+            new TwingLoaderArray(new Map([[name, template]])),
+            current,
+        ]);
+
+        this.setLoader(loader);
+
+        try {
+            result = this.loadTemplate(name);
+        }
+        finally {
+            this.setLoader(current);
+        }
+
+        return result;
     }
 
     /**
@@ -431,27 +558,27 @@ class TwingEnvironment {
      * @throws TwingErrorLoader When none of the templates can be found
      * @throws TwingErrorSyntax When an error occurred during compilation
      */
-    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate>): TwingTemplate {
+    resolveTemplate(names: string | TwingTemplate | TwingTemplateWrapper | Array<string | TwingTemplate>): TwingTemplate | TwingTemplateWrapper {
         let self = this;
+        let namesArray: Array<any>;
 
         if (!Array.isArray(names)) {
-            names = [names];
+            namesArray = [names];
+        }
+        else {
+            namesArray = names;
         }
 
         let error = null;
-        let i: number;
 
-        // we use imperative syntax since we need to break the loop once a template is successfully loaded
-        for (i = 0; i < names.length; i++) {
-            let name = names[i];
-
+        for (let name of namesArray) {
             if (name instanceof TwingTemplate) {
                 return name;
             }
 
-            // if (name instanceof TwingTemplateWrapper) {
-            //     return name;
-            // }
+            if (name instanceof TwingTemplateWrapper) {
+                return name;
+            }
 
             try {
                 return self.loadTemplate(name);
@@ -466,11 +593,11 @@ class TwingEnvironment {
             }
         }
 
-        if (names.length === 1) {
+        if (namesArray.length === 1) {
             throw error;
         }
 
-        throw new TwingErrorLoader(`Unable to find one of the following templates: "${names.join(', ')}".`);
+        throw new TwingErrorLoader(`Unable to find one of the following templates: "${namesArray.join(', ')}".`);
     }
 
     setLexer(lexer: TwingLexer) {
@@ -490,7 +617,7 @@ class TwingEnvironment {
      * @throws {TwingErrorSyntax} When the code is syntactically wrong
      */
     tokenize(source: TwingSource) {
-        if (this.lexer === null) {
+        if (!this.lexer) {
             this.lexer = new TwingLexer(this);
         }
 
@@ -501,12 +628,12 @@ class TwingEnvironment {
      * Converts a token stream to a template.
      *
      * @param {TwingTokenStream} stream
-     * @returns {TwingTemplate}
+     * @returns {TwingNodeModule}
      *
      * @throws {TwingErrorSyntax} When the token stream is syntactically or semantically wrong
      */
-    parse(stream: TwingTokenStream) {
-        if (this.parser === null) {
+    parse(stream: TwingTokenStream): TwingNodeModule {
+        if (!this.parser) {
             this.parser = new TwingParser(this);
         }
 
@@ -514,31 +641,33 @@ class TwingEnvironment {
     }
 
     /**
+     * Compiles a node and returns its compiled templates.
      *
-     * @param {TwingNodeModule} node
-     * @returns {TwingTemplate}
+     * @returns { Map<number, TwingTemplate> } The compiled templates
      */
-    compile(node: TwingNodeModule): TwingTemplate {
-        return new TwingTemplate(this, node);
+    compile(node: TwingNode): Map<number, TwingTemplate> {
+        let compiler = new TwingCompiler(this);
+
+        return compiler.compile(node).getTemplates();
     }
 
     /**
      *
      * @param {TwingSource} source
-     * @returns {TwingTemplate}
+     * @returns {Map<number, TwingTemplate> }
      */
-    compileSource(source: TwingSource) {
+    compileSource(source: TwingSource): Map<number, TwingTemplate> {
         try {
             return this.compile(this.parse(this.tokenize(source)));
         }
         catch (e) {
-            if ( e instanceof TwingError) {
-                e.setSourceContext(source);
-
+            if (e instanceof TwingError) {
                 throw e;
             }
             else {
-                throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.getMessage()}").`, -1, source, e);
+                // console.warn(e);
+
+                throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.message}").`, -1, source, e);
             }
         }
     }
@@ -593,6 +722,20 @@ class TwingEnvironment {
     getExtension(name: string) {
         return this.extensionSet.getExtension(name);
     }
+
+    updateOptionsHash() {
+        let nodeVersionComponents = process.versions.node.split('.');
+
+        this.optionsHash = [
+            this.extensionSet.getSignature(),
+            nodeVersionComponents[0],
+            nodeVersionComponents[1],
+            process.env.npm_package_version,
+            this.debug,
+            this.baseTemplateClass,
+            this.strictVariables,
+        ].join(':');
+    }
 }
 
-export = TwingEnvironment;
+export default TwingEnvironment;

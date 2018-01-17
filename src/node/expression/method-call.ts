@@ -1,9 +1,11 @@
 import TwingNodeExpression from "../expression";
 import TwingNodeExpressionArray from "./array";
-import TwingNodeExpressionType from "../expression-type";
 import TwingMap from "../../map";
-import TwingTemplate = require("../../template");
-import TwingTemplateBlock from "../../template-block";
+import TwingTemplate from "../../template";
+import TwingNodeExpressionName from "./name";
+import TwingCompiler from "../../compiler";
+import DoDisplayHandler from "../../do-display-handler";
+import TwingMethodDefinition from "../../method-definition";
 
 class TwingNodeExpressionMethodCall extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, method: string, methodArguments: TwingNodeExpressionArray, lineno: number) {
@@ -19,46 +21,39 @@ class TwingNodeExpressionMethodCall extends TwingNodeExpression {
 
         super(nodes, attributes, lineno);
 
-        if (node.getExpressionType() === TwingNodeExpressionType.NAME) {
+        if (node instanceof TwingNodeExpressionName) {
             node.setAttribute('always_defined', true);
         }
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let tplName = this.getNode('node').getAttribute('name');
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let nodeHandler = compiler.subcompile(this.getNode('node'));
+        let macroArgumentsHandler = compiler.subcompile(this.getNode('arguments'));
         let macroName = this.getAttribute('method');
-        let macroArguments: Array<any> = this.getNode('arguments').compile(context, template, blocks);
-        let macroTemplate = context[tplName];
-        let macroDefinition = macroTemplate.getMacro(macroName);
 
-        if (macroDefinition) {
-            let macro = macroDefinition.macro;
-            let argumentDefinitions = macroDefinition.arguments;
-            let localContext = Object.assign({}, context);
-            let index: number = 0;
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
+            let scope = nodeHandler(template, context, blocks) as any;
+            let macroDefinition = scope[macroName] as TwingMethodDefinition;
 
-            macroArguments.forEach(function(macroArgument) {
-                let argumentDefinition = argumentDefinitions[index];
+            let macro = macroDefinition.handler;
+            let macroArguments = macroArgumentsHandler(template, context, blocks);
+            let macroArgumentDefinitions = macroDefinition.arguments.slice();
 
-                if (argumentDefinition) {
-                    localContext[argumentDefinition.name] = macroArgument;
-                }
+            let varArgs: Array<any> = [];
 
-                index++;
-            });
+            for (let macroArgument of macroArguments) {
+                macroArgumentDefinitions.shift();
 
-            // consume remaining arguments
-            if (argumentDefinitions.length > (index + 1)) {
-                for (index; index < argumentDefinitions.length; index++) {
-                    let argumentDefinition = argumentDefinitions[index];
-
-                    localContext[argumentDefinition.name] = argumentDefinition.defaultValue.compile(context, template, blocks);
-
-                    index++;
-                }
+                varArgs.push(macroArgument);
             }
 
-            return macro(localContext, blocks);
+            for (let macroArgumentDefinition of macroArgumentDefinitions) {
+                varArgs.push(macroArgumentDefinition.defaultValue(template, context, blocks));
+            }
+
+            let macroHandler = macro(...varArgs);
+
+            return macroHandler(template, context, blocks);
         }
     }
 }

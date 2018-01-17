@@ -3,20 +3,32 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import Token from "./token";
-import Source from "./source";
-import TokenType from "./token-type";
-import TokenStream from "./token-stream";
-import TwingSyntaxError, {default as TwingErrorSyntax} from "./error/syntax";
+import TwingToken from "./token";
+import TwingSource from "./source";
+import TwingTokenType from "./token-type";
+import TwingTokenStream from "./token-stream";
+import TwingErrorSyntax from "./error/syntax";
 import TwingEnvironment from "./environment";
-import LexerState from "./lexer-state";
+import TwingLexerState from "./lexer-state";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
 let ctype_alpha = require('locutus/php/ctype/ctype_alpha');
-let stripcslashes = require('locutus/php/strings/stripslashes');
 let merge = require('merge');
 
-class TwingLexer {
+let safeCChars: Array<string> = ['b', 'f', 'n', 'r', 't', 'v', '0', '\'', '"', '\\'];
+
+let stripcslashes = function (string: string) {
+    return string.replace(/\\(.)/g, function (match, char) {
+        if (safeCChars.includes(char)) {
+            return new Function('return "' + match + '"')();
+        }
+        else {
+            return char;
+        }
+    });
+};
+
+export class TwingLexer {
     static REGEX_NAME = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/;
     static REGEX_NUMBER = /^[0-9]+(?:\.[0-9]+)?/;
     static REGEX_STRING = /^"([^#"\\]*(?:\\.[^#"\\]*)*)"|^'([^'\\]*(?:\\.[^'\\]*)*)'/;
@@ -52,10 +64,10 @@ class TwingLexer {
         operator: RegExp,
         lex_raw_data: RegExp
     };
-    source: Source;
-    state: LexerState;
-    states: Array<LexerState>;
-    tokens: Array<Token>;
+    source: TwingSource;
+    state: TwingLexerState;
+    states: Array<TwingLexerState>;
+    tokens: Array<TwingToken>;
 
     constructor(env: TwingEnvironment, options: {} = {}) {
         this.env = env;
@@ -95,14 +107,14 @@ class TwingLexer {
         }
     }
 
-    tokenize(source: Source): TokenStream {
+    tokenize(source: TwingSource): TwingTokenStream {
         this.source = source;
         this.code = source.getCode(); //.replace('\r\n', '\n').replace('\r', '\n');
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;
         this.tokens = [];
-        this.state = LexerState.STATE_DATA;
+        this.state = TwingLexerState.STATE_DATA;
         this.states = [];
         this.brackets = [];
         this.position = -1;
@@ -120,25 +132,25 @@ class TwingLexer {
 
             // https://stackoverflow.com/questions/45197320/typescript-switch-statement-throws-not-comparable-to-type-error
             switch (+this.state) {
-                case LexerState.STATE_DATA:
+                case TwingLexerState.STATE_DATA:
                     this.lexData();
                     break;
-                case LexerState.STATE_BLOCK:
+                case TwingLexerState.STATE_BLOCK:
                     this.lexBlock();
                     break;
-                case LexerState.STATE_VAR:
+                case TwingLexerState.STATE_VAR:
                     this.lexVar();
                     break;
-                case LexerState.STATE_STRING:
+                case TwingLexerState.STATE_STRING:
                     this.lexString();
                     break;
-                case LexerState.STATE_INTERPOLATION:
+                case TwingLexerState.STATE_INTERPOLATION:
                     this.lexInterpolation();
                     break;
             }
         }
 
-        this.pushToken(TokenType.EOF_TYPE);
+        this.pushTwingToken(TwingTokenType.EOF_TYPE);
 
         if (this.brackets.length > 0) {
             let bracket = this.brackets.pop();
@@ -149,13 +161,13 @@ class TwingLexer {
             throw new TwingErrorSyntax(`Unclosed "${expect}".`, lineno, this.source);
         }
 
-        return new TokenStream(this.tokens, this.source);
+        return new TwingTokenStream(this.tokens, this.source);
     }
 
     private lexData() {
         // if no matches are left we return the rest of the template as simple text token
         if (this.position === (this.positions.length - 1)) {
-            this.pushToken(TokenType.TEXT_TYPE, this.code.substring(this.cursor));
+            this.pushTwingToken(TwingTokenType.TEXT_TYPE, this.code.substring(this.cursor));
             this.cursor = this.end;
 
             return;
@@ -182,7 +194,7 @@ class TwingLexer {
             text = text.trimRight();
         }
 
-        this.pushToken(TokenType.TEXT_TYPE, text);
+        this.pushTwingToken(TwingTokenType.TEXT_TYPE, text);
         this.moveCursor(textContent + position[0]);
 
         switch (position[1]) {
@@ -203,14 +215,14 @@ class TwingLexer {
                     this.lineno = parseInt(match[1]);
                 }
                 else {
-                    this.pushToken(TokenType.BLOCK_START_TYPE);
-                    this.pushState(LexerState.STATE_BLOCK);
+                    this.pushTwingToken(TwingTokenType.BLOCK_START_TYPE);
+                    this.pushState(TwingLexerState.STATE_BLOCK);
                     this.currentVarBlockLine = this.lineno;
                 }
                 break;
             case this.options.tag_variable[0]:
-                this.pushToken(TokenType.VAR_START_TYPE);
-                this.pushState(LexerState.STATE_VAR);
+                this.pushTwingToken(TwingTokenType.VAR_START_TYPE);
+                this.pushState(TwingLexerState.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
                 break;
         }
@@ -221,7 +233,7 @@ class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_block.exec(string)) !== null)) {
-            this.pushToken(TokenType.BLOCK_END_TYPE);
+            this.pushTwingToken(TwingTokenType.BLOCK_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         }
@@ -234,7 +246,7 @@ class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_var.exec(this.code.substring(this.cursor))) !== null)) {
-            this.pushToken(TokenType.VAR_END_TYPE);
+            this.pushTwingToken(TwingTokenType.VAR_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         } else {
@@ -252,7 +264,7 @@ class TwingLexer {
             this.moveCursor(match[0]);
 
             if (this.cursor >= this.end) {
-                throw new TwingErrorSyntax(`Unclosed "${this.state === LexerState.STATE_BLOCK ? 'block' : 'variables'}".`, this.currentVarBlockLine, this.source);
+                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexerState.STATE_BLOCK ? 'block' : 'variables'}".`, this.currentVarBlockLine, this.source);
             }
         }
 
@@ -261,19 +273,19 @@ class TwingLexer {
 
         // operators
         if ((match = this.regexes.operator.exec(candidate)) !== null) {
-            match[0] = match[0].replace('/\s+/', ' ');
+            let tokenValue = match[0].replace(/\s+/, ' ');
 
-            this.pushToken(TokenType.OPERATOR_TYPE, match[0]);
+            this.pushTwingToken(TwingTokenType.OPERATOR_TYPE, tokenValue);
             this.moveCursor(match[0]);
         }
         // names
         else if ((match = TwingLexer.REGEX_NAME.exec(candidate)) !== null) {
-            this.pushToken(TokenType.NAME_TYPE, match[0]);
+            this.pushTwingToken(TwingTokenType.NAME_TYPE, match[0]);
             this.moveCursor(match[0]);
         }
         // numbers
         else if ((match = TwingLexer.REGEX_NUMBER.exec(candidate)) !== null) {
-            this.pushToken(TokenType.NUMBER_TYPE, Number(match[0]));
+            this.pushTwingToken(TwingTokenType.NUMBER_TYPE, Number(match[0]));
             this.moveCursor(match[0]);
         }
         // punctuation
@@ -308,13 +320,13 @@ class TwingLexer {
                 }
             }
 
-            this.pushToken(TokenType.PUNCTUATION_TYPE, punctuationCandidate);
+            this.pushTwingToken(TwingTokenType.PUNCTUATION_TYPE, punctuationCandidate);
 
             this.cursor++;
         }
         // strings
         else if ((match = TwingLexer.REGEX_STRING.exec(candidate)) !== null) {
-            this.pushToken(TokenType.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
+            this.pushTwingToken(TwingTokenType.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
             this.moveCursor(match[0]);
         }
         // opening double quoted string
@@ -323,12 +335,12 @@ class TwingLexer {
                 value: '"',
                 line: this.lineno
             });
-            this.pushState(LexerState.STATE_STRING);
+            this.pushState(TwingLexerState.STATE_STRING);
             this.moveCursor(match[0]);
         }
         // unlexable
         else {
-            throw new TwingSyntaxError(
+            throw new TwingErrorSyntax(
                 `Unexpected character "${candidate}" in "${this.code}"`,
                 this.lineno,
                 this.source
@@ -345,23 +357,23 @@ class TwingLexer {
 
         let text = this.code.substr(this.cursor, match.index);
 
-        this.moveCursor(text  + match[0]);
+        this.moveCursor(text + match[0]);
 
         if (match[1].indexOf(this.options.whitespace_trim) > -1) {
             text = text.trimRight();
         }
 
-        this.pushToken(TokenType.TEXT_TYPE, text);
+        this.pushTwingToken(TwingTokenType.TEXT_TYPE, text);
     }
 
     private lexComment() {
-        let match: RegExpExecArray;
+        let match = this.regexes.lex_comment.exec(this.code.substring(this.cursor));
 
-        if (!(match = this.regexes.lex_comment.exec(this.code.substring(this.cursor))) !== null) {
-            // throw new Twig_Error_Syntax('Unclosed comment.', $this->lineno, $this->source);
+        if (!match) {
+            throw new TwingErrorSyntax('Unclosed comment.', this.lineno, this.source);
         }
 
-        this.moveCursor(this.code.substr(this.cursor, match.index - this.cursor) + match[0]);
+        this.moveCursor(this.code.substr(this.cursor, match.index) + match[0]);
     }
 
     private lexString() {
@@ -372,12 +384,12 @@ class TwingLexer {
                 value: this.options.interpolation[0],
                 line: this.lineno
             });
-            this.pushToken(TokenType.INTERPOLATION_START_TYPE);
+            this.pushTwingToken(TwingTokenType.INTERPOLATION_START_TYPE);
             this.moveCursor(match[0]);
-            this.pushState(LexerState.STATE_INTERPOLATION);
+            this.pushState(TwingLexerState.STATE_INTERPOLATION);
         }
         else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
-            this.pushToken(TokenType.STRING_TYPE, stripcslashes(match[0]));
+            this.pushTwingToken(TwingTokenType.STRING_TYPE, stripcslashes(match[0]));
             this.moveCursor(match[0]);
         }
         else if ((match = TwingLexer.REGEX_DQ_STRING_DELIM.exec(this.code.substring(this.cursor))) !== null) {
@@ -399,7 +411,7 @@ class TwingLexer {
 
         if (this.options.interpolation[0] === bracket.value && (match = this.regexes.interpolation_end.exec(this.code.substring(this.cursor))) !== null) {
             this.brackets.pop();
-            this.pushToken(TokenType.INTERPOLATION_END_TYPE);
+            this.pushTwingToken(TwingTokenType.INTERPOLATION_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         } else {
@@ -421,7 +433,7 @@ class TwingLexer {
         ]);
 
         operators.sort(function (a, b) {
-            return a.length > b.length ? 0 : 1;
+            return a.length > b.length ? -1 : 1;
         });
 
         let patterns: Array<string> = [];
@@ -440,7 +452,7 @@ class TwingLexer {
             }
 
             // an operator with a space can be any amount of whitespaces
-            pattern = pattern.replace('/\s+/', '\s+');
+            pattern = pattern.replace(/\s+/, '\\s+');
 
             patterns.push('^' + pattern);
         });
@@ -448,21 +460,21 @@ class TwingLexer {
         return new RegExp(patterns.join('|'));
     };
 
-    private pushToken(type: TokenType, value: any = null) {
-        if ((type === TokenType.TEXT_TYPE) && (value.length < 1)) {
+    private pushTwingToken(type: TwingTokenType, value: any = null) {
+        if ((type === TwingTokenType.TEXT_TYPE) && (value.length < 1)) {
             return;
         }
 
-        this.tokens.push(new Token(type, value, this.lineno));
+        this.tokens.push(new TwingToken(type, value, this.lineno));
     }
 
-    private pushState(state: LexerState) {
+    private pushState(state: TwingLexerState) {
         this.states.push(this.state);
         this.state = state;
     }
 
     /**
-     * @return LexerState
+     * @return TwingLexerState
      */
     private popState() {
         if (this.states.length < 1) {

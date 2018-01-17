@@ -24,4 +24,4 @@ class TwingTokenParserImport extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserImport;
+export default TwingTokenParserImport;

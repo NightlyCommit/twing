@@ -1,15 +1,18 @@
 import TwingExtension from "../extension";
-import TwingNodeVisitorEscaper = require("../node-visitor/escaper");
+import TwingNodeVisitorEscaper from "../node-visitor/escaper";
 import TwingTokenParserAutoEscape from "../token-parser/auto-escape";
-import TwingFilterRaw = require("../filter/raw");
+import TwingFileExtensionEscapingStrategy from "../file-extension-escaping-strategy";
+import TwingFilter from "../filter";
+
+import twingRaw from '../util/raw';
 
 class TwingExtensionEscaper extends TwingExtension {
-    private defaultStrategy: string;
+    private defaultStrategy: string | boolean | Function;
 
     /**
      * @param {string} defaultStrategy An escaping strategy
      */
-    constructor(defaultStrategy: string = 'html') {
+    constructor(defaultStrategy: string | boolean | Function = 'html') {
         super();
 
         this.setDefaultStrategy(defaultStrategy);
@@ -29,7 +32,9 @@ class TwingExtensionEscaper extends TwingExtension {
 
     getFilters() {
         return [
-            new TwingFilterRaw('raw'),
+            new TwingFilter('raw', twingRaw, {
+                is_safe: ['all']
+            }),
         ];
     }
 
@@ -39,12 +44,12 @@ class TwingExtensionEscaper extends TwingExtension {
      * The strategy can be a valid PHP callback that takes the template
      * name as an argument and returns the strategy to use.
      *
-     * @param string|false|callable $defaultStrategy An escaping strategy
+     * @param {string|boolean|Function} defaultStrategy An escaping strategy
      */
-    setDefaultStrategy(defaultStrategy: string)
+    setDefaultStrategy(defaultStrategy: string | boolean | Function)
     {
         if (defaultStrategy === 'name') {
-            // defaultStrategy = array('Twig_FileExtensionEscapingStrategy', 'guess');
+            defaultStrategy = TwingFileExtensionEscapingStrategy.guess;
         }
 
         this.defaultStrategy = defaultStrategy;
@@ -53,19 +58,23 @@ class TwingExtensionEscaper extends TwingExtension {
     /**
      * Gets the default strategy to use when not defined by the user.
      *
-     * @param string $name The template name
+     * @param {string|boolean} name The template name
      *
-     * @return string|false The default strategy to use for the template
+     * @returns {string|false} The default strategy to use for the template
      */
-    getDefaultStrategy(name: string) {
-        // // disable string callables to avoid calling a function named html or js,
-        // // or any other upcoming escaping strategy
-        // if (!is_string($this->defaultStrategy) && false !== $this->defaultStrategy) {
-        //     return call_user_func($this->defaultStrategy, $name);
-        // }
+    getDefaultStrategy(name: string | boolean): string {
+        let result: string;
 
-        return this.defaultStrategy;
+        // disable string callables to avoid calling a function named html or js,
+        // or any other upcoming escaping strategy
+        if (typeof this.defaultStrategy === 'function') {
+            return this.defaultStrategy(name);
+        }
+
+        result = this.defaultStrategy as string;
+
+        return result;
     }
 }
 
-export = TwingExtensionEscaper;
+export default TwingExtensionEscaper;

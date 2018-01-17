@@ -1,5 +1,5 @@
 import TwingParser from "./parser";
-import {default as TwingToken} from "./token";
+import TwingToken from "./token";
 import TwingNode from "./node";
 
 /**

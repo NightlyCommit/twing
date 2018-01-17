@@ -13,4 +13,4 @@ interface TwingFilterOptions {
     alternative?: TwingFilter;
 }
 
-export = TwingFilterOptions;
+export default TwingFilterOptions;

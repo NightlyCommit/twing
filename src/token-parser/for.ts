@@ -39,12 +39,12 @@ class TwingTokenParserFor extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse(this.decideForFork);
+        let body = this.parser.subparse([this,this.decideForFork]);
         let elseToken;
 
         if (stream.next().getValue() == 'else') {
             stream.expect(TwingTokenType.BLOCK_END_TYPE);
-            elseToken = this.parser.subparse(this.decideForEnd, true);
+            elseToken = this.parser.subparse([this, this.decideForEnd], true);
         } else {
             elseToken = null;
         }
@@ -54,7 +54,7 @@ class TwingTokenParserFor extends TwingTokenParser {
         let keyTarget;
         let valueTarget;
 
-        if ((targets.getNodes().length()) > 1) {
+        if ((targets.getNodes().size) > 1) {
             keyTarget = targets.getNode(0);
             keyTarget = new TwingNodeExpressionAssignName(keyTarget.getAttribute('name'), keyTarget.getTemplateLine());
 

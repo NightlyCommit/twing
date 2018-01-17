@@ -1,5 +1,8 @@
 import TwingNodeExpressionTest from "../test";
-import TwingTemplate = require("../../../template");
+import TwingTemplate from "../../../template";
+import TwingMap from "../../../map";
+import TwingCompiler from "../../../compiler";
+import DoDisplayHandler from "../../../do-display-handler";
 
 /**
  * Checks if a variable is the exact same value as a constant.
@@ -14,28 +17,37 @@ import TwingTemplate = require("../../../template");
  * so-called constants are keys of the TwingEnvironment::globals property.
  */
 class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
-    compile(context: any, template: TwingTemplate) {
-        let env = template.getEnvironment();
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let env = compiler.getEnvironment();
         let globals: any = env.getGlobals();
-
-        let actual: any = this.getNode('node').compile(context, template);
-        let key: string = this.getNode('arguments').getNode(0).compile(context, template);
-        let expected: any;
+        let actualHandler: any = compiler.subcompile(this.getNode('node'));
+        let keyHandler: any = compiler.subcompile(this.getNode('arguments').getNode(0));
+        let objectHandler: DoDisplayHandler;
 
         if (this.getNode('arguments').hasNode(1)) {
-            let object = this.getNode('arguments').getNode(1).compile(context, template);
+            objectHandler = compiler.subcompile(this.getNode('arguments').getNode(1));
+        }
 
-            if (object && typeof object === 'object') {
-                let className = object.constructor.name;
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
+            let actual = actualHandler(template, context, blocks);
+            let key = keyHandler(template, context, blocks);
+            let expected: any;
 
-                expected = globals[className][key];
+            if (objectHandler) {
+                let object = objectHandler(template, context, blocks);
+
+                if (object && typeof object === 'object') {
+                    let className = object.constructor.name;
+
+                    expected = globals[className][key];
+                }
             }
-        }
-        else {
-            expected = globals[key];
-        }
+            else {
+                expected = globals[key];
+            }
 
-        return actual === expected;
+            return actual === expected;
+        }
     }
 }
 

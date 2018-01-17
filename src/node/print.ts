@@ -3,8 +3,9 @@ import TwingNodeOutputInterface from "../node-output-interface";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingNodeType from "../node-type";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
     constructor(expr: TwingNodeExpression, line: number, tag: string = null) {
@@ -14,18 +15,15 @@ class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
 
         super(nodes, new TwingMap(), line, tag);
 
-        this.type = TwingNodeType.PRINT;
+        this.type = TwingNodeType.OUTPUT;
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let result = this.getNode('expr').compile(context, template, blocks);
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let exprHandler = compiler.subcompile(this.getNode('expr'));
 
-        // as per PHP specifications, true is output as '1' and false as ''
-        if (typeof result === 'boolean') {
-            return result ? '1' : '';
-        }
-
-        return result;
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            return compiler.raw(exprHandler(template, context, blocks));
+        };
     }
 }
 

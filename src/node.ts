@@ -1,8 +1,10 @@
 import TwingNodeType from "./node-type";
 import TwingNodeInterface from "./node-interface";
 import TwingMap from "./map";
-import TwingTemplate = require("./template");
-import TwingTemplateBlock from "./template-block";
+import TwingTemplate from "./template";
+import TwingError from "./error";
+import DoDisplayHandler from "./do-display-handler";
+import TwingCompiler from "./compiler";
 
 class TwingNode implements TwingNodeInterface {
     protected nodes: TwingMap<string, TwingNode>;
@@ -34,12 +36,27 @@ class TwingNode implements TwingNodeInterface {
     }
 
     /**
-     * Basically a noop
-     *
      * @returns {TwingNode}
      */
     clone(): TwingNode {
-        return null;
+        let result: TwingNode = Reflect.construct(this.constructor, []);
+
+        for (let [name, node] of this.getNodes()) {
+            result.setNode(name, node.clone());
+        }
+
+        for (let [name, node] of this.attributes) {
+            if (node instanceof TwingNode) {
+                node = node.clone();
+            }
+
+            result.setAttribute(name, node);
+        }
+
+        result.lineno = this.lineno;
+        result.tag = this.tag;
+
+        return result;
     }
 
     toString(indentation: number = 0) {
@@ -47,20 +64,25 @@ class TwingNode implements TwingNodeInterface {
             this.constructor.name
         ];
 
-
-        if (this.attributes.length() > 0) {
+        if (this.attributes.size > 0) {
             let attributes: Array<string> = [];
 
             repr.push(' '.repeat(indentation + 2) + 'ATTRIBUTES');
 
-            this.attributes.forEach(function (value, index) {
-                attributes.push(' '.repeat(indentation + 4) + `${index}: ${value && value.toString ? value.toString() : value}`);
+            this.attributes.forEach(function (values, index) {
+                if (!Array.isArray(values)) {
+                    values = [values];
+                }
+
+                for (let value of values) {
+                    attributes.push(' '.repeat(indentation + 4) + `${index}: ${value && value instanceof TwingNode ? value.toString(indentation + 4) : value}`);
+                }
             });
 
             repr.push(attributes.join('\n'));
         }
 
-        if (this.nodes.length() > 0) {
+        if (this.nodes.size > 0) {
             let nodes: Array<string> = [];
 
             repr.push(' '.repeat(indentation + 2) + 'NODES');
@@ -79,14 +101,33 @@ class TwingNode implements TwingNodeInterface {
         return this.type;
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let outputs: Array<string> = [];
+    static ind = 0;
 
-        this.nodes.forEach(function (node) {
-            outputs.push(node.compile(context, template, blocks));
-        });
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let handlers: Array<DoDisplayHandler> = [];
 
-        return outputs.join('');
+        for (let [k, node] of this.nodes) {
+            handlers.push(compiler.subcompile(node));
+        }
+
+        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
+            return handlers.map(function (handler) {
+                try {
+                    return handler(template, context, blocks);
+                }
+                catch (e) {
+                    if (e instanceof TwingError) {
+                        // this is mostly useful for TwingErrorLoader exceptions
+                        // @see TwingErrorLoader
+                        if (e.getTemplateLine() === false) {
+                            e.setTemplateLine(handler.node.getTemplateLine());
+                        }
+                    }
+
+                    throw e;
+                }
+            }).join('')
+        }
     }
 
     getTemplateLine() {
@@ -156,7 +197,7 @@ class TwingNode implements TwingNodeInterface {
     }
 
     count() {
-        return this.nodes.length();
+        return this.nodes.size;
     }
 
     setTemplateName(name: string) {
@@ -181,6 +222,7 @@ class TwingNode implements TwingNodeInterface {
     getNodes() {
         return this.nodes;
     }
+
 }
 
 export default TwingNode;

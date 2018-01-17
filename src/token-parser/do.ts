@@ -1,7 +1,7 @@
 import TwingTokenParser from "../token-parser";
 import TwingToken from "../token";
 import TwingTokenType from "../token-type";
-import TwingNodeDo = require("../node/do");
+import TwingNodeDo from "../node/do";
 
 class TwingTokenParserDo extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -17,4 +17,4 @@ class TwingTokenParserDo extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserDo;
+export default TwingTokenParserDo;

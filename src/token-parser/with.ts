@@ -18,7 +18,7 @@ class TwingTokenParserWith extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse(this.decideWithEnd, true);
+        let body = this.parser.subparse([this, this.decideWithEnd], true);
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
@@ -34,4 +34,4 @@ class TwingTokenParserWith extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserWith;
+export default TwingTokenParserWith;

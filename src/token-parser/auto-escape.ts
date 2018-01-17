@@ -12,7 +12,7 @@
 import TwingTokenParser from "../token-parser";
 import TwingNode from "../node";
 import TwingToken from "../token";
-import TwingSyntaxError, {default as TwingErrorSyntax} from "../error/syntax";
+import TwingErrorSyntax from "../error/syntax";
 import TwingTokenType from "../token-type";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeAutoEscape from "../node/auto-escape";
@@ -38,7 +38,7 @@ class TwingTokenParserAutoEscape extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse(this.decideBlockEnd, true);
+        let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 

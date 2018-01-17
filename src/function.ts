@@ -1,10 +1,10 @@
-import TwingFunctionOptions = require("./function-options");
-import TwingNodeExpressionFunction = require("./node/expression/function");
+import TwingFunctionOptions from "./function-options";
+import TwingNodeExpressionFunction from "./node/expression/function";
 import TwingNode from "./node";
 
 const merge = require('merge');
 
-class TwingFunction {
+export class TwingFunction {
     private name: string;
     private callable: Function;
     private options: TwingFunctionOptions;
@@ -13,9 +13,9 @@ class TwingFunction {
     /**
      * Creates a template function.
      *
-     * @param string        $name     Name of this function
-     * @param callable|null $callable A callable implementing the function. If null, you need to overwrite the "node_class" option to customize compilation.
-     * @param array         $options  Options array
+     * @param {string} name Name of this function
+     * @param {Function} callable A callable implementing the function. If null, you need to overwrite the "expression_factory" option to customize compilation.
+     * @param {TwingFunctionOptions} options Options
      */
     constructor(name: string, callable: Function = null, options: TwingFunctionOptions = {}) {
         // if (__CLASS__ !== get_class($this)) {

@@ -8,7 +8,7 @@ import TwingErrorLoader from "../error/loader";
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-class TwingLoaderArray implements TwingLoaderInterface {
+export class TwingLoaderArray implements TwingLoaderInterface {
     private templates: Map<string, string>;
 
     constructor(templates: Map<string, string>) {
@@ -48,4 +48,4 @@ class TwingLoaderArray implements TwingLoaderInterface {
     }
 }
 
-export = TwingLoaderArray;
+export default TwingLoaderArray;

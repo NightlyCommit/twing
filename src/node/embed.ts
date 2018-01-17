@@ -1,9 +1,10 @@
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingTemplate from "../template";
 import TwingNodeInclude from "./include";
 import TwingNodeExpressionConstant from "./expression/constant";
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 const merge = require('merge');
 
@@ -16,9 +17,16 @@ class TwingNodeEmbed extends TwingNodeInclude {
         this.setAttribute('index', index);
     }
 
-    protected getIncludedTemplate(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): TwingTemplate {
-        return template.getEmbeddedTemplate(this.getAttribute('index'));
-    };
+    addGetTemplate(compiler: TwingCompiler): DoDisplayHandler {
+        return (template: TwingTemplate) => {
+            return template.loadTemplate(
+                this.getAttribute('name'),
+                this.getTemplateName(),
+                this.getTemplateLine(),
+                this.getAttribute('index')
+            );
+        }
+    }
 }
 
-export = TwingNodeEmbed;
+export default TwingNodeEmbed;

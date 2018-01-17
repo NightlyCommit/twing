@@ -1,4 +1,4 @@
-import TwingNodeExpressionBinary = require("../binary");
+import TwingNodeExpressionBinary from "../binary";
 import TwingNodeExpressionBinaryDiv from "./div";
 
 class TwingNodeExpressionBinaryFloorDiv extends TwingNodeExpressionBinaryDiv {

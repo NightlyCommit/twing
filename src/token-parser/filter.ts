@@ -4,7 +4,7 @@ import TwingNode from "../node";
 import TwingToken from "../token";
 import TwingSyntaxError from "../error/syntax";
 import TwingTokenType from "../token-type";
-import TwingNodeExpressionBlockReference = require("../node/expression/block-reference");
+import TwingNodeExpressionBlockReference from "../node/expression/block-reference";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeBlock from "../node/block";
 import TwingNodePrint from "../node/print";
@@ -26,7 +26,7 @@ class TwingTokenParserFilter extends TwingTokenParser {
 
         this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse(this.decideBlockEnd, true);
+        let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
         this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
 
@@ -46,4 +46,4 @@ class TwingTokenParserFilter extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserFilter;
+export default TwingTokenParserFilter;

@@ -1,9 +1,8 @@
-import TwingTemplate = require("./template");
-import TwingMap from "./map";
-import TwingTemplateBlock from "./template-block";
+import TwingCompiler from "./compiler";
+import DoDisplayHandler from "./do-display-handler";
 
 interface TwingNodeInterface {
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock>): any;
+    compile(compiler: TwingCompiler): DoDisplayHandler;
 }
 
 export default TwingNodeInterface;

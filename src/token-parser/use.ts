@@ -5,8 +5,6 @@ import TwingErrorSyntax from "../error/syntax";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingNodeUse = require("../node/use");
-import TwingNodeBody from "../node/body";
 
 class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -28,7 +26,7 @@ class TwingTokenParserUse extends TwingTokenParser {
                     alias = stream.expect(TwingTokenType.NAME_TYPE).getValue();
                 }
 
-                targets.set(name, new TwingNodeExpressionConstant(alias, -1));
+                targets.set(name, new TwingNodeExpressionConstant(alias, token.getLine()));
 
                 if (!stream.nextIf(TwingTokenType.PUNCTUATION_TYPE, ',')) {
                     break;
@@ -38,16 +36,7 @@ class TwingTokenParserUse extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let bodyNodes = new TwingMap([
-           ['template', template],
-           ['targets', new TwingNode(targets)]
-        ]);
-
-        let nodes = new TwingMap([
-            ['body', new TwingNodeBody(bodyNodes)]
-        ]);
-
-        this.parser.addTrait(new TwingNodeUse(nodes));
+        this.parser.addTrait(new TwingNode(new TwingMap([['template', template], ['targets', new TwingNode(targets)]])));
 
         return new TwingNode();
     }
@@ -57,4 +46,4 @@ class TwingTokenParserUse extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserUse;
+export default TwingTokenParserUse;

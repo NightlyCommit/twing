@@ -1,4 +1,11 @@
 .gitignore
+.idea
+.npmignore
+.nyc_output
+.rpt2_cache
 .travis.yml
+coverage
 src
+tasks
 test
+tsconfig.json

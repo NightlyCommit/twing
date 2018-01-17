@@ -6,10 +6,9 @@
 import TwingTokenParserInterface from "./token-parser-interface";
 import TwingNodeVisitorInterface from "./node-visitor-interface";
 import TwingFilter from "./filter";
-import TwingTest from "./test";
 import TwingFunction from "./function";
-import TwingMap from "./map";
-import TwingOperatorDefinitionInterface = require("./operator-definition-interface");
+import TwingOperatorDefinitionInterface from "./operator-definition-interface";
+import TwingTest from "./test";
 
 interface TwingExtensionInterface {
     /**
@@ -36,9 +35,9 @@ interface TwingExtensionInterface {
     /**
      * Returns a list of tests to add to the existing list.
      *
-     * @return Map<string, TwingTest>
+     * @returns Array<TwingTest>
      */
-    getTests(): Map<string, TwingTest>;
+    getTests(): Array<TwingTest>;
 
     /**
      * Returns a list of functions to add to the existing list.
@@ -59,9 +58,9 @@ interface TwingExtensionInterface {
      *
      * @param {string} name The template name
      *
-     * @return string|false The default strategy to use for the template
+     * @returns string|Function The default strategy to use for the template
      */
-    getDefaultStrategy(name: string): string|false;
+    getDefaultStrategy(name: string): string | Function | false;
 }
 
 export default TwingExtensionInterface;

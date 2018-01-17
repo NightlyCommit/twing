@@ -1,8 +1,9 @@
 import TwingNodeExpression from "../expression";
-import TwingNodeExpressionType from "../expression-type";
 import TwingNodeExpressionConstant from "./constant";
 import TwingMap from "../../map";
-import TwingTemplate = require("../../template");
+import TwingTemplate from "../../template";
+import TwingCompiler from "../../compiler";
+import DoDisplayHandler from "../../do-display-handler";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 let ctype_digit = require('locutus/php/ctype/ctype_digit');
@@ -18,12 +19,10 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
         this.getKeyValuePairs().forEach(function (pair) {
             let expression = pair.key;
 
-            if ((expression.getExpressionType() === TwingNodeExpressionType.CONSTANT) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
+            if ((expression instanceof TwingNodeExpressionConstant) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
                 this.index = expression.getAttribute('value');
             }
         });
-
-        this.expressionType = TwingNodeExpressionType.ARRAY;
     }
 
     getKeyValuePairs(): Array<{key: TwingNodeExpression, value: TwingNodeExpression}> {
@@ -50,14 +49,22 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
         this.nodes.push(value);
     }
 
-    compile(context: any, template: TwingTemplate): any {
-        let results: Array<any> = [];
+    compile(compiler: TwingCompiler): DoDisplayHandler {
+        let handlers: Array<DoDisplayHandler> = [];
 
-        this.getKeyValuePairs().forEach(function (pair) {
-            results.push(pair.value.compile(context, template));
-        });
+        for (let pair of this.getKeyValuePairs()) {
+            handlers.push(compiler.subcompile(pair.value));
+        }
 
-        return results;
+        return (context: any, template: TwingTemplate, blocks: TwingMap<string, Array<any>>) => {
+            let result: Array<any> = [];
+
+            for (let handler of handlers) {
+                result.push(handler(context, template, blocks));
+            }
+
+            return result;
+        };
     }
 }
 

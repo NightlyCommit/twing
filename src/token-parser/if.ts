@@ -16,7 +16,7 @@ import TwingNode from "../node";
 import TwingToken from "../token";
 import TwingTokenType from "../token-type";
 import TwingErrorSyntax from "../error/syntax";
-import TwingNodeIf = require("../node/if");
+import TwingNodeIf from "../node/if";
 import TwingMap from "../map";
 
 class TwingTokenParserIf extends TwingTokenParser {
@@ -27,7 +27,7 @@ class TwingTokenParserIf extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse(this.decideIfFork);
+        let body = this.parser.subparse([this, this.decideIfFork]);
         let tests = new TwingMap();
 
         tests
@@ -43,13 +43,13 @@ class TwingTokenParserIf extends TwingTokenParser {
             switch (stream.next().getValue()) {
                 case 'else':
                     stream.expect(TwingTokenType.BLOCK_END_TYPE);
-                    elseNode = this.parser.subparse(this.decideIfEnd);
+                    elseNode = this.parser.subparse([this, this.decideIfEnd]);
                     break;
 
                 case 'elseif':
                     expr = this.parser.getExpressionParser().parseExpression();
                     stream.expect(TwingTokenType.BLOCK_END_TYPE);
-                    body = this.parser.subparse(this.decideIfFork);
+                    body = this.parser.subparse([this, this.decideIfFork]);
                     tests.push(expr);
                     tests.push(body);
                     break;
@@ -81,4 +81,4 @@ class TwingTokenParserIf extends TwingTokenParser {
     }
 }
 
-export = TwingTokenParserIf;
+export default TwingTokenParserIf;

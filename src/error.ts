@@ -3,23 +3,27 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import Source, {default as TwingSource} from "./source";
-import {type} from "os";
+import TwingSource from "./source";
 
 class TwingError extends Error {
     sourceName: string;
     message: string;
-    stack?: string;
 
     private lineno: number | boolean;
     private rawMessage: string;
     private sourcePath: string;
     private sourceCode: string;
+    private previous: Error;
 
-    constructor(message: string, lineno: number = -1, source: Source | string | null = null, previous: Error = null) {
+    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
         super(message);
 
         this.name = this.constructor.name;
+        this.previous = previous;
+
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
 
         let sourceName;
 
@@ -40,7 +44,7 @@ class TwingError extends Error {
         this.sourceName = sourceName;
 
         if (lineno === -1 || sourceName === null || this.sourcePath === null) {
-            // $this->guessTemplateInfo();
+            this.guessTemplateInfo();
         }
 
         this.rawMessage = message;
@@ -86,7 +90,6 @@ class TwingError extends Error {
         return this.sourceName ? new TwingSource(this.sourceCode, this.sourceName, this.sourcePath) : null;
     }
 
-
     /**
      * Sets the source context of the Twig template where the error occurred.
      */
@@ -104,7 +107,7 @@ class TwingError extends Error {
     }
 
     guess() {
-        // this.guessTemplateInfo();
+        this.guessTemplateInfo();
         this.updateRepr();
     }
 
@@ -162,6 +165,10 @@ class TwingError extends Error {
         if (questionMark) {
             this.message += '?';
         }
+    }
+
+    private guessTemplateInfo() {
+        // console.warn(this.stack);
     }
 }
 

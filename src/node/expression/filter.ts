@@ -1,9 +1,8 @@
 import TwingNode from "../../node";
 import TwingNodeExpressionConstant from "./constant";
 import TwingMap from "../../map";
-import TwingTemplate = require("../../template");
-import TwingTemplateBlock from "../../template-block";
 import TwingNodeExpressionCall from "./call";
+import TwingCompiler from "../../compiler";
 
 class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
@@ -16,18 +15,20 @@ class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
+    compile(compiler: TwingCompiler): any {
         let name = this.getNode('filter').getAttribute('value');
-        let filter = template.getEnvironment().getFilter(name);
+        let filter = compiler.getEnvironment().getFilter(name);
+        let callable = filter.getCallable();
 
-        if (filter) {
-            this.callable = filter.getCallable();
-        }
-
+        this.setAttribute('name', name);
+        this.setAttribute('type', 'filter');
         this.setAttribute('needs_environment', filter.needsEnvironment());
         this.setAttribute('needs_context', filter.needsContext());
+        this.setAttribute('arguments', filter.getArguments());
+        this.setAttribute('callable', callable);
+        this.setAttribute('is_variadic', filter.isVariadic());
 
-        return super.compile(context, template, blocks);
+        return this.compileCallable(compiler);
     }
 }
 

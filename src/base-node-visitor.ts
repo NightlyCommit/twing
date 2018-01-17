@@ -1,6 +1,6 @@
 import TwingNodeVisitorInterface from "./node-visitor-interface";
 import TwingNode from "./node";
-import TwingEnvironment = require("./environment");
+import TwingEnvironment from "./environment";
 
 abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
     getPriority(): number {
@@ -40,4 +40,4 @@ abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
     abstract doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode;
 }
 
-export = TwingBaseNodeVisitor;
+export default TwingBaseNodeVisitor;

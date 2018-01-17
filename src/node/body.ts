@@ -1,5 +1,4 @@
 import TwingNode from "../node";
-import TwingTemplate = require("../template");
 
 /**
  * Represents a body node.

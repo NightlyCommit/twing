@@ -2,14 +2,13 @@ import TwingNode from "../node";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingNodeExpressionAssignName from "./expression/assign-name";
-import TwingNodeForLoop = require("./for-loop");
-import TwingNodeIf = require("./if");
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingNodeForLoop from "./for-loop";
+import TwingNodeIf from "./if";
+import TwingTemplate from "../template";
 
-const merge = require('merge');
-const array_intersect_key = require('locutus/php/array/array_intersect_key');
-const ensureTraversable = require('../ensure-traversable');
+import ensureTraversable from '../util/ensure-iterable';
+import TwingCompiler from "../compiler";
+import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
@@ -54,74 +53,83 @@ class TwingNodeFor extends TwingNode {
         this.loop = loop;
     }
 
-    compile(context: any, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap) {
-        let self = this;
-        let result = '';
-
-        context['_parent'] = Object.assign({}, context);
-        context['_seq'] = ensureTraversable(this.getNode('seq').compile(context, template, blocks));
+    compile(compiler: TwingCompiler) {
+        let elseHandler: DoDisplayHandler;
+        let seqHandler: DoDisplayHandler = compiler.subcompile(this.getNode('seq'));
+        let bodyHandler: DoDisplayHandler = compiler.subcompile(this.getNode('body'));
 
         if (this.hasNode('else')) {
-            context['_iterated'] = false;
-        }
-
-        if (this.getAttribute('with_loop')) {
-            context['loop'] = {
-                parent: context['_parent'],
-                index0: 0,
-                index: 1,
-                first: true
-            };
-
-            if (!this.getAttribute('ifexpr')) {
-                let length = Array.from(context['_seq'].values()).length;
-
-                context['loop']['revindex0'] = length - 1;
-                context['loop']['revindex'] = length;
-                context['loop']['length'] = length;
-                context['loop']['last'] = (length === 1);
-            }
+            elseHandler = compiler.subcompile(this.getNode('else'));
         }
 
         this.loop.setAttribute('else', this.hasNode('else'));
         this.loop.setAttribute('with_loop', this.getAttribute('with_loop'));
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
-        context['_seq'].forEach(function (value: any, key: any) {
-            context[self.getNode('key_target').compile(context, template, blocks)] = key;
-            context[self.getNode('value_target').compile(context, template, blocks)] = value;
+        let keyTargetHandler = compiler.subcompile(this.getNode('key_target'));
+        let valueTargetHandler = compiler.subcompile(this.getNode('value_target'));
 
-            result += self.getNode('body').compile(context, template, blocks);
-        });
+        return (template: TwingTemplate, context: any, blocks: any) => {
+            let result = '';
 
-        if (this.hasNode('else')) {
-            if (!context['_iterated']) {
-                result += this.getNode('else').compile(context, template, blocks);
+            context['_parent'] = Object.assign({}, context);
+            context['_seq'] = ensureTraversable(seqHandler(template, context, blocks));
+
+            if (elseHandler) {
+                context['_iterated'] = false;
             }
-        }
 
-        let _parent = context['_parent'];
+            if (this.getAttribute('with_loop')) {
+                context['loop'] = {
+                    parent: context['_parent'],
+                    index0: 0,
+                    index: 1,
+                    first: true
+                };
 
-        // remove some 'private' loop variables (needed for nested loops)
-        delete (context['_seq']);
-        delete (context['_iterated']);
-        delete (context[this.getNode('key_target').getAttribute('name')]);
-        delete (context[this.getNode('value_target').getAttribute('name')]);
-        delete (context['_parent']);
-        delete (context['loop']);
+                if (!this.getAttribute('ifexpr')) {
+                    let length = Array.from(context['_seq'].values()).length;
 
-        // keep the values set in the inner context for variables defined in the outer context
-        // context = merge(context, array_intersect_key(context, _parent));
-
-        let k;
-
-        for (k in _parent) {
-            if (!Reflect.has(context, k)) {
-                context[k] = _parent[k];
+                    context['loop']['revindex0'] = length - 1;
+                    context['loop']['revindex'] = length;
+                    context['loop']['length'] = length;
+                    context['loop']['last'] = (length === 1);
+                }
             }
-        }
 
-        return result;
+            for (let [key, value] of context['_seq']) {
+                keyTargetHandler(template, context, blocks).value = key;
+                valueTargetHandler(template, context, blocks).value = value;
+
+                result += bodyHandler(template, context, blocks);
+            }
+
+            if (elseHandler) {
+                if (!context['_iterated']) {
+                    result += elseHandler(template, context, blocks);
+                }
+            }
+
+            let _parent = context['_parent'];
+
+            // remove some 'private' loop variables (needed for nested loops)
+            delete (context['_seq']);
+            delete (context['_iterated']);
+            delete (context[this.getNode('key_target').getAttribute('name')]);
+            delete (context[this.getNode('value_target').getAttribute('name')]);
+            delete (context['_parent']);
+            delete (context['loop']);
+
+            // keep the values set in the inner context for variables defined in the outer context
+            // context = merge(context, array_intersect_key(context, _parent));
+            for (let k in _parent) {
+                if (!Reflect.has(context, k)) {
+                    context[k] = _parent[k];
+                }
+            }
+
+            return result;
+        };
     }
 }
 

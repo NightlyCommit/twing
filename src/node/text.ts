@@ -1,8 +1,7 @@
 import TwingNode from "../node";
 import TwingNodeType from "../node-type";
 import TwingMap from "../map";
-import TwingTemplate = require("../template");
-import TwingTemplateBlock from "../template-block";
+import TwingCompiler from "../compiler";
 
 class TwingNodeText extends TwingNode {
     constructor(data: string, line: number) {
@@ -11,10 +10,10 @@ class TwingNodeText extends TwingNode {
         this.type = TwingNodeType.OUTPUT;
     }
 
-    compile(context: {}, template: TwingTemplate, blocks: TwingMap<string, TwingTemplateBlock> = new TwingMap): any {
-        let result = this.getAttribute('data');
-
-        return result;
+    compile(compiler: TwingCompiler) {
+        return () => {
+            return this.getAttribute('data');
+        };
     }
 }
 

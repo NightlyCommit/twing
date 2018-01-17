@@ -1,0 +1,8 @@
+
+{%- sandbox %}
+    {%- include "foo.twig" %}
+
+    {% if 1 %}
+        {%- include "foo.twig" %}
+    {% endif %}
+{%- endsandbox %}

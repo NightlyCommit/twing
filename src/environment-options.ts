@@ -1,5 +1,3 @@
-import TwingCacheInterface = require("./cache-interface");
-
 /**
  *  * Available options:
  *
@@ -7,13 +5,6 @@ import TwingCacheInterface = require("./cache-interface");
  *           well (default to false).
  *
  *  * charset: The charset used by the templates (default to UTF-8).
- *
- *  * base_template_class: The base template class to use for generated
- *                         templates (default to Twig_Template).
- *
- *  * cache: An absolute path where to store the compiled templates,
- *           a Twig_Cache_Interface implementation,
- *           or false to disable compilation cache (default).
  *
  *  * auto_reload: Whether to reload the template if the original source changed.
  *                 If you don't provide the auto_reload option, it will be
@@ -33,11 +24,13 @@ import TwingCacheInterface = require("./cache-interface");
  *                   set it to 0 to disable).
  */
 interface TwingEnvironmentOptions {
-    strict_variables?: boolean;
-    base_template_class?: string;
-    cache?: TwingCacheInterface;
-    autoescape?: string;
+    debug?: boolean;
     charset?: string;
+    base_template_class?: string;
+    auto_reload?: boolean;
+    strict_variables?: boolean;
+    autoescape?: string | boolean | Function;
+    optimizations?: number;
 }
 
 export default TwingEnvironmentOptions;

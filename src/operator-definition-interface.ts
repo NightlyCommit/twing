@@ -4,4 +4,4 @@ interface TwingOperatorDefinitionInterface {
     factory: Function;
 }
 
-export = TwingOperatorDefinitionInterface;
+export default TwingOperatorDefinitionInterface;

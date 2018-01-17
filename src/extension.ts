@@ -2,13 +2,12 @@ import TwingExtensionInterface from "./extension-interface";
 import TwingTokenParserInterface from "./token-parser-interface";
 import TwingNodeVisitorInterface from "./node-visitor-interface";
 import TwingFilter from "./filter";
-import TwingTest from "./test";
 import TwingFunction from "./function";
-import TwingOperatorDefinitionInterface = require("./operator-definition-interface");
-import TwingMap from "./map";
+import TwingOperatorDefinitionInterface from "./operator-definition-interface";
+import TwingTest from "./test";
 
 class TwingExtension implements TwingExtensionInterface {
-    getDefaultStrategy(name: string): string | false {
+    getDefaultStrategy(name: string): string | Function {
         return 'html';
     }
 
@@ -24,8 +23,8 @@ class TwingExtension implements TwingExtensionInterface {
         return [];
     }
 
-    getTests(): Map<string, TwingTest> {
-        return new Map();
+    getTests(): Array<TwingTest> {
+        return [];
     }
 
     getFunctions(): Array<TwingFunction> {

@@ -17,8 +17,8 @@ class TwingMarkup {
     }
 
     toJSON() {
-        return JSON.stringify(this.content);
+        return this.content;
     }
 }
 
-export = TwingMarkup;
+export default TwingMarkup;

@@ -1,0 +1,8 @@
+
+{% autoescape 'html' %}
+{{ var|nl2br_("<br />") }}
+{{ var|nl2br_("<br />"|escape) }}
+{{ var|nl2br_(sep) }}
+{{ var|nl2br_(sep|raw) }}
+{{ var|nl2br_(sep|escape) }}
+{% endautoescape %}
