@@ -1,31 +1,35 @@
 import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
-import TwingTemplate from "../../template";
-import TwingErrorRuntime from "../../error/runtime";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
 
 class TwingNodeExpressionParent extends TwingNodeExpression {
     constructor(name: string, lineno: number) {
         super(new TwingMap(), new TwingMap([['output', false], ['name', name]]), lineno);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
+    compile(compiler: TwingCompiler) {
         let name = this.getAttribute('name');
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
-            try {
-                return template.renderParentBlock(name, context, blocks);
-            }
-            catch (e) {
-                if (e instanceof TwingErrorRuntime) {
-                    if (e.getTemplateLine() === -1) {
-                        e.setTemplateLine(this.getTemplateLine());
-                    }
-                }
+        const varValidator = require('var-validator');
 
-                throw e;
-            }
+        if (!varValidator.isValid(name)) {
+            name = Buffer.from(name).toString('hex');
+        }
+
+        if (this.getAttribute('output')) {
+            compiler
+                .addDebugInfo(this)
+                .write('this.displayParentBlock(')
+                .string(name)
+                .raw(", context, blocks);\n")
+            ;
+        }
+        else {
+            compiler
+                .raw('this.renderParentBlock(')
+                .string(name)
+                .raw(', context, blocks)')
+            ;
         }
     }
 }

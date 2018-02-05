@@ -1,8 +1,7 @@
 import TwingCompiler from "./compiler";
-import DoDisplayHandler from "./do-display-handler";
 
 interface TwingNodeInterface {
-    compile(compiler: TwingCompiler): DoDisplayHandler;
+    compile(compiler: TwingCompiler): any;
 }
 
 export default TwingNodeInterface;

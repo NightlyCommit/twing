@@ -1,4 +1,4 @@
-class TwingMarkup {
+export class TwingMarkup {
     private content: string;
     private charset: string;
 

@@ -3,7 +3,7 @@ import TwingSandboxSecurityNotAllowedFilterError from "./security-not-allowed-fi
 import TwingSandboxSecurityNotAllowedTagError from "./security-not-allowed-tag-error";
 import TwingSandboxSecurityNotAllowedFunctionError from "./security-not-allowed-function-error";
 
-class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInterface {
+export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInterface {
     private allowedTags: Array<string>;
     private allowedFilters: Array<string>;
     private allowedMethods: Array<Function>;

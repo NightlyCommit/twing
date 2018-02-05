@@ -66,8 +66,8 @@ export class TwingParser {
         this.env = env;
     }
 
-    getVarName(): string {
-        return `__internal_${md5(uniqid(mt_rand(), true))}`;
+    getVarName(prefix: string = '__internal_'): string {
+        return `${prefix}${md5(uniqid(mt_rand(), true))}`;
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {

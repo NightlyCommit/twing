@@ -1,8 +1,5 @@
 import TwingNodeExpressionTest from "../test";
-import TwingTemplate from "../../../template";
-import TwingMap from "../../../map";
 import TwingCompiler from "../../../compiler";
-import DoDisplayHandler from "../../../do-display-handler";
 
 /**
  * Checks if a variable is the exact same value as a constant.
@@ -17,37 +14,24 @@ import DoDisplayHandler from "../../../do-display-handler";
  * so-called constants are keys of the TwingEnvironment::globals property.
  */
 class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let env = compiler.getEnvironment();
-        let globals: any = env.getGlobals();
-        let actualHandler: any = compiler.subcompile(this.getNode('node'));
-        let keyHandler: any = compiler.subcompile(this.getNode('arguments').getNode(0));
-        let objectHandler: DoDisplayHandler;
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('(')
+            .subcompile(this.getNode('node'))
+            .raw(' === Twing.twingConstant(this.env, ')
+            .subcompile(this.getNode('arguments').getNode(0))
+        ;
 
         if (this.getNode('arguments').hasNode(1)) {
-            objectHandler = compiler.subcompile(this.getNode('arguments').getNode(1));
+            compiler
+                .raw(', ')
+                .subcompile(this.getNode('arguments').getNode(1))
+            ;
         }
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            let actual = actualHandler(template, context, blocks);
-            let key = keyHandler(template, context, blocks);
-            let expected: any;
-
-            if (objectHandler) {
-                let object = objectHandler(template, context, blocks);
-
-                if (object && typeof object === 'object') {
-                    let className = object.constructor.name;
-
-                    expected = globals[className][key];
-                }
-            }
-            else {
-                expected = globals[key];
-            }
-
-            return actual === expected;
-        }
+        compiler
+            .raw('))')
+        ;
     }
 }
 

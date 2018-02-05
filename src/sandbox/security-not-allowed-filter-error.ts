@@ -1,6 +1,6 @@
 import TwingSandboxSecurityError from "./security-error";
 
-class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
+export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
     private filterName: string;
 
     constructor(message: string, functionName: string, lineno: number = -1, filename: string = null, previous: Error = null) {

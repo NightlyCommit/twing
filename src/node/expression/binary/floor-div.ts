@@ -1,9 +1,15 @@
-import TwingNodeExpressionBinary from "../binary";
 import TwingNodeExpressionBinaryDiv from "./div";
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinaryFloorDiv extends TwingNodeExpressionBinaryDiv {
-    execute(left: any, right: any): any {
-        return Math.floor(super.execute(left, right));
+    compile(compiler: TwingCompiler) {
+        compiler.raw('Math.floor(');
+        super.compile(compiler);
+        compiler.raw(')');
+    }
+
+    operator(compiler: TwingCompiler) {
+        return compiler.raw('/');
     }
 }
 

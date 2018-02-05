@@ -1,4 +1,4 @@
-class TwingSource {
+export class TwingSource {
     private code: string;
     private name: string;
     private path: string;

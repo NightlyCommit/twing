@@ -4,8 +4,6 @@ import TwingTokenParserAutoEscape from "../token-parser/auto-escape";
 import TwingFileExtensionEscapingStrategy from "../file-extension-escaping-strategy";
 import TwingFilter from "../filter";
 
-import twingRaw from '../util/raw';
-
 class TwingExtensionEscaper extends TwingExtension {
     private defaultStrategy: string | boolean | Function;
 
@@ -32,7 +30,7 @@ class TwingExtensionEscaper extends TwingExtension {
 
     getFilters() {
         return [
-            new TwingFilter('raw', twingRaw, {
+            new TwingFilter('raw', twingRawFilter, {
                 is_safe: ['all']
             }),
         ];
@@ -75,6 +73,17 @@ class TwingExtensionEscaper extends TwingExtension {
 
         return result;
     }
+}
+
+/**
+ * Marks a variable as being safe.
+ *
+ * @param string $string A PHP variable
+ *
+ * @return string
+ */
+export function twingRawFilter(value: string) {
+    return value;
 }
 
 export default TwingExtensionEscaper;

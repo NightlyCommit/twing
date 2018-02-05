@@ -1,7 +1,5 @@
 import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
-import TwingTemplate from "../../template";
-import TwingErrorRuntime from "../../error/runtime";
 import TwingCompiler from "../../compiler";
 
 class TwingNodeExpressionName extends TwingNodeExpression {
@@ -16,46 +14,62 @@ class TwingNodeExpressionName extends TwingNodeExpression {
         attributes.set('always_defined', false);
 
         super(new TwingMap(), attributes, lineno);
+
+        this.specialVars = new TwingMap([
+            ['_self', 'this.getTemplateName()'],
+            ['_context', 'context'],
+            ['_charset', 'this.env.getCharset()']
+        ]);
     }
 
     compile(compiler: TwingCompiler) {
-        return (template: TwingTemplate, context: any) => {
-            this.specialVars = new TwingMap([
-                ['_self', template.getTemplateName()],
-                ['_context', context],
-                ['_charset', compiler.getEnvironment().getCharset()]
-            ]);
+        let name: string = this.getAttribute('name');
 
-            let name = this.getAttribute('name');
+        compiler.addDebugInfo(this);
 
-            if (this.getAttribute('is_defined_test')) {
-                if (this.isSpecial()) {
-                    return true;
-                }
-                else {
-                    return Reflect.has(context, name);
-                }
-            }
-            else if (this.isSpecial()) {
-                return this.specialVars.get(name);
-            }
-            else if (this.getAttribute('always_defined')) {
-                return context[name];
+        if (this.getAttribute('is_defined_test')) {
+            if (this.isSpecial()) {
+                compiler.repr(true);
             }
             else {
-                if (this.getAttribute('ignore_strict_check') || !compiler.getEnvironment().isStrictVariables()) {
-                    return context[name];
-                }
-                else {
-                    if (Reflect.has(context, name)) {
-                        return context[name];
-                    }
-                    else {
-                        throw new TwingErrorRuntime(`Variable "${name}" does not exist.`, this.getTemplateLine(), template.getSourceContext());
-                    }
-                }
+                compiler.raw('(context.has(').repr(name).raw('))');
             }
-        };
+        }
+        else if (this.isSpecial()) {
+            compiler.raw(this.specialVars.get(name));
+        }
+        else if (this.getAttribute('always_defined')) {
+            compiler
+                .raw('context.get(')
+                .string(name)
+                .raw(')')
+            ;
+        }
+        else {
+            if (this.getAttribute('ignore_strict_check') || !compiler.getEnvironment().isStrictVariables()) {
+                compiler
+                    .raw('(context.has(')
+                    .string(name)
+                    .raw(') ? context.get(')
+                    .string(name)
+                    .raw(') : null)')
+                ;
+            }
+            else {
+                compiler
+                    .raw('(context.has(')
+                    .string(name)
+                    .raw(') ? context.get(')
+                    .string(name)
+                    .raw(') : (() => { throw new Twing.TwingErrorRuntime(\'Variable ')
+                    .string(name)
+                    .raw(' does not exist.\', ')
+                    .repr(this.lineno)
+                    .raw(', this.getSourceContext()); })()')
+                    .raw(')')
+                ;
+            }
+        }
     }
 
     isSpecial() {

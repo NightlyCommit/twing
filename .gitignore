@@ -3,7 +3,9 @@
 .rpt2_cache
 build
 coverage
+dist
 lib
 node_modules
 actual.html
 npm-debug.log
+tmp

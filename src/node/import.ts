@@ -6,11 +6,8 @@
 import TwingNode from "../node";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
 import TwingNodeExpressionName from "./expression/name";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
-import {type} from "os";
 
 class TwingNodeImport extends TwingNode {
     constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, tag: string = null) {
@@ -22,32 +19,30 @@ class TwingNodeImport extends TwingNode {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let exprHandler = compiler.subcompile(this.getNode('expr'));
-        let varHandler = compiler.subcompile(this.getNode('var'));
-        let importedTemplateHandler: DoDisplayHandler;
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write('')
+            .subcompile(this.getNode('var'))
+            .raw(' = ')
+        ;
 
-        if ((this.getNode('expr') instanceof TwingNodeExpressionName) && (this.getNode('expr').getAttribute('name') === '_self')) {
-            importedTemplateHandler = (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
-                return template;
-            }
+        if (this.getNode('expr') instanceof TwingNodeExpressionName && this.getNode('expr').getAttribute('name') === '_self') {
+            compiler.raw('this');
         }
         else {
-            importedTemplateHandler = (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
-                return template.loadTemplate(
-                    exprHandler(template, context, blocks),
-                    this.getTemplateName(),
-                    this.getTemplateLine()
-                );
-            }
+            compiler
+                .raw('this.loadTemplate(')
+                .subcompile(this.getNode('expr'))
+                .raw(', ')
+                .repr(this.getTemplateName())
+                .raw(', ')
+                .repr(this.getTemplateLine())
+                .raw(')')
+            ;
         }
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
-            let var_ = varHandler(template, context, blocks);
-            let importedTemplate = importedTemplateHandler(template, context, blocks);
-
-            var_.value = importedTemplate;
-        }
+        compiler.raw(";\n");
     }
 }
 

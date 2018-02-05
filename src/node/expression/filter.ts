@@ -15,7 +15,7 @@ class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): any {
+    compile(compiler: TwingCompiler) {
         let name = this.getNode('filter').getAttribute('value');
         let filter = compiler.getEnvironment().getFilter(name);
         let callable = filter.getCallable();
@@ -28,7 +28,7 @@ class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', filter.isVariadic());
 
-        return this.compileCallable(compiler);
+        this.compileCallable(compiler);
     }
 }
 

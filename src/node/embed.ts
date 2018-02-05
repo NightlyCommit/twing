@@ -1,12 +1,7 @@
 import TwingNodeExpression from "./expression";
-import TwingMap from "../map";
-import TwingTemplate from "../template";
 import TwingNodeInclude from "./include";
 import TwingNodeExpressionConstant from "./expression/constant";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
-
-const merge = require('merge');
 
 class TwingNodeEmbed extends TwingNodeInclude {
     // we don't inject the module to avoid node visitors to traverse it twice (as it will be already visited in the main module)
@@ -17,15 +12,18 @@ class TwingNodeEmbed extends TwingNodeInclude {
         this.setAttribute('index', index);
     }
 
-    addGetTemplate(compiler: TwingCompiler): DoDisplayHandler {
-        return (template: TwingTemplate) => {
-            return template.loadTemplate(
-                this.getAttribute('name'),
-                this.getTemplateName(),
-                this.getTemplateLine(),
-                this.getAttribute('index')
-            );
-        }
+    addGetTemplate(compiler: TwingCompiler) {
+        compiler
+            .write('this.loadTemplate(')
+            .string(this.getAttribute('name'))
+            .raw(', ')
+            .repr(this.getTemplateName())
+            .raw(', ')
+            .repr(this.getTemplateLine())
+            .raw(', ')
+            .string(this.getAttribute('index'))
+            .raw(')')
+        ;
     }
 }
 

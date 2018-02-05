@@ -4,17 +4,14 @@ import TwingNodeExpressionGetAttr from "../get-attr";
 import TwingNodeExpression from "../../expression";
 import TwingNodeExpressionConstant from "../constant";
 import TwingErrorSyntax from "../../../error/syntax";
-import TwingTemplate from "../../../template";
-import TwingMap from "../../../map";
 import TwingNodeExpressionName from "../name";
 import TwingNodeExpressionBlockReference from "../block-reference";
 import TwingNodeExpressionFunction from "../function";
 import TwingNodeExpressionArray from "../array";
 import TwingCompiler from "../../../compiler";
-import DoDisplayHandler from "../../../do-display-handler";
 
 /**
- * Checks if a variable is defined in the current context.
+ * Checks if a variable is defined in the active context.
  *
  * <pre>
  * {# defined works with variable names and variable attributes #}
@@ -70,12 +67,8 @@ class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         }
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let nodeHandler = compiler.subcompile(this.getNode('node'));
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return nodeHandler(template, context, blocks);
-        }
+    compile(compiler: TwingCompiler) {
+        compiler.subcompile(this.getNode('node'));
     }
 }
 

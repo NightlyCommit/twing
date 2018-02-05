@@ -1,10 +1,19 @@
 import TwingNodeExpressionBinary from "../binary";
-
-import twingCompare from '../../../util/compare';
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinaryEqual extends TwingNodeExpressionBinary {
-    execute(left: any, right: any): any {
-        return twingCompare(left, right);
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('Twing.twingCompare(')
+            .subcompile(this.getNode('left'))
+            .raw(', ')
+            .subcompile(this.getNode('right'))
+            .raw(')')
+        ;
+    }
+
+    operator(compiler: TwingCompiler): TwingCompiler {
+        return compiler.raw('');
     }
 }
 

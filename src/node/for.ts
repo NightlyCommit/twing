@@ -4,11 +4,7 @@ import TwingMap from "../map";
 import TwingNodeExpressionAssignName from "./expression/assign-name";
 import TwingNodeForLoop from "./for-loop";
 import TwingNodeIf from "./if";
-import TwingTemplate from "../template";
-
-import ensureTraversable from '../util/ensure-iterable';
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
@@ -54,82 +50,99 @@ class TwingNodeFor extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        let elseHandler: DoDisplayHandler;
-        let seqHandler: DoDisplayHandler = compiler.subcompile(this.getNode('seq'));
-        let bodyHandler: DoDisplayHandler = compiler.subcompile(this.getNode('body'));
+        compiler
+            .addDebugInfo(this)
+            .write("context.set('_parent', context.clone());\n")
+            .write("context.set('_seq',  Twing.twingEnsureTraversable(")
+            .subcompile(this.getNode('seq'))
+            .raw("));\n")
+        ;
 
         if (this.hasNode('else')) {
-            elseHandler = compiler.subcompile(this.getNode('else'));
+            compiler.write("context.set('_iterated', false);\n");
+        }
+
+        if (this.getAttribute('with_loop')) {
+            compiler
+                .write("context.set('loop', new Twing.TwingMap([\n")
+                .write("  ['parent', context.get('_parent')],\n")
+                .write("  ['index0', 0],\n")
+                .write("  ['index', 1],\n")
+                .write("  ['first', true]\n")
+                .write("]));\n")
+            ;
+
+            if (!this.getAttribute('ifexpr')) {
+                compiler
+                    .write("let length = context.get('_seq').size;\n")
+                    .write("let loop = context.get('loop');\n")
+                    .write("loop.set('revindex0', length - 1);\n")
+                    .write("loop.set('revindex', length);\n")
+                    .write("loop.set('length', length);\n")
+                    .write("loop.set('last', (length === 1));\n")
+                ;
+            }
         }
 
         this.loop.setAttribute('else', this.hasNode('else'));
         this.loop.setAttribute('with_loop', this.getAttribute('with_loop'));
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
-        let keyTargetHandler = compiler.subcompile(this.getNode('key_target'));
-        let valueTargetHandler = compiler.subcompile(this.getNode('value_target'));
+        compiler
+            .write("for (let [__key__, __value__] of context.get('_seq')) {\n")
+            .indent()
+            .subcompile(this.getNode('key_target'), false)
+            .raw(' = __key__;\n')
+            .subcompile(this.getNode('value_target'), false)
+            .raw(' = __value__;\n')
+            .subcompile(this.getNode('body'))
+            .outdent()
+            .write("}\n")
+        ;
 
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            let result = '';
+        if (this.hasNode('else')) {
+            compiler
+                .write("if (context.get('_iterated') === false) {\n")
+                .indent()
+                .subcompile(this.getNode('else'))
+                .outdent()
+                .write("}\n")
+            ;
+        }
 
-            context['_parent'] = Object.assign({}, context);
-            context['_seq'] = ensureTraversable(seqHandler(template, context, blocks));
+        compiler
+            .write("(() => {\n")
+            .indent()
+            .write(`let parent = context.get('_parent');\n`)
+        ;
 
-            if (elseHandler) {
-                context['_iterated'] = false;
-            }
+        // remove some "private" loop variables (needed for nested loops)
+        compiler
+            .write('context.delete(\'_seq\');\n')
+            .write('context.delete(\'_iterated\');\n')
+            .write('context.delete(\'' + this.getNode('key_target').getAttribute('name') + '\');\n')
+            .write('context.delete(\'' + this.getNode('value_target').getAttribute('name') + '\');\n')
+            .write('context.delete(\'_parent\');\n')
+            .write('context.delete(\'loop\');\n')
+        ;
 
-            if (this.getAttribute('with_loop')) {
-                context['loop'] = {
-                    parent: context['_parent'],
-                    index0: 0,
-                    index: 1,
-                    first: true
-                };
+        // keep the values set in the inner context for variables defined in the outer context
+        compiler
+            .write(`for (let [k, v] of parent) {\n`)
+            .indent()
+            .write('if (!context.has(k)) {\n')
+            .indent()
+            .write(`context.set(k, v);\n`)
+            .outdent()
+            .write('}\n')
+            .outdent()
+            .write('}\n')
+        ;
 
-                if (!this.getAttribute('ifexpr')) {
-                    let length = Array.from(context['_seq'].values()).length;
-
-                    context['loop']['revindex0'] = length - 1;
-                    context['loop']['revindex'] = length;
-                    context['loop']['length'] = length;
-                    context['loop']['last'] = (length === 1);
-                }
-            }
-
-            for (let [key, value] of context['_seq']) {
-                keyTargetHandler(template, context, blocks).value = key;
-                valueTargetHandler(template, context, blocks).value = value;
-
-                result += bodyHandler(template, context, blocks);
-            }
-
-            if (elseHandler) {
-                if (!context['_iterated']) {
-                    result += elseHandler(template, context, blocks);
-                }
-            }
-
-            let _parent = context['_parent'];
-
-            // remove some 'private' loop variables (needed for nested loops)
-            delete (context['_seq']);
-            delete (context['_iterated']);
-            delete (context[this.getNode('key_target').getAttribute('name')]);
-            delete (context[this.getNode('value_target').getAttribute('name')]);
-            delete (context['_parent']);
-            delete (context['loop']);
-
-            // keep the values set in the inner context for variables defined in the outer context
-            // context = merge(context, array_intersect_key(context, _parent));
-            for (let k in _parent) {
-                if (!Reflect.has(context, k)) {
-                    context[k] = _parent[k];
-                }
-            }
-
-            return result;
-        };
+        compiler
+            .outdent()
+            .write("})();\n")
+        ;
     }
 }
 

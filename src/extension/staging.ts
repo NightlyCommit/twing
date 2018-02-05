@@ -1,14 +1,14 @@
 import TwingExtension from "../extension";
 import TwingTokenParserInterface from "../token-parser-interface";
 import TwingFilter from "../filter";
-import TwingMap from "../map";
 import TwingFunction from "../function";
 import TwingTest from "../test";
+import TwingNodeVisitorInterface from "../node-visitor-interface";
 
 class TwingExtensionStaging extends TwingExtension {
     private functions: Array<TwingFunction> = [];
     private filters: Array<TwingFilter> = [];
-    // private visitors = array();
+    private visitors: Array<TwingNodeVisitorInterface> = [];
     private tokenParsers: Map<string, TwingTokenParserInterface> = new Map();
     private tests: Array<TwingTest> = [];
 
@@ -39,6 +39,10 @@ class TwingExtensionStaging extends TwingExtension {
 
     getFilters() {
         return this.filters;
+    }
+
+    addNodeVisitor(visitor: TwingNodeVisitorInterface) {
+        this.visitors.push(visitor);
     }
 
     addTest(test: TwingTest) {

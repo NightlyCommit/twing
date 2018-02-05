@@ -3,9 +3,7 @@ import TwingNodeOutputInterface from "../node-output-interface";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingNodeType from "../node-type";
-import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
     constructor(expr: TwingNodeExpression, line: number, tag: string = null) {
@@ -18,12 +16,13 @@ class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
         this.type = TwingNodeType.OUTPUT;
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let exprHandler = compiler.subcompile(this.getNode('expr'));
-
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            return compiler.raw(exprHandler(template, context, blocks));
-        };
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write('Twing.echo(')
+            .subcompile(this.getNode('expr'))
+            .raw(');\n')
+        ;
     }
 }
 

@@ -1,8 +1,9 @@
 import TwingNodeExpressionBinary from "../binary";
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinarySub extends TwingNodeExpressionBinary {
-    execute(left: any, right: any): any {
-        return left - right;
+    operator(compiler: TwingCompiler): TwingCompiler {
+        return compiler.raw('-');
     }
 }
 

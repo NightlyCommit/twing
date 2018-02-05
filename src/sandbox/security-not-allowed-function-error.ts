@@ -1,6 +1,6 @@
 import TwingSandboxSecurityError from "./security-error";
 
-class TwingSandboxSecurityNotAllowedFunctionError extends TwingSandboxSecurityError {
+export class TwingSandboxSecurityNotAllowedFunctionError extends TwingSandboxSecurityError {
     private functionName: string;
 
     constructor(message: string, functionName: string, lineno: number = -1, filename: string = null, previous: Error = null) {

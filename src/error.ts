@@ -4,8 +4,11 @@
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 import TwingSource from "./source";
+import TwingTemplate from "./template";
 
-class TwingError extends Error {
+const stackTrace = require('stack-trace');
+
+export class TwingError extends Error {
     sourceName: string;
     message: string;
 
@@ -14,8 +17,9 @@ class TwingError extends Error {
     private sourcePath: string;
     private sourceCode: string;
     private previous: Error;
+    private template: TwingTemplate;
 
-    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
+    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null, template: TwingTemplate = null) {
         super(message);
 
         this.name = this.constructor.name;
@@ -42,6 +46,10 @@ class TwingError extends Error {
 
         this.lineno = lineno;
         this.sourceName = sourceName;
+
+        if (template) {
+            this.template = template;
+        }
 
         if (lineno === -1 || sourceName === null || this.sourcePath === null) {
             this.guessTemplateInfo();
@@ -106,6 +114,23 @@ class TwingError extends Error {
         this.updateRepr();
     }
 
+    /**
+     *
+     * @returns {TwingTemplate}
+     */
+    getTemplate() {
+        return this.template;
+    }
+
+    /**
+     *
+     * @param {TwingTemplate} template
+     */
+    setTemplate(template: TwingTemplate) {
+        this.template = template;
+        this.updateRepr();
+    }
+
     guess() {
         this.guessTemplateInfo();
         this.updateRepr();
@@ -120,7 +145,7 @@ class TwingError extends Error {
     updateRepr() {
         this.message = this.rawMessage;
 
-        if (this.sourcePath && this.lineno > 0) {
+        if (this.sourcePath && (this.lineno > 0)) {
             // this.file = this.sourcePath;
             // this.line = this.lineno;
 
@@ -167,8 +192,31 @@ class TwingError extends Error {
         }
     }
 
-    private guessTemplateInfo() {
-        // console.warn(this.stack);
+    guessTemplateInfo(): void {
+        if (this.template) {
+            let trace = stackTrace.parse(this);
+
+            let templateToUse: TwingTemplate = this.template;
+
+            while (templateToUse && (templateToUse.getTemplateName() !== this.getSourceContext().getName())) {
+                templateToUse = templateToUse.getParent();
+            }
+
+            if (templateToUse) {
+                for (let callSite of trace) {
+                    if (callSite.getTypeName() === templateToUse.constructor.name) {
+                        for (let [codeLine, templateLine] of templateToUse.getDebugInfo()) {
+                            if (codeLine <= callSite.getLineNumber()) {
+                                // update template line
+                                this.lineno = templateLine;
+
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

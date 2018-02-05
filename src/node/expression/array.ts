@@ -1,9 +1,7 @@
 import TwingNodeExpression from "../expression";
 import TwingNodeExpressionConstant from "./constant";
 import TwingMap from "../../map";
-import TwingTemplate from "../../template";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 let ctype_digit = require('locutus/php/ctype/ctype_digit');
@@ -49,22 +47,22 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
         this.nodes.push(value);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let handlers: Array<DoDisplayHandler> = [];
+    compile(compiler: TwingCompiler) {
+        compiler.raw('[');
+
+        let first = true;
 
         for (let pair of this.getKeyValuePairs()) {
-            handlers.push(compiler.subcompile(pair.value));
-        }
-
-        return (context: any, template: TwingTemplate, blocks: TwingMap<string, Array<any>>) => {
-            let result: Array<any> = [];
-
-            for (let handler of handlers) {
-                result.push(handler(context, template, blocks));
+            if (!first) {
+                compiler.raw(', ');
             }
 
-            return result;
-        };
+            first = false;
+
+            compiler.subcompile(pair.value);
+        }
+
+        compiler.raw(']');
     }
 }
 

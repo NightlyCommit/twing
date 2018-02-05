@@ -1,8 +1,9 @@
 import TwingNodeExpressionUnary from "../unary";
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionUnaryPos extends TwingNodeExpressionUnary {
-    execute(expr: any): any {
-        return +expr;
+    operator(compiler: TwingCompiler): TwingCompiler {
+        return compiler.raw('+');
     }
 }
 

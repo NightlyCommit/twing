@@ -19,19 +19,18 @@
     "node": ">=6.0"
   },
   "scripts": {
-    "postversion": "git push origin master --tags",
-    "test": "TS_NODE_CACHE=0 npm run fastest",
+    "prepublish": "npm run build",
+    "test": "TS_NODE_CACHE=0 npm run build && npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
-    "fastest2": "tape -r ts-node/register/type-check 'test/tests/integration-tests.ts' | tap-mocha-reporter spec",
-    "build": "tsc",
+    "build": "tsc && node tasks/build.js",
     "cover": "nyc npm t",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "prepublish": "npm run build && node tasks/build.js"
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "camelcase": "^4.1.0",
     "capitalize": "^1.0.0",
     "dateformat-converter": "^2.0.1",
+    "eval": "^0.1.2",
     "fs-extra": "^5.0.0",
     "hash.js": "^1.1.3",
     "htmlspecialchars": "^1.0.5",
@@ -51,7 +50,9 @@
     "secure-filters": "^1.1.0",
     "sha.js": "^2.4.9",
     "snake-case": "^2.1.0",
-    "tmp": "0.0.33"
+    "stack-trace": "0.0.10",
+    "tmp": "0.0.33",
+    "var-validator": "0.0.3"
   },
   "devDependencies": {
     "@types/luxon": "^0.2.2",
@@ -60,10 +61,13 @@
     "coveralls": "^3.0.0",
     "fs-extra": "^5.0.0",
     "fs-finder": "^1.8.1",
+    "module-alias": "^2.0.3",
     "node-hook": "^1.0.0",
     "nyc": "^11.4.1",
     "rollup": "^0.54.1",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-multi-entry": "^2.0.2",
+    "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-typescript2": "^0.10.0",
     "tap": "^11.0.1",
     "tap-diff": "^0.1.1",

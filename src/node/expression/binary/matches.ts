@@ -1,12 +1,19 @@
 import TwingNodeExpressionBinary from "../binary";
-
-const regexParser = require("regex-parser");
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinaryMatches extends TwingNodeExpressionBinary {
-    execute(left: any, right: any): any {
-        let regExp = regexParser(right);
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('Twing.regexParser(')
+            .subcompile(this.getNode('right'))
+            .raw(').test(')
+            .subcompile(this.getNode('left'))
+            .raw(')')
+        ;
+    }
 
-        return regExp.test(left);
+    operator(compiler: TwingCompiler) {
+        return compiler.raw('');
     }
 }
 

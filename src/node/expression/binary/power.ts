@@ -1,8 +1,19 @@
 import TwingNodeExpressionBinary from "../binary";
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinaryPower extends TwingNodeExpressionBinary {
-    execute(left: any, right: any): any {
-        return Math.pow(left, right);
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('Math.pow(')
+            .subcompile(this.getNode('left'))
+            .raw(', ')
+            .subcompile(this.getNode('right'))
+            .raw(')')
+        ;
+    }
+
+    operator(compiler: TwingCompiler) {
+        return compiler.raw('**');
     }
 }
 
