@@ -25,9 +25,9 @@ class TwingNodeTraverser {
 
         this.env = env;
 
-        visitors.forEach(function (visitor) {
+        for (let visitor of visitors) {
             self.addVisitor(visitor);
-        });
+        }
     }
 
     addVisitor(visitor: TwingNodeVisitorInterface) {

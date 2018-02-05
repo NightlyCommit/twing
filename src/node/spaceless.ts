@@ -1,8 +1,6 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeSpaceless extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag = 'spaceless') {
@@ -13,12 +11,13 @@ class TwingNodeSpaceless extends TwingNode {
         super(nodes, new TwingMap(), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let bodyHandler = compiler.subcompile(this.getNode('body'));
-
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            return bodyHandler(template, context, blocks).replace(/>\s+</g, '><').trim();
-        }
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write("Twing.obStart();\n")
+            .subcompile(this.getNode('body'))
+            .write("Twing.echo(Twing.obGetClean().replace(/>\\s+</g, '><').trim());\n")
+        ;
     }
 }
 

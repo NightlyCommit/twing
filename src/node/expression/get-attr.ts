@@ -1,11 +1,7 @@
 import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
 import TwingTemplate from "../../template";
-import TwingErrorRuntime from "../../error/runtime";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
-
-import getAttribute from '../../util/get-attribute';
 
 class TwingNodeExpressionGetAttr extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number) {
@@ -27,80 +23,46 @@ class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         super(nodes, nodeAttributes, lineno);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let argumentsHandler = this.hasNode('arguments') ? compiler.subcompile(this.getNode('arguments')) : null;
+    compile(compiler: TwingCompiler) {
+        compiler.raw('Twing.twingGetAttribute(this.env, this.getSourceContext(), ');
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);
         }
 
-        let objectHandler = compiler.subcompile(this.getNode('node'));
-        let attributeHandler = compiler.subcompile(this.getNode('attribute'));
-        let type = this.getAttribute('type');
-        let isDefinedTest = this.getAttribute('is_defined_test') ? true : false;
-        let ignoreStrictCheck = this.getAttribute('ignore_strict_check') ? true : false;
+        compiler.subcompile(this.getNode('node'));
 
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            try {
-                let result = getAttribute(
-                    compiler.getEnvironment(),
-                    template.getSourceContext(),
-                    objectHandler(template, context, blocks),
-                    attributeHandler(template, context, blocks),
-                    argumentsHandler ? argumentsHandler(template, context, blocks) : [],
-                    type,
-                    isDefinedTest,
-                    ignoreStrictCheck
-                );
+        compiler.raw(', ').subcompile(this.getNode('attribute'));
 
-                return result;
+        // only generate optional arguments when needed (to make generated code more readable)
+        let needFourth = this.getAttribute('ignore_strict_check');
+        let needThird = needFourth || this.getAttribute('is_defined_test');
+        let needSecond = needThird || this.getAttribute('type') !== TwingTemplate.ANY_CALL;
+        let needFirst = needSecond || this.hasNode('arguments');
+
+        if (needFirst) {
+            if (this.hasNode('arguments')) {
+                compiler.raw(', ').subcompile(this.getNode('arguments'));
             }
-            catch (e) {
-                if (e instanceof TwingErrorRuntime) {
-                    if (e.getTemplateLine() === -1) {
-                        e.setTemplateLine(this.getTemplateLine());
-                    }
-                }
-
-                throw e;
+            else {
+                compiler.raw(', []');
             }
         }
-    };
 
-    // render(context: any, template: TwingTemplate, blocks: TwingMap<string, Array<any>> = new TwingMap): any {
-    //     let arguments_ = this.hasNode('arguments') ? this.getNode('arguments').render(context, template, blocks) : [];
-    //
-    //     if (this.getAttribute('ignore_strict_check')) {
-    //         this.getNode('node').setAttribute('ignore_strict_check', true);
-    //     }
-    //
-    //     let object: any = this.getNode('node').render(context, template, blocks);
-    //     let attribute: string = this.getNode('attribute').render(context, template, blocks);
-    //
-    //     try {
-    //         let result = getAttribute(
-    //             template.getEnvironment(),
-    //             template.getSourceContext(),
-    //             object,
-    //             attribute,
-    //             arguments_,
-    //             this.getAttribute('type'),
-    //             this.getAttribute('is_defined_test') ? true : false,
-    //             this.getAttribute('ignore_strict_check') ? true : false
-    //         );
-    //
-    //         return result;
-    //     }
-    //     catch (e) {
-    //         if (e instanceof TwingErrorRuntime) {
-    //             if (e.getTemplateLine() === -1) {
-    //                 e.setTemplateLine(this.getTemplateLine());
-    //             }
-    //         }
-    //
-    //         throw e;
-    //     }
-    // }
+        if (needSecond) {
+            compiler.raw(', ').repr(this.getAttribute('type'));
+        }
+
+        if (needThird) {
+            compiler.raw(', ').repr(this.getAttribute('is_defined_test'));
+        }
+
+        if (needFourth) {
+            compiler.raw(', ').repr(this.getAttribute('ignore_strict_check'));
+        }
+
+        compiler.raw(')');
+    };
 }
 
 export default TwingNodeExpressionGetAttr;

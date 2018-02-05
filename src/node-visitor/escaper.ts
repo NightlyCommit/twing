@@ -75,7 +75,6 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: any) {
-
         if (!type) {
             return node;
         }

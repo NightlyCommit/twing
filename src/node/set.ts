@@ -1,10 +1,7 @@
 import TwingNode from "../node";
 import TwingNodeType from "../node-type";
 import TwingMap from "../map";
-import TwingMarkup from "../markup";
-import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
@@ -27,52 +24,69 @@ class TwingNodeSet extends TwingNode {
         }
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let namesNode = this.getNode('names');
-        let valuesNode = this.getNode('values');
+    compile(compiler: TwingCompiler) {
+        compiler.addDebugInfo(this);
 
-        let handlers: Array<any> = [];
+        if (this.getNode('names').getNodes().size > 1) {
+            compiler.write('[');
 
-        if (!this.getAttribute('capture')) {
-            let names = [...namesNode.getNodes().values()];
-            let values = [...valuesNode.getNodes().values()];
-
-            let i: number;
-            let count: number = names.length;
-
-            for (i = 0; i < count; i++) {
-                let name = names[i];
-                let value = values[i];
-
-                handlers.push({
-                    name: compiler.subcompile(name),
-                    value: compiler.subcompile(value)
-                });
-            }
-        }
-        else {
-            for (let [k, nameNode] of namesNode.getNodes()) {
-                handlers.push({
-                    name: compiler.subcompile(nameNode),
-                    value: compiler.subcompile(valuesNode)
-                });
-            }
-        }
-
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            for (let handler of handlers) {
-                let nameHandler = handler.name;
-                let valueHandler = handler.value;
-
-                let value = valueHandler(template, context, blocks);
-
-                if (this.getAttribute('capture')) {
-                    value = value ? new TwingMarkup(value, compiler.getEnvironment().getCharset()) : '';
+            for (let [idx, node] of this.getNode('names').getNodes()) {
+                if (idx) {
+                    compiler.raw(', ');
                 }
 
-                nameHandler(template, context, blocks).value = value;
+                compiler.subcompile(node);
+            }
+
+            compiler.raw(']');
+        }
+        else {
+            if (this.getAttribute('capture')) {
+                compiler
+                    .write('let tmp;\n')
+                    .write("Twing.obStart();\n")
+                    .subcompile(this.getNode('values'))
+                ;
+            }
+
+            compiler.subcompile(this.getNode('names'), false);
+
+            if (this.getAttribute('capture')) {
+                compiler.raw(" = ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset())");
             }
         }
+
+        if (!this.getAttribute('capture')) {
+            compiler.raw(' = ');
+
+            if (this.getNode('names').getNodes().size > 1) {
+                compiler.write('[');
+
+                for (let [idx, $value] of this.getNode('values').getNodes()) {
+                    if (idx) {
+                        compiler.raw(', ');
+                    }
+
+                    compiler.subcompile($value);
+                }
+
+                compiler.raw(']');
+            }
+            else {
+                if (this.getAttribute('safe')) {
+                    compiler
+                        .raw("('' === tmp = ")
+                        .subcompile(this.getNode('values'))
+                        .raw(") ? '' : new TwingMarkup(tmp, this.env.getCharset())")
+                    ;
+                }
+                else {
+                    compiler.subcompile(this.getNode('values'));
+                }
+            }
+        }
+
+        compiler.raw(";\n");
     }
 }
 

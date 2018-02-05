@@ -6,6 +6,7 @@ import TwingNodeExpressionGetAttr from "../get-attr";
 import TwingNodeExpressionTestDefined from "../test/defined";
 import TwingNodeExpressionConditional from "../conditional";
 import TwingNodeExpression from "../../expression";
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
@@ -22,6 +23,10 @@ class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
         }
 
         super(node, filterName, methodArguments, lineno, tag);
+    }
+
+    compile(compiler: TwingCompiler) {
+        compiler.subcompile(this.getNode('node'));
     }
 }
 

@@ -16,11 +16,18 @@ import TwingMap from "../map";
 import TwingNodeMacro from "../node/macro";
 import TwingNode from "../node";
 
+const varValidator = require('var-validator');
+
 class TwingTokenParserMacro extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
         let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
+        let safeName = name;
+
+        if (!varValidator.isValid(name)) {
+            safeName = Buffer.from(name).toString('hex');
+        }
 
         let macroArguments = this.parser.getExpressionParser().parseArguments(true, true);
 
@@ -46,7 +53,7 @@ class TwingTokenParserMacro extends TwingTokenParser {
 
         nodes.push(body);
 
-        this.parser.setMacro(name, new TwingNodeMacro(name, new TwingNodeBody(nodes), macroArguments, lineno, this.getTag()));
+        this.parser.setMacro(name, new TwingNodeMacro(safeName, new TwingNodeBody(nodes), macroArguments, lineno, this.getTag()));
 
         return null;
     }

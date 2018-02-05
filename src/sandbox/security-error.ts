@@ -1,6 +1,6 @@
 import TwingError from "../error";
 
-class TwingSandboxSecurityError extends TwingError {
+export class TwingSandboxSecurityError extends TwingError {
 
 }
 

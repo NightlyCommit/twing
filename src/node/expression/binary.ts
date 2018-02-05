@@ -1,9 +1,7 @@
 import TwingNodeExpression from "../expression";
 import TwingNode from "../../node";
 import TwingMap from "../../map";
-import TwingTemplate from "../../template";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
 
 abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
     constructor(left: TwingNode, right: TwingNode, lineno: number) {
@@ -15,19 +13,23 @@ abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
         super(nodes, new TwingMap(), lineno);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let leftHandler = compiler.subcompile(this.getNode('left'));
-        let rightHandler = compiler.subcompile(this.getNode('right'));
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('(')
+            .subcompile(this.getNode('left'))
+            .raw(' ')
+        ;
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return this.execute(
-              leftHandler(template, context, blocks),
-              rightHandler(template, context, blocks)
-            );
-        }
+        this.operator(compiler);
+
+        compiler
+            .raw(' ')
+            .subcompile(this.getNode('right'))
+            .raw(')')
+        ;
     }
 
-    abstract execute(left: any, right: any): any;
+    abstract operator(compiler: TwingCompiler): TwingCompiler;
 }
 
 export default TwingNodeExpressionBinary;

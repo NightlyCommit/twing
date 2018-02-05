@@ -129,7 +129,7 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
 
         // when do we need to add the loop variable back?
 
-        // the loop variable is referenced for the current loop
+        // the loop variable is referenced for the active loop
         else if (node as any instanceof TwingNodeExpressionName && node.getAttribute('name') === 'loop') {
             node.setAttribute('always_defined', true);
             this.addLoopToCurrent();

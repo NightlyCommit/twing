@@ -1,66 +1,24 @@
 import TwingNode from "./node";
 import TwingEnvironment from "./environment";
-import DoDisplayHandler from "./do-display-handler";
-import TwingTemplate from "./template";
-import TwingTemplateImpl from "./template/impl";
 import TwingMap from "./map";
-import TwingMethodDefinition from "./method-definition";
-import TwingNodeModule from "./node/module";
 
-const merge = require('merge');
+const substr_count = require('locutus/php/strings/substr_count');
+const addcslashes = require('locutus/php/strings/addcslashes');
 const md5 = require('locutus/php/strings/md5');
 const uniqid = require('locutus/php/misc/uniqid');
 const mt_rand = require('locutus/php/math/mt_rand');
-const addcslashes = require('locutus/php/strings/addcslashes');
 
 class TwingCompiler {
     private lastLine: number;
+    private source: string;
     private indentation: number;
     private env: TwingEnvironment;
-    private debugInfo: Array<string> = [];
+    private debugInfo: TwingMap<string, string>;
     private sourceOffset: number;
     private sourceLine: number;
-    private index: number;
-
-    private doConstruct: DoDisplayHandler;
-    private doDisplay: DoDisplayHandler;
-    private doGetParent: DoDisplayHandler;
-    private doGetTemplateName: DoDisplayHandler;
-    private blocks: TwingMap<string, DoDisplayHandler> = new TwingMap();
-    private macros: TwingMap<string, TwingMethodDefinition> = new TwingMap();
-
-    private subCompilers: Array<TwingCompiler> = [];
 
     constructor(env: TwingEnvironment) {
         this.env = env;
-    }
-
-    setIndex(index: number) {
-        this.index = index;
-    }
-
-    setDoConstruct(handler: DoDisplayHandler) {
-        this.doConstruct = handler;
-    }
-
-    setDoDisplay(handler: DoDisplayHandler) {
-        this.doDisplay = handler;
-    }
-
-    setDoGetParent(handler: DoDisplayHandler) {
-        this.doGetParent = handler;
-    }
-
-    setDoGetTemplateName(handler: DoDisplayHandler) {
-        this.doGetTemplateName = handler;
-    }
-
-    setBlock(name: string, handler: DoDisplayHandler) {
-        this.blocks.set(name, handler);
-    }
-
-    setMacro(name: string, methodDefinition: TwingMethodDefinition) {
-        this.macros.set(name, methodDefinition);
     }
 
     /**
@@ -72,94 +30,56 @@ class TwingCompiler {
         return this.env;
     }
 
-    getTemplates(): Map<number, TwingTemplate> {
-        let templates: Map<number, TwingTemplate> = new Map();
-
-        templates.set(this.index, this.getTemplate());
-
-        let flatten = function(compiler: TwingCompiler) {
-          for (let [index, template] of compiler.getTemplates()) {
-              templates.set(index, template);
-          }
-        };
-
-        for (let subCompiler of this.subCompilers) {
-            flatten(subCompiler);
-        }
-
-        return templates;
+    getSource() {
+        return this.source;
     }
 
-    /**
-     * Gets the template after compilation.
-     *
-     * Functionally equivalent to getSource in PHP implementation
-     *
-     * @return {TwingTemplate} The template
-     */
-    getTemplate(): TwingTemplate {
-        let template = new TwingTemplateImpl(this.env, this.doConstruct);
+    compile(node: TwingNode, indentation: number = 0): TwingCompiler {
+        this.lastLine = null;
+        this.source = '';
+        this.debugInfo = new TwingMap();
+        this.sourceOffset = 0;
+        // source code starts at 1 (as we then increment it when we encounter new lines)
+        this.sourceLine = 1;
+        this.indentation = indentation;
 
-        Reflect.set(template, 'doDisplay', (context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) => {
-            return this.doDisplay(template, context, blocks);
-        });
-
-        Reflect.set(template, 'doGetParent', (context: any) => {
-            return this.doGetParent(template, context);
-        });
-
-        Reflect.set(template, 'getTemplateName', () => {
-            return this.doGetTemplateName(template);
-        });
-
-        for (let [name, handler] of this.blocks) {
-            Reflect.set(template, `block_${name}`, (context: any, blocks: TwingMap<string, Array<any>>) => {
-                return handler(template, context, blocks);
-            });
-        }
-
-        for (let [name, methodDefinition] of this.macros) {
-            Reflect.set(template, `macro_${name}`, methodDefinition);
-        }
-
-        return template;
-    }
-
-    compile(node: TwingNode): TwingCompiler {
-        let compiler: TwingCompiler = this;
-
-        if (node instanceof TwingNodeModule && node.getAttribute('index') !== null) {
-            compiler = new TwingCompiler(this.getEnvironment());
-
-            this.subCompilers.push(compiler);
-        }
-
-        compiler.index = node.getAttribute('index');
-        compiler.subcompile(node);
+        this.subcompile(node);
 
         return this;
     }
 
-    subcompile(node: TwingNode): DoDisplayHandler {
-        let result = node.compile(this);
+    subcompile(node: TwingNode, raw: boolean = true): any {
+        if (raw === false) {
+            this.source += ' '.repeat(this.indentation * 4);
+        }
 
-        result.node = node;
+        node.compile(this);
 
-        return result;
+        return this;
     }
 
     /**
      *
-     * @param value
+     * @param string
      * @returns
      */
-    raw(value: any): any {
-        // as per PHP specifications, true is output as '1' and false as ''
-        if (typeof value === 'boolean') {
-            return value ? '1' : '';
+    raw(string: any): TwingCompiler {
+        this.source += string;
+
+        return this;
+    }
+
+    /**
+     * Writes a string to the compiled code by adding indentation.
+     *
+     * @returns {TwingCompiler}
+     */
+    write(...strings: Array<string>): TwingCompiler {
+        for (let string of strings) {
+            this.source += ' '.repeat(this.indentation * 4) + string;
         }
 
-        return value;
+        return this;
     }
 
     /**
@@ -167,35 +87,172 @@ class TwingCompiler {
      *
      * @param {string} value The string
      *
-     * @returns {string}
+     * @returns {TwingCompiler}
      */
-    string(handler: DoDisplayHandler): DoDisplayHandler {
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>): string => {
-            return `"${addcslashes(handler(template, context, blocks), "\0\t\"\$\\")}"`
-        };
+    string(value: string): TwingCompiler {
+        if (value !== null) {
+            if (typeof value === 'string') {
+                value = `"${addcslashes(value, "\0\t\"\\\n")}"`;
+            }
+        }
+        else {
+            value = '""';
+        }
+
+        this.source += value;
+
+        return this;
     }
 
     repr(value: any): any {
-        if (value === null) {
-            return 'null';
+        if (typeof value === 'number') {
+            // if (false !== $locale = setlocale(LC_NUMERIC, '0')) {
+            //     setlocale(LC_NUMERIC, 'C');
+            // }
+
+            this.raw(value);
+
+            // if (false !== $locale) {
+            //     setlocale(LC_NUMERIC, $locale);
+            // }
+        }
+        else if (value === null) {
+            this.raw('null');
         }
         else if (typeof value === 'boolean') {
-            return this.raw(value ? 'true' : 'false');
+            this.raw(value ? 'true' : 'false');
         }
         else if (Array.isArray(value)) {
-            let result: Array<any> = [];
+            this.raw('[');
 
-            for (let k in value) {
-                result.push(this.raw(value[k]));
+            let first = true;
+
+            for (let v of value) {
+                if (!first) {
+                    this.raw(', ');
+                }
+
+                first = false;
+
+                this.repr(v);
             }
 
-            return result;
+            this.raw(']');
+        }
+        else if (value instanceof Map) {
+            this.raw('new Map([');
+
+            let first = true;
+
+            for (let [k, v] of value) {
+                if (!first) {
+                    this.raw(', ');
+                }
+
+                first = false;
+
+                this
+                    .raw('[')
+                    .repr(k)
+                    .raw(',')
+                    .repr(v)
+                    .raw(']')
+                ;
+            }
+
+            this.raw('])');
+        }
+        else if (typeof value === 'object') {
+            this.raw('{');
+
+            let first = true;
+
+            for (let k in value) {
+                if (!first) {
+                    this.raw(', ');
+                }
+
+                first = false;
+
+                this
+                    .repr(k)
+                    .raw(': ')
+                    .repr(value[k])
+                ;
+            }
+
+            this.raw('}');
         }
         else if (value === undefined) {
-            return '';
+            this.raw('');
+        }
+        else {
+            this.string(value);
         }
 
-        return value;
+        return this;
+    }
+
+    /**
+     * Adds debugging information.
+     *
+     * @returns TwingCompiler
+     */
+    addDebugInfo(node: TwingNode) {
+        if (node.getTemplateLine() != this.lastLine) {
+            this.write(`// line ${node.getTemplateLine()}\n`);
+
+            this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
+            this.sourceOffset = this.source.length;
+            this.debugInfo.set(this.sourceLine, node.getTemplateLine());
+
+            this.lastLine = node.getTemplateLine();
+        }
+
+        return this;
+    }
+
+    getDebugInfo() {
+        this.debugInfo = this.debugInfo.sortByKeys();
+
+        return this.debugInfo;
+    }
+
+    /**
+     * Indents the generated code.
+     *
+     * @param {number} step The number of indentation to add
+     *
+     * @returns TwingCompiler
+     */
+    indent(step: number = 1) {
+        this.indentation += step;
+
+        return this;
+    }
+
+    /**
+     * Outdents the generated code.
+     *
+     * @param {number} step The number of indentation to remove
+     *
+     * @return TwingCompiler
+     *
+     * @throws Error When trying to outdent too much so the indentation would become negative
+     */
+    outdent(step: number = 1) {
+        // can't outdent by more steps than the current indentation level
+        if (this.indentation < step) {
+            throw new Error('Unable to call outdent() as the indentation would become negative.');
+        }
+
+        this.indentation -= step;
+
+        return this;
+    }
+
+    getVarName(prefix: string = '__internal_'): string {
+        return `${prefix}${md5(uniqid(mt_rand(), true))}`;
     }
 }
 

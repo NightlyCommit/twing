@@ -7,29 +7,47 @@ import TwingExtensionStaging from "./extension/staging";
 import TwingMap from "./map";
 import TwingOperatorDefinitionInterface from "./operator-definition-interface";
 import TwingTest from "./test";
-
-let preg_quote = require('locutus/php/pcre/preg_quote');
+import TwingEnvironment from "./environment";
+import TwingExtensionInitRuntime from "./extension/init-runtime";
 
 class TwingExtensionSet {
     private extensions: Map<string, TwingExtensionInterface>;
-    private filters: Map<string, TwingFilter>;
-    private filterCallbacks: Array<Function> = [];
-    private functions: TwingMap<string, TwingFunction>;
-    private functionCallbacks: Array<Function> = [];
     private initialized: boolean = false;
     private runtimeInitialized: boolean = false;
+    private staging: TwingExtensionStaging;
     private parsers: TwingTokenParserInterface[];
-    private tests: TwingMap<string, TwingTest>;
     private visitors: TwingNodeVisitorInterface[];
+    private filters: Map<string, TwingFilter>;
+    private tests: TwingMap<string, TwingTest>;
+    private functions: TwingMap<string, TwingFunction>;
     private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
     private binaryOperators: Map<string, TwingOperatorDefinitionInterface>;
     private globals: TwingMap<string, {}>;
-    private staging: TwingExtensionStaging;
+    private functionCallbacks: Array<Function> = [];
+    private filterCallbacks: Array<Function> = [];
+    private lastModified: number = 0;
 
     constructor() {
         this.staging = new TwingExtensionStaging();
         this.extensions = new Map();
         this.parsers = [];
+    }
+
+    /**
+     * Initializes the runtime environment.
+     */
+    initRuntime(env: TwingEnvironment): void {
+        if (this.runtimeInitialized) {
+            return;
+        }
+
+        this.runtimeInitialized = true;
+
+        for (let [name, extension] of this.extensions) {
+            if (extension instanceof TwingExtensionInitRuntime) {
+                extension.initRuntime(env);
+            }
+        }
     }
 
     hasExtension(name: string) {
@@ -66,6 +84,22 @@ class TwingExtensionSet {
 
     isInitialized() {
         return this.initialized || this.runtimeInitialized;
+    }
+
+    getLastModified() {
+        if (this.lastModified !== 0) {
+            return this.lastModified;
+        }
+
+        // todo: is this even possible in JS?
+        for (let [name, extension] of this.extensions) {
+            // $r = new ReflectionObject($extension);
+            // if (file_exists($r->getFileName()) && ($extensionTime = filemtime($r->getFileName())) > $this->lastModified) {
+            //     $this->lastModified = $extensionTime;
+            // }
+        }
+
+        return this.lastModified;
     }
 
     getNodeVisitors(): TwingNodeVisitorInterface[] {
@@ -367,6 +401,13 @@ class TwingExtensionSet {
         this.filterCallbacks.push(callable);
     }
 
+    addNodeVisitor(visitor: TwingNodeVisitorInterface) {
+        if (this.initialized) {
+            throw new Error('Unable to add a node visitor as extensions have already been initialized.');
+        }
+
+        this.staging.addNodeVisitor(visitor);
+    }
 
     addTest(test: TwingTest) {
         if (this.initialized) {

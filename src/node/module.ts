@@ -1,11 +1,13 @@
 import TwingNode from "../node";
 import TwingSource from "../source";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 import TwingNodeExpressionConstant from "./expression/constant";
-import TwingErrorRuntime from "../error/runtime";
+import TwingNodeBody from "./body";
+import TwingNodeText from "./text";
+import TwingNodeBlockReference from "./block-reference";
+
+const ctype_space = require('locutus/php/ctype/ctype_space');
 
 /**
  * Represents a module node.
@@ -48,19 +50,21 @@ class TwingNodeModule extends TwingNode {
         this.setAttribute('index', index);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
+    compile(compiler: TwingCompiler) {
         this.compileTemplate(compiler);
 
         for (let template of this.getAttribute('embedded_templates')) {
-            compiler.compile(template);
-        }
-
-        return () => {
-
+            compiler.subcompile(template);
         }
     }
 
     compileTemplate(compiler: TwingCompiler) {
+        if (!this.getAttribute('index')) {
+            this.compileFileHeader(compiler);
+        }
+
+        this.compileClassHeader(compiler);
+
         if (this.getNode('blocks').getNodes().size ||
             this.getNode('traits').getNodes().size ||
             !this.hasNode('parent') ||
@@ -71,163 +75,388 @@ class TwingNodeModule extends TwingNode {
         }
 
         this.compileGetParent(compiler);
+
         this.compileDisplay(compiler);
+
         compiler.subcompile(this.getNode('blocks'));
+
         this.compileMacros(compiler);
+
         this.compileGetTemplateName(compiler);
+
+        this.compileIsTraitable(compiler);
+
+        this.compileDebugInfo(compiler);
+
+        this.compileGetSourceContext(compiler);
+
+        this.compileClassfooter(compiler);
+
+        if (this.getAttribute('index')) {
+            this.compileFileFooter(compiler);
+        }
+    }
+
+    compileFileHeader(compiler: TwingCompiler) {
+        compiler
+            .write('const Twing = require("twing");\n\n')
+            .write('module.exports = {};\n')
+        ;
     }
 
     compileGetParent(compiler: TwingCompiler) {
-        if (this.hasNode('parent')) {
-            let parent = this.getNode('parent');
-            let doGetParent: DoDisplayHandler;
-
-            if (parent instanceof TwingNodeExpressionConstant) {
-                doGetParent = compiler.subcompile(parent);
-            }
-            else {
-                let parentHandler = compiler.subcompile(parent);
-
-                doGetParent = (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) => {
-                    return template.loadTemplate(
-                        parentHandler(template, context, blocks),
-                        this.source.getName(),
-                        parent.getTemplateLine()
-                    );
-                }
-            }
-
-            compiler.setDoGetParent((template: TwingTemplate, context: any): TwingTemplate | false => {
-                return doGetParent(template, context);
-            });
+        if (!this.hasNode('parent')) {
+            return;
         }
+
+        let parent = this.getNode('parent');
+
+        compiler
+            .write("doGetParent(context) {\n")
+            .indent()
+            .addDebugInfo(parent)
+            .write('return ')
+        ;
+
+        if (parent instanceof TwingNodeExpressionConstant) {
+            compiler.subcompile(parent);
+        }
+        else {
+            compiler
+                .raw('this.loadTemplate(')
+                .subcompile(parent)
+                .raw(', ')
+                .repr(this.source.getName())
+                .raw(', ')
+                .repr(parent.getTemplateLine())
+                .raw(')')
+            ;
+        }
+
+        compiler
+            .raw(";\n")
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
+
+    compileClassHeader(compiler: TwingCompiler) {
+        let templateClass = compiler.getEnvironment().getTemplateClass(this.source.getName(), this.getAttribute('index'));
+
+        compiler
+            .write("\n\n")
+            .write('/* ' + this.source.getName() + ' */\n')
+            .write('module.exports.')
+            .raw(`${templateClass} = class ${templateClass} extends ${compiler.getEnvironment().getBaseTemplateClass()} `)
+            .write('{\n')
+            .indent()
     }
 
     compileConstructor(compiler: TwingCompiler) {
-        let handlers: Array<DoDisplayHandler> = [];
-
-        // constructor_start
-        handlers.push(compiler.subcompile(this.getNode('constructor_start')));
+        compiler
+            .write('constructor(env) {\n')
+            .indent()
+            .subcompile(this.getNode('constructor_start'))
+            .write('super(env);\n\n')
+        ;
 
         // parent
-        let parent: TwingNode;
-
         if (!this.hasNode('parent')) {
-            handlers.push((template: TwingTemplate) => {
-                Reflect.set(template, 'parent', false);
-            });
+            compiler.write("this.parent = false;\n\n");
         }
-        else if ((parent = this.getNode('parent')) && parent instanceof TwingNodeExpressionConstant) {
-            let parentHandler = compiler.subcompile(parent);
+        else {
+            let parent = this.getNode('parent');
 
-            handlers.push((template: TwingTemplate) => {
-                let parent = template.loadTemplate(
-                    parentHandler(template, {}),
-                    this.source.getName(),
-                    parentHandler.node.getTemplateLine()
-                );
-
-                Reflect.set(template, 'parent', parent);
-            });
+            if (parent && (parent instanceof TwingNodeExpressionConstant)) {
+                compiler
+                    .addDebugInfo(parent)
+                    .write('this.parent = this.loadTemplate(')
+                    .subcompile(parent)
+                    .raw(', ')
+                    .repr(this.source.getName())
+                    .raw(', ')
+                    .repr(parent.getTemplateLine())
+                    .raw(");\n")
+                ;
+            }
         }
 
-        /**********/
-        /* blocks */
-        /**********/
-        handlers.push((template: TwingTemplate) => {
-            let traitsBlocks: Array<TwingMap<string, Array<any>>> = [];
+        let countTraits = this.getNode('traits').getNodes().size;
 
+        if (countTraits) {
             // traits
-            for (let [index, traitNode] of this.getNode('traits').getNodes()) {
-                let templateName = compiler.subcompile(traitNode.getNode('template'))(template, {});
-                let trait = template.loadTemplate(templateName, traitNode.getTemplateName(), traitNode.getTemplateLine()) as TwingTemplate;
+            for (let [i, trait] of this.getNode('traits').getNodes()) {
+                let node = trait.getNode('template');
 
-                if (!trait.isTraitable()) {
-                    throw new TwingErrorRuntime(`Template "${templateName}" cannot be used as a trait.`);
+                compiler
+                    .write(`let _trait_${i} = this.loadTemplate(`)
+                    .subcompile(node)
+                    .raw(', ')
+                    .repr(node.getTemplateName())
+                    .raw(', ')
+                    .repr(node.getTemplateLine())
+                    .raw(");\n")
+                ;
+
+                compiler
+                    .addDebugInfo(trait.getNode('template'))
+                    .write(`if (!_trait_${i}.isTraitable()) {\n`)
+                    .indent()
+                    .write('throw new Twing.TwingErrorRuntime(\'Template "')
+                    .subcompile(trait.getNode('template'))
+                    .raw('" cannot be used as a trait.\');\n')
+                    .outdent()
+                    .write('}\n')
+                    .write(`let _trait_${i}_blocks = _trait_${i}.getBlocks().clone();\n\n`)
+                ;
+
+                for (let [key, value] of trait.getNode('targets').getNodes()) {
+                    compiler
+                        .write(`if (!_trait_${i}_blocks.has(`)
+                        .string(key)
+                        .raw(")) {\n")
+                        .indent()
+                        .write('throw new Twing.TwingErrorRuntime(\'Block ')
+                        .string(key)
+                        .raw(' is not defined in trait ')
+                        .subcompile(trait.getNode('template'))
+                        .raw('.\', ')
+                        .repr(value.lineno)
+                        .raw(', this.getSourceContext());\n')
+                        .outdent()
+                        .write('}\n\n')
+                        .write(`_trait_${i}_blocks.set(`)
+                        .subcompile(value)
+                        .raw(`, _trait_${i}_blocks.get(`)
+                        .string(key)
+                        .raw(`)); _trait_${i}_blocks.delete(`)
+                        .string(key)
+                        .raw(');\n\n')
+                    ;
                 }
-
-                let traitBlocks = new TwingMap().merge(trait.getBlocks());
-
-                // aliases
-                traitNode.getNode('targets').getNodes().forEach(function (valueNode: TwingNodeExpressionConstant, key: string) {
-                    if (!traitBlocks.has(key)) {
-                        throw new TwingErrorRuntime(`Block "${key}" is not defined in trait "${templateName}".`, valueNode.getTemplateLine(), valueNode.getTemplateName());
-                    }
-
-                    let value = compiler.subcompile(valueNode)(template, {});
-
-                    traitBlocks.set(value, traitBlocks.get(key));
-                    traitBlocks.delete(key);
-                });
-
-                traitsBlocks.push(traitBlocks);
             }
 
-            let traits: TwingMap<string, Array<any>> = new TwingMap();
-
-            for (let traitBlocks of traitsBlocks) {
-                traits = traits.merge(traitBlocks);
+            if (countTraits > 1) {
+                for (let i = 0; i < countTraits; ++i) {
+                    compiler
+                        .write(`this.traits = this.traits.merge(_trait_${i}_blocks);\n`)
+                    ;
+                }
+            }
+            else {
+                compiler
+                    .write("this.traits = _trait_0_blocks.clone();\n\n")
+                ;
             }
 
-            Reflect.set(template, 'traits', traits);
+            compiler
+                .write("this.blocks = this.traits.merge(new Twing.TwingMap([\n")
+                .indent()
+            ;
+        }
+        else {
+            compiler
+                .write("this.blocks = new Twing.TwingMap([\n")
+            ;
+        }
 
-            // blocks
-            let blocks = new TwingMap();
+        // blocks
+        compiler
+            .indent()
+        ;
 
-            for (let [name, node] of this.getNode('blocks').getNodes()) {
-                blocks.set(name, [template, `block_${name}`]);
+        let count = this.getNode('blocks').getNodes().size;
+
+        for (let [name, node] of this.getNode('blocks').getNodes()) {
+            count--;
+
+            let safeName = name;
+
+            const varValidator = require('var-validator');
+
+            if (!varValidator.isValid(name)) {
+                safeName = Buffer.from(name).toString('hex');
             }
 
-            blocks = traits.merge(blocks);
+            compiler
+                .write(`['${name}', [this, 'block_${safeName}']]`)
+            ;
 
-            Reflect.set(template, 'blocks', blocks);
-        });
+            if (count > 0) {
+                compiler.raw(',')
+            }
 
-        // constructor_end
-        handlers.push(compiler.subcompile(this.getNode('constructor_end')));
+            compiler.raw('\n');
+        }
 
-        compiler.setDoConstruct((template: TwingTemplate) => {
-            return handlers.map(function (handler) {
-                return handler(template);
-            }).join('')
-        });
+        compiler
+            .outdent()
+            .write("])")
+        ;
+
+        if (countTraits) {
+            compiler
+                .write("\n")
+                .outdent()
+                .write(")")
+            ;
+        }
+
+        compiler.raw(';\n');
+
+        compiler
+            .outdent()
+            .subcompile(this.getNode('constructor_end'))
+            .write('}\n\n')
+        ;
     }
 
     compileMacros(compiler: TwingCompiler) {
         compiler.subcompile(this.getNode('macros'));
     }
 
-    compileGetTemplateName(compiler: TwingCompiler) {
-        compiler.setDoGetTemplateName((): string => {
-            return this.source.getName();
-        });
-    }
-
     compileDisplay(compiler: TwingCompiler) {
-        let handlers: Array<DoDisplayHandler> = [];
-
-        handlers.push(compiler.subcompile(this.getNode('display_start')));
-        handlers.push(compiler.subcompile(this.getNode('body')));
+        compiler
+            .write("doDisplay(context, blocks = new Twing.TwingMap()) {\n")
+            .indent()
+            .subcompile(this.getNode('display_start'))
+            .subcompile(this.getNode('body'))
+        ;
 
         if (this.hasNode('parent')) {
-            handlers.push((template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-                let parent: TwingTemplate = template.getParent(context);
+            let parent = this.getNode('parent');
+            compiler.addDebugInfo(parent);
 
-                // console.warn('tPL', template);
+            if (parent instanceof TwingNodeExpressionConstant) {
+                compiler.write('this.parent');
+            } else {
+                compiler.write('this.getParent(context)');
+            }
 
-                return parent.display(context, template.getBlocks().merge(blocks));
-            });
+            compiler.raw(".display(context, this.blocks.merge(blocks));\n");
         }
 
-        handlers.push(compiler.subcompile(this.getNode('display_end')));
+        compiler
+            .subcompile(this.getNode('display_end'))
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
 
-        compiler.setDoDisplay((template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()): string => {
-            let result = handlers.map(function (handler) {
-                return handler(template, context, blocks);
-            }).join('');
+    compileGetTemplateName(compiler: TwingCompiler) {
+        compiler
+            .write("getTemplateName() {\n")
+            .indent()
+            .write('return ')
+            .repr(this.source.getName())
+            .raw(";\n")
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
 
-            return result;
-        });
+    compileIsTraitable(compiler: TwingCompiler) {
+        // A template can be used as a trait if:
+        //   * it has no parent
+        //   * it has no macros
+        //   * it has no body
+        //
+        // Put another way, a template can be used as a trait if it
+        // only contains blocks and use statements.
+        let traitable = !this.hasNode('parent') && this.getNode('macros').getNodes().size === 0;
+
+        if (traitable) {
+            let nodes: TwingNode;
+
+            if (this.getNode('body') instanceof TwingNodeBody) {
+                nodes = this.getNode('body').getNode(0);
+            }
+            else {
+                nodes = this.getNode('body');
+            }
+
+            if (!nodes.getNodes().size) {
+                let n = new TwingMap();
+
+                n.push(nodes);
+
+                nodes = new TwingNode(n);
+            }
+
+            for (let [idx, node] of nodes.getNodes()) {
+                if (!node.getNodes().size) {
+                    continue;
+                }
+
+                if (node instanceof TwingNodeText && ctype_space(node.getAttribute('data'))) {
+                    continue;
+                }
+
+                if (node instanceof TwingNodeBlockReference) {
+                    continue;
+                }
+
+                traitable = false;
+
+                break;
+            }
+        }
+
+        if (traitable) {
+            return;
+        }
+
+        compiler
+            .write("isTraitable() {\n")
+            .indent()
+            .write(`return ${traitable ? 'true' : 'false'};\n`)
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
+
+    compileDebugInfo(compiler: TwingCompiler) {
+        compiler
+            .write("getDebugInfo() {\n")
+            .indent()
+            .write('return ')
+            // @see https://github.com/Microsoft/TypeScript/issues/11152
+            .repr(new Map(Array.from(compiler.getDebugInfo()).reverse() as Iterable<any>))
+            .raw(';\n')
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
+
+
+    compileGetSourceContext(compiler: TwingCompiler) {
+        compiler
+            .write("getSourceContext() {\n")
+            .indent()
+            .write('return new Twing.TwingSource(`')
+            .raw(compiler.getEnvironment().isDebug() ? this.source.getCode() : '')
+            .raw('`, ')
+            .string(this.source.getName())
+            .raw(', ')
+            .string(this.source.getPath())
+            .raw(");\n")
+            .outdent()
+            .write("}\n")
+        ;
+    }
+
+    compileClassfooter(compiler: TwingCompiler) {
+        compiler
+            .subcompile(this.getNode('class_end'))
+            .outdent()
+            .write('};\n\n')
+        ;
+    }
+
+    compileFileFooter(compiler: TwingCompiler) {
+        // compiler
+        //     .write('(function() {return module.exports;})();')
+        // ;
     }
 }
 

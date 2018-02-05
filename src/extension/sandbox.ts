@@ -3,7 +3,7 @@ import TwingSandboxSecurityPolicyInterface from "../sandbox/sandbox-policy-inter
 import TwingTokenParserSandbox from "../token-parser/sandbox";
 import TwingNodeVisitorSandbox from "../node-visitor/sandbox";
 
-class TwingExtensionSandbox extends TwingExtension {
+export class TwingExtensionSandbox extends TwingExtension {
     private sandboxedGlobally: boolean;
     private sandboxed: boolean;
     private policy: TwingSandboxSecurityPolicyInterface;

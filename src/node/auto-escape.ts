@@ -1,8 +1,6 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
-import TwingTemplate from "../template";
 
 /**
  * Represents an autoescape node.
@@ -20,12 +18,8 @@ class TwingNodeAutoEscape extends TwingNode {
         super(new TwingMap([['body', body]]), new TwingMap([['value', value]]), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let bodyHandler = compiler.subcompile(this.getNode('body'));
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return bodyHandler(template, context, blocks);
-        }
+    compile(compiler: TwingCompiler) {
+        compiler.subcompile(this.getNode('body'));
     }
 }
 

@@ -1,10 +1,7 @@
-import TwingNodeExpression from "../expression";
 import TwingNode from "../../node";
 import TwingMap from "../../map";
-import TwingTemplate from "../../template";
 import TwingNodeExpressionCall from "./call";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
 
 class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
     constructor(name: string, functionArguments: TwingNode, lineno: number) {
@@ -20,7 +17,7 @@ class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
         super(nodes, attributes, lineno);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
+    compile(compiler: TwingCompiler) {
         let name = this.getAttribute('name');
         let function_ = compiler.getEnvironment().getFunction(name);
 
@@ -39,7 +36,7 @@ class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', function_.isVariadic());
 
-        return this.compileCallable(compiler);
+        this.compileCallable(compiler);
     }
 }
 

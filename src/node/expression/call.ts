@@ -1,102 +1,152 @@
 import TwingNodeExpression from "../expression";
-import TwingTemplate from "../../template";
 import TwingMap from "../../map";
 import TwingNode from "../../node";
 import TwingErrorSyntax from "../../error/syntax";
 import TwingNodeExpressionConstant from "./constant";
 import TwingNodeExpressionArray from "./array";
 import TwingReflectionParameter from "../../reflection-parameter";
-import TwingReflectionFunction from "../../reflection-function";
+import TwingReflectionMethod from "../../reflection-method";
 import TwingCompiler from "../../compiler";
-import DoDisplayHandler from "../../do-display-handler";
-import TwingErrorRuntime from "../../error/runtime";
+import TwingExtension from "../../extension";
 
 const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
+const capitalize = require('capitalize');
 
 interface TwingNodeExpressionCallReflector {
-    r: TwingReflectionFunction;
+    r: TwingReflectionMethod;
     callable: Function;
 }
 
 abstract class TwingNodeExpressionCall extends TwingNodeExpression {
     private reflector: TwingNodeExpressionCallReflector;
 
-    compileCallable(compiler: TwingCompiler) {
+    protected compileCallable(compiler: TwingCompiler) {
         let callable = this.getAttribute('callable');
-        let argumentHandlers = this.compileArguments(compiler);
+        let closingParenthesis = false;
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            let callableArguments = [];
+        // compiler
+        //     .raw('(() => {\n')
+        //     .indent()
+        //     .write('try {\n')
+        //     .indent()
+        //     .write('return ')
+        // ;
 
-            for (let argumentHandler of argumentHandlers) {
-                callableArguments.push(argumentHandler(template, context, blocks));
+        let [r, callable_] = this.reflectCallable(callable);
+
+        if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
+            if (r.isStatic()) {
+                compiler.raw(`${callable_[0]}::${callable_[1]}`);
             }
-
-            try {
-                return callable.apply(this, callableArguments);
+            else {
+                compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}`);
             }
-            catch (e) {
-                if (e instanceof TwingErrorRuntime) {
-                    if (e.getTemplateLine() === -1) {
-                        e.setTemplateLine(this.getTemplateLine());
-                    }
-                }
+        }
+        else if (r instanceof TwingReflectionMethod && callable_[0] instanceof TwingExtension) {
+            compiler.raw(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
+        }
+        else {
+            closingParenthesis = true;
 
-                throw e;
-            }
-        };
+            compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
+        }
+
+        this.compileArguments(compiler);
+
+        if (closingParenthesis) {
+            compiler.raw(')');
+        }
+
+        // compiler
+        //     .raw(';\n')
+        //     .outdent()
+        //     .write('}\n')
+        //     .write('catch (e) {\n')
+        //     .indent()
+        //     .write('if (e instanceof Twing.TwingError) {\n')
+        //     .indent()
+        //     .write(`e.setTemplateLine(${this.lineno});\n`)
+        //     .outdent()
+        //     .write('}\n')
+        //     .write('throw e;\n')
+        //     .outdent()
+        //     .write('}\n')
+        //     .outdent()
+        //     .write('})()')
+        // ;
     }
 
-    compileArguments(compiler: TwingCompiler): Array<any> {
-        let result: Array<DoDisplayHandler> = [];
+    protected compileArguments(compiler: TwingCompiler) {
+        compiler.raw('[');
+
+        let first = true;
 
         if (this.hasAttribute('needs_environment') && this.getAttribute('needs_environment')) {
-            result.push(() => {
-                return compiler.getEnvironment();
-            });
+            compiler.raw('this.env');
+
+            first = false;
         }
 
         if (this.hasAttribute('needs_context') && this.getAttribute('needs_context')) {
-            result.push((template: TwingTemplate, context: any) => {
-                return context;
-            });
+            if (!first) {
+                compiler.raw(', ');
+            }
+
+            compiler.raw('context');
+
+            first = false;
         }
 
-        if (this.hasAttribute('arguments') && this.getAttribute('arguments')) {
-            this.getAttribute('arguments').forEach(function (argument_: any) {
-                result.push(() => {
-                    return argument_;
-                });
-            });
+        if (this.hasAttribute('arguments')) {
+            for (let argument_ of this.getAttribute('arguments')) {
+                if (!first) {
+                    compiler.raw(', ');
+                }
+
+                compiler.string(argument_);
+
+                first = false;
+            }
         }
 
         if (this.hasNode('node')) {
-            result.push(compiler.subcompile(this.getNode('node')));
+            if (!first) {
+                compiler.raw(', ');
+            }
+
+            compiler.subcompile(this.getNode('node'));
+
+            first = false;
         }
 
         if (this.hasNode('arguments')) {
             let callable = this.getAttribute('callable');
             let arguments_ = this.getArguments(callable, this.getNode('arguments'));
 
-            arguments_.forEach(function (argNode: TwingNode) {
-                result.push(compiler.subcompile(argNode));
-            });
+            for (let node of arguments_) {
+                if (!first) {
+                    compiler.raw(', ');
+                }
+
+                compiler.subcompile(node);
+
+                first = false;
+            }
         }
 
-        return result;
+        compiler.raw(']');
     }
 
-    getArguments(callable: Function = null, argumentsNode: TwingNode): Array<TwingNode> {
+    protected getArguments(callable: Function = null, argumentsNode: TwingNode): Array<TwingNode> {
         let self = this;
-
         let callType = this.getAttribute('type');
         let callName = this.getAttribute('name');
 
         let parameters: TwingMap<string, TwingNode> = new TwingMap();
         let named = false;
 
-        argumentsNode.getNodes().forEach(function (node, name) {
+        for (let [name, node] of argumentsNode.getNodes()) {
             if (typeof name !== 'number') {
                 named = true;
                 name = self.normalizeName(name);
@@ -106,11 +156,13 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             }
 
             parameters.set(name, node);
-        });
+        }
 
         let isVariadic = this.hasAttribute('is_variadic') && this.getAttribute('is_variadic');
 
         if (!named && !isVariadic) {
+            // console.warn('arguments_', ...parameters.values());
+
             return [...parameters.values()];
         }
 
@@ -135,8 +187,7 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let optionalArguments: Array<string | TwingNodeExpressionConstant> = [];
         let pos = 0;
 
-        for (let i = 0; i < callableParameters.length; i++) {
-            let callableParameter = callableParameters[i];
+        for (let callableParameter of callableParameters) {
             let name = '' + self.normalizeName(callableParameter.getName());
 
             names.push(name);
@@ -163,7 +214,7 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 ++pos;
             }
             else if (callableParameter.isDefaultValueAvailable()) {
-                optionalArguments.push(new TwingNodeExpressionConstant(undefined, -1));
+                optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1));
             }
             else if (callableParameter.isOptional()) {
                 if (parameters.size < 1) {
@@ -182,7 +233,7 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             let arbitraryArguments = new TwingNodeExpressionArray(new TwingMap(), -1);
             let resolvedKeys: Array<any> = [];
 
-            parameters.forEach(function (value, key) {
+            for (let [key, value] of parameters) {
                 if (Number.isInteger(key)) {
                     arbitraryArguments.addElement(value);
                 }
@@ -191,11 +242,11 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 }
 
                 resolvedKeys.push(key);
-            });
+            }
 
-            resolvedKeys.forEach(function (key) {
+            for (let key of resolvedKeys) {
                 parameters.delete(key);
-            });
+            }
 
             if (arbitraryArguments.count()) {
                 arguments_ = array_merge(arguments_, optionalArguments);
@@ -214,12 +265,12 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         return arguments_;
     }
 
-    normalizeName(name: string) {
+    protected normalizeName(name: string) {
         return snakeCase(name).toLowerCase();
     }
 
-    getCallableParameters(callable: Function, isVariadic: boolean): Array<TwingReflectionParameter> {
-        let r = this.reflectCallable(callable).r;
+    private getCallableParameters(callable: Function, isVariadic: boolean): Array<TwingReflectionParameter> {
+        let r = this.reflectCallable(callable)[0];
 
         if (!r) {
             return [];
@@ -266,45 +317,17 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         return parameters;
     }
 
-    private reflectCallable(callable: Function) {
-        let r: TwingReflectionFunction;
+    private reflectCallable(callable: Function): Array<any> {
+        let r: TwingReflectionMethod;
 
-        if (this.reflector) {
-            return this.reflector;
-        }
-
-        // if (is_array($callable)) {
-        //     if (!method_exists($callable[0], $callable[1])) {
-        //         // __call()
-        //         return array(null, array());
-        //     }
-        //     $r = new ReflectionMethod($callable[0], $callable[1]);
-        // }
-        // else if (is_object($callable) && !$callable instanceof Closure) {
-        //     $r = new ReflectionObject($callable);
-        //     $r = $r->getMethod('__invoke');
-        //     $callable = array($callable, '__invoke');
-        // }
-        // else if (is_string($callable) && false !== $pos = strpos($callable, '::')) {
-        //     $class = substr($callable, 0, $pos);
-        //     $method = substr($callable, $pos + 2);
-        //     if (!method_exists($class, $method)) {
-        //         // __staticCall()
-        //         return array(null, array());
-        //     }
-        //     $r = new ReflectionMethod($callable);
-        //     $callable = array($class, $method);
-        // }
-        // else {
-        r = new TwingReflectionFunction(callable);
-        // }
+        r = new TwingReflectionMethod(callable);
 
         this.reflector = {
             r: r,
             callable: callable
         };
 
-        return this.reflector;
+        return [r, callable];
     }
 }
 

@@ -1,6 +1,6 @@
 import TwingError from "../error";
 
-class TwingErrorRuntime extends TwingError {
+export class TwingErrorRuntime extends TwingError {
 
 }
 

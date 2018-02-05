@@ -1,53 +1,34 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
-import TwingExtensionSandbox from "../extension/sandbox";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeSandbox extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag: string = null) {
         super(new TwingMap([['body', body]]), new TwingMap(), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let sandbox = compiler.getEnvironment().getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
-        let handler = compiler.subcompile(this.getNode('body'));
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) => {
-            let alreadySandboxed = sandbox.isSandboxed();
-
-            if (!alreadySandboxed) {
-                sandbox.enableSandbox();
-            }
-
-            let output = handler(template, context, blocks);
-
-            if (!alreadySandboxed) {
-                sandbox.disableSandbox();
-            }
-
-            return output;
-        }
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write("(() => {\n")
+            .indent()
+            .write("let sandbox = this.env.getExtension('TwingExtensionSandbox');\n")
+            .write('let alreadySandboxed = sandbox.isSandboxed();\n')
+            .write("if (!alreadySandboxed) {\n")
+            .indent()
+            .write("sandbox.enableSandbox();\n")
+            .outdent()
+            .write("}\n")
+            .subcompile(this.getNode('body'))
+            .write("if (!alreadySandboxed) {\n")
+            .indent()
+            .write("sandbox.disableSandbox();\n")
+            .outdent()
+            .write("}\n")
+            .outdent()
+            .write("})();\n")
+        ;
     }
-
-    // render(context: any, template: TwingTemplate, blocks: TwingMap<string, Array<any>> = new TwingMap()): any {
-    //     let sandbox = template.getEnvironment().getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
-    //
-    //     let alreadySandboxed = sandbox.isSandboxed();
-    //
-    //     if (!alreadySandboxed) {
-    //         sandbox.enableSandbox();
-    //     }
-    //
-    //     let output = this.getNode('body').render(context, template, blocks);
-    //
-    //     if (!alreadySandboxed) {
-    //         sandbox.disableSandbox();
-    //     }
-    //
-    //     return output;
-    // }
 }
 
 export default TwingNodeSandbox;

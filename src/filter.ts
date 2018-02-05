@@ -10,7 +10,7 @@ export class TwingFilter {
     private name: string;
     private callable: Function;
     private options: TwingFilterOptions;
-    private methodArguments: Array<any>;
+    private methodArguments: Array<any> = [];
 
     constructor(name: string, callable: Function, options: TwingFilterOptions = {}) {
         this.name = name;

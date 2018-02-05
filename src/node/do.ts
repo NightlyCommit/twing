@@ -3,7 +3,6 @@ import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 /**
  * Represents a do node.
@@ -19,12 +18,13 @@ class TwingNodeDo extends TwingNode {
         super(new TwingMap([['expr', expr]]), new TwingMap(), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let exprHandler = compiler.subcompile(this.getNode('expr'));
-
-        return (template: TwingTemplate, context: any, blocks: any) => {
-            exprHandler(template, context, blocks);
-        }
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write('')
+            .subcompile(this.getNode('expr'))
+            .raw(";\n")
+        ;
     }
 }
 

@@ -1,11 +1,7 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
-import TwingErrorRuntime from "../error/runtime";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
-const merge = require('merge');
 
 class TwingNodeWith extends TwingNode {
     constructor(body: TwingNode, variables: TwingNode = null, only: boolean = false, lineno: number, tag: string = null) {
@@ -20,48 +16,40 @@ class TwingNodeWith extends TwingNode {
         super(nodes, new TwingMap([['only', only]]), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let variablesHandler: DoDisplayHandler;
-        let bodyHandler: DoDisplayHandler = compiler.subcompile(this.getNode('body'));
+    compile(compiler: TwingCompiler) {
+        compiler.addDebugInfo(this);
 
         if (this.hasNode('variables')) {
-            variablesHandler = compiler.subcompile(this.getNode('variables'));
-        }
+            let varsName = compiler.getVarName();
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) => {
-            if (variablesHandler) {
-                let variables = variablesHandler(template, context, blocks);
+            compiler
+                .write(`let ${varsName} = `)
+                .subcompile(this.getNode('variables'))
+                .raw(";\n")
+                .write(`if (typeof (${varsName}) !== 'object') {\n`)
+                .indent()
+                .write('throw new Twing.TwingErrorRuntime(\'Variables passed to the "with" tag must be a hash.\');\n')
+                .outdent()
+                .write("}\n")
+            ;
 
-                if (typeof variables !== 'object') {
-                    throw new TwingErrorRuntime('Variables passed to the "with" tag must be a hash.', this.getTemplateLine(), this.getTemplateName())
-                }
-
-                if (this.getAttribute('only')) {
-                    context = {
-                        _parent: context
-                    };
-                }
-                else {
-                    context['_parent'] = Object.assign({}, context);
-                }
-
-                merge(context, variables);
+            if (this.getAttribute('only')) {
+                compiler.write("context = new Twing.TwingMap([['_parent', context]]);\n");
             }
             else {
-                context['_parent'] = Object.assign({}, context);
+                compiler.write("context.set('_parent', context.clone());\n");
             }
 
-            let output = bodyHandler(template, context, blocks);
-
-            // restore the context
-            merge(context, context['_parent']);
-
-            if (!context['_parent']) {
-                delete context['_parent'];
-            }
-
-            return output;
+            compiler.write(`context = context.merge(Twing.iteratorToMap(${varsName}));\n`);
         }
+        else {
+            compiler.write("context.set('_parent', context.clone());\n");
+        }
+
+        compiler
+            .subcompile(this.getNode('body'))
+            .write("context = context.get('_parent');\n")
+        ;
     }
 }
 

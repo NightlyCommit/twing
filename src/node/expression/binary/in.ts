@@ -1,13 +1,19 @@
 import TwingNodeExpressionBinary from "../binary";
-import twingIn from '../../../util/in';
-
-const isNumber = require('is-number');
+import TwingCompiler from "../../../compiler";
 
 class TwingNodeExpressionBinaryIn extends TwingNodeExpressionBinary {
-    execute(value: any, compare: any): any {
-        let result = twingIn(value, compare);
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('Twing.twingInFilter(')
+            .subcompile(this.getNode('left'))
+            .raw(', ')
+            .subcompile(this.getNode('right'))
+            .raw(')')
+        ;
+    }
 
-        return result;
+    operator(compiler: TwingCompiler) {
+        return compiler.raw('in');
     }
 }
 

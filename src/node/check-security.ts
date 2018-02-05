@@ -1,12 +1,6 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
-import TwingExtensionSandbox from "../extension/sandbox";
-import TwingSandboxSecurityNotAllowedTagError from "../sandbox/security-not-allowed-tag-error";
-import TwingSandboxSecurityNotAllowedFilterError from "../sandbox/security-not-allowed-filter-error";
-import TwingSandboxSecurityNotAllowedFunctionError from "../sandbox/security-not-allowed-function-error";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
 
 class TwingNodeCheckSecurity extends TwingNode {
     private usedFilters: TwingMap<string, TwingNode>;
@@ -21,7 +15,7 @@ class TwingNodeCheckSecurity extends TwingNode {
         this.usedFunctions = usedFunctions;
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
+    compile(compiler: TwingCompiler) {
         let tags = new TwingMap();
 
         this.usedTags.forEach(function (node, name) {
@@ -55,32 +49,47 @@ class TwingNodeCheckSecurity extends TwingNode {
             }
         });
 
-        let extension = compiler.getEnvironment().getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
-
-        try {
-            extension.checkSecurity(
-                [...tags.keys()],
-                [...filters.keys()],
-                [...functions.keys()]
-            );
-        }
-        catch (e) {
-            if (e instanceof TwingSandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
-                e.setTemplateLine(tags.get(e.getTagName()));
-            }
-            else if (e instanceof TwingSandboxSecurityNotAllowedFilterError && filters.has(e.getFilterName())) {
-                e.setTemplateLine(filters.get(e.getFilterName()));
-            }
-            else if (e instanceof TwingSandboxSecurityNotAllowedFunctionError && functions.has(e.getFunctionName())) {
-                e.setTemplateLine(functions.get(e.getFunctionName()));
-            }
-
-            throw e;
-        }
-
-        return () => {
-
-        };
+        compiler
+            .write('let tags = ').repr(tags).raw(";\n")
+            .write('let filters = ').repr(filters).raw(";\n")
+            .write('let functions = ').repr(functions).raw(";\n\n")
+            .write("try {\n")
+            .indent()
+            .write("this.env.getExtension('TwingExtensionSandbox').checkSecurity(\n")
+            .indent()
+            .write(!tags.size ? "[],\n" : "['" + [...tags.keys()].join(', ') + "'],\n")
+            .write(!filters.size ? "[],\n" : "['" + [...filters.keys()].join(', ') + "'],\n")
+            .write(!functions.size ? "[]\n" : "['" + [...functions.keys()].join(', ') + "']\n")
+            .outdent()
+            .write(");\n")
+            .outdent()
+            .write("}\n")
+            .write("catch (e) {\n")
+            .indent()
+            .write("if (e instanceof Twing.TwingSandboxSecurityError) {\n")
+            .indent()
+            .write("e.setSourceContext(this.getSourceContext());\n\n")
+            .write("if (e instanceof Twing.TwingSandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {\n")
+            .indent()
+            .write("e.setTemplateLine(tags.get(e.getTagName()));\n")
+            .outdent()
+            .write("}\n")
+            .write("else if (e instanceof Twing.TwingSandboxSecurityNotAllowedFilterError && filters.has(e.getFilterName())) {\n")
+            .indent()
+            .write("e.setTemplateLine(filters.get(e.getFilterName()));\n")
+            .outdent()
+            .write("}\n")
+            .write("else if (e instanceof Twing.TwingSandboxSecurityNotAllowedFunctionError && functions.has(e.getFunctionName())) {\n")
+            .indent()
+            .write("e.setTemplateLine(functions.get(e.getFunctionName()));\n")
+            .outdent()
+            .write("}\n")
+            .outdent()
+            .write('}\n\n')
+            .write("throw e;\n")
+            .outdent()
+            .write("}\n\n")
+        ;
     }
 }
 

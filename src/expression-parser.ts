@@ -56,9 +56,9 @@ class TwingExpressionParser {
             else if (token.getValue() === 'is') {
                 expr = this.parseTestExpression(expr);
             }
-            // else if (op.callable) {
-            //     expr = op.callable.call(this, this.parser, expr);
-            // }
+            else if (op.callable) {
+                expr = op.callable.call(this, this.parser, expr);
+            }
             else {
                 let expr1 = this.parseExpression(op.associativity === TwingExpressionParser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence);
                 let opFactory = op.factory;
@@ -398,7 +398,13 @@ class TwingExpressionParser {
                     throw new TwingErrorSyntax(`Dynamic macro names are not supported (called on "${node.getAttribute('name')}").`, token.getLine(), stream.getSourceContext());
                 }
 
+                const varValidator = require('var-validator');
+
                 let name = arg.getAttribute('value');
+
+                if (!varValidator.isValid(name)) {
+                    name = Buffer.from(name).toString('hex');
+                }
 
                 node = new TwingNodeExpressionMethodCall(node, 'macro_' + name, arguments_, lineno);
                 node.setAttribute('safe', true);

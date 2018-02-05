@@ -1,9 +1,6 @@
 import TwingNodeType from "./node-type";
 import TwingNodeInterface from "./node-interface";
 import TwingMap from "./map";
-import TwingTemplate from "./template";
-import TwingError from "./error";
-import DoDisplayHandler from "./do-display-handler";
 import TwingCompiler from "./compiler";
 
 class TwingNode implements TwingNodeInterface {
@@ -103,30 +100,9 @@ class TwingNode implements TwingNodeInterface {
 
     static ind = 0;
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let handlers: Array<DoDisplayHandler> = [];
-
+    compile(compiler: TwingCompiler): any {
         for (let [k, node] of this.nodes) {
-            handlers.push(compiler.subcompile(node));
-        }
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return handlers.map(function (handler) {
-                try {
-                    return handler(template, context, blocks);
-                }
-                catch (e) {
-                    if (e instanceof TwingError) {
-                        // this is mostly useful for TwingErrorLoader exceptions
-                        // @see TwingErrorLoader
-                        if (e.getTemplateLine() === false) {
-                            e.setTemplateLine(handler.node.getTemplateLine());
-                        }
-                    }
-
-                    throw e;
-                }
-            }).join('')
+            node.compile(compiler);
         }
     }
 

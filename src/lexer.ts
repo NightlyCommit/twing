@@ -300,8 +300,7 @@ export class TwingLexer {
             // closing bracket
             else if (')]}'.indexOf(punctuationCandidate) > -1) {
                 if (this.brackets.length < 1) {
-                    // throw new Twig_Error_Syntax(sprintf('Unexpected "%s".', $this->code[$this->cursor]), $this->lineno, $this->source);
-                    throw `Unexpected "${punctuationCandidate}"`;
+                    throw new TwingErrorSyntax(`Unexpected "${punctuationCandidate}"`, this.lineno, this.source);
                 }
 
                 let bracket = this.brackets.pop();
@@ -315,8 +314,7 @@ export class TwingLexer {
                 ;
 
                 if (punctuationCandidate != expect) {
-                    // throw new Twig_Error_Syntax(sprintf('Unclosed "%s".', $expect), $lineno, $this->source);
-                    throw `Unclosed "${expect}" at line ${lineno} of ${this.source}.`;
+                    throw new TwingErrorSyntax(`Unclosed "${expect}."`, lineno, this.source);
                 }
             }
 

@@ -1,8 +1,6 @@
 import TwingNode from "../../node";
 import TwingMap from "../../map";
 import TwingCompiler from "../../compiler";
-import TwingExtensionProfiler from "../../extension/profiler";
-import TwingProfilerProfile from "../profile";
 
 class TwingProfilerNodeLeaveProfile extends TwingNode {
     constructor(varName: string) {
@@ -10,13 +8,10 @@ class TwingProfilerNodeLeaveProfile extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        let varName = this.getAttribute('var_name');
-        let extension = TwingExtensionProfiler.context.get(varName) as TwingExtensionProfiler;
-        let profile = TwingExtensionProfiler.context.get(`${varName}_prof`) as TwingProfilerProfile;
-
-        return () => {
-            extension.leave(profile);
-        }
+        compiler
+            .write("\n")
+            .write(`${this.getAttribute('var_name')}.leave(${this.getAttribute('var_name')});\n\n` + '_prof')
+        ;
     }
 }
 

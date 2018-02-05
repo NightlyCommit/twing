@@ -1,4 +1,4 @@
-class TwingMap<K, V> extends Map<any, any> {
+export class TwingMap<K, V> extends Map<any, any> {
     push(item: any) {
         this.set(this.size, item);
 
@@ -9,17 +9,26 @@ class TwingMap<K, V> extends Map<any, any> {
         return Array.from(this.values())[0];
     }
 
-    merge(map: TwingMap<any, any>) {
-        let self = this;
+    merge(map: TwingMap<any, any>): TwingMap<any, any> {
         let result = new TwingMap();
 
-        self.forEach(function (value, key) {
-            result.set(key, value);
-        });
+        let index = 0;
 
-        map.forEach(function (value, key) {
+        for (let [key, value] of this) {
+            if (typeof key === 'number') {
+                key = index++;
+            }
+
             result.set(key, value);
-        });
+        }
+
+        for (let [key, value] of map) {
+            if (typeof key === 'number') {
+                key = index++;
+            }
+
+            result.set(key, value);
+        }
 
         return result;
     }
@@ -167,6 +176,10 @@ class TwingMap<K, V> extends Map<any, any> {
         }
 
         return false;
+    }
+
+    clone() {
+        return this.merge(new TwingMap());
     }
 }
 

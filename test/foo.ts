@@ -1,4 +1,6 @@
 class TwingTestFoo {
+    static BAR_NAME = 'bar';
+    
     public position: number = 0;
     public array: Map<any, any>;
 

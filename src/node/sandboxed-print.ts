@@ -1,18 +1,31 @@
-import TwingNodePrint from "./print";
-import TwingTemplate from "../template";
-import TwingMap from "../map";
-import TwingExtensionSandbox from "../extension/sandbox";
+import TwingNodePrint from "./print"
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
+import TwingNode from "../node";
+import TwingNodeExpressionFilter from "./expression/filter";
 
 class TwingNodeSandboxedPrint extends TwingNodePrint {
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let extension = compiler.getEnvironment().getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
-        let printHandler: DoDisplayHandler = super.compile(compiler);
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write('Twing.echo(this.env.getExtension(\'TwingExtensionSandbox\').ensureToStringAllowed(')
+            .subcompile(this.getNode('expr'))
+            .raw("));\n")
+        ;
+    }
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return extension.ensureToStringAllowed(printHandler(template, context, blocks));
+    /**
+     * Removes node filters.
+     *
+     * This is mostly needed when another visitor adds filters (like the escaper one).
+     *
+     * @returns {TwingNode}
+     */
+    private removeNodeFilter(node: TwingNode): TwingNode {
+        if (node instanceof TwingNodeExpressionFilter) {
+            return this.removeNodeFilter(node.getNode('node'));
         }
+
+        return node;
     }
 }
 

@@ -6,21 +6,17 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingErrorSyntax from "../error/syntax";
-import TwingTemplate from "../template";
-import TwingMarkup from "../markup";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
-import TwingMethodArgument from "../method-argument";
-
-const VARARGS_NAME = 'varargs';
 
 class TwingNodeMacro extends TwingNode {
+    static VARARGS_NAME = 'varargs';
+
     constructor(name: string, body: TwingNode, macroArguments: TwingNode, lineno: number, tag: string = null) {
-        macroArguments.getNodes().forEach(function (macroArgument, argumentName) {
-            if (argumentName === VARARGS_NAME) {
-                throw new TwingErrorSyntax(`The argument "${VARARGS_NAME}" in macro "${name}" cannot be defined because the variable "${VARARGS_NAME}" is reserved for arbitrary arguments.`, macroArgument.getTemplateLine());
+        for (let [argumentName, macroArgument] of macroArguments.getNodes()) {
+            if (argumentName === TwingNodeMacro.VARARGS_NAME) {
+                throw new TwingErrorSyntax(`The argument "${TwingNodeMacro.VARARGS_NAME}" in macro "${name}" cannot be defined because the variable "${TwingNodeMacro.VARARGS_NAME}" is reserved for arbitrary arguments.`, macroArgument.getTemplateLine());
             }
-        });
+        }
 
         let nodes = new TwingMap();
 
@@ -30,49 +26,98 @@ class TwingNodeMacro extends TwingNode {
         super(nodes, new TwingMap([['name', name]]), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let bodyHandler = compiler.subcompile(this.getNode('body'));
-        let macroName = this.getAttribute('name');
-        let macroArguments: Array<TwingMethodArgument> = [];
-        let environment = compiler.getEnvironment();
-        let charset = environment.getCharset();
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write(`macro_${this.getAttribute('name')}(`)
+        ;
 
-        for (let [argumentName, defaultValue] of this.getNode('arguments').getNodes()) {
-            macroArguments.push({
-                name: argumentName,
-                defaultValue: compiler.subcompile(defaultValue)
-            });
+        let count = this.getNode('arguments').getNodes().size;
+        let pos = 0;
+
+        for (let [name, default_] of this.getNode('arguments').getNodes()) {
+            compiler
+                .raw('__' + name + '__ = ')
+                .subcompile(default_)
+            ;
+
+            if (++pos < count) {
+                compiler.raw(', ');
+            }
         }
 
-        let macro = function(): DoDisplayHandler {
-            let varArgs = [...arguments];
-            let localContext: any = {};
-
-            for (let macroArgument of macroArguments) {
-                let macroArgumentName = macroArgument.name;
-
-                localContext[macroArgumentName] = varArgs.shift();
-            }
-
-            localContext[VARARGS_NAME] = varArgs;
-
-            localContext = environment.mergeGlobals(localContext);
-
-            return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap) => {
-                let output = bodyHandler(template, localContext, blocks);
-
-                return output === '' ? '' : new TwingMarkup(output, charset);
-            }
-        };
-
-        compiler.setMacro(macroName, {
-            handler: macro,
-            arguments: macroArguments
-        });
-
-        return () => {
-
+        if (count) {
+            compiler.raw(', ');
         }
+
+        compiler
+            .raw('...__varargs__')
+            .raw(") {\n")
+            .indent()
+        ;
+
+        compiler
+            .write("let context = this.env.mergeGlobals(new Twing.TwingMap([\n")
+            .indent()
+        ;
+
+        let first = true;
+
+        for (let [name, default_] of this.getNode('arguments').getNodes()) {
+            if (!first) {
+                compiler.raw(',\n');
+            }
+
+            first = false;
+
+            compiler
+                .write('[')
+                .string(name)
+                .raw(', __' + name + '__]')
+            ;
+        }
+
+        if (!first) {
+            compiler.raw(',\n');
+        }
+
+        compiler
+            .write('[')
+            .string(TwingNodeMacro.VARARGS_NAME)
+            .raw(', ')
+        ;
+
+        compiler
+            .raw("\__varargs__]\n")
+            .outdent()
+            .write("]));\n\n")
+            .write("let blocks = new Twing.TwingMap();\n")
+            .write('let result;\n')
+            .write('let error;\n\n')
+            .write("Twing.obStart();\n")
+            .write("try {\n")
+            .indent()
+            .subcompile(this.getNode('body'))
+            .raw("\n")
+            .write('let tmp = Twing.obGetContents();\n')
+            .write("result = (tmp === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset());\n")
+            .outdent()
+            .write("}\n")
+            .write('catch (e) {\n')
+            .indent()
+            .write('error = e;\n')
+            .outdent()
+            .write('}\n\n')
+            .write("Twing.obEndClean();\n\n")
+            .write('if (error) {\n')
+            .indent()
+            .write('throw error;\n')
+            .outdent()
+            .write('}\n')
+            .write('return result;\n')
+            .outdent()
+            .write("}\n\n")
+        ;
     }
 }
 

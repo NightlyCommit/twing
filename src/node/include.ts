@@ -1,12 +1,7 @@
 import TwingNode from "../node";
 import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
-import TwingErrorLoader from "../error/loader";
 import TwingCompiler from "../compiler";
-import DoDisplayHandler from "../do-display-handler";
-
-const merge = require('merge');
 
 class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression = null, only: boolean = false, ignoreMissing: boolean = false, lineno: number, tag: string = null) {
@@ -21,67 +16,69 @@ class TwingNodeInclude extends TwingNode {
         super(nodes, new TwingMap([['only', only], ['ignore_missing', ignoreMissing]]), lineno, tag);
     }
 
-    compile(compiler: TwingCompiler): DoDisplayHandler {
-        let ignoreMissing = this.getAttribute('ignore_missing');
-        let includedTemplateHandler: DoDisplayHandler = this.addGetTemplate(compiler);
-        let includedContextHandler: DoDisplayHandler = this.addTemplateArguments(compiler);
+    compile(compiler: TwingCompiler) {
+        compiler.addDebugInfo(this);
 
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            let includedTemplate: TwingTemplate;
+        if (this.getAttribute('ignore_missing')) {
+            compiler
+                .write("try {\n")
+                .indent()
+            ;
+        }
+        this.addGetTemplate(compiler);
 
-            if (ignoreMissing) {
-                try {
-                    includedTemplate = includedTemplateHandler(template, context, blocks);
-                }
-                catch (e) {
-                    if (e instanceof TwingErrorLoader) {
-                        // ignore missing template
-                        return '';
-                    }
-                    else {
-                        throw e;
-                    }
-                }
-            }
-            else {
-                includedTemplate = includedTemplateHandler(template, context, blocks);
-            }
+        compiler.raw('.display(');
 
-            let includedContext = includedContextHandler(template, context, blocks);
+        this.addTemplateArguments(compiler);
 
-            return includedTemplate.display(includedContext);
+        compiler.raw(");\n");
+
+        if (this.getAttribute('ignore_missing')) {
+            compiler
+                .outdent()
+                .write("} catch (e) {\n")
+                .indent()
+                .write('if (e instanceof Twing.TwingErrorLoader) {\n')
+                .indent()
+                .write("// ignore missing template\n")
+                .outdent()
+                .write('}\n')
+                .write('else {\n')
+                .indent()
+                .write('throw e;\n')
+                .outdent()
+                .write('}\n')
+                .outdent()
+                .write("}\n\n")
+            ;
         }
     }
 
-    addGetTemplate(compiler: TwingCompiler): DoDisplayHandler {
-        let templateHandler = compiler.subcompile(this.getNode('expr'));
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            return template.loadTemplate(
-                templateHandler(template, context, blocks),
-                this.getTemplateName(),
-                this.getTemplateLine()
-            );
-        }
+    addGetTemplate(compiler: TwingCompiler) {
+        compiler
+            .write('this.loadTemplate(')
+            .subcompile(this.getNode('expr'))
+            .raw(', ')
+            .repr(this.getTemplateName())
+            .raw(', ')
+            .repr(this.getTemplateLine())
+            .raw(')')
+        ;
     }
 
-    addTemplateArguments(compiler: TwingCompiler): DoDisplayHandler {
-        let variablesHandler = this.hasNode('variables') ? compiler.subcompile(this.getNode('variables')) : null;
-
-        return (template: TwingTemplate, context: any, blocks: TwingMap<string, Array<any>>) => {
-            if (!variablesHandler) {
-                return this.getAttribute('only') === false ? context : {};
-            }
-            else {
-                let variables = variablesHandler(template, context, blocks);
-
-                if (this.getAttribute('only') === false) {
-                    return merge(context, variables);
-                }
-                else {
-                    return variables;
-                }
-            }
+    addTemplateArguments(compiler: TwingCompiler) {
+        if (!this.hasNode('variables')) {
+            compiler.raw(this.getAttribute('only') === false ? 'context' : 'new Twing.TwingMap()');
+        }
+        else if (this.getAttribute('only') === false) {
+            compiler
+                .raw('Twing.twingArrayMerge(context, ')
+                .subcompile(this.getNode('variables'))
+                .raw(')')
+            ;
+        }
+        else {
+            compiler.subcompile(this.getNode('variables'));
         }
     }
 }

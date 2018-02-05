@@ -11,9 +11,12 @@ class TwingNodeText extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        return () => {
-            return this.getAttribute('data');
-        };
+        compiler
+            .addDebugInfo(this)
+            .write('Twing.echo(')
+            .string(this.getAttribute('data'))
+            .raw(");\n")
+        ;
     }
 }
 

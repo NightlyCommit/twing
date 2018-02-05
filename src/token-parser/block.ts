@@ -18,17 +18,25 @@ import TwingNodeBlockReference from "../node/block-reference";
  *  {% endblock %}
  * </pre>
  */
+const varValidator = require('var-validator');
+
 class TwingTokenParserBlock extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
         let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
 
+        let safeName = name;
+
+        if (!varValidator.isValid(name)) {
+            safeName = Buffer.from(name).toString('hex');
+        }
+
         if (this.parser.hasBlock(name)) {
             throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().getLine(), stream.getSourceContext());
         }
 
-        let block = new TwingNodeBlock(name, new TwingNode(new TwingMap()), lineno);
+        let block = new TwingNodeBlock(safeName, new TwingNode(new TwingMap()), lineno);
 
         this.parser.setBlock(name, block);
         this.parser.pushLocalScope();
