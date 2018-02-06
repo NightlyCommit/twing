@@ -19,8 +19,9 @@
     "node": ">=6.0"
   },
   "scripts": {
+    "pretest": "npm run build",
     "prepublish": "npm run build",
-    "test": "TS_NODE_CACHE=0 npm run build && npm run fastest",
+    "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
     "build": "tsc && node tasks/build.js",
     "cover": "nyc npm t",
