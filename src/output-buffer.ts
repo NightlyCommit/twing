@@ -94,7 +94,7 @@ export class TwingOutputBuffer {
         }
 
         if (!(active.getFlags() & TwingOutputHandler.OUTPUT_HANDLER_FLUSHABLE)) {
-            console.warn(`failed to flush dfbuffer of ${TwingOutputBuffer.getActive().getName()} (${TwingOutputBuffer.getActive().getLevel()})`);
+            console.warn(`failed to flush buffer of ${TwingOutputBuffer.getActive().getName()} (${TwingOutputBuffer.getActive().getLevel()})`);
 
             return false;
         }
@@ -111,6 +111,15 @@ export class TwingOutputBuffer {
         TwingOutputBuffer.handlers.push(active);
 
         return true;
+    }
+
+    /**
+     * Alias for TwingOutputBuffer.obFlush
+     *
+     * @returns {boolean}
+     */
+    static flush() {
+        return TwingOutputBuffer.obFlush();
     }
 
     /**
@@ -299,5 +308,6 @@ export const obStart = TwingOutputBuffer.obStart;
 export const obEndClean = TwingOutputBuffer.obEndClean;
 export const obGetClean = TwingOutputBuffer.obGetClean;
 export const obGetContents = TwingOutputBuffer.obGetContents;
+export const flush = TwingOutputBuffer.flush;
 
 export default TwingOutputBuffer;
