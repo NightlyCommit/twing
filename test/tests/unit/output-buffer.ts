@@ -5,7 +5,7 @@ const tap = require('tap');
 
 let reset = () => {
     while (TwingOutputBuffer.obGetLevel()) {
-        TwingOutputBuffer.obEndFlush();
+        TwingOutputBuffer.obEndClean();
     }
 
     TwingOutputBuffer.obStart();
@@ -17,6 +17,31 @@ let reset = () => {
 };
 
 tap.test('TwingOutputBuffer', function (test: Test) {
+    test.test('echo', function (test: Test) {
+        let data = '';
+
+        let stdoutWrite = process.stdout.write;
+        let i = 0;
+
+        process.stdout.write = function (chunk: string | Buffer): boolean {
+            data += chunk;
+
+            if (i === 1) {
+                process.stdout.write = stdoutWrite;
+            }
+
+            i++;
+
+            return true;
+        };
+
+        TwingOutputBuffer.echo('foo');
+        TwingOutputBuffer.echo('bar');
+
+        test.same(data, 'foobar', 'process.stdout should contain "foobar"');
+        test.end();
+    });
+
     test.test('obStart', function (test: Test) {
         TwingOutputBuffer.obStart();
 
