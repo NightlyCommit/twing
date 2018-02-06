@@ -1,14 +1,17 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
-import TwingTemplate from "../template";
+import TwingCompiler from "../compiler";
 
 class TwingNodeFlush extends TwingNode {
-    constructor(lineno: number, tag = 'spaceless') {
+    constructor(lineno: number, tag: string) {
         super(new TwingMap(), new TwingMap(), lineno, tag);
     }
 
-    render(context: any, template: TwingTemplate, blocks: TwingMap<string, Array<any>> = new TwingMap): any {
-        return '';
+    compile(compiler: TwingCompiler) {
+        compiler
+            .addDebugInfo(this)
+            .write("Twing.flush();\n")
+        ;
     }
 }
 

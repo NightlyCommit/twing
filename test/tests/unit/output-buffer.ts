@@ -83,5 +83,13 @@ tap.test('TwingOutputBuffer', function (test: Test) {
         test.end();
     });
 
+    test.test('flush', function (test: Test) {
+        reset();
+        TwingOutputBuffer.flush();
+
+        test.same(TwingOutputBuffer.obGetContents(), '', `obGetContents() should return ''`);
+        test.end();
+    });
+
     test.end();
 });
