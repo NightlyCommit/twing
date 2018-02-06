@@ -143,7 +143,6 @@ export class TwingOutputBuffer {
         }
 
         if (TwingOutputBuffer.obFlush()) {
-
             TwingOutputBuffer.handlers.pop();
 
             return true;
@@ -289,7 +288,7 @@ export class TwingOutputBuffer {
             active.append(string);
         }
         else {
-            return string;
+            process.stdout.write(string);
         }
     }
 
