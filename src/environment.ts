@@ -254,11 +254,11 @@ export class TwingEnvironment {
      * Renders a template.
      *
      * @param {string} name The template name
-     * @param {{}} context  An array of parameters to pass to the template
-     * @returns {string}
+     * @param {{}} context An array of parameters to pass to the template
+     * @returns {Promise<string>}
      */
-    render(name: string, context: any = {}) {
-        return this.loadTemplate(name).render(context);
+    async render(name: string, context: any = {}): Promise<string> {
+        return await this.loadTemplate(name).render(context);
     }
 
     /**
@@ -271,8 +271,8 @@ export class TwingEnvironment {
      * @throws TwingErrorSyntax  When an error occurred during compilation
      * @throws TwingErrorRuntime When an error occurred during rendering
      */
-    display(name: string, context: any = {}) {
-        this.loadTemplate(name).display(context);
+    async display(name: string, context: any = {}) {
+        await this.loadTemplate(name).display(context);
     }
 
     /**

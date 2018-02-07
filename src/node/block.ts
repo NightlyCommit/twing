@@ -10,7 +10,8 @@ class TwingNodeBlock extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write(`block_${this.getAttribute('name')}(context, blocks = new Twing.TwingMap()) {\n`)
+            .write('async ')
+            .raw(`block_${this.getAttribute('name')}(context, blocks = new Twing.TwingMap()) {\n`)
             .indent()
         ;
 

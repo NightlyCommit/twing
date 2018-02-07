@@ -6,7 +6,7 @@ import TwingFunction from "./function";
 import TwingOperatorDefinitionInterface from "./operator-definition-interface";
 import TwingTest from "./test";
 
-class TwingExtension implements TwingExtensionInterface {
+export class TwingExtension implements TwingExtensionInterface {
     getDefaultStrategy(name: string): string | Function {
         return 'html';
     }

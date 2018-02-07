@@ -19,14 +19,14 @@ class TwingNodeExpressionParent extends TwingNodeExpression {
         if (this.getAttribute('output')) {
             compiler
                 .addDebugInfo(this)
-                .write('this.displayParentBlock(')
+                .write('await this.displayParentBlock(')
                 .string(name)
                 .raw(", context, blocks);\n")
             ;
         }
         else {
             compiler
-                .raw('this.renderParentBlock(')
+                .raw('await this.renderParentBlock(')
                 .string(name)
                 .raw(', context, blocks)')
             ;

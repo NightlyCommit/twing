@@ -26,13 +26,13 @@ nh.hook('.html', function (source: string, filename: string) {
 
 // gather fixtures
 // let directory = path.resolve('test/fixtures/tags/embed/error_line');
-// let directory = path.resolve('test/tests/integration/fixtures/expressions/array');
+// let directory = path.resolve('test/tests/integration/fixtures/async');
 let directory = path.resolve('test/tests/integration/fixtures');
 
 let files = finder.from(directory).findFiles('test.ts');
 
-tap.test('integration tests', function (test: Test) {
-    files.forEach(function (file: string) {
+tap.test('integration tests', async function (test: Test) {
+    for (let file of files) {
         let dirname = path.dirname(file);
 
         let IntegrationTest = require(file);
@@ -53,8 +53,8 @@ tap.test('integration tests', function (test: Test) {
         integrationTest.setTwing(twing);
 
         // extensions
-        integrationTest.getExtensions().forEach(function(extension) {
-           twing.addExtension(extension);
+        integrationTest.getExtensions().forEach(function (extension) {
+            twing.addExtension(extension);
         });
 
         // globals
@@ -72,7 +72,12 @@ tap.test('integration tests', function (test: Test) {
 
         if (!expectedErrorMessage) {
             try {
-                let actual = twing.render('index.twig', data);
+                let actual = await twing.render('index.twig', data);
+
+                // for (let [k, v] of templates) {
+                //     console.warn(twing.compile(twing.parse(twing.tokenize(twing.getLoader().getSourceContext(k)))));
+                // }
+
 
                 test.same(actual.trim(), expected.trim(), testMessage);
 
@@ -81,12 +86,16 @@ tap.test('integration tests', function (test: Test) {
             catch (e) {
                 console.warn(e);
 
+                // for (let [k, v] of templates) {
+                //     console.warn(twing.compile(twing.parse(twing.tokenize(twing.getLoader().getSourceContext(k)))));
+                // }
+
                 test.fail(`${testMessage} (${e})`);
             }
         }
         else {
             try {
-                twing.render('index.twig', data);
+                await twing.render('index.twig', data);
 
                 test.fail('should throw an error');
             }
@@ -96,7 +105,7 @@ tap.test('integration tests', function (test: Test) {
                 test.same(e.toString(), expectedErrorMessage, testMessage);
             }
         }
-    });
+    }
 
     test.end();
 });

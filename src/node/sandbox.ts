@@ -10,7 +10,8 @@ class TwingNodeSandbox extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("(() => {\n")
+            .write("(")
+            .raw("async () => {\n")
             .indent()
             .write("let sandbox = this.env.getExtension('TwingExtensionSandbox');\n")
             .write('let alreadySandboxed = sandbox.isSandboxed();\n')

@@ -25,6 +25,7 @@ class TwingNodeExpressionMethodCall extends TwingNodeExpression {
 
     compile(compiler: TwingCompiler) {
         compiler
+            .raw('await ')
             .subcompile(this.getNode('node'))
             .raw('.')
             .raw(this.getAttribute('method'))
