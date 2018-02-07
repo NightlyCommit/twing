@@ -40,12 +40,14 @@ class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     }
 
     compileTemplateCall(compiler: TwingCompiler, method: string): TwingCompiler {
+        compiler.write('await ');
+
         if (!this.hasNode('template')) {
-            compiler.write('this');
+            compiler.raw('this');
         }
         else {
             compiler
-                .write('this.loadTemplate(')
+                .raw('this.loadTemplate(')
                 .subcompile(this.getNode('template'))
                 .raw(', ')
                 .repr(this.getTemplateName())

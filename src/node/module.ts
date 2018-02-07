@@ -317,7 +317,7 @@ class TwingNodeModule extends TwingNode {
 
     compileDisplay(compiler: TwingCompiler) {
         compiler
-            .write("doDisplay(context, blocks = new Twing.TwingMap()) {\n")
+            .write("async doDisplay(context, blocks = new Twing.TwingMap()) {\n")
             .indent()
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))
@@ -325,12 +325,15 @@ class TwingNodeModule extends TwingNode {
 
         if (this.hasNode('parent')) {
             let parent = this.getNode('parent');
-            compiler.addDebugInfo(parent);
+            compiler
+                .addDebugInfo(parent)
+                .write('await ')
+            ;
 
             if (parent instanceof TwingNodeExpressionConstant) {
-                compiler.write('this.parent');
+                compiler.raw('this.parent');
             } else {
-                compiler.write('this.getParent(context)');
+                compiler.raw('this.getParent(context)');
             }
 
             compiler.raw(".display(context, this.blocks.merge(blocks));\n");

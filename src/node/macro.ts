@@ -29,7 +29,8 @@ class TwingNodeMacro extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write(`macro_${this.getAttribute('name')}(`)
+            .write('async ')
+            .raw(`macro_${this.getAttribute('name')}(`)
         ;
 
         let count = this.getNode('arguments').getNodes().size;

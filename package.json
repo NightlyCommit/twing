@@ -16,7 +16,7 @@
   },
   "main": "build/node/twing.js",
   "engines": {
-    "node": ">=6.0"
+    "node": ">=7.6.0"
   },
   "scripts": {
     "pretest": "npm run build",

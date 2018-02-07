@@ -25,15 +25,9 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let callable = this.getAttribute('callable');
         let closingParenthesis = false;
 
-        // compiler
-        //     .raw('(() => {\n')
-        //     .indent()
-        //     .write('try {\n')
-        //     .indent()
-        //     .write('return ')
-        // ;
-
         let [r, callable_] = this.reflectCallable(callable);
+
+        compiler.raw('await ');
 
         if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
             if (r.isStatic()) {
@@ -57,24 +51,6 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         if (closingParenthesis) {
             compiler.raw(')');
         }
-
-        // compiler
-        //     .raw(';\n')
-        //     .outdent()
-        //     .write('}\n')
-        //     .write('catch (e) {\n')
-        //     .indent()
-        //     .write('if (e instanceof Twing.TwingError) {\n')
-        //     .indent()
-        //     .write(`e.setTemplateLine(${this.lineno});\n`)
-        //     .outdent()
-        //     .write('}\n')
-        //     .write('throw e;\n')
-        //     .outdent()
-        //     .write('}\n')
-        //     .outdent()
-        //     .write('})()')
-        // ;
     }
 
     protected compileArguments(compiler: TwingCompiler) {

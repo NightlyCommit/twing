@@ -25,6 +25,9 @@ class TwingNodeInclude extends TwingNode {
                 .indent()
             ;
         }
+
+        compiler.write('await ');
+
         this.addGetTemplate(compiler);
 
         compiler.raw('.display(');
@@ -56,7 +59,7 @@ class TwingNodeInclude extends TwingNode {
 
     addGetTemplate(compiler: TwingCompiler) {
         compiler
-            .write('this.loadTemplate(')
+            .raw('this.loadTemplate(')
             .subcompile(this.getNode('expr'))
             .raw(', ')
             .repr(this.getTemplateName())

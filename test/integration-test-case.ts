@@ -67,6 +67,11 @@ class TwingTestExtension extends TwingExtension {
             new Twing.TwingFilter('anon_foo', function (name: string) {
                 return '*' + name + '*';
             }),
+            new Twing.TwingFilter('async_foo', function (name: string) {
+                return new Promise((resolve) => {
+                    resolve('*' + name + '*');
+                });
+            })
         ];
     }
 
@@ -82,12 +87,22 @@ class TwingTestExtension extends TwingExtension {
             new Twing.TwingFunction('anon_foo', function (name: string) {
                 return '*' + name + '*';
             }),
+            new Twing.TwingFunction('async_foo', function (name: string) {
+                return new Promise((resolve) => {
+                    resolve('*' + name + '*');
+                });
+            })
         ];
     }
 
     getTests() {
         return [
-            new TwingTest('multi word', this.is_multi_word)
+            new Twing.TwingTest('multi word', this.is_multi_word),
+            new Twing.TwingTest('async_foo', function(value: number) {
+                return new Promise((resolve) => {
+                    resolve(value >= 0);
+                })
+            })
         ];
     }
 
