@@ -4,9 +4,9 @@ import TwingCompiler from "../../../compiler";
 class TwingNodeExpressionTestNull extends TwingNodeExpressionTest {
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('(null === ')
+            .raw('(')
             .subcompile(this.getNode('node'))
-            .raw(')')
+            .raw(' === null)')
         ;
     }
 }

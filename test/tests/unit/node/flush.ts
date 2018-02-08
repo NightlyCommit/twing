@@ -18,7 +18,9 @@ tap.test('node/flush', function (test: Test) {
         let node = new TwingNodeFlush(1, 'foo');
         let compiler = new TwingTestCompilerStub();
 
-        test.same(compiler.compile(node).getSource(), '// line 1\nTwing.flush();\n');
+        test.same(compiler.compile(node).getSource(), `// line 1
+Twing.flush();
+`);
 
         test.end();
     });

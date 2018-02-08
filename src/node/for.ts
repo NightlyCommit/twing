@@ -74,12 +74,16 @@ class TwingNodeFor extends TwingNode {
 
             if (!this.getAttribute('ifexpr')) {
                 compiler
+                    .write("if (Twing.isCountable(context.get('_seq'))) {\n")
+                    .indent()
                     .write("let length = context.get('_seq').size;\n")
                     .write("let loop = context.get('loop');\n")
                     .write("loop.set('revindex0', length - 1);\n")
                     .write("loop.set('revindex', length);\n")
                     .write("loop.set('length', length);\n")
                     .write("loop.set('last', (length === 1));\n")
+                    .outdent()
+                    .write("}\n")
                 ;
             }
         }

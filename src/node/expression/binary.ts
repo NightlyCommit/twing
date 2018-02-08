@@ -29,7 +29,14 @@ abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
         ;
     }
 
-    abstract operator(compiler: TwingCompiler): TwingCompiler;
+    /**
+     *
+     * @param {TwingCompiler} compiler
+     * @returns {TwingCompiler}
+     */
+    operator(compiler: TwingCompiler): TwingCompiler {
+        return compiler;
+    }
 }
 
 export default TwingNodeExpressionBinary;

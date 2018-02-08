@@ -13,10 +13,6 @@ class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
             .raw(')')
         ;
     }
-
-    operator(compiler: TwingCompiler) {
-        return compiler.raw('..');
-    }
 }
 
 export default TwingNodeExpressionBinaryRange;

@@ -39,7 +39,8 @@ class TwingNodeInclude extends TwingNode {
         if (this.getAttribute('ignore_missing')) {
             compiler
                 .outdent()
-                .write("} catch (e) {\n")
+                .write("}\n")
+                .write("catch (e) {\n")
                 .indent()
                 .write('if (e instanceof Twing.TwingErrorLoader) {\n')
                 .indent()

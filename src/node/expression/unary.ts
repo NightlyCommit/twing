@@ -18,7 +18,9 @@ abstract class TwingNodeExpressionUnary extends TwingNodeExpression {
         compiler.subcompile(this.getNode('node'));
     }
 
-    abstract operator(compiler: TwingCompiler): TwingCompiler;
+    operator(compiler: TwingCompiler): TwingCompiler {
+        return compiler;
+    }
 }
 
 export default TwingNodeExpressionUnary;

@@ -11,10 +11,6 @@ class TwingNodeExpressionBinaryMatches extends TwingNodeExpressionBinary {
             .raw(')')
         ;
     }
-
-    operator(compiler: TwingCompiler) {
-        return compiler.raw('');
-    }
 }
 
 export default TwingNodeExpressionBinaryMatches;

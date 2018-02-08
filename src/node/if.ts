@@ -23,7 +23,8 @@ class TwingNodeIf extends TwingNode {
             if (i > 0) {
                 compiler
                     .outdent()
-                    .write('} else if (')
+                    .write('}\n')
+                    .write('else if (')
                 ;
             } else {
                 compiler

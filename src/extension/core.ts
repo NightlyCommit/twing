@@ -857,15 +857,15 @@ export function twingRound(value: any, precision = 0, method = 'common') {
  * be used.  Supplying any of the parameters will override the defaults set in the
  * environment object.
  *
- * @param TwingEnvironment $env
- * @param mixed            $number       A float/int/string of the number to format
- * @param int              $decimal      the number of decimal points to display
- * @param string           $decimalPoint the character(s) to use for the decimal point
- * @param string           $thousandSep  the character(s) to use for the thousands separator
+ * @param {TwingEnvironment} env
+ * @param {*} number A float/int/string of the number to format
+ * @param {number} decimal the number of decimal points to display
+ * @param {string} decimalPoint the character(s) to use for the decimal point
+ * @param {string} thousandSep the character(s) to use for the thousands separator
  *
  * @returns string The formatted number
  */
-export function twingNumberFormatFilter(env: TwingEnvironment, number: number, decimal: number, decimalPoint: string, thousandSep: string) {
+export function twingNumberFormatFilter(env: TwingEnvironment, number: any, decimal: number, decimalPoint: string, thousandSep: string) {
     const number_format = require('locutus/php/strings/number_format');
 
     let defaults = env.getCoreExtension().getNumberFormat();

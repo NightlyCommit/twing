@@ -2,8 +2,8 @@ import TwingCompiler from "../src/compiler";
 import TwingTestEnvironmentStub from "./environment-stub";
 
 class TwingTestCompilerStub extends TwingCompiler {
-    constructor() {
-        super(new TwingTestEnvironmentStub());
+    constructor(env: TwingTestEnvironmentStub = null) {
+        super(env ? env : new TwingTestEnvironmentStub());
     }
 }
 

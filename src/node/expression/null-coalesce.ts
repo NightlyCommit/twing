@@ -19,13 +19,13 @@ class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
         super(test, left, right, lineno);
     }
 
-    // compile(compiler: TwingCompiler) {
-    //     if (this.getNode('expr2') instanceof TwingNodeExpressionName) {
-    //         this.getNode('expr2').setAttribute('always_defined', true);
-    //     }
-    //
-    //     return super.compile(compiler);
-    // }
+    compile(compiler: TwingCompiler) {
+        if (this.getNode('expr2') instanceof TwingNodeExpressionName) {
+            this.getNode('expr2').setAttribute('always_defined', true);
+        }
+
+        return super.compile(compiler);
+    }
 }
 
 export default TwingNodeExpressionNullCoalesce;

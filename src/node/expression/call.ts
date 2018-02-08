@@ -193,6 +193,8 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1));
             }
             else if (callableParameter.isOptional()) {
+                console.warn('OPTIONAL', name);
+
                 if (parameters.size < 1) {
                     break;
                 }
@@ -235,7 +237,7 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 return parameter instanceof TwingNode;
             });
 
-            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join(', ')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : -1, self.getTemplateName());
+            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : -1, self.getTemplateName());
         }
 
         return arguments_;
@@ -275,28 +277,30 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         if (isVariadic) {
             let argument_ = parameters[parameters.length - 1];
 
-            if (argument_ && argument_.isArray() && argument_.isDefaultValueAvailable() && argument_.getDefaultValue() === []) {
+            if (argument_ && argument_.isArray() && argument_.isDefaultValueAvailable() && (argument_.getDefaultValue().length === 0)) {
                 parameters.pop();
             }
             else {
                 let callableName = r.getName();
 
-                // todo: should we support this?
-                // if (r instanceof ReflectionMethod) {
-                //     $callableName = $r->getDeclaringClass()->name.'::'.$callableName;
-                // }
-
-                throw new Error(`The last parameter of "${callableName}" for ${this.getAttribute('type')} "${this.getAttribute('name')}" must be an array with default value, eg. "array $arg = array()".`);
+                throw new Error(`The last parameter of "${callableName}" for ${this.getAttribute('type')} "${this.getAttribute('name')}" must be an array with default value, eg. "arg = []".`);
             }
         }
 
         return parameters;
     }
 
-    private reflectCallable(callable: Function): Array<any> {
+    private reflectCallable(callable: Function | any): [TwingReflectionMethod, any] {
         let r: TwingReflectionMethod;
+        let name: string;
 
-        r = new TwingReflectionMethod(callable);
+        if (typeof callable === 'object' && Reflect.has(callable, '__invoke')) {
+            name = `${callable.constructor.name}::__invoke`;
+
+            callable = Reflect.get(callable, '__invoke');
+        }
+
+        r = new TwingReflectionMethod(callable, name);
 
         this.reflector = {
             r: r,
