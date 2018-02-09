@@ -51,7 +51,7 @@ module.exports = {};
 
 
 /* foo.twig */
-module.exports.__TwingTemplate_0cc9060b33e7afc236871834bb173dbde0e702e658b7e3169a89785328ad994e = class __TwingTemplate_0cc9060b33e7afc236871834bb173dbde0e702e658b7e3169a89785328ad994e extends Twing.TwingTemplate {
+module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.TwingTemplate {
     constructor(env) {
         super(env);
 
@@ -107,7 +107,7 @@ module.exports = {};
 
 
 /* foo.twig */
-module.exports.__TwingTemplate_0cc9060b33e7afc236871834bb173dbde0e702e658b7e3169a89785328ad994e = class __TwingTemplate_0cc9060b33e7afc236871834bb173dbde0e702e658b7e3169a89785328ad994e extends Twing.TwingTemplate {
+module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.TwingTemplate {
     constructor(env) {
         super(env);
 
@@ -189,7 +189,7 @@ module.exports = {};
 
 
 /* foo.twig */
-module.exports.__TwingTemplate_96c4f48993a114ca84c2283ba51e8a8ece14ff6b0e52cfcf1a791ce18a2a1890 = class __TwingTemplate_96c4f48993a114ca84c2283ba51e8a8ece14ff6b0e52cfcf1a791ce18a2a1890 extends Twing.TwingTemplate {
+module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.TwingTemplate {
     doGetParent(context) {
         // line 2
         return this.loadTemplate(((true) ? ("foo") : ("foo")), "foo.twig", 2);
