@@ -11,10 +11,6 @@ class TwingNodeExpressionBinaryPower extends TwingNodeExpressionBinary {
             .raw(')')
         ;
     }
-
-    operator(compiler: TwingCompiler) {
-        return compiler.raw('**');
-    }
 }
 
 export default TwingNodeExpressionBinaryPower;

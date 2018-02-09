@@ -1,6 +1,7 @@
 class TwingReflectionParameter {
     private name: string;
     private defaultValue: any;
+    private optional: boolean = false;
 
     constructor(name: string, defaultValue: any) {
         this.name = name;
@@ -20,11 +21,22 @@ class TwingReflectionParameter {
     }
 
     isArray(): boolean {
-        return false;
+        // type hinting, used by PHP to support that function, does not exist in JavaScript
+        // if we have a default value, we test its type against Array
+        // else we return true since any parameter can potentially be an array
+        if (this.isDefaultValueAvailable()) {
+            return Array.isArray(this.getDefaultValue());
+        }
+
+        return true;
     }
 
     isOptional(): boolean {
-        return false;
+        return this.optional;
+    }
+
+    setOptional(flag: boolean) {
+        this.optional = flag;
     }
 }
 

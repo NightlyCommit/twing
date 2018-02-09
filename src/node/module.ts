@@ -60,7 +60,10 @@ class TwingNodeModule extends TwingNode {
 
     compileTemplate(compiler: TwingCompiler) {
         if (!this.getAttribute('index')) {
-            this.compileFileHeader(compiler);
+            compiler
+                .write('const Twing = require("twing");\n\n')
+                .write('module.exports = {};\n')
+            ;
         }
 
         this.compileClassHeader(compiler);
@@ -91,17 +94,6 @@ class TwingNodeModule extends TwingNode {
         this.compileGetSourceContext(compiler);
 
         this.compileClassfooter(compiler);
-
-        if (this.getAttribute('index')) {
-            this.compileFileFooter(compiler);
-        }
-    }
-
-    compileFileHeader(compiler: TwingCompiler) {
-        compiler
-            .write('const Twing = require("twing");\n\n')
-            .write('module.exports = {};\n')
-        ;
     }
 
     compileGetParent(compiler: TwingCompiler) {
@@ -454,12 +446,6 @@ class TwingNodeModule extends TwingNode {
             .outdent()
             .write('};\n\n')
         ;
-    }
-
-    compileFileFooter(compiler: TwingCompiler) {
-        // compiler
-        //     .write('(function() {return module.exports;})();')
-        // ;
     }
 }
 

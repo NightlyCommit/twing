@@ -23,6 +23,7 @@
     "prepublish": "npm run build",
     "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
+    "fastest2": "tape -r ts-node/register/type-check 'test/tests/unit/node/**/*.ts' | tap-mocha-reporter spec",
     "build": "tsc && node tasks/build.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls"

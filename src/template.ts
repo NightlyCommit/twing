@@ -22,9 +22,9 @@ import iteratorToMap from "./helper/iterator-to-map";
 const merge = require('merge');
 
 export abstract class TwingTemplate {
-    static ANY_CALL = 'ANY_CALL';
-    static ARRAY_CALL = 'ARRAY_CALL';
-    static METHOD_CALL = 'METHOD_CALL';
+    static ANY_CALL = 'any';
+    static ARRAY_CALL = 'array';
+    static METHOD_CALL = 'method';
 
     /**
      * @internal

@@ -2,6 +2,8 @@ import TwingNode from "../node";
 import TwingNodeType from "../node-type";
 import TwingMap from "../map";
 import TwingCompiler from "../compiler";
+import TwingNodeText from "./text";
+import TwingNodeExpressionConstant from "./expression/constant";
 
 class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
@@ -19,8 +21,20 @@ class TwingNodeSet extends TwingNode {
 
         this.type = TwingNodeType.CAPTURE;
 
+        /*
+         * Optimizes the node when capture is used for a large block of text.
+         *
+         * {% set foo %}foo{% endset %} is compiled to $context['foo'] = new Twig_Markup("foo");
+         */
         if (this.getAttribute('capture')) {
             this.setAttribute('safe', true);
+
+            let values = this.getNode('values');
+
+            if (values instanceof TwingNodeText) {
+                this.setNode('values', new TwingNodeExpressionConstant(values.getAttribute('data'), values.getTemplateLine()));
+                this.setAttribute('capture', false);
+            }
         }
     }
 
@@ -47,6 +61,11 @@ class TwingNodeSet extends TwingNode {
                     .write("Twing.obStart();\n")
                     .subcompile(this.getNode('values'))
                 ;
+            }
+            else {
+                if (this.getAttribute('safe')) {
+                    compiler.write('let tmp;\n');
+                }
             }
 
             compiler.subcompile(this.getNode('names'), false);
@@ -75,9 +94,9 @@ class TwingNodeSet extends TwingNode {
             else {
                 if (this.getAttribute('safe')) {
                     compiler
-                        .raw("('' === tmp = ")
+                        .write("((tmp = ")
                         .subcompile(this.getNode('values'))
-                        .raw(") ? '' : new TwingMarkup(tmp, this.env.getCharset())")
+                        .raw(") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset())")
                     ;
                 }
                 else {
