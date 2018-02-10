@@ -2,6 +2,7 @@ import TwingNodeExpression from "../expression";
 import TwingNodeExpressionConstant from "./constant";
 import TwingMap from "../../map";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 let ctype_digit = require('locutus/php/ctype/ctype_digit');
@@ -12,15 +13,17 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
     constructor(elements: TwingMap<string, TwingNodeExpression>, lineno: number) {
         super(elements, new TwingMap(), lineno);
 
+        this.type = TwingNodeType.ARRAY;
+
         this.index = -1;
 
-        this.getKeyValuePairs().forEach(function (pair) {
+        for (let pair of this.getKeyValuePairs()) {
             let expression = pair.key;
 
             if ((expression instanceof TwingNodeExpressionConstant) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
                 this.index = expression.getAttribute('value');
             }
-        });
+        }
     }
 
     getKeyValuePairs(): Array<{key: TwingNodeExpression, value: TwingNodeExpression}> {

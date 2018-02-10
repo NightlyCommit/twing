@@ -2,7 +2,10 @@ enum TwingNodeType {
     NONE = 'NONE',
     CAPTURE = 'CAPTURE',
     OUTPUT = 'OUTPUT',
-    PRINT = 'PRINT'
+
+    ARRAY = 'array',
+    CONSTANT = 'constant',
+    PRINT = 'print',
 }
 
 export default TwingNodeType;

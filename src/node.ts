@@ -177,18 +177,16 @@ class TwingNode implements TwingNodeInterface {
     }
 
     setTemplateName(name: string) {
-        let self = this;
-
         this.name = name;
 
-        this.nodes.forEach(function (node) {
+        for (let [k, node] of this.nodes) {
             try {
                 node.setTemplateName(name);
             }
             catch (e) {
                 throw e;
             }
-        });
+        };
     }
 
     getTemplateName() {

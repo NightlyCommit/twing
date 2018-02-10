@@ -713,16 +713,17 @@ class TwingExpressionParser {
         if (function_.isDeprecated()) {
             let message = `Twing Function "${function_.getName()}" is deprecated`;
 
-            // if (!is_bool(filter.getDeprecatedVersion())) {
-            //     message .= sprintf(' since version %s', filter.getDeprecatedVersion());
-            // }
-            // if (filter.getAlternative()) {
-            //     message .= sprintf('. Use "%s" instead', filter.getAlternative());
-            // }
-            // src = this.parser.getStream().getSourceContext();
-            // message .= sprintf(' in %s at line %d.', src.getPath() ?: src.getTemplateName(), line);
-            //
-            // @trigger_error(message, E_USER_DEPRECATED);
+            if (typeof function_.getDeprecatedVersion() !== 'boolean') {
+                message += ` since version ${function_.getDeprecatedVersion()}`;
+            }
+
+            if (function_.getAlternative()) {
+                message += `. Use "${function_.getAlternative()}" instead`;
+            }
+
+            let src = this.parser.getStream().getSourceContext();
+
+            message += ` in ${src.getPath() ? '' : src.getName()} at line ${line}.`;
 
             console.warn(message);
         }
@@ -744,16 +745,17 @@ class TwingExpressionParser {
         if (filter.isDeprecated()) {
             let message = `Twig Filter "${filter.getName()}" is deprecated`;
 
-            // if (!is_bool(filter.getDeprecatedVersion())) {
-            //     message .= sprintf(' since version %s', filter.getDeprecatedVersion());
-            // }
-            // if (filter.getAlternative()) {
-            //     message .= sprintf('. Use "%s" instead', filter.getAlternative());
-            // }
-            // src = this.parser.getStream().getSourceContext();
-            // message .= sprintf(' in %s at line %d.', src.getPath() ?: src.getTemplateName(), line);
-            //
-            // @trigger_error(message, E_USER_DEPRECATED);
+            if (typeof filter.getDeprecatedVersion() !== 'boolean') {
+                message += ` since version ${filter.getDeprecatedVersion()}`;
+            }
+
+            if (filter.getAlternative()) {
+                message += `. Use "${filter.getAlternative()}" instead`;
+            }
+
+            let src = this.parser.getStream().getSourceContext();
+
+            message += ` in ${src.getPath() ? '' : src.getName()} at line ${line}.`;
 
             console.warn(message);
         }
