@@ -12,37 +12,6 @@ class TwingReflectionMethod {
 
         let parser = parseFunction();
 
-        // until https://github.com/tunnckoCore/parse-function/issues/110 is fixed, we have to use this plugin to support instrumentation
-        parser.use((app: any) => {
-            return (node: any, result: any) => {
-                if (node.type === 'FunctionExpression') {
-                    let params = node.params;
-
-                    for (let param of params) {
-                        if (param.type === 'AssignmentPattern') {
-                            let right = param.right;
-
-                            if (right.type === 'SequenceExpression') {
-                                let value: any;
-                                let lastExpression = right.expressions.pop();
-
-                                if (lastExpression.type === 'NullLiteral') {
-                                    value = null;
-                                }
-                                else {
-                                    value = lastExpression.value;
-                                }
-
-                                result.defaults[param.left.name] = value;
-                            }
-                        }
-                    }
-                }
-
-                return result;
-            }
-        });
-
         if (typeof callable === 'string') {
             callable = Reflect.get(global, callable as string);
         }
