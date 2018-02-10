@@ -27,14 +27,16 @@ The recommended way to install Twing is via npm:
 
 This section gives you a brief introduction to the node.js API for Twing.
 
-    const Twing = require('twing');
-    
-    let loader = new Twing.TwingLoaderArray({
-        'index.twig': 'Hello {{ name }}!'
-    });
-    let twing = new Twing.TwingEnvironment(loader);
-    
-    let output = await twing.render('index.twig', {name: 'Fabien'});
+```js
+const Twing = require('twing');
+
+let loader = new Twing.TwingLoaderArray({
+    'index.twig': 'Hello {{ name }}!'
+});
+let twing = new Twing.TwingEnvironment(loader);
+
+let output = await twing.render('index.twig', {name: 'Fabien'});
+```
 
 Twing uses a loader (`TwingLoaderArray`) to locate templates, and an
 environment (`TwingEnvironment`) to store the configuration.
@@ -45,26 +47,30 @@ renders it with the variables passed as a second argument.
 As templates are generally stored on the filesystem, Twing also comes with a
 filesystem loader:
 
-    const Twing = require('twing');
+```js
+const Twing = require('twing');
 
-    let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
-    let twing = new Twing.TwingEnvironment(loader);
+let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
+let twing = new Twing.TwingEnvironment(loader);
 
-    let ouput = await twing.render('index.html', {'name': 'Fabien'});
+let ouput = await twing.render('index.html', {'name': 'Fabien'});
+```
 
 ## Asynchronous by nature
 
 Starting with 0.4.0, Twing is asynchronous by nature. It means that `TwingEnvironment::render`,`TwingEnvironment::display` and the belonging `TwingTemplate` functions return a Promise. This asynchronous nature makes possible to implement asynchronous filters, functions and tests.
 
-    class SleepExtenstion extends Twing.TwingExtension {
-        getFunctions() {
-            return [
-                new Twing.TwingFunction('sleep', function(duration) {
-                    return new Promise((resolve) => setTimeout(resolve, duration));      
-                })
-            ];
-        }
+```js
+class SleepExtenstion extends Twing.TwingExtension {
+    getFunctions() {
+        return [
+            new Twing.TwingFunction('sleep', function(duration) {
+                return new Promise((resolve) => setTimeout(resolve, duration));      
+            })
+        ];
     }
+}
+```
 
 
 [npm-image]: https://badge.fury.io/js/twing.svg
