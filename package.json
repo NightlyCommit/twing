@@ -2,7 +2,7 @@
   "author": "Eric MORAND <eric.morand@gmail,com>",
   "name": "twing",
   "description": "TypeScript port of the Twig templating language.",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "homepage": "https://github.com/ericmorand/twing",
   "licenses": [
     {
