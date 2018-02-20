@@ -92,7 +92,7 @@ class TwingCompiler {
     string(value: string): TwingCompiler {
         if (value !== null) {
             if (typeof value === 'string') {
-                value = `"${addcslashes(value, "\0\t\"\\\n")}"`;
+                value = `"${addcslashes(value, "\0\t\"\\\n\r")}"`;
             }
         }
         else {
