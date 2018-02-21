@@ -8,6 +8,7 @@ import TwingMap from "../../../src/map";
 import TwingNodeExpressionConstant from "../../../src/node/expression/constant";
 import TwingNodeExpressionName from "../../../src/node/expression/name";
 import TwingNodeExpressionBinaryConcat from "../../../src/node/expression/binary/concat";
+import TwingTestLoaderStub from "../../loader-stub";
 
 const tap = require('tap');
 
@@ -28,7 +29,8 @@ tap.test('expression-parser', function (test: Test) {
             ['{% set %}{% endset %})', 'Only variables can be assigned to. Unexpected token "end of statement block" of value "null" ("name" expected).']
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndMessage of templatesAndMessages) {
@@ -116,7 +118,8 @@ tap.test('expression-parser', function (test: Test) {
             ],
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
@@ -143,7 +146,8 @@ tap.test('expression-parser', function (test: Test) {
             ['{{ {"a": "b", 2} }}', 'A hash key must be followed by a colon (:). Unexpected token "punctuation" of value "}" ("punctuation" expected with value ":")']
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndMessage of templatesAndMessages) {
@@ -158,7 +162,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('stringExpressionDoesNotConcatenateTwoConsecutiveStrings', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ "a" "b" }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -209,7 +214,8 @@ tap.test('expression-parser', function (test: Test) {
             ]
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
@@ -230,7 +236,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('attributeCallDoesNotSupportNamedArguments', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foo.bar(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -243,7 +250,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% from _self import foo %}{% macro foo() %}{% endmacro %}{{ foo(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -256,7 +264,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% macro foo("a") %}{% endmacro %}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -274,7 +283,8 @@ tap.test('expression-parser', function (test: Test) {
             '{% macro foo(name = [["b", "a #{foo} a"]]) %}{% endmacro %}'
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let template of templates) {
@@ -300,7 +310,8 @@ tap.test('expression-parser', function (test: Test) {
             '{% macro foo(name = {a: {b: "a"}}) %}{% endmacro %}'
         ];
 
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let template of templates) {
@@ -314,7 +325,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownFunction', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ cycl() }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -327,7 +339,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownFunctionWithoutSuggestions', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foobar() }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -340,7 +353,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownFilter', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1|lowe }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -353,7 +367,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownFilterWithoutSuggestions', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1|foobar }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -366,7 +381,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownTest', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1 is nul }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -379,7 +395,8 @@ tap.test('expression-parser', function (test: Test) {
     });
 
     test.test('unknownTestWithoutSuggestions', function (test: any) {
-        let env = new TwingTestEnvironmentStub({cache: false, autoescape: false, optimizations: 0});
+        let loader = new TwingTestLoaderStub();
+        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1 is foobar}}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);

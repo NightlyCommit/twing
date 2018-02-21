@@ -91,14 +91,6 @@ class TwingExtensionSet {
             return this.lastModified;
         }
 
-        // todo: is this even possible in JS?
-        for (let [name, extension] of this.extensions) {
-            // $r = new ReflectionObject($extension);
-            // if (file_exists($r->getFileName()) && ($extensionTime = filemtime($r->getFileName())) > $this->lastModified) {
-            //     $this->lastModified = $extensionTime;
-            // }
-        }
-
         return this.lastModified;
     }
 

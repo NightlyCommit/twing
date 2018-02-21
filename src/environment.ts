@@ -332,16 +332,17 @@ export class TwingEnvironment {
 
         let templates: any;
 
-        if (this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key))) {
+        if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key))) {
             templates = cache.load(key);
         }
 
         if (!templates) {
             let source = this.getLoader().getSourceContext(name);
             let content = this.compileSource(source);
-            this.cache.write(key, content);
 
-            templates = this.cache.load(key);
+            cache.write(key, content);
+
+            templates = cache.load(key);
 
             if (!templates) {
                 // last line of defense
@@ -425,17 +426,13 @@ export class TwingEnvironment {
     /**
      * Returns true if the template is still fresh.
      *
-     * Besides checking the loader for freshness information,
-     * this method also checks if the enabled extensions have
-     * not changed.
-     *
      * @param {string} name The template name
      * @param {number} time The last modification time of the cached template
      *
      * @returns {boolean} true if the template is fresh, false otherwise
      */
     isTemplateFresh(name: string, time: number) {
-        return this.extensionSet.getLastModified() <= time && this.getLoader().isFresh(name, time);
+        return this.getLoader().isFresh(name, time);
     }
 
     /**

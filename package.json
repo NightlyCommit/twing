@@ -24,6 +24,7 @@
     "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
     "fastest2": "tape -r ts-node/register/type-check 'test/tests/unit/cache/filesystem.ts' | tap-mocha-reporter spec",
+    "fastest2": "tape -r ts-node/register/type-check 'test/tests/unit/environment.ts' | tap-mocha-reporter spec",
     "build": "tsc && node tasks/build.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
@@ -72,6 +73,7 @@
     "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-typescript2": "^0.11.0",
+    "sinon": "^4.3.0",
     "tap": "^11.0.1",
     "tap-diff": "^0.1.1",
     "tap-mocha-reporter": "^3.0.6",
