@@ -23,7 +23,7 @@
     "prepublish": "npm run build",
     "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
-    "fastest2": "tape -r ts-node/register/type-check 'test/tests/unit/compiler.ts' | tap-mocha-reporter spec",
+    "fastest2": "tape -r ts-node/register/type-check 'test/tests/unit/cache/filesystem.ts' | tap-mocha-reporter spec",
     "build": "tsc && node tasks/build.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
@@ -49,6 +49,7 @@
     "pad": "^2.0.3",
     "parse-function": "^5.1.1",
     "regex-parser": "^2.2.8",
+    "require-uncached": "^1.0.3",
     "secure-filters": "^1.1.0",
     "sha.js": "^2.4.9",
     "snake-case": "^2.1.0",
