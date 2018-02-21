@@ -3,6 +3,7 @@ import TwingNodeExpressionConstant from "./constant";
 import TwingMap from "../../map";
 import TwingNodeExpressionCall from "./call";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
@@ -13,6 +14,8 @@ class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         nodes.set('arguments', methodArguments);
 
         super(nodes, new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.EXPRESSION_FILTER;
     }
 
     compile(compiler: TwingCompiler) {

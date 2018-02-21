@@ -12,6 +12,7 @@ import TwingNodeInclude from "../node/include";
 import TwingNodeExpressionFunction from "../node/expression/function";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
+import TwingNodeType from "../node-type";
 
 const isInteger = require('is-integer');
 
@@ -77,19 +78,19 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      *
      * It replaces:
      *
-     *   * "echo $this->render(Parent)Block()" with "$this->display(Parent)Block()"
+     *   * "echo this.render(Parent)Block()" with "this.display(Parent)Block()"
      *
-     * @return Twig_Node
+     * @returns {TwingNode}
      */
     optimizePrintNode(node: TwingNode, env: TwingEnvironment) {
-        if (!(node instanceof TwingNodePrint)) {
+        if (node.getType() !== TwingNodeType.PRINT) {
             return node;
         }
 
         let exprNode = node.getNode('expr');
 
-        if (exprNode as any instanceof TwingNodeExpressionBlockReference ||
-            exprNode as any instanceof TwingNodeExpressionParent) {
+        if (exprNode.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE ||
+            exprNode.getType() === TwingNodeType.EXPRESSION_PARENT) {
             exprNode.setAttribute('output', true);
 
             return exprNode;
@@ -104,7 +105,7 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      * @returns {TwingNode}
      */
     optimizeRawFilter(node: TwingNode, env: TwingEnvironment) {
-        if (node instanceof TwingNodeExpressionFilter && node.getNode('filter').getAttribute('value') === 'raw') {
+        if (node.getType() === TwingNodeType.EXPRESSION_FILTER && node.getNode('filter').getAttribute('value') === 'raw') {
             return node.getNode('node');
         }
 
@@ -115,7 +116,7 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      * Optimizes "for" tag by removing the "loop" variable creation whenever possible.
      */
     enterOptimizeFor(node: TwingNode, env: TwingEnvironment) {
-        if (node as any instanceof TwingNodeFor) {
+        if (node.getType() === TwingNodeType.FOR) {
             // disable the loop variable by default
             node.setAttribute('with_loop', false);
             this.loops.unshift(node);
@@ -130,33 +131,33 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
         // when do we need to add the loop variable back?
 
         // the loop variable is referenced for the active loop
-        else if (node as any instanceof TwingNodeExpressionName && node.getAttribute('name') === 'loop') {
+        else if (node.getType() === TwingNodeType.EXPRESSION_NAME && node.getAttribute('name') === 'loop') {
             node.setAttribute('always_defined', true);
             this.addLoopToCurrent();
         }
 
         // optimize access to loop targets
-        else if (node as any instanceof TwingNodeExpressionName && this.loopsTargets.includes(node.getAttribute('name'))) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_NAME && this.loopsTargets.includes(node.getAttribute('name'))) {
             node.setAttribute('always_defined', true);
         }
 
         // block reference
-        else if (node as any instanceof TwingNodeBlockReference || node as any instanceof TwingNodeExpressionBlockReference) {
+        else if (node.getType() === TwingNodeType.BLOCK_REFERENCE || node.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE) {
             this.addLoopToCurrent();
         }
 
         // include without the only attribute
-        else if (node as any instanceof TwingNodeInclude && !node.getAttribute('only')) {
+        else if (node.getType() === TwingNodeType.INCLUDE && !node.getAttribute('only')) {
             this.addLoopToAll();
         }
 
         // include function without the with_context=false parameter
-        else if (node as any instanceof TwingNodeExpressionFunction && node.getAttribute('name') === 'include' && (!node.getNode('arguments').hasNode('with_context') || node.getNode('arguments').getNode('with_context').getAttribute('value') !== false)) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && node.getAttribute('name') === 'include' && (!node.getNode('arguments').hasNode('with_context') || node.getNode('arguments').getNode('with_context').getAttribute('value') !== false)) {
             this.addLoopToAll();
         }
 
         // the loop variable is referenced via an attribute
-        else if (node as any instanceof TwingNodeExpressionGetAttr && (!node.getNode('attribute') as any instanceof TwingNodeExpressionConstant || node.getNode('attribute').getAttribute('value') === 'parent') && (this.loops[0].getAttribute('with_loop') === true || (node.getNode('node') as any instanceof TwingNodeExpressionName && node.getNode('node').getAttribute('name') === 'loop'))) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR && (node.getNode('attribute').getType() !== TwingNodeType.EXPRESSION_CONSTANT || node.getNode('attribute').getAttribute('value') === 'parent') && (this.loops[0].getAttribute('with_loop') === true || (node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME && node.getNode('node').getAttribute('name') === 'loop'))) {
             this.addLoopToAll();
         }
     }
@@ -165,7 +166,7 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      * Optimizes "for" tag by removing the "loop" variable creation whenever possible.
      */
     leaveOptimizeFor(node: TwingNode, env: TwingEnvironment) {
-        if (node instanceof TwingNodeFor) {
+        if (node.getType() === TwingNodeType.FOR) {
             this.loops.shift();
             this.loopsTargets.shift();
             this.loopsTargets.shift();

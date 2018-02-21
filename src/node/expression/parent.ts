@@ -1,10 +1,13 @@
 import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionParent extends TwingNodeExpression {
     constructor(name: string, lineno: number) {
         super(new TwingMap(), new TwingMap([['output', false], ['name', name]]), lineno);
+
+        this.type = TwingNodeType.EXPRESSION_PARENT;
     }
 
     compile(compiler: TwingCompiler) {

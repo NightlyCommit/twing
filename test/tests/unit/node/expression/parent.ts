@@ -1,6 +1,7 @@
 import {Test} from "tape";
 import TwingTestCompilerStub from "../../../../compiler-stub";
 import TwingNodeExpressionParent from "../../../../../src/node/expression/parent";
+import TwingNodeType from "../../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -9,6 +10,7 @@ tap.test('node/expression/parent', function (test: Test) {
         let node = new TwingNodeExpressionParent('foo', 1);
 
         test.same(node.getAttribute('name'), 'foo');
+        test.same(node.getType(), TwingNodeType.EXPRESSION_PARENT);
 
         test.end();
     });

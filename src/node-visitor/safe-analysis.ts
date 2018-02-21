@@ -11,6 +11,7 @@ import TwingNodeExpressionMethodCall from "../node/expression/method-call";
 import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
 import TwingNodeExpressionName from "../node/expression/name";
 import TwingMap from "../map";
+import TwingNodeType from "../node-type";
 
 var objectHash = require('object-hash');
 
@@ -83,24 +84,24 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
     }
 
     doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node instanceof TwingNodeExpressionConstant) {
+        if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             // constants are marked safe for all
             this.setSafe(node, ['all']);
         }
-        else if (node instanceof TwingNodeExpressionBlockReference) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE) {
             // blocks are safe by definition
             this.setSafe(node, ['all']);
         }
-        else if (node instanceof TwingNodeExpressionParent) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_PARENT) {
             // parent block is safe by definition
             this.setSafe(node, ['all']);
         }
-        else if (node instanceof TwingNodeExpressionConditional) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_CONDITIONAL) {
             // intersect safeness of both operands
             let safe = this.intersectSafe(this.getSafe(node.getNode('expr2')), this.getSafe(node.getNode('expr3')));
             this.setSafe(node, safe);
         }
-        else if (node instanceof TwingNodeExpressionFilter) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
             // filter expression is safe when the filter is safe
             let name = node.getNode('filter').getAttribute('value');
             let filterArgs = node.getNode('arguments');
@@ -119,7 +120,7 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
                 this.setSafe(node, []);
             }
         }
-        else if (node instanceof TwingNodeExpressionFunction) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION) {
             // function expression is safe when the function is safe
             let name = node.getAttribute('name');
             let functionArgs = node.getNode('arguments');
@@ -132,7 +133,7 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
                 this.setSafe(node, []);
             }
         }
-        else if (node instanceof TwingNodeExpressionMethodCall) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_METHOD_CALL) {
             if (node.getAttribute('safe')) {
                 this.setSafe(node, ['all']);
             }
@@ -140,7 +141,7 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
                 this.setSafe(node, []);
             }
         }
-        else if (node instanceof TwingNodeExpressionGetAttr && node.getNode('node') instanceof TwingNodeExpressionName) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR && node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME) {
             let name = node.getNode('node').getAttribute('name');
 
             if (this.safeVars.indexOf(name) > -1) {

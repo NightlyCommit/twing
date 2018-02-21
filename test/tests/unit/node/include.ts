@@ -6,6 +6,7 @@ import TwingMap from "../../../../src/map";
 import TwingNodeExpressionArray from "../../../../src/node/expression/array";
 import TwingNodeExpressionConditional from "../../../../src/node/expression/conditional";
 import TwingNodeExpressionHash from "../../../../src/node/expression/hash";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -28,6 +29,7 @@ tap.test('node/include', function (test: Test) {
 
         test.same(node.getNode('variables'), vars);
         test.true(node.getAttribute('only'));
+        test.same(node.getType(), TwingNodeType.INCLUDE);
 
         test.end();
     });

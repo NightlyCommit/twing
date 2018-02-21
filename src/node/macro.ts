@@ -7,6 +7,7 @@ import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingErrorSyntax from "../error/syntax";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeMacro extends TwingNode {
     static VARARGS_NAME = 'varargs';
@@ -24,6 +25,8 @@ class TwingNodeMacro extends TwingNode {
         nodes.set('arguments', macroArguments);
 
         super(nodes, new TwingMap([['name', name]]), lineno, tag);
+
+        this.type = TwingNodeType.MACRO;
     }
 
     compile(compiler: TwingCompiler) {

@@ -3,6 +3,7 @@ import TwingTestCompilerStub from "../../../compiler-stub";
 import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
 import TwingNodeDo from "../../../../src/node/do";
 import TwingNodePrint from "../../../../src/node/print";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -12,6 +13,7 @@ tap.test('node/print', function (test: Test) {
         let node = new TwingNodePrint(expr, 1);
 
         test.same(node.getNode('expr'), expr);
+        test.same(node.getType(), TwingNodeType.PRINT);
 
         test.end();
     });

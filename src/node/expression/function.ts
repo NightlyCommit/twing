@@ -2,6 +2,7 @@ import TwingNode from "../../node";
 import TwingMap from "../../map";
 import TwingNodeExpressionCall from "./call";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
     constructor(name: string, functionArguments: TwingNode, lineno: number) {
@@ -15,6 +16,8 @@ class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
         ]);
 
         super(nodes, attributes, lineno);
+
+        this.type = TwingNodeType.EXPRESSION_FUNCTION;
     }
 
     compile(compiler: TwingCompiler) {

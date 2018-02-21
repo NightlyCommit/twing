@@ -2,6 +2,7 @@ import TwingNodeExpression from "../expression";
 import TwingNode from "../../node";
 import TwingMap from "../../map";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
     constructor(left: TwingNode, right: TwingNode, lineno: number) {
@@ -11,6 +12,8 @@ abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
         nodes.set('right', right);
 
         super(nodes, new TwingMap(), lineno);
+
+        this.type = TwingNodeType.EXPRESSION_BINARY;
     }
 
     compile(compiler: TwingCompiler) {

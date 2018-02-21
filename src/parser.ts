@@ -19,6 +19,7 @@ import TwingNodeTraverser from "./node-traverser";
 import TwingNodeMacro from "./node/macro";
 import TwingNodeBlockReference from "./node/block-reference";
 import TwingTokenParser from "./token-parser";
+import TwingNodeOutputType from "./node-output-type";
 
 let ctype_space = require('locutus/php/ctype/ctype_space');
 let md5 = require('locutus/php/strings/md5');
@@ -384,11 +385,11 @@ export class TwingParser {
      * @param node
      * @returns {TwingNode}
      */
-    filterBodyNodes(node: any): TwingNode {
+    filterBodyNodes(node: TwingNode): TwingNode {
         let self = this;
 
-        if ((node as any instanceof TwingNodeText && !ctype_space(node.getAttribute('data'))) ||
-            (!(node  as any instanceof TwingNodeText) && !(node  as any instanceof TwingNodeBlockReference) && (node.getType() === TwingNodeType.OUTPUT))) {
+        if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && (node.getOutputType() === TwingNodeOutputType.OUTPUT))) {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingSyntaxError(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
@@ -403,11 +404,11 @@ export class TwingParser {
         }
 
         // bypass nodes that will "capture" the output
-        if (node.getType() == TwingNodeType.CAPTURE) {
+        if (node.getOutputType() == TwingNodeOutputType.CAPTURE) {
             return node;
         }
 
-        if (node.getType() == TwingNodeType.OUTPUT) {
+        if (node.getOutputType() == TwingNodeOutputType.OUTPUT) {
             return null;
         }
 

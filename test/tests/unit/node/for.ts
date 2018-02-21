@@ -8,6 +8,7 @@ import TwingMap from "../../../../src/map";
 import TwingNodePrint from "../../../../src/node/print";
 import TwingNode from "../../../../src/node";
 import TwingNodeFor from "../../../../src/node/for";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -40,6 +41,7 @@ tap.test('node/for', function (test: Test) {
         node.setAttribute('with_loop', false);
 
         test.same(node.getNode('else'), else_);
+        test.same(node.getType(), TwingNodeType.FOR);
 
         test.end();
     });

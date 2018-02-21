@@ -9,6 +9,7 @@ import TwingProfilerProfile from "../profile";
 import TwingNodeBody from "../../node/body";
 import TwingProfilerNodeEnterProfile from "../node/enter-profile";
 import TwingProfilerNodeLeaveProfile from "../node/leave-profile";
+import TwingNodeType from "../../node-type";
 
 let md5 = require('locutus/php/strings/md5');
 let uniqid = require('locutus/php/misc/uniqid');
@@ -28,7 +29,7 @@ class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     }
 
     doLeaveNode(node: TwingNode, env: TwingEnvironment) {
-        if (node as any instanceof TwingNodeModule) {
+        if (node.getType() === TwingNodeType.MODULE) {
             let varName = this.getVarName();
 
             let displayStartNodes = new TwingMap();
@@ -45,7 +46,7 @@ class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
 
             node.setNode('display_end', new TwingNode(displayEndNodes));
         }
-        else if (node as any instanceof TwingNodeBlock) {
+        else if (node.getType() === TwingNodeType.BLOCK) {
             let varName = this.getVarName();
 
             let bodyNodes = new TwingMap();
@@ -56,7 +57,7 @@ class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
 
             node.setNode('body', new TwingNodeBody(bodyNodes));
         }
-        else if (node as any instanceof TwingNodeMacro) {
+        else if (node.getType() === TwingNodeType.MACRO) {
             let varName = this.getVarName();
 
             let bodyNodes = new TwingMap();

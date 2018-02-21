@@ -5,13 +5,14 @@ import TwingErrorSyntax from "../error/syntax";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNode from "../node";
 import TwingMap from "../map";
+import TwingNodeType from "../node-type";
 
 class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
         let template = this.parser.getExpressionParser().parseExpression();
         let stream = this.parser.getStream();
 
-        if (!(template instanceof TwingNodeExpressionConstant)) {
+        if (template.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
             throw new TwingErrorSyntax('The template references in a "use" statement must be a string.', stream.getCurrent().getLine(), stream.getSourceContext());
         }
 

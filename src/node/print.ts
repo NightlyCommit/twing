@@ -4,6 +4,7 @@ import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingNodeType from "../node-type";
 import TwingCompiler from "../compiler";
+import TwingNodeOutputType from "../node-output-type";
 
 class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
     constructor(expr: TwingNodeExpression, line: number, tag: string = null) {
@@ -13,7 +14,8 @@ class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface{
 
         super(nodes, new TwingMap(), line, tag);
 
-        this.type = TwingNodeType.OUTPUT;
+        this.type = TwingNodeType.PRINT;
+        this.outputType = TwingNodeOutputType.OUTPUT;
     }
 
     compile(compiler: TwingCompiler) {

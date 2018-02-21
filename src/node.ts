@@ -2,13 +2,15 @@ import TwingNodeType from "./node-type";
 import TwingNodeInterface from "./node-interface";
 import TwingMap from "./map";
 import TwingCompiler from "./compiler";
+import TwingNodeOutputType from "./node-output-type";
 
 class TwingNode implements TwingNodeInterface {
     protected nodes: TwingMap<string, TwingNode>;
     protected attributes: TwingMap<string, any>;
     protected lineno: number;
     protected tag: string;
-    protected type: TwingNodeType = TwingNodeType.NONE;
+    protected type: TwingNodeType;
+    protected outputType: TwingNodeOutputType = TwingNodeOutputType.NONE;
 
     private name: string = null;
 
@@ -28,8 +30,7 @@ class TwingNode implements TwingNodeInterface {
         this.attributes = attributes;
         this.lineno = lineno;
         this.tag = tag;
-
-        this.type = TwingNodeType.NONE;
+        this.type = null;
     }
 
     /**
@@ -52,13 +53,14 @@ class TwingNode implements TwingNodeInterface {
 
         result.lineno = this.lineno;
         result.tag = this.tag;
+        result.type = this.type;
 
         return result;
     }
 
     toString(indentation: number = 0) {
         let repr = [
-            this.constructor.name
+            this.constructor.name + ' (' + this.getType() + ')'
         ];
 
         if (this.attributes.size > 0) {
@@ -96,6 +98,10 @@ class TwingNode implements TwingNodeInterface {
 
     getType() {
         return this.type;
+    }
+
+    getOutputType() {
+        return this.outputType;
     }
 
     static ind = 0;

@@ -7,6 +7,7 @@ import TwingNode from "../../../../src/node";
 import TwingNodeExpressionName from "../../../../src/node/expression/name";
 import TwingNodeText from "../../../../src/node/text";
 import TwingNodeMacro from "../../../../src/node/macro";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -24,6 +25,7 @@ tap.test('node/macro', function (test: Test) {
         test.same(node.getNode('body'), body);
         test.same(node.getNode('arguments'), arguments_);
         test.same(node.getAttribute('name'), 'foo');
+        test.same(node.getType(), TwingNodeType.MACRO);
 
         test.end();
     });

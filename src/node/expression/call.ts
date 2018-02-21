@@ -234,6 +234,7 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
         if (parameters.size > 0) {
             let unknownParameter = [...parameters.values()].find(function (parameter) {
+                // todo: what other type of data can parameter be?
                 return parameter instanceof TwingNode;
             });
 

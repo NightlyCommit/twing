@@ -8,6 +8,7 @@ import TwingNodeSet from "../../../../src/node/set";
 import TwingNode from "../../../../src/node";
 import TwingNodePrint from "../../../../src/node/print";
 import TwingNodeText from "../../../../src/node/text";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -30,6 +31,7 @@ tap.test('node/set', function (test: Test) {
         test.same(node.getNode('names'), namesNode);
         test.same(node.getNode('values'), valuesNode);
         test.false(node.getAttribute('capture'));
+        test.same(node.getType(), TwingNodeType.SET);
 
         test.end();
     });

@@ -5,6 +5,7 @@ import TwingNodeExpressionAssignName from "./expression/assign-name";
 import TwingNodeForLoop from "./for-loop";
 import TwingNodeIf from "./if";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
@@ -46,6 +47,7 @@ class TwingNodeFor extends TwingNode {
 
         super(nodes, attributes, lineno, tag);
 
+        this.type = TwingNodeType.FOR;
         this.loop = loop;
     }
 

@@ -16,6 +16,7 @@ import TwingErrorSyntax from "../error/syntax";
 import TwingTokenType from "../token-type";
 import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeAutoEscape from "../node/auto-escape";
+import TwingNodeType from "../node-type";
 
 class TwingTokenParserAutoEscape extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
@@ -29,7 +30,7 @@ class TwingTokenParserAutoEscape extends TwingTokenParser {
         else {
             let expr = this.parser.getExpressionParser().parseExpression();
 
-            if (!(expr instanceof TwingNodeExpressionConstant)) {
+            if (expr.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
                 throw new TwingErrorSyntax('An escaping strategy must be a string or false.', stream.getCurrent().getLine(), stream.getSourceContext());
             }
 

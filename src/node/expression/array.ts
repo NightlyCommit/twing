@@ -13,14 +13,14 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
     constructor(elements: TwingMap<string, TwingNodeExpression>, lineno: number) {
         super(elements, new TwingMap(), lineno);
 
-        this.type = TwingNodeType.ARRAY;
+        this.type = TwingNodeType.EXPRESSION_ARRAY;
 
         this.index = -1;
 
         for (let pair of this.getKeyValuePairs()) {
             let expression = pair.key;
 
-            if ((expression instanceof TwingNodeExpressionConstant) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
+            if ((expression.getType() === TwingNodeType.EXPRESSION_CONSTANT) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
                 this.index = expression.getAttribute('value');
             }
         }

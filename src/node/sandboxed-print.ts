@@ -2,6 +2,7 @@ import TwingNodePrint from "./print"
 import TwingCompiler from "../compiler";
 import TwingNode from "../node";
 import TwingNodeExpressionFilter from "./expression/filter";
+import TwingNodeType from "../node-type";
 
 class TwingNodeSandboxedPrint extends TwingNodePrint {
     compile(compiler: TwingCompiler) {
@@ -21,7 +22,7 @@ class TwingNodeSandboxedPrint extends TwingNodePrint {
      * @returns {TwingNode}
      */
     private removeNodeFilter(node: TwingNode): TwingNode {
-        if (node instanceof TwingNodeExpressionFilter) {
+        if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
             return this.removeNodeFilter(node.getNode('node'));
         }
 
