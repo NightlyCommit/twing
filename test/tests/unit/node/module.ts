@@ -11,6 +11,7 @@ import TwingMap from "../../../../src/map";
 import TwingNodeExpressionConditional from "../../../../src/node/expression/conditional";
 import TwingNodeSet from "../../../../src/node/set";
 import TwingTestEnvironmentStub from "../../../environment-stub";
+import TwingTestLoaderStub from "../../../loader-stub";
 
 const tap = require('tap');
 
@@ -178,7 +179,8 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
             let traits = new TwingNode();
             let source = new TwingSource('{{ foo }}', 'foo.twig');
 
-            let twing = new TwingTestEnvironmentStub({debug: true});
+            let loader = new TwingTestLoaderStub();
+            let twing = new TwingTestEnvironmentStub(loader, {debug: true});
             let node = new TwingNodeModule(body, extends_, blocks, macros, traits, [], source);
 
             compiler = new TwingTestCompilerStub(twing);

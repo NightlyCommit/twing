@@ -1,9 +1,12 @@
 import TwingCompiler from "../src/compiler";
 import TwingTestEnvironmentStub from "./environment-stub";
+import TwingTestLoaderStub from "./loader-stub";
 
 class TwingTestCompilerStub extends TwingCompiler {
     constructor(env: TwingTestEnvironmentStub = null) {
-        super(env ? env : new TwingTestEnvironmentStub());
+        let loader = new TwingTestLoaderStub();
+
+        super(env ? env : new TwingTestEnvironmentStub(loader));
     }
 }
 

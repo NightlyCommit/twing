@@ -6,6 +6,7 @@ import TwingTestEnvironmentStub from "../../../../environment-stub";
 import TwingMap from "../../../../../src/map";
 import TwingNodeExpressionFunction from "../../../../../src/node/expression/function";
 import TwingFunction from "../../../../../src/function";
+import TwingTestLoaderStub from "../../../../loader-stub";
 
 const tap = require('tap');
 
@@ -32,7 +33,8 @@ tap.test('node/expression/function', function (test: Test) {
     });
 
     test.test('compile', function (test: Test) {
-        let environment = new TwingTestEnvironmentStub();
+        let loader = new TwingTestLoaderStub();
+        let environment = new TwingTestEnvironmentStub(loader);
         environment.addFunction(new TwingFunction('foo', twig_tests_function_dummy, {}));
         environment.addFunction(new TwingFunction('bar', twig_tests_function_dummy, {needs_environment: true}));
         environment.addFunction(new TwingFunction('foofoo', twig_tests_function_dummy, {needs_context: true}));

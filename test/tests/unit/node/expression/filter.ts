@@ -7,6 +7,8 @@ import TwingTestEnvironmentStub from "../../../../environment-stub";
 import TwingFilter from "../../../../../src/filter";
 import TwingMap from "../../../../../src/map";
 import TwingErrorSyntax from "../../../../../src/error/syntax";
+import TwingTestCountableStub from "../../../../countable-stub";
+import TwingTestLoaderStub from "../../../../loader-stub";
 
 const tap = require('tap');
 
@@ -38,7 +40,8 @@ tap.test('node/expression/filter', function (test: Test) {
     });
 
     test.test('compile', function (test: Test) {
-        let environment = new TwingTestEnvironmentStub();
+        let loader = new TwingTestLoaderStub();
+        let environment = new TwingTestEnvironmentStub(loader);
         environment.addFilter(new TwingFilter('bar', twig_tests_filter_dummy, {needs_environment: true}));
         environment.addFilter(new TwingFilter('barbar', twig_tests_filter_barbar, {
             needs_context: true,
