@@ -390,7 +390,7 @@ export abstract class TwingTemplate {
         await this.displayWithErrorHandling(this.env.mergeGlobals(context), this.blocks.merge(blocks));
     }
 
-    async render(context: any = {}): Promise<string> {
+    async render(context: any): Promise<string> {
         let level = TwingOutputBuffer.obGetLevel();
 
         TwingOutputBuffer.obStart();
