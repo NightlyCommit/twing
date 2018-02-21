@@ -11,6 +11,7 @@ import TwingMap from "../../../../src/map";
 import TwingNodeExpressionConditional from "../../../../src/node/expression/conditional";
 import TwingNodeSet from "../../../../src/node/set";
 import TwingTestEnvironmentStub from "../../../environment-stub";
+import TwingNodeType from "../../../../src/node-type";
 import TwingTestLoaderStub from "../../../loader-stub";
 
 const tap = require('tap');
@@ -30,6 +31,7 @@ tap.test('node/module', function (test: Test) {
         test.same(node.getNode('macros'), macros);
         test.same(node.getNode('parent'), parent);
         test.same(node.getTemplateName(), source.getName());
+        test.same(node.getType(), TwingNodeType.MODULE);
 
         test.end();
     });

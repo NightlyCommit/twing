@@ -1,8 +1,8 @@
 import TwingNodeExpression from "../expression";
 import TwingNodeExpressionArray from "./array";
 import TwingMap from "../../map";
-import TwingNodeExpressionName from "./name";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionMethodCall extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, method: string, methodArguments: TwingNodeExpressionArray, lineno: number) {
@@ -18,7 +18,9 @@ class TwingNodeExpressionMethodCall extends TwingNodeExpression {
 
         super(nodes, attributes, lineno);
 
-        if (node instanceof TwingNodeExpressionName) {
+        this.type = TwingNodeType.EXPRESSION_METHOD_CALL;
+
+        if (node.getType() == TwingNodeType.EXPRESSION_NAME) {
             node.setAttribute('always_defined', true);
         }
     }

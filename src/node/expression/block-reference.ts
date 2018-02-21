@@ -2,6 +2,7 @@ import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
 import TwingNode from "../../node";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     constructor(name: TwingNode, template: TwingNode = null, lineno: number, tag: string = null) {
@@ -19,6 +20,8 @@ class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         ]);
 
         super(nodes, attributes, lineno, tag);
+
+        this.type = TwingNodeType.EXPRESSION_BLOCK_REFERENCE;
     }
 
     compile(compiler: TwingCompiler) {

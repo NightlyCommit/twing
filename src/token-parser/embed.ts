@@ -5,6 +5,7 @@ import TwingNodeExpressionConstant from "../node/expression/constant";
 import TwingNodeExpressionName from "../node/expression/name";
 import TwingNodeEmbed from "../node/embed";
 import TwingNodeModule from "../node/module";
+import TwingNodeType from "../node-type";
 
 class TwingTokenParserEmbed extends TwingTokenParserInclude {
     parse(token: TwingToken) {
@@ -23,11 +24,10 @@ class TwingTokenParserEmbed extends TwingTokenParserInclude {
 
         parentToken = fakeParentToken = new TwingToken(TwingTokenType.STRING_TYPE, '__parent__', token.getLine());
 
-        // @see https://github.com/Microsoft/TypeScript/issues/10422
-        if (parent as any instanceof TwingNodeExpressionConstant) {
+        if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             parentToken = new TwingToken(TwingTokenType.STRING_TYPE, parent.getAttribute('value'), token.getLine());
         }
-        else if (parent as any instanceof TwingNodeExpressionName) {
+        else if (parent.getType() === TwingNodeType.EXPRESSION_NAME) {
             parentToken = new TwingToken(TwingTokenType.NAME_TYPE, parent.getAttribute('name'), token.getLine());
         }
 

@@ -8,6 +8,7 @@ import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingNodeExpressionName from "./expression/name";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeImport extends TwingNode {
     constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, tag: string = null) {
@@ -17,6 +18,8 @@ class TwingNodeImport extends TwingNode {
         nodes.set('var', varName);
 
         super(nodes, new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.IMPORT;
     }
 
     compile(compiler: TwingCompiler) {
@@ -27,7 +30,7 @@ class TwingNodeImport extends TwingNode {
             .raw(' = ')
         ;
 
-        if (this.getNode('expr') instanceof TwingNodeExpressionName && this.getNode('expr').getAttribute('name') === '_self') {
+        if (this.getNode('expr').getType() === TwingNodeType.EXPRESSION_NAME && this.getNode('expr').getAttribute('name') === '_self') {
             compiler.raw('this');
         }
         else {

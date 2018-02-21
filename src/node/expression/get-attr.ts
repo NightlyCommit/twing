@@ -2,6 +2,7 @@ import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
 import TwingTemplate from "../../template";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionGetAttr extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number) {
@@ -21,6 +22,8 @@ class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         nodeAttributes.set('ignore_strict_check', false);
 
         super(nodes, nodeAttributes, lineno);
+
+        this.type = TwingNodeType.EXPRESSION_GET_ATTR;
     }
 
     compile(compiler: TwingCompiler) {

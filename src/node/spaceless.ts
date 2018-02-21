@@ -1,6 +1,7 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeSpaceless extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag = 'spaceless') {
@@ -9,6 +10,8 @@ class TwingNodeSpaceless extends TwingNode {
         nodes.set('body', body);
 
         super(nodes, new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.SPACELESS;
     }
 
     compile(compiler: TwingCompiler) {

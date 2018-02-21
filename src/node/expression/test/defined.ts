@@ -1,14 +1,10 @@
 import TwingNodeExpressionTest from "../test";
 import TwingNode from "../../../node";
-import TwingNodeExpressionGetAttr from "../get-attr";
 import TwingNodeExpression from "../../expression";
 import TwingNodeExpressionConstant from "../constant";
 import TwingErrorSyntax from "../../../error/syntax";
-import TwingNodeExpressionName from "../name";
-import TwingNodeExpressionBlockReference from "../block-reference";
-import TwingNodeExpressionFunction from "../function";
-import TwingNodeExpressionArray from "../array";
 import TwingCompiler from "../../../compiler";
+import TwingNodeType from "../../../node-type";
 
 /**
  * Checks if a variable is defined in the active context.
@@ -25,21 +21,20 @@ class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         let changeIgnoreStrictCheck = false;
         let error = null;
 
-        // @see https://github.com/Microsoft/TypeScript/issues/10422
-        if (node as any instanceof TwingNodeExpressionName) {
+        if (node.getType() === TwingNodeType.EXPRESSION_NAME) {
             node.setAttribute('is_defined_test', true);
         }
-        else if (node as any instanceof TwingNodeExpressionGetAttr) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
             node.setAttribute('is_defined_test', true);
             changeIgnoreStrictCheck = true;
         }
-        else if (node as any instanceof TwingNodeExpressionBlockReference) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE) {
             node.setAttribute('is_defined_test', true);
         }
-        else if (node as any instanceof TwingNodeExpressionFunction && (node.getAttribute('name') === 'constant')) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && (node.getAttribute('name') === 'constant')) {
             node.setAttribute('is_defined_test', true);
         }
-        else if (node as any instanceof TwingNodeExpressionConstant || node as any instanceof TwingNodeExpressionArray) {
+        else if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY) {
             node = new TwingNodeExpressionConstant(true, node.getTemplateLine());
         }
         else {
@@ -62,7 +57,7 @@ class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
 
         let exprNode = <TwingNodeExpression>node.getNode('node');
 
-        if (exprNode instanceof TwingNodeExpressionGetAttr) {
+        if (exprNode.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
             this.changeIgnoreStrictCheck(exprNode);
         }
     }

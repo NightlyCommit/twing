@@ -1,6 +1,7 @@
 import TwingNodeExpression from "../expression";
 import TwingMap from "../../map";
 import TwingCompiler from "../../compiler";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionName extends TwingNodeExpression {
     private specialVars: TwingMap<string, string>;
@@ -20,6 +21,8 @@ class TwingNodeExpressionName extends TwingNodeExpression {
             ['_context', 'context'],
             ['_charset', 'this.env.getCharset()']
         ]);
+
+        this.type = TwingNodeType.EXPRESSION_NAME;
     }
 
     compile(compiler: TwingCompiler) {

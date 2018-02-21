@@ -7,6 +7,7 @@ import TwingNodePrint from "../../../../src/node/print";
 import TwingNodeExpressionName from "../../../../src/node/expression/name";
 import TwingNode from "../../../../src/node";
 import TwingNodeIf from "../../../../src/node/if";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -28,6 +29,7 @@ tap.test('node/if', function (test: Test) {
         node = new TwingNodeIf(t, else_, 1);
 
         test.same(node.getNode('else'), else_);
+        test.same(node.getType(), TwingNodeType.IF);
 
         test.end();
     });

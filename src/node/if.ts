@@ -1,6 +1,7 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeIf extends TwingNode {
     constructor(tests: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {
@@ -13,6 +14,8 @@ class TwingNodeIf extends TwingNode {
         }
 
         super(nodes, new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.IF;
     }
 
     compile(compiler: TwingCompiler) {

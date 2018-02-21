@@ -26,7 +26,7 @@ nh.hook('.html', function (source: string, filename: string) {
 
 // gather fixtures
 // let directory = path.resolve('test/fixtures/tags/embed/error_line');
-// let directory = path.resolve('test/tests/integration/fixtures/async');
+// let directory = path.resolve('test/tests/integration/fixtures/functions/dump');
 let directory = path.resolve('test/tests/integration/fixtures');
 
 let files = finder.from(directory).findFiles('test.ts');

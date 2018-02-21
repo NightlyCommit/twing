@@ -22,8 +22,7 @@ import TwingNodeExpressionParent from "./node/expression/parent";
 import TwingNodeExpressionBlockReference from "./node/expression/block-reference";
 import TwingNodeExpressionHash from "./node/expression/hash";
 import TwingNodeExpressionUnaryNot from "./node/expression/unary/not";
-import TwingNodeExpressionUnaryNeg from "./node/expression/unary/neg";
-import TwingNodeExpressionUnaryPos from "./node/expression/unary/pos";
+import TwingNodeType from "./node-type";
 
 class TwingExpressionParser {
     private parser: TwingParser;
@@ -393,8 +392,8 @@ class TwingExpressionParser {
                 throw new TwingErrorSyntax('Expected name or number.', lineno, stream.getSourceContext());
             }
 
-            if ((node.constructor.name === 'TwingNodeExpressionName') && this.parser.getImportedSymbol('template', node.getAttribute('name'))) {
-                if (!(arg instanceof TwingNodeExpressionConstant)) {
+            if ((node.getType() === TwingNodeType.EXPRESSION_NAME) && this.parser.getImportedSymbol('template', node.getAttribute('name'))) {
+                if (arg.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
                     throw new TwingErrorSyntax(`Dynamic macro names are not supported (called on "${node.getAttribute('name')}").`, token.getLine(), stream.getSourceContext());
                 }
 
@@ -622,7 +621,7 @@ class TwingExpressionParser {
             let name = null;
 
             if (namedArguments && (token = stream.nextIf(TwingTokenType.OPERATOR_TYPE, '='))) {
-                if (!(value instanceof TwingNodeExpressionName)) {
+                if (value.getType() !== TwingNodeType.EXPRESSION_NAME) {
                     throw new TwingErrorSyntax(`A parameter name must be a string, "${typeof value}" given.`, token.getLine(), stream.getSourceContext());
                 }
                 name = value.getAttribute('name');
@@ -767,7 +766,7 @@ class TwingExpressionParser {
     checkConstantExpression(node: TwingNode) {
         let self = this;
 
-        if (!(node instanceof TwingNodeExpressionConstant || node instanceof TwingNodeExpressionArray || node instanceof TwingNodeExpressionUnaryNeg || node instanceof TwingNodeExpressionUnaryPos)) {
+        if (!(node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY || node.getType() === TwingNodeType.EXPRESSION_UNARY_NEG || node.getType() === TwingNodeType.EXPRESSION_UNARY_POS)) {
             return false;
         }
 

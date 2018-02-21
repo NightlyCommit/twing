@@ -8,7 +8,7 @@ class TwingNodeExpressionConstant extends TwingNodeExpression {
     constructor(value: TwingNode | string | number | boolean, lineno: number) {
         super(new TwingMap(), new TwingMap([['value', value]]), lineno);
 
-        this.type = TwingNodeType.CONSTANT;
+        this.type = TwingNodeType.EXPRESSION_CONSTANT;
     }
 
     compile(compiler: TwingCompiler) {

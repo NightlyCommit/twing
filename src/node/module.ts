@@ -6,6 +6,7 @@ import TwingNodeExpressionConstant from "./expression/constant";
 import TwingNodeBody from "./body";
 import TwingNodeText from "./text";
 import TwingNodeBlockReference from "./block-reference";
+import TwingNodeType from "../node-type";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 
@@ -40,6 +41,7 @@ class TwingNodeModule extends TwingNode {
 
         super(nodes, attributes, 1);
 
+        this.type = TwingNodeType.MODULE;
         this.source = source;
 
         // populate the template name of all node children
@@ -71,7 +73,7 @@ class TwingNodeModule extends TwingNode {
         if (this.getNode('blocks').getNodes().size ||
             this.getNode('traits').getNodes().size ||
             !this.hasNode('parent') ||
-            this.getNode('parent') instanceof TwingNodeExpressionConstant ||
+            this.getNode('parent').getType() === TwingNodeType.EXPRESSION_CONSTANT ||
             this.getNode('constructor_start').getNodes().size ||
             this.getNode('constructor_end').getNodes().size) {
             this.compileConstructor(compiler)
@@ -110,7 +112,7 @@ class TwingNodeModule extends TwingNode {
             .write('return ')
         ;
 
-        if (parent instanceof TwingNodeExpressionConstant) {
+        if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             compiler.subcompile(parent);
         }
         else {
@@ -159,7 +161,7 @@ class TwingNodeModule extends TwingNode {
         else {
             let parent = this.getNode('parent');
 
-            if (parent && (parent instanceof TwingNodeExpressionConstant)) {
+            if (parent && (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
                 compiler
                     .addDebugInfo(parent)
                     .write('this.parent = this.loadTemplate(')
@@ -322,7 +324,7 @@ class TwingNodeModule extends TwingNode {
                 .write('await ')
             ;
 
-            if (parent instanceof TwingNodeExpressionConstant) {
+            if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
                 compiler.raw('this.parent');
             } else {
                 compiler.raw('this.getParent(context)');
@@ -363,7 +365,7 @@ class TwingNodeModule extends TwingNode {
         if (traitable) {
             let nodes: TwingNode;
 
-            if (this.getNode('body') instanceof TwingNodeBody) {
+            if (this.getNode('body').getType() === TwingNodeType.BODY) {
                 nodes = this.getNode('body').getNode(0);
             }
             else {
@@ -383,11 +385,11 @@ class TwingNodeModule extends TwingNode {
                     continue;
                 }
 
-                if (node instanceof TwingNodeText && ctype_space(node.getAttribute('data'))) {
+                if (node.getType() === TwingNodeType.TEXT && ctype_space(node.getAttribute('data'))) {
                     continue;
                 }
 
-                if (node instanceof TwingNodeBlockReference) {
+                if (node.getType() === TwingNodeType.BLOCK_REFERENCE) {
                     continue;
                 }
 

@@ -1,11 +1,10 @@
 import {Test} from "tape";
 import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeDo from "../../../../src/node/do";
 import TwingNodeSpaceless from "../../../../src/node/spaceless";
 import TwingMap from "../../../../src/map";
 import TwingNodeText from "../../../../src/node/text";
 import TwingNode from "../../../../src/node";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -19,6 +18,7 @@ tap.test('node/spaceless', function (test: Test) {
         let node = new TwingNodeSpaceless(body, 1);
 
         test.same(node.getNode('body'), body);
+        test.same(node.getType(), TwingNodeType.SPACELESS);
 
         test.end();
     });

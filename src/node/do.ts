@@ -3,6 +3,7 @@ import TwingNodeExpression from "./expression";
 import TwingMap from "../map";
 import TwingTemplate from "../template";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 /**
  * Represents a do node.
@@ -16,6 +17,8 @@ import TwingCompiler from "../compiler";
 class TwingNodeDo extends TwingNode {
     constructor(expr: TwingNodeExpression, lineno: number, tag: string = null) {
         super(new TwingMap([['expr', expr]]), new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.DO;
     }
 
     compile(compiler: TwingCompiler) {

@@ -2,6 +2,7 @@ import {Test} from "tape";
 import TwingNodeExpressionConstant from "../../../../../../src/node/expression/constant";
 import TwingTestCompilerStub from "../../../../../compiler-stub";
 import TwingNodeExpressionUnaryNeg from "../../../../../../src/node/expression/unary/neg";
+import TwingNodeType from "../../../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -11,6 +12,7 @@ tap.test('node/expression/unary/neg', function (test: Test) {
         let node = new TwingNodeExpressionUnaryNeg(expr, 1);
 
         test.same(node.getNode('node'), expr);
+        test.same(node.getType(), TwingNodeType.EXPRESSION_UNARY_NEG);
 
         test.end();
     });

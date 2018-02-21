@@ -18,36 +18,36 @@ class TwingNodeCheckSecurity extends TwingNode {
     compile(compiler: TwingCompiler) {
         let tags = new TwingMap();
 
-        this.usedTags.forEach(function (node, name) {
-            if (node instanceof TwingNode) {
-                tags.set(name, node.getTemplateLine());
-            }
-            else {
+        for (let [name, node] of this.usedTags) {
+            if (typeof node === 'string') {
                 tags.set(node, null);
             }
-        });
+            else {
+                tags.set(name, node.getTemplateLine());
+            }
+        }
 
         let filters = new TwingMap();
 
-        this.usedFilters.forEach(function (node, name) {
-            if (node instanceof TwingNode) {
-                filters.set(name, node.getTemplateLine());
-            }
-            else {
+        for (let [name, node] of this.usedFilters) {
+            if (typeof node === 'string') {
                 filters.set(node, null);
             }
-        });
+            else {
+                filters.set(name, node.getTemplateLine());
+            }
+        }
 
         let functions = new TwingMap();
 
-        this.usedFunctions.forEach(function (node, name) {
-            if (node instanceof TwingNode) {
-                functions.set(name, node.getTemplateLine());
-            }
-            else {
+        for (let [name, node] of this.usedFunctions) {
+            if (typeof node === 'string') {
                 functions.set(node, null);
             }
-        });
+            else {
+                functions.set(name, node.getTemplateLine());
+            }
+        }
 
         compiler
             .write('let tags = ').repr(tags).raw(";\n")

@@ -4,6 +4,7 @@ import TwingMap from "../../../../src/map";
 import TwingNodeText from "../../../../src/node/text";
 import TwingNode from "../../../../src/node";
 import TwingNodeAutoEscape from "../../../../src/node/auto-escape";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -18,6 +19,7 @@ tap.test('node/autoescape', function (test: Test) {
 
         test.same(node.getNode('body'), body);
         test.true(node.getAttribute('value'));
+        test.same(node.getType(), TwingNodeType.AUTO_ESCAPE);
 
         test.end();
     });

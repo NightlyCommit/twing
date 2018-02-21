@@ -7,6 +7,7 @@ import TwingNodeExpressionTest from "../../../../../src/node/expression/test";
 import TwingTestEnvironmentStub from "../../../../environment-stub";
 import TwingTest from "../../../../../src/test";
 import TwingNodeExpressionTestNull from "../../../../../src/node/expression/test/null";
+import TwingNodeType from "../../../../../src/node-type";
 import TwingTestLoaderStub from "../../../../loader-stub";
 
 const tap = require('tap');
@@ -28,6 +29,7 @@ tap.test('node/expression/test', function (test: Test) {
         test.same(node.getNode('node'), expr);
         test.same(node.getNode('arguments'), args);
         test.same(node.getAttribute('name'), name);
+        test.same(node.getType(), TwingNodeType.EXPRESSION_TEST);
 
         test.end();
     });

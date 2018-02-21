@@ -1,14 +1,12 @@
 import TwingBaseNodeVisitor from "../base-node-visitor";
 import TwingEnvironment from "../environment";
 import TwingNode from "../node";
-import TwingNodeModule from "../node/module";
 import TwingMap from "../map";
-import TwingNodeExpressionFilter from "../node/expression/filter";
-import TwingNodePrint from "../node/print";
 import TwingNodeExpressionFunction from "../node/expression/function";
 import TwingNodeSandboxedPrint from "../node/sandboxed-print";
 import TwingNodeExpression from "../node/expression";
 import TwingNodeCheckSecurity from "../node/check-security";
+import TwingNodeType from "../node-type";
 
 class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private inAModule: boolean = false;
@@ -17,7 +15,7 @@ class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private functions: TwingMap<string, TwingNode>;
 
     doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node instanceof TwingNodeModule) {
+        if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = true;
             this.tags = new TwingMap();
             this.filters = new TwingMap();
@@ -32,17 +30,17 @@ class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             }
 
             // look for filters
-            if (node instanceof TwingNodeExpressionFilter && !this.filters.has(node.getNode('filter').getAttribute('value'))) {
+            if (node.getType() === TwingNodeType.EXPRESSION_FILTER && !this.filters.has(node.getNode('filter').getAttribute('value'))) {
                 this.filters.set(node.getNode('filter').getAttribute('value'), node);
             }
 
             // look for functions
-            if (node instanceof TwingNodeExpressionFunction && !this.functions.has(node.getAttribute('name'))) {
+            if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && !this.functions.has(node.getAttribute('name'))) {
                 this.functions.set(node.getAttribute('name'), node);
             }
 
             // wrap print to check toString() calls
-            if (node instanceof TwingNodePrint) {
+            if (node.getType() === TwingNodeType.PRINT) {
                 return new TwingNodeSandboxedPrint(node.getNode('expr') as TwingNodeExpression, node.getTemplateLine(), node.getNodeTag());
             }
         }
@@ -51,7 +49,7 @@ class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     }
 
     doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node instanceof TwingNodeModule) {
+        if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = false;
 
             let nodes = new TwingMap();

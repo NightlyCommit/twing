@@ -1,10 +1,13 @@
 import TwingNode from "../node";
 import TwingMap from "../map";
 import TwingCompiler from "../compiler";
+import TwingNodeType from "../node-type";
 
 class TwingNodeSandbox extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag: string = null) {
         super(new TwingMap([['body', body]]), new TwingMap(), lineno, tag);
+
+        this.type = TwingNodeType.SANDBOX;
     }
 
     compile(compiler: TwingCompiler) {

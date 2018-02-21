@@ -4,6 +4,7 @@ import TwingMap from "../map";
 import TwingCompiler from "../compiler";
 import TwingNodeText from "./text";
 import TwingNodeExpressionConstant from "./expression/constant";
+import TwingNodeOutputType from "../node-output-type";
 
 class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
@@ -19,7 +20,8 @@ class TwingNodeSet extends TwingNode {
 
         super(nodes, attributes, lineno, tag);
 
-        this.type = TwingNodeType.CAPTURE;
+        this.type = TwingNodeType.SET;
+        this.outputType = TwingNodeOutputType.CAPTURE;
 
         /*
          * Optimizes the node when capture is used for a large block of text.
@@ -31,7 +33,7 @@ class TwingNodeSet extends TwingNode {
 
             let values = this.getNode('values');
 
-            if (values instanceof TwingNodeText) {
+            if (values.getType() === TwingNodeType.TEXT) {
                 this.setNode('values', new TwingNodeExpressionConstant(values.getAttribute('data'), values.getTemplateLine()));
                 this.setAttribute('capture', false);
             }

@@ -6,7 +6,7 @@ import TwingNodeExpressionTestNull from "./test/null";
 import TwingNode from "../../node";
 import TwingNodeExpressionBinaryAnd from "./binary/and";
 import TwingCompiler from "../../compiler";
-import TwingNodeExpressionName from "./name";
+import TwingNodeType from "../../node-type";
 
 class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
     constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number) {
@@ -17,10 +17,12 @@ class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
         );
 
         super(test, left, right, lineno);
+
+        this.type = TwingNodeType.EXPRESSION_NULL_COALESCE;
     }
 
     compile(compiler: TwingCompiler) {
-        if (this.getNode('expr2') instanceof TwingNodeExpressionName) {
+        if (this.getNode('expr2').getType() === TwingNodeType.EXPRESSION_NAME) {
             this.getNode('expr2').setAttribute('always_defined', true);
         }
 

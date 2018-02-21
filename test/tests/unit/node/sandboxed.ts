@@ -1,9 +1,8 @@
 import {Test} from "tape";
 import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeSandboxedPrint from "../../../../src/node/sandboxed-print";
 import TwingNodeText from "../../../../src/node/text";
 import TwingNodeSandbox from "../../../../src/node/sandbox";
+import TwingNodeType from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -13,6 +12,7 @@ tap.test('node/sandboxed', function (test: Test) {
         let node = new TwingNodeSandbox(body, 1);
 
         test.same(node.getNode('body'), body);
+        test.same(node.getType(), TwingNodeType.SANDBOX);
 
         test.end();
     });
