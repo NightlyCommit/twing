@@ -41,7 +41,9 @@ export class TwingCacheFilesystem extends TwingCache {
         let modulePath: string = path.resolve(key);
 
         if (fs.pathExistsSync(modulePath)) {
-            return require(modulePath);
+            let requireUncached = require('require-uncached');
+
+            return requireUncached(modulePath);
         }
 
         return null;
