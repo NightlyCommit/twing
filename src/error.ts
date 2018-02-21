@@ -10,7 +10,6 @@ const stackTrace = require('stack-trace');
 
 export class TwingError extends Error {
     sourceName: string;
-    message: string;
 
     private lineno: number | boolean;
     private rawMessage: string;
