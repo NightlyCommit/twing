@@ -5,6 +5,7 @@ import TwingNodeExpressionArray from "../../../../../src/node/expression/array";
 import TwingTestCompilerStub from "../../../../compiler-stub";
 import TwingNodeExpressionName from "../../../../../src/node/expression/name";
 import TwingTestEnvironmentStub from "../../../../environment-stub";
+import TwingTestLoaderStub from "../../../../loader-stub";
 
 const tap = require('tap');
 
@@ -21,8 +22,9 @@ tap.test('node/expression/name', function (test: Test) {
         let self = new TwingNodeExpressionName('_self', 1);
         let context = new TwingNodeExpressionName('_context', 1);
 
-        let compiler = new TwingTestCompilerStub(new TwingTestEnvironmentStub({strict_variables: true}));
-        let compiler1 = new TwingTestCompilerStub(new TwingTestEnvironmentStub({strict_variables: false}));
+        let loader = new TwingTestLoaderStub();
+        let compiler = new TwingTestCompilerStub(new TwingTestEnvironmentStub(loader, {strict_variables: true}));
+        let compiler1 = new TwingTestCompilerStub(new TwingTestEnvironmentStub(loader, {strict_variables: false}));
 
         test.same(compiler.compile(node).getSource(), `// line 1
 (context.has("foo") ? context.get("foo") : (() => { throw new Twing.TwingErrorRuntime('Variable "foo" does not exist.', 1, this.getSourceContext()); })())`);

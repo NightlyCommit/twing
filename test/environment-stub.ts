@@ -1,10 +1,11 @@
 import TwingEnvironment from "../src/environment";
 import TwingTestLoaderStub from "./loader-stub";
 import TwingEnvironmentOptions from "../src/environment-options";
+import TwingLoaderInterface from "../src/loader-interface";
 
 class TwingTestEnvironmentStub extends TwingEnvironment {
-    constructor(options: TwingEnvironmentOptions = {}) {
-        super(new TwingTestLoaderStub(), options);
+    constructor(loader: TwingLoaderInterface, options: TwingEnvironmentOptions = {}) {
+        super(loader, options);
     }
 
     getTemplateClass(name: string, index: number = null) {
