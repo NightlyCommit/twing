@@ -12,7 +12,10 @@ export = class extends TwingTestIntegrationTestCase {
 
     getData() {
         return {
-            vars: new Map([['foo', 'bar']])
+            vars: new Map([['foo', 'bar']]),
+            vars_as_obj: {
+                foo: 'bar'
+            }
         };
     }
 
