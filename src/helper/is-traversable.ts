@@ -12,8 +12,10 @@
  *
  * @returns {boolean} true if the value is traversable
  */
+import {isNullOrUndefined} from "util";
+
 export default function isTraversable(value: any) {
-    if (value !== null) {
+    if (!isNullOrUndefined(value)) {
         // in PHP strings are traversable
         if (typeof value === 'string') {
             return false;
