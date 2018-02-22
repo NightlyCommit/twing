@@ -18,7 +18,7 @@ export function iteratorToMap(thing: any): TwingMap<any, any> {
                 result.push(value);
             }
         }
-        else if (typeof thing === 'object') {
+        else {
             for (let k in thing) {
                 result.set(k, thing[k]);
             }
