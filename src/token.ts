@@ -1,14 +1,14 @@
-import Position from "./token-position";
+import TokenPosition from "./token-position";
 import TwingTokenType from "./token-type";
 
 class TwingToken {
-    position: Position;
+    position: TokenPosition;
     type: TwingTokenType;
     value: string;
     lineno: number;
 
     constructor(type: TwingTokenType, value: string, lineno: number) {
-        this.position = new Position;
+        this.position = new TokenPosition;
         this.type = type;
         this.value = value;
         this.lineno = lineno;

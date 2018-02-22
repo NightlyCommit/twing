@@ -88,22 +88,5 @@
     "tokenizer": "1.1.x",
     "ts-node": "^4.1.0",
     "typescript": "^2.6.2"
-  },
-  "nyc": {
-    "all": true,
-    "lines": 100,
-    "branches": 100,
-    "functions": 100,
-    "extension": [
-      ".ts"
-    ],
-    "include": "src",
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "require": [
-      "ts-node/register/type-check"
-    ]
   }
 }

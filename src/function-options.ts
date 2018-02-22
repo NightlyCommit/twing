@@ -1,4 +1,4 @@
-interface TwingFunctionOptions {
+type TwingFunctionOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
     is_variadic?: boolean;

@@ -1,0 +1,21 @@
+{
+    "all": true,
+    "lines": 100,
+    "branches": 100,
+    "functions": 100,
+    "extension": [
+      ".ts"
+    ],
+    "include": "src",
+    "exclude": [
+      "**/*-interface.ts",
+      "**/*-options.ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "require": [
+      "ts-node/register/type-check"
+    ]
+}

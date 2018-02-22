@@ -1,5 +1,4 @@
 import TwingEnvironment from "../src/environment";
-import TwingTestLoaderStub from "./loader-stub";
 import TwingEnvironmentOptions from "../src/environment-options";
 import TwingLoaderInterface from "../src/loader-interface";
 
