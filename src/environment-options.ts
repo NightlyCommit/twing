@@ -32,7 +32,7 @@
  */
 import TwingCacheInterface from "./cache-interface";
 
-interface TwingEnvironmentOptions {
+type TwingEnvironmentOptions = {
     debug?: boolean;
     charset?: string;
     base_template_class?: string;

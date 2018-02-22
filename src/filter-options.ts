@@ -1,6 +1,6 @@
 import TwingFilter from "./filter";
 
-interface TwingFilterOptions {
+type TwingFilterOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
     is_variadic?: boolean;
