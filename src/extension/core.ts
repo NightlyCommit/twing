@@ -919,8 +919,8 @@ export function twingUrlencodeFilter(url: string | {}): string {
  *  {# items now contains { 'apple': 'fruit', 'orange': 'fruit', 'peugeot': 'car' } #}
  * </pre>
  *
- * @param array|Traversable $arr1 An array
- * @param array|Traversable $arr2 An array
+ * @param {*} arr1 An array
+ * @param {*} arr2 An array
  *
  * @return array The merged array
  */
@@ -929,14 +929,14 @@ export function twingArrayMerge(arr1: any, arr2: any) {
         arr1 = iteratorToMap(arr1);
     }
     else {
-        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${typeof arr1}" as first argument.`);
+        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr1) ? typeof arr1 : arr1}" as first argument.`);
     }
 
     if (isTraversable(arr2)) {
         arr2 = iteratorToMap(arr2);
     }
     else {
-        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${typeof arr2}" as first argument.`);
+        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr2) ? typeof arr2 : arr2}" as second argument.`);
     }
 
     return arr1.merge(arr2);
