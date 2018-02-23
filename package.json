@@ -9,7 +9,7 @@
     "twig-engine",
     "typescript"
   ],
-  "version": "0.5.2",
+  "version": "0.5.3",
   "homepage": "https://github.com/ericmorand/twing",
   "licenses": [
     {
