@@ -658,10 +658,10 @@ export function twingDateFormatFilter(env: TwingEnvironment, date: DateTime | In
     date = twingDateConverter(env, date, timezone);
 
     if (date instanceof Interval) {
-        return formatDateInterval(env, date, format);
+        return formatDateInterval(date, format);
     }
 
-    return formatDateTime(env, date, format);
+    return formatDateTime(date, format);
 }
 
 /**
@@ -790,7 +790,7 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
     }
 
     Reflect.set(result, 'format', function (format: string) {
-        return formatDateTime(env, this);
+        return formatDateTime(this, format);
     });
 
     return result;

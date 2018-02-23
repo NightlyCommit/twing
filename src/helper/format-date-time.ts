@@ -10,14 +10,7 @@ const dateformatConverter = require('dateformat-converter');
  * @param {string} format
  * @returns {string}
  */
-export default function formatDateTime(env: TwingEnvironment, date: DateTime, format: string = null) {
-    if (format === null) {
-        let coreExtension = env.getCoreExtension();
-        let formats = coreExtension.getDateFormat();
-
-        format = formats[0];
-    }
-
+export default function formatDateTime(date: DateTime, format: string = null) {
     if (format === 'r') {
         return date.toRFC2822();
     }
@@ -38,7 +31,7 @@ export default function formatDateTime(env: TwingEnvironment, date: DateTime, fo
         monthsFullText: 'F',
         yearsTwoDigits: 'y',
         yearsFourDigits: 'Y',
-        unixTimestamp: 'X',
+        unixTimestamp: 'U',
         timezoneName: 'P'
     };
 
@@ -60,7 +53,7 @@ export default function formatDateTime(env: TwingEnvironment, date: DateTime, fo
         monthsFullText: 'MMMM',
         yearsTwoDigits: 'yy',
         yearsFourDigits: 'yyyy',
-        unixTimestamp: 'X',
+        unixTimestamp: date.toJSDate().getTime().toString(),
         timezoneName: 'ZZ'
     };
 

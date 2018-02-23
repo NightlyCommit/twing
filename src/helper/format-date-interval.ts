@@ -1,3 +1,15 @@
+import {Duration, Interval} from "luxon";
+
+const pad = require('pad');
+
+const padStart = function (value: number, length: number, padString: string): string {
+    let result: string = '' + value;
+
+    result = pad(length, result, padString);
+
+    return result;
+};
+
 /**
  *
  * @param {"luxon".luxon.Interval} interval
@@ -6,29 +18,7 @@
  *
  * @see http://php.net/manual/en/dateinterval.format.php
  */
-import TwingEnvironment from "../environment";
-import {Duration, Interval} from "luxon";
-
-const pad = require('pad');
-
-const padStart = function (value: number, length: number = 1, padString: string = ' '): string {
-    let result: string = '' + value;
-
-    result = pad(length, result, padString);
-
-    return result;
-};
-
-export default function formatDateInterval(env: TwingEnvironment, interval: Interval, format: string): string {
-    let self = this;
-
-    if (format === null) {
-        let coreExtension = env.getCoreExtension();
-        let formats = coreExtension.getDateFormat();
-
-        format = formats[1];
-    }
-
+export default function formatDateInterval(interval: Interval, format: string): string {
     let result: string;
     let units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
     let duration: Duration = interval.toDuration(units);
