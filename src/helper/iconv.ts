@@ -9,7 +9,7 @@ import * as iconvLite from "iconv-lite";
  *
  * @returns {string} the converted string or false on failure.
  */
-export default function iconv(inCharset: string, outCharset: string, str: string) {
+export function iconv(inCharset: string, outCharset: string, str: string) {
     let buffer: Buffer = new Buffer(str);
 
     str = iconvLite.decode(buffer, inCharset);

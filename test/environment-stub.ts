@@ -1,8 +1,8 @@
-import TwingEnvironment from "../src/environment";
-import TwingEnvironmentOptions from "../src/environment-options";
-import TwingLoaderInterface from "../src/loader-interface";
+import {TwingEnvironment} from "../src/environment";
+import {TwingEnvironmentOptions} from "../src/environment-options";
+import {TwingLoaderInterface} from "../src/loader-interface";
 
-class TwingTestEnvironmentStub extends TwingEnvironment {
+export class TwingTestEnvironmentStub extends TwingEnvironment {
     constructor(loader: TwingLoaderInterface, options: TwingEnvironmentOptions = {}) {
         super(loader, options);
     }
@@ -11,5 +11,3 @@ class TwingTestEnvironmentStub extends TwingEnvironment {
         return '__TwingTemplate_foo';
     }
 }
-
-export default TwingTestEnvironmentStub;

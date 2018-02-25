@@ -7,18 +7,18 @@
  * {% endmacro %}
  * </pre>
  */
-import TwingToken from "../token";
-import TwingTokenParser from "../token-parser";
-import TwingTokenType from "../token-type";
-import TwingErrorSyntax from "../error/syntax";
-import TwingNodeBody from "../node/body";
-import TwingMap from "../map";
-import TwingNodeMacro from "../node/macro";
-import TwingNode from "../node";
+import {TwingToken} from "../token";
+import {TwingTokenParser} from "../token-parser";
+import {TwingTokenType} from "../token-type";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingNodeBody} from "../node/body";
+import {TwingMap} from "../map";
+import {TwingNodeMacro} from "../node/macro";
+import {TwingNode} from "../node";
 
 const varValidator = require('var-validator');
 
-class TwingTokenParserMacro extends TwingTokenParser {
+export class TwingTokenParserMacro extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
@@ -66,5 +66,3 @@ class TwingTokenParserMacro extends TwingTokenParser {
         return 'macro';
     }
 }
-
-export default TwingTokenParserMacro;

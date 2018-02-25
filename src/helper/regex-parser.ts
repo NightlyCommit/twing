@@ -8,5 +8,3 @@ const parser = require('regex-parser');
 export function regexParser(input: string): RegExp {
     return parser(input);
 }
-
-export default regexParser;

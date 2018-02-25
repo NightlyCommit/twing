@@ -1,13 +1,13 @@
-import TwingNode from "../../node";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
+import {TwingNode} from "../../node";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
 
 /**
  * Represents a profile enter node.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TwingProfilerNodeEnterProfile extends TwingNode {
+export class TwingProfilerNodeEnterProfile extends TwingNode {
     constructor(extensionName: string, type: string, name: string, varName: string) {
         super(new TwingMap(), new TwingMap([['extension_name', extensionName], ['name', name], ['type', type], ['var_name', varName]]));
     }
@@ -25,5 +25,3 @@ class TwingProfilerNodeEnterProfile extends TwingNode {
         ;
     }
 }
-
-export default TwingProfilerNodeEnterProfile;

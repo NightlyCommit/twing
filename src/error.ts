@@ -3,8 +3,8 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingSource from "./source";
-import TwingTemplate from "./template";
+import {TwingSource} from "./source";
+import {TwingTemplate} from "./template";
 
 const stackTrace = require('stack-trace');
 
@@ -218,5 +218,3 @@ export class TwingError extends Error {
         }
     }
 }
-
-export default TwingError;

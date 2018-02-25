@@ -1,13 +1,12 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeDo from "../../../../src/node/do";
-import TwingMap from "../../../../src/map";
-import TwingNodePrint from "../../../../src/node/print";
-import TwingNodeExpressionName from "../../../../src/node/expression/name";
-import TwingNode from "../../../../src/node";
-import TwingNodeIf from "../../../../src/node/if";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodePrint} from "../../../../src/node/print";
+import {TwingNodeExpressionName} from "../../../../src/node/expression/name";
+import {TwingNode} from "../../../../src/node";
+import {TwingNodeIf} from "../../../../src/node/if";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -37,7 +36,7 @@ tap.test('node/if', function (test: Test) {
     test.test('compile', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
 
-        test.test('without else', function(test: Test) {
+        test.test('without else', function (test: Test) {
             let tNodes = new TwingMap();
 
             tNodes.push(new TwingNodeExpressionConstant(true, 1));
@@ -55,7 +54,7 @@ if (true) {
             test.end();
         });
 
-        test.test('with multiple tests', function(test: Test) {
+        test.test('with multiple tests', function (test: Test) {
             let tNodes = new TwingMap();
 
             tNodes.push(new TwingNodeExpressionConstant(true, 1));
@@ -79,7 +78,7 @@ else if (false) {
             test.end();
         });
 
-        test.test('with else', function(test: Test) {
+        test.test('with else', function (test: Test) {
             let tNodes = new TwingMap();
 
             tNodes.push(new TwingNodeExpressionConstant(true, 1));

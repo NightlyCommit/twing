@@ -1,7 +1,7 @@
-import TwingMarkup from "../markup";
-import TwingEnvironment from "../environment";
-import TwingMap from "../map";
-import TwingErrorRuntime from "../error/runtime";
+import {TwingMarkup} from "../markup";
+import {TwingEnvironment} from "../environment";
+import {TwingMap} from "../map";
+import {TwingErrorRuntime} from "../error/runtime";
 
 /**
  * Escapes a string.
@@ -16,7 +16,7 @@ import TwingErrorRuntime from "../error/runtime";
  *
  * @returns {string}
  */
-export default function escape(env: TwingEnvironment, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false) {
+export function escape(env: TwingEnvironment, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false) {
     const htmlspecialchars = require('htmlspecialchars');
     const secureFilters = require('secure-filters');
     const array_merge = require('locutus/php/array/array_merge');

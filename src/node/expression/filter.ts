@@ -1,11 +1,11 @@
-import TwingNode from "../../node";
-import TwingNodeExpressionConstant from "./constant";
-import TwingMap from "../../map";
-import TwingNodeExpressionCall from "./call";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNode} from "../../node";
+import {TwingNodeExpressionConstant} from "./constant";
+import {TwingMap} from "../../map";
+import {TwingNodeExpressionCall} from "./call";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
+export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
         let nodes = new TwingMap();
 
@@ -34,5 +34,3 @@ class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         this.compileCallable(compiler);
     }
 }
-
-export default TwingNodeExpressionFilter;

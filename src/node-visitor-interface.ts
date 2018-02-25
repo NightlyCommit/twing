@@ -4,10 +4,10 @@
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingNode from "./node";
-import TwingEnvironment from "./environment";
+import {TwingNode} from "./node";
+import {TwingEnvironment} from "./environment";
 
-interface TwingNodeVisitorInterface {
+export interface TwingNodeVisitorInterface {
     /**
      * Called before child nodes are visited.
      *
@@ -31,5 +31,3 @@ interface TwingNodeVisitorInterface {
      */
     getPriority(): number;
 }
-
-export default TwingNodeVisitorInterface;

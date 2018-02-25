@@ -1,4 +1,4 @@
-class TwingReflectionParameter {
+export class TwingReflectionParameter {
     private name: string;
     private defaultValue: any;
     private optional: boolean = false;
@@ -39,5 +39,3 @@ class TwingReflectionParameter {
         this.optional = flag;
     }
 }
-
-export default TwingReflectionParameter;

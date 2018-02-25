@@ -1,7 +1,7 @@
-import TwingExtension from "../extension";
-import TwingFunction from "../function";
-import TwingEnvironment from "../environment";
-import varDump from "../helper/var-dump";
+import {TwingExtension} from "../extension";
+import {TwingFunction} from "../function";
+import {TwingEnvironment} from "../environment";
+import {varDump} from "../helper/var-dump";
 
 export class TwingExtensionDebug extends TwingExtension {
     getFunctions() {
@@ -37,5 +37,3 @@ export function twingVarDump(env: TwingEnvironment, context: any, ...vars: Array
 
     return parts.join('\n');
 }
-
-export default TwingExtensionDebug;

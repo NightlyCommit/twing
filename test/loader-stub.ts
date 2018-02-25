@@ -1,7 +1,7 @@
-import TwingLoaderInterface from "../src/loader-interface";
-import TwingSource from "../src/source";
+import {TwingLoaderInterface} from "../src/loader-interface";
+import {TwingSource} from "../src/source";
 
-class TwingTestLoaderStub implements TwingLoaderInterface {
+export class TwingTestLoaderStub implements TwingLoaderInterface {
     getSourceContext(name: string): TwingSource {
         return new TwingSource('', 'foo.twig');
     }
@@ -19,5 +19,3 @@ class TwingTestLoaderStub implements TwingLoaderInterface {
     }
 
 }
-
-export default TwingTestLoaderStub;

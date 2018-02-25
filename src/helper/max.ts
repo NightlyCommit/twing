@@ -1,12 +1,12 @@
-import ensureIterable from './iterator-to-map';
+import {iteratorToMap} from './iterator-to-map';
 
-export default function twingMax(...things: Array<any>) {
+export function max(...things: Array<any>) {
     if (things.length === 1) {
         things = things[0];
     }
 
     if (typeof things === 'object') {
-        let iterable = ensureIterable(things).sort(function(a: any, b:any) {
+        let iterable = iteratorToMap(things).sort(function (a: any, b: any) {
             return a < b ? 1 : 0;
         });
 

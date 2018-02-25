@@ -1,9 +1,9 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeDo from "../node/do";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeDo} from "../node/do";
 
-class TwingTokenParserDo extends TwingTokenParser {
+export class TwingTokenParserDo extends TwingTokenParser {
     parse(token: TwingToken) {
         let expr = this.parser.getExpressionParser().parseExpression();
 
@@ -16,5 +16,3 @@ class TwingTokenParserDo extends TwingTokenParser {
         return 'do';
     }
 }
-
-export default TwingTokenParserDo;

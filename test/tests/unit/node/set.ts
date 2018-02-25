@@ -1,14 +1,13 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeDo from "../../../../src/node/do";
-import TwingMap from "../../../../src/map";
-import TwingNodeExpressionAssignName from "../../../../src/node/expression/assign-name";
-import TwingNodeSet from "../../../../src/node/set";
-import TwingNode from "../../../../src/node";
-import TwingNodePrint from "../../../../src/node/print";
-import TwingNodeText from "../../../../src/node/text";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodeExpressionAssignName} from "../../../../src/node/expression/assign-name";
+import {TwingNodeSet} from "../../../../src/node/set";
+import {TwingNode} from "../../../../src/node";
+import {TwingNodePrint} from "../../../../src/node/print";
+import {TwingNodeText} from "../../../../src/node/text";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 

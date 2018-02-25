@@ -1,11 +1,9 @@
-import TwingTest from "./test";
+import {TwingTest} from "./test";
 
-interface TwingTestOptions {
+export interface TwingTestOptions {
     is_variadic?: boolean;
     node_factory?: Function;
     deprecated?: string;
     alternative?: TwingTest;
     need_context?: boolean;
 }
-
-export default TwingTestOptions;

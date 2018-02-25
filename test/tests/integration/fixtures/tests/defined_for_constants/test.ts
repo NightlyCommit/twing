@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 const DATE_W3C = 'DATE_W3C';
 

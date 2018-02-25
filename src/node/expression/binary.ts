@@ -1,10 +1,10 @@
-import TwingNodeExpression from "../expression";
-import TwingNode from "../../node";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingNode} from "../../node";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
+export abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
     constructor(left: TwingNode, right: TwingNode, lineno: number) {
         let nodes = new TwingMap();
 
@@ -41,5 +41,3 @@ abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
         return compiler;
     }
 }
-
-export default TwingNodeExpressionBinary;

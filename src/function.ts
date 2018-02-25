@@ -1,6 +1,6 @@
-import TwingFunctionOptions from "./function-options";
-import TwingNodeExpressionFunction from "./node/expression/function";
-import TwingNode from "./node";
+import {TwingFunctionOptions} from "./function-options";
+import {TwingNodeExpressionFunction} from "./node/expression/function";
+import {TwingNode} from "./node";
 
 const merge = require('merge');
 
@@ -99,5 +99,3 @@ export class TwingFunction {
         return this.options.alternative;
     }
 }
-
-export default TwingFunction;

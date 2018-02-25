@@ -1,4 +1,4 @@
-import TwingSandboxSecurityError from "./security-error";
+import {TwingSandboxSecurityError} from "./security-error";
 
 export class TwingSandboxSecurityNotAllowedFunctionError extends TwingSandboxSecurityError {
     private functionName: string;
@@ -12,5 +12,3 @@ export class TwingSandboxSecurityNotAllowedFunctionError extends TwingSandboxSec
         return this.functionName;
     }
 }
-
-export default TwingSandboxSecurityNotAllowedFunctionError;

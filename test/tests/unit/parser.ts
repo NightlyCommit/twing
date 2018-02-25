@@ -1,21 +1,20 @@
 import {Test} from "tape";
-import TwingEnvironment from "../../../src/environment";
-import TwingParser from "../../../src/parser";
-import TwingNode from "../../../src/node";
-import TwingTokenStream from "../../../src/token-stream";
-import TwingTokenParser from "../../../src/token-parser";
-import TwingToken from "../../../src/token";
-import TwingTokenType from "../../../src/token-type";
-import TwingMap from "../../../src/map";
-import TwingNodeText from "../../../src/node/text";
-import TwingNodeSet from "../../../src/node/set";
-import TwingLoaderArray from "../../../src/loader/array";
-import TwingSource from "../../../src/source";
+import {TwingEnvironment} from "../../../src/environment";
+import {TwingParser} from "../../../src/parser";
+import {TwingNode} from "../../../src/node";
+import {TwingTokenStream} from "../../../src/token-stream";
+import {TwingTokenParser} from "../../../src/token-parser";
+import {TwingToken} from "../../../src/token";
+import {TwingTokenType} from "../../../src/token-type";
+import {TwingMap} from "../../../src/map";
+import {TwingNodeText} from "../../../src/node/text";
+import {TwingNodeSet} from "../../../src/node/set";
+import {TwingLoaderArray} from "../../../src/loader/array";
+import {TwingSource} from "../../../src/source";
 
 const tap = require('tap');
 
 let testEnv = new TwingEnvironment(null);
-
 
 let getParser = function () {
     let parser = new TwingParser(new TwingEnvironment(null));

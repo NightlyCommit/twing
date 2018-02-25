@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 /**
  * Note that the expected result from the original TwigPHP test is incorrect - but for some reason, the test passes successfully on TwigPHP.

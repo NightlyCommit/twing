@@ -1,9 +1,7 @@
 import {Test} from "tape";
-import TwingTestIntegrationTestCase from "../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../integration-test-case";
 
 const tap = require('tap');
-const tape = require('tape');
-const fs = require('fs');
 const path = require('path');
 const finder = require('fs-finder');
 const merge = require('merge');
@@ -25,8 +23,6 @@ nh.hook('.html', function (source: string, filename: string) {
 });
 
 // gather fixtures
-// let directory = path.resolve('test/fixtures/tags/embed/error_line');
-// let directory = path.resolve('test/tests/integration/fixtures/functions/dump');
 let directory = path.resolve('test/tests/integration/fixtures');
 
 let files = finder.from(directory).findFiles('test.ts');
@@ -74,21 +70,10 @@ tap.test('integration tests', async function (test: Test) {
             try {
                 let actual = await twing.render('index.twig', data);
 
-                // for (let [k, v] of templates) {
-                //     console.warn(twing.compile(twing.parse(twing.tokenize(twing.getLoader().getSourceContext(k)))));
-                // }
-
-
                 test.same(actual.trim(), expected.trim(), testMessage);
-
-                fs.writeFileSync(path.join(dirname, 'actual.html'), actual);
             }
             catch (e) {
                 console.warn(e);
-
-                // for (let [k, v] of templates) {
-                //     console.warn(twing.compile(twing.parse(twing.tokenize(twing.getLoader().getSourceContext(k)))));
-                // }
 
                 test.fail(`${testMessage} (${e})`);
             }
@@ -100,8 +85,6 @@ tap.test('integration tests', async function (test: Test) {
                 test.fail('should throw an error');
             }
             catch (e) {
-                // console.warn(e);
-
                 test.same(e.toString(), expectedErrorMessage, testMessage);
             }
         }

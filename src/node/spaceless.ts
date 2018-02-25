@@ -1,9 +1,9 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeSpaceless extends TwingNode {
+export class TwingNodeSpaceless extends TwingNode {
     constructor(body: TwingNode, lineno: number, tag = 'spaceless') {
         let nodes = new TwingMap();
 
@@ -23,5 +23,3 @@ class TwingNodeSpaceless extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeSpaceless;

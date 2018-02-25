@@ -1,14 +1,14 @@
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingParser from "./parser";
-import TwingToken from "./token";
-import TwingNode from "./node";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingParser} from "./parser";
+import {TwingToken} from "./token";
+import {TwingNode} from "./node";
 
 /**
  * Base class for all token parsers.
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-abstract class TwingTokenParser implements TwingTokenParserInterface {
+export abstract class TwingTokenParser implements TwingTokenParserInterface {
     parse(token: TwingToken): TwingNode {
         throw new Error("Method not implemented.");
     }
@@ -26,5 +26,3 @@ abstract class TwingTokenParser implements TwingTokenParserInterface {
         this.parser = parser;
     }
 }
-
-export default TwingTokenParser;

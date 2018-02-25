@@ -1,10 +1,10 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeInclude from "../node/include";
-import TwingNodeExpression from "../node/expression";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeInclude} from "../node/include";
+import {TwingNodeExpression} from "../node/expression";
 
-class TwingTokenParserInclude extends TwingTokenParser {
+export class TwingTokenParserInclude extends TwingTokenParser {
     parse(token: TwingToken) {
         let expr = this.parser.getExpressionParser().parseExpression();
 
@@ -17,7 +17,7 @@ class TwingTokenParserInclude extends TwingTokenParser {
      *
      * @returns {{variables: TwingNodeExpression; only: boolean; ignoreMissing: boolean}}
      */
-    protected parseArguments(): {variables: TwingNodeExpression; only: boolean; ignoreMissing: boolean} {
+    protected parseArguments(): { variables: TwingNodeExpression; only: boolean; ignoreMissing: boolean } {
         let stream = this.parser.getStream();
 
         let ignoreMissing = false;
@@ -53,5 +53,3 @@ class TwingTokenParserInclude extends TwingTokenParser {
         return 'include';
     }
 }
-
-export default TwingTokenParserInclude;

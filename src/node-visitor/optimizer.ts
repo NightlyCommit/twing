@@ -1,18 +1,7 @@
-import TwingBaseNodeVisitor from "../base-node-visitor";
-import TwingNode from "../node";
-import TwingEnvironment from "../environment";
-import TwingNodePrint from "../node/print";
-import TwingNodeExpressionBlockReference from "../node/expression/block-reference";
-import TwingNodeExpressionParent from "../node/expression/parent";
-import TwingNodeExpressionFilter from "../node/expression/filter";
-import TwingNodeFor from "../node/for";
-import TwingNodeExpressionName from "../node/expression/name";
-import TwingNodeBlockReference from "../node/block-reference";
-import TwingNodeInclude from "../node/include";
-import TwingNodeExpressionFunction from "../node/expression/function";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
-import TwingNodeType from "../node-type";
+import {TwingBaseNodeVisitor} from "../base-node-visitor";
+import {TwingNode} from "../node";
+import {TwingEnvironment} from "../environment";
+import {TwingNodeType} from "../node-type";
 
 const isInteger = require('is-integer');
 
@@ -26,7 +15,7 @@ const isInteger = require('is-integer');
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
+export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     readonly OPTIMIZE_ALL = -1;
     readonly OPTIMIZE_NONE = 0;
     readonly OPTIMIZE_FOR = 2;
@@ -187,5 +176,3 @@ class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
         return 255;
     }
 }
-
-export default TwingNodeVisitorOptimizer;

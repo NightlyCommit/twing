@@ -1,10 +1,10 @@
-import TwingNode from "../node";
-import TwingNodeType from "../node-type";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeOutputType from "../node-output-type";
+import {TwingNode} from "../node";
+import {TwingNodeType} from "../node-type";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeOutputType} from "../node-output-type";
 
-class TwingNodeText extends TwingNode {
+export class TwingNodeText extends TwingNode {
     constructor(data: string, line: number) {
         super(new TwingMap(), new TwingMap([['data', data]]), line);
 
@@ -21,5 +21,3 @@ class TwingNodeText extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeText;

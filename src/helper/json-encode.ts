@@ -1,3 +1,3 @@
-export default function jsonEncode(value: any): string {
+export function jsonEncode(value: any): string {
     return JSON.stringify(value);
 }

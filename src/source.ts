@@ -21,5 +21,3 @@ export class TwingSource {
         return this.path;
     }
 }
-
-export default TwingSource;

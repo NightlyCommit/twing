@@ -1,6 +1,6 @@
-import TwingCacheInterface from "./cache-interface";
+import {TwingCacheInterface} from "./cache-interface";
 
-abstract class TwingCache implements TwingCacheInterface {
+export abstract class TwingCache implements TwingCacheInterface {
     generateKey(name: string, className: string): string {
         throw new Error('Method not implemented.');
     }
@@ -18,5 +18,3 @@ abstract class TwingCache implements TwingCacheInterface {
     }
 
 }
-
-export default TwingCache;

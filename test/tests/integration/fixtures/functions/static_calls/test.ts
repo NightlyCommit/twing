@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 export = class extends TwingTestIntegrationTestCase {
     getDescription() {
@@ -16,7 +16,7 @@ export = class extends TwingTestIntegrationTestCase {
     getExpected() {
         return require('./expected.html');
     }
-    
+
     getData() {
         return {
             foo: 'foo'

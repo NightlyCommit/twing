@@ -18,7 +18,7 @@ const padStart = function (value: number, length: number, padString: string): st
  *
  * @see http://php.net/manual/en/dateinterval.format.php
  */
-export default function formatDateInterval(interval: Interval, format: string): string {
+export function formatDateInterval(interval: Interval, format: string): string {
     let result: string;
     let units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
     let duration: Duration = interval.toDuration(units);

@@ -34,5 +34,3 @@ export enum TwingNodeType {
     SPACELESS = 'spaceless',
     TEXT = 'text'
 }
-
-export default TwingNodeType;

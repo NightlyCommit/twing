@@ -1,14 +1,13 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeDo from "../../../../src/node/do";
-import TwingNodeExpressionAssignName from "../../../../src/node/expression/assign-name";
-import TwingNodeExpressionName from "../../../../src/node/expression/name";
-import TwingMap from "../../../../src/map";
-import TwingNodePrint from "../../../../src/node/print";
-import TwingNode from "../../../../src/node";
-import TwingNodeFor from "../../../../src/node/for";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingNodeExpressionAssignName} from "../../../../src/node/expression/assign-name";
+import {TwingNodeExpressionName} from "../../../../src/node/expression/name";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodePrint} from "../../../../src/node/print";
+import {TwingNode} from "../../../../src/node";
+import {TwingNodeFor} from "../../../../src/node/for";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -49,7 +48,7 @@ tap.test('node/for', function (test: Test) {
     test.test('compile', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
 
-        test.test('without loop', function(test: Test) {
+        test.test('without loop', function (test: Test) {
             // ...
             let keyTarget = new TwingNodeExpressionAssignName('key', 1);
             let valueTarget = new TwingNodeExpressionAssignName('item', 1);
@@ -94,7 +93,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             test.end();
         });
 
-        test.test('with loop', function(test: Test) {
+        test.test('with loop', function (test: Test) {
             // ...
             let keyTarget = new TwingNodeExpressionAssignName('k', 1);
             let valueTarget = new TwingNodeExpressionAssignName('v', 1);
@@ -164,7 +163,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             test.end();
         });
 
-        test.test('with ifexpr', function(test: Test) {
+        test.test('with ifexpr', function (test: Test) {
             // ...
             let keyTarget = new TwingNodeExpressionAssignName('k', 1);
             let valueTarget = new TwingNodeExpressionAssignName('v', 1);
@@ -223,7 +222,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             test.end();
         });
 
-        test.test('with else', function(test: Test) {
+        test.test('with else', function (test: Test) {
             // ...
             let keyTarget = new TwingNodeExpressionAssignName('k', 1);
             let valueTarget = new TwingNodeExpressionAssignName('v', 1);

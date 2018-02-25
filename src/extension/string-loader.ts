@@ -1,7 +1,7 @@
-import TwingExtension from "../extension";
-import TwingFunction from "../function";
-import TwingEnvironment from "../environment";
-import TwingTemplate from "../template";
+import {TwingExtension} from "../extension";
+import {TwingFunction} from "../function";
+import {TwingEnvironment} from "../environment";
+import {TwingTemplate} from "../template";
 
 export class TwingExtensionStringLoader extends TwingExtension {
     getFunctions() {
@@ -26,5 +26,3 @@ export class TwingExtensionStringLoader extends TwingExtension {
 export function twingTemplateFromString(env: TwingEnvironment, template: string): TwingTemplate {
     return env.createTemplate(template);
 }
-
-export default TwingExtensionStringLoader;

@@ -1,12 +1,11 @@
-import TwingNode from "../node";
-import TwingNodeType from "../node-type";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeText from "./text";
-import TwingNodeExpressionConstant from "./expression/constant";
-import TwingNodeOutputType from "../node-output-type";
+import {TwingNode} from "../node";
+import {TwingNodeType} from "../node-type";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeExpressionConstant} from "./expression/constant";
+import {TwingNodeOutputType} from "../node-output-type";
 
-class TwingNodeSet extends TwingNode {
+export class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
         let nodes = new TwingMap();
 
@@ -110,5 +109,3 @@ class TwingNodeSet extends TwingNode {
         compiler.raw(";\n");
     }
 }
-
-export default TwingNodeSet;

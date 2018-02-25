@@ -1,10 +1,10 @@
-import TwingNodeExpressionTest from "../test";
-import TwingNode from "../../../node";
-import TwingNodeExpression from "../../expression";
-import TwingNodeExpressionConstant from "../constant";
-import TwingErrorSyntax from "../../../error/syntax";
-import TwingCompiler from "../../../compiler";
-import TwingNodeType from "../../../node-type";
+import {TwingNodeExpressionTest} from "../test";
+import {TwingNode} from "../../../node";
+import {TwingNodeExpression} from "../../expression";
+import {TwingNodeExpressionConstant} from "../constant";
+import {TwingErrorSyntax} from "../../../error/syntax";
+import {TwingCompiler} from "../../../compiler";
+import {TwingNodeType} from "../../../node-type";
 
 /**
  * Checks if a variable is defined in the active context.
@@ -16,7 +16,7 @@ import TwingNodeType from "../../../node-type";
  * {% endif %}
  * </pre>
  */
-class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
+export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
     constructor(node: TwingNodeExpression, name: string, nodeArguments: TwingNode = null, lineno: number) {
         let changeIgnoreStrictCheck = false;
         let error = null;
@@ -66,5 +66,3 @@ class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         compiler.subcompile(this.getNode('node'));
     }
 }
-
-export default TwingNodeExpressionTestDefined;

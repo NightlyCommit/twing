@@ -3,8 +3,6 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-interface TwingNodeOutputInterface {
+export interface TwingNodeOutputInterface {
 
 }
-
-export default TwingNodeOutputInterface;

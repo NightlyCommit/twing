@@ -1,7 +1,7 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryPower extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryPower extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('Math.pow(')
@@ -12,5 +12,3 @@ class TwingNodeExpressionBinaryPower extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryPower;

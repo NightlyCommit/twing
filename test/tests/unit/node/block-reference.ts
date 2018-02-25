@@ -1,7 +1,7 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeBlockReference from "../../../../src/node/block-reference";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeBlockReference} from "../../../../src/node/block-reference";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 

@@ -1,7 +1,7 @@
-import TwingTestOptions from "./test-options";
-import TwingNodeExpression from "./node/expression";
-import TwingNode from "./node";
-import TwingNodeExpressionTest from "./node/expression/test";
+import {TwingTestOptions} from "./test-options";
+import {TwingNodeExpression} from "./node/expression";
+import {TwingNode} from "./node";
+import {TwingNodeExpressionTest} from "./node/expression/test";
 
 const merge = require('merge');
 
@@ -63,5 +63,3 @@ export class TwingTest {
         return this.options.alternative;
     }
 }
-
-export default TwingTest;

@@ -1,16 +1,16 @@
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingFilter from "./filter";
-import TwingFunction from "./function";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingExtensionInterface from "./extension-interface";
-import TwingExtensionStaging from "./extension/staging";
-import TwingMap from "./map";
-import TwingOperatorDefinitionInterface from "./operator-definition-interface";
-import TwingTest from "./test";
-import TwingEnvironment from "./environment";
-import TwingExtensionInitRuntime from "./extension/init-runtime";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingFilter} from "./filter";
+import {TwingFunction} from "./function";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingExtensionInterface} from "./extension-interface";
+import {TwingExtensionStaging} from "./extension/staging";
+import {TwingMap} from "./map";
+import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
+import {TwingTest} from "./test";
+import {TwingEnvironment} from "./environment";
+import {TwingExtensionInitRuntime} from "./extension/init-runtime";
 
-class TwingExtensionSet {
+export class TwingExtensionSet {
     private extensions: Map<string, TwingExtensionInterface>;
     private initialized: boolean = false;
     private runtimeInitialized: boolean = false;
@@ -116,7 +116,6 @@ class TwingExtensionSet {
         }
 
         let globals = new TwingMap();
-
 
         if (this.initialized) {
             this.globals = globals;
@@ -237,7 +236,6 @@ class TwingExtensionSet {
         this.unaryOperators = new Map([...this.unaryOperators, ...operators.unary]);
         this.binaryOperators = new Map([...this.binaryOperators, ...operators.binary]);
     }
-
 
     addFunction(twingFunction: TwingFunction) {
         if (this.initialized) {
@@ -439,5 +437,3 @@ class TwingExtensionSet {
         return null;
     }
 }
-
-export default TwingExtensionSet;

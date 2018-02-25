@@ -1,7 +1,7 @@
-import TokenPosition from "./token-position";
-import TwingTokenType from "./token-type";
+import {TokenPosition} from "./token-position";
+import {TwingTokenType} from "./token-type";
 
-class TwingToken {
+export class TwingToken {
     position: TokenPosition;
     type: TwingTokenType;
     value: string;
@@ -49,7 +49,6 @@ class TwingToken {
         return this.value;
     }
 
-
     toString() {
         return `${TwingToken.typeToEnglish(this.type)}(${this.value})`;
     }
@@ -87,5 +86,3 @@ class TwingToken {
         }
     }
 }
-
-export default TwingToken;

@@ -1,5 +1,5 @@
-import TwingNodeExpressionTest from "../test";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionTest} from "../test";
+import {TwingCompiler} from "../../../compiler";
 
 /**
  * Checks if a variable is divisible by a number.
@@ -10,7 +10,7 @@ import TwingCompiler from "../../../compiler";
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TwingNodeExpressionTestDivisibleBy extends TwingNodeExpressionTest {
+export class TwingNodeExpressionTestDivisibleBy extends TwingNodeExpressionTest {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('(0 == ')
@@ -21,5 +21,3 @@ class TwingNodeExpressionTestDivisibleBy extends TwingNodeExpressionTest {
         ;
     }
 }
-
-export default TwingNodeExpressionTestDivisibleBy;

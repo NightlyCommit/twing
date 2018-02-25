@@ -1,13 +1,13 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingErrorSyntax from "../error/syntax";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingNodeType from "../node-type";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingNodeExpressionConstant} from "../node/expression/constant";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingNodeType} from "../node-type";
 
-class TwingTokenParserUse extends TwingTokenParser {
+export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
         let template = this.parser.getExpressionParser().parseExpression();
         let stream = this.parser.getStream();
@@ -18,12 +18,12 @@ class TwingTokenParserUse extends TwingTokenParser {
 
         let targets = new TwingMap();
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE,'with')) {
+        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'with')) {
             do {
                 let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
                 let alias = name;
 
-                if (stream.nextIf(TwingTokenType.NAME_TYPE,'as')) {
+                if (stream.nextIf(TwingTokenType.NAME_TYPE, 'as')) {
                     alias = stream.expect(TwingTokenType.NAME_TYPE).getValue();
                 }
 
@@ -46,5 +46,3 @@ class TwingTokenParserUse extends TwingTokenParser {
         return 'use';
     }
 }
-
-export default TwingTokenParserUse;

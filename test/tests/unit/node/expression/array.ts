@@ -1,14 +1,14 @@
 import {Test} from "tape";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingNodeExpressionArray from "../../../../../src/node/expression/array";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeType from "../../../../../src/node-type";
+import {TwingMap} from "../../../../../src/map";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
+import {TwingNodeExpressionArray} from "../../../../../src/node/expression/array";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeType} from "../../../../../src/node-type";
 
 const tap = require('tap');
 
 tap.test('node/expression/array', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let foo = new TwingNodeExpressionConstant('bar', 1);
 
         let elements = new TwingMap();

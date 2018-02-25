@@ -6,7 +6,7 @@
  * │ NULL    │ FALSE │ TRUE  │ FALSE │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ TRUE  │ TRUE  │ FALSE   │ FALSE │ TRUE  |
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export default function twingCompareToNull(value: any) {
+export function twingCompareToNull(value: any) {
     if (typeof value === 'boolean') {
         return (value === false);
     }

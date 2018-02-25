@@ -1,12 +1,12 @@
 import {Test} from "tape";
-import TwingEnvironment from "../../../src/environment";
-import TwingLexer from "../../../src/lexer";
-import TwingTokenType from "../../../src/token-type";
-import TwingSource from "../../../src/source";
+import {TwingEnvironment} from "../../../src/environment";
+import {TwingLexer} from "../../../src/lexer";
+import {TwingTokenType} from "../../../src/token-type";
+import {TwingSource} from "../../../src/source";
 
 const tap = require('tap');
 
-let createLexer = function() {
+let createLexer = function () {
     return new TwingLexer(new TwingEnvironment(null));
 };
 
@@ -46,7 +46,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ §() }}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -175,8 +175,8 @@ tap.test('lexer', function (test: Test) {
 
         let lexer = createLexer();
 
-        fixtures.forEach(function(fixture) {
-            test.doesNotThrow(function() {
+        fixtures.forEach(function (fixture) {
+            test.doesNotThrow(function () {
                 let stream = lexer.tokenize(new TwingSource(fixture.template, 'index'));
 
                 stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -191,7 +191,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = 'foo {{ "bar #{ baz + 1 }" }}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.TEXT_TYPE, 'foo ');
@@ -212,7 +212,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ "bar \\#{baz+1}" }}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -227,7 +227,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ "bar # baz" }}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -242,7 +242,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ "bar #{x" }}';
 
-        test.throws(function() {
+        test.throws(function () {
             lexer.tokenize(new TwingSource(data, 'index'));
         });
 
@@ -253,7 +253,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ "bar #{ "foo#{bar}" }" }}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -274,7 +274,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{% foo "bar #{ "foo#{bar}" }" %}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.BLOCK_START_TYPE);
@@ -296,7 +296,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ 1 and\n0}}';
 
-        test.doesNotThrow(function() {
+        test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
             stream.expect(TwingTokenType.VAR_START_TYPE);
@@ -311,7 +311,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{{ bar ';
 
-        test.throws(function() {
+        test.throws(function () {
             lexer.tokenize(new TwingSource(data, 'index'));
         });
 
@@ -322,7 +322,7 @@ tap.test('lexer', function (test: Test) {
         let lexer = createLexer();
         let data = '{% bar ';
 
-        test.throws(function() {
+        test.throws(function () {
             lexer.tokenize(new TwingSource(data, 'index'));
         });
 

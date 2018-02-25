@@ -1,8 +1,5 @@
 import {Test} from "tape";
-import TwingLoaderFilesystem from "../../../../src/loader/filesystem";
-import TwingErrorLoader from "../../../../src/error/loader";
-import TwingEnvironment from "../../../../src/environment";
-import TwingLoaderArray from "../../../../src/loader/array";
+import {TwingLoaderArray} from "../../../../src/loader/array";
 
 const tap = require('tap');
 const nodePath = require('path');
@@ -10,8 +7,8 @@ const nodePath = require('path');
 tap.test('loader array', function (test: Test) {
     test.test('constructor', function (test: Test) {
         let loader = new TwingLoaderArray({
-           foo: 'bar',
-           bar: 'foo'
+            foo: 'bar',
+            bar: 'foo'
         });
 
         test.true(loader.exists('foo'));

@@ -1,12 +1,12 @@
-import ensureIterable from './iterator-to-map';
+import {iteratorToMap} from './iterator-to-map';
 
-export default function twingMin(...things: Array<any>) {
+export function min(...things: Array<any>) {
     if (things.length === 1) {
         things = things[0];
     }
 
     if (typeof things === 'object') {
-        let iterable = ensureIterable(things).sort();
+        let iterable = iteratorToMap(things).sort();
 
         return iterable.first();
     }

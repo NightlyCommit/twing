@@ -1,11 +1,11 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../compiler-stub";
-import TwingNode from "../../../src/node";
+import {TwingTestCompilerStub} from "../../compiler-stub";
+import {TwingNode} from "../../../src/node";
 
 const tap = require('tap');
 
-tap.test('compiler', function(test: Test) {
-    test.test('should escape all forms of line-feeds', function(test: Test) {
+tap.test('compiler', function (test: Test) {
+    test.test('should escape all forms of line-feeds', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
         let node = new TwingNode();
 
@@ -19,5 +19,5 @@ tap.test('compiler', function(test: Test) {
         test.end();
     });
 
-   test.end();
+    test.end();
 });

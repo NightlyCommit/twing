@@ -1,8 +1,8 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
 
-class TwingNodeForLoop extends TwingNode {
+export class TwingNodeForLoop extends TwingNode {
     constructor(lineno: number, tag: string = null) {
         let attributes = new TwingMap();
 
@@ -47,5 +47,3 @@ class TwingNodeForLoop extends TwingNode {
         }
     }
 }
-
-export default TwingNodeForLoop;

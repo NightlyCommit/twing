@@ -1,11 +1,11 @@
-import TwingExtension from "../extension";
-import TwingTokenParserInterface from "../token-parser-interface";
-import TwingFilter from "../filter";
-import TwingFunction from "../function";
-import TwingTest from "../test";
-import TwingNodeVisitorInterface from "../node-visitor-interface";
+import {TwingExtension} from "../extension";
+import {TwingTokenParserInterface} from "../token-parser-interface";
+import {TwingFilter} from "../filter";
+import {TwingFunction} from "../function";
+import {TwingTest} from "../test";
+import {TwingNodeVisitorInterface} from "../node-visitor-interface";
 
-class TwingExtensionStaging extends TwingExtension {
+export class TwingExtensionStaging extends TwingExtension {
     private functions: Array<TwingFunction> = [];
     private filters: Array<TwingFilter> = [];
     private visitors: Array<TwingNodeVisitorInterface> = [];
@@ -53,5 +53,3 @@ class TwingExtensionStaging extends TwingExtension {
         return this.tests;
     }
 }
-
-export default TwingExtensionStaging;

@@ -1,6 +1,6 @@
-import TwingMap from "../map";
+import {TwingMap} from "../map";
 
-class TwingProfilerProfile {
+export class TwingProfilerProfile {
     static ROOT = 'ROOT';
     static BLOCK = 'block';
     static TEMPLATE = 'template';
@@ -141,5 +141,3 @@ class TwingProfilerProfile {
     //     [this.template, this.name, this.type, this.starts, this.ends, this.profiles] = JSON.parse(data);
     // }
 }
-
-export default TwingProfilerProfile;

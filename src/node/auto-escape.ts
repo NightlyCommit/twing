@@ -1,7 +1,7 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
 /**
  * Represents an autoescape node.
@@ -14,7 +14,7 @@ import TwingNodeType from "../node-type";
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TwingNodeAutoEscape extends TwingNode {
+export class TwingNodeAutoEscape extends TwingNode {
     constructor(value: {}, body: TwingNode, lineno: number, tag = 'autoescape') {
         super(new TwingMap([['body', body]]), new TwingMap([['value', value]]), lineno, tag);
 
@@ -25,5 +25,3 @@ class TwingNodeAutoEscape extends TwingNode {
         compiler.subcompile(this.getNode('body'));
     }
 }
-
-export default TwingNodeAutoEscape;

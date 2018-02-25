@@ -1,8 +1,8 @@
-import TwingNodeExpressionName from "./name";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpressionName} from "./name";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
+export class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
     constructor(name: string, lineno: number) {
         super(name, lineno);
 
@@ -17,5 +17,3 @@ class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
         ;
     }
 }
-
-export default TwingNodeExpressionAssignName;

@@ -1,13 +1,13 @@
 import {Test} from "tape";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionHash from "../../../../../src/node/expression/hash";
+import {TwingMap} from "../../../../../src/map";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionHash} from "../../../../../src/node/expression/hash";
 
 const tap = require('tap');
 
 tap.test('node/expression/hash', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let foo = new TwingNodeExpressionConstant('bar', 1);
 
         let elements = new TwingMap();

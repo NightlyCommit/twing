@@ -1,21 +1,18 @@
-import TwingBaseNodeVisitor from "../../base-node-visitor";
-import TwingNode from "../../node";
-import TwingEnvironment from "../../environment";
-import TwingNodeModule from "../../node/module";
-import TwingNodeBlock from "../../node/block";
-import TwingNodeMacro from "../../node/macro";
-import TwingMap from "../../map";
-import TwingProfilerProfile from "../profile";
-import TwingNodeBody from "../../node/body";
-import TwingProfilerNodeEnterProfile from "../node/enter-profile";
-import TwingProfilerNodeLeaveProfile from "../node/leave-profile";
-import TwingNodeType from "../../node-type";
+import {TwingBaseNodeVisitor} from "../../base-node-visitor";
+import {TwingNode} from "../../node";
+import {TwingEnvironment} from "../../environment";
+import {TwingMap} from "../../map";
+import {TwingProfilerProfile} from "../profile";
+import {TwingNodeBody} from "../../node/body";
+import {TwingProfilerNodeEnterProfile} from "../node/enter-profile";
+import {TwingProfilerNodeLeaveProfile} from "../node/leave-profile";
+import {TwingNodeType} from "../../node-type";
 
 let md5 = require('locutus/php/strings/md5');
 let uniqid = require('locutus/php/misc/uniqid');
 let mt_rand = require('locutus/php/math/mt_rand');
 
-class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
+export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     private extensionName: string;
 
     constructor(extensionName: string) {
@@ -80,5 +77,3 @@ class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
         return 0;
     }
 }
-
-export default TwingProfilerNodeVisitorProfiler;

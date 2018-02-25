@@ -3,7 +3,7 @@
  * that when \Countable is implemented, it is preferred over the __toString()
  * method.
  */
-class TwingTestCountableStub {
+export class TwingTestCountableStub {
     public length: number;
 
     constructor(count: number) {
@@ -14,5 +14,3 @@ class TwingTestCountableStub {
         throw new Error('toString shall not be called on Countables');
     }
 }
-
-export default TwingTestCountableStub;

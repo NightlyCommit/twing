@@ -1,7 +1,7 @@
 import {Test} from "tape";
-import TwingNodeExpressionConstant from "../../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../../compiler-stub";
-import TwingNodeExpressionBinaryStartsWith from "../../../../../../src/node/expression/binary/starts-with";
+import {TwingNodeExpressionConstant} from "../../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../../compiler-stub";
+import {TwingNodeExpressionBinaryStartsWith} from "../../../../../../src/node/expression/binary/starts-with";
 
 const tap = require('tap');
 

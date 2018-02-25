@@ -6,9 +6,9 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-import TwingEnvironment from "../environment";
+import {TwingEnvironment} from "../environment";
 
-interface TwingExtensionsInitRuntimeInterface {
+export interface TwingExtensionsInitRuntimeInterface {
     /**
      * Initializes the runtime environment.
      *
@@ -18,5 +18,3 @@ interface TwingExtensionsInitRuntimeInterface {
      */
     initRuntime(environment: TwingEnvironment): void;
 }
-
-export default TwingExtensionsInitRuntimeInterface;

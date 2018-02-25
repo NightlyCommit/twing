@@ -9,19 +9,19 @@
  * </ul>
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeExpressionName from "../node/expression/name";
-import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
-import TwingErrorSyntax from "../error/syntax";
-import TwingTokenStream from "../token-stream";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionAssignName from "../node/expression/assign-name";
-import TwingNodeFor from "../node/for";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeExpressionName} from "../node/expression/name";
+import {TwingNodeExpressionGetAttr} from "../node/expression/get-attr";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingTokenStream} from "../token-stream";
+import {TwingNodeExpressionConstant} from "../node/expression/constant";
+import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
+import {TwingNodeFor} from "../node/for";
 
-class TwingTokenParserFor extends TwingTokenParser {
+export class TwingTokenParserFor extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
@@ -39,7 +39,7 @@ class TwingTokenParserFor extends TwingTokenParser {
 
         stream.expect(TwingTokenType.BLOCK_END_TYPE);
 
-        let body = this.parser.subparse([this,this.decideForFork]);
+        let body = this.parser.subparse([this, this.decideForFork]);
         let elseToken;
 
         if (stream.next().getValue() == 'else') {
@@ -127,5 +127,3 @@ class TwingTokenParserFor extends TwingTokenParser {
         return 'for';
     }
 }
-
-export default TwingTokenParserFor;

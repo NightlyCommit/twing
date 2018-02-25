@@ -1,4 +1,4 @@
-enum TwingTokenType {
+export enum TwingTokenType {
     EOF_TYPE = 'EOF_TYPE',
     TEXT_TYPE = 'TEXT_TYPE',
     BLOCK_START_TYPE = 'BLOCK_START_TYPE',
@@ -13,5 +13,3 @@ enum TwingTokenType {
     INTERPOLATION_START_TYPE = 'INTERPOLATION_START_TYPE',
     INTERPOLATION_END_TYPE = 'INTERPOLATION_END_TYPE'
 }
-
-export default TwingTokenType;

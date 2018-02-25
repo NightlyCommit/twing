@@ -1,5 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
-import TwingTestFoo from "../../../../../foo";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 export = class extends TwingTestIntegrationTestCase {
     getDescription() {

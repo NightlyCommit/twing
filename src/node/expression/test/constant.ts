@@ -1,5 +1,5 @@
-import TwingNodeExpressionTest from "../test";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionTest} from "../test";
+import {TwingCompiler} from "../../../compiler";
 
 /**
  * Checks if a variable is the exact same value as a constant.
@@ -13,7 +13,7 @@ import TwingCompiler from "../../../compiler";
  * Global or class constants make no sense in JavaScript. To emulate the expected behavior, it is assumed that
  * so-called constants are keys of the TwingEnvironment::globals property.
  */
-class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
+export class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('(')
@@ -34,5 +34,3 @@ class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
         ;
     }
 }
-
-export default TwingNodeExpressionTestConstant;

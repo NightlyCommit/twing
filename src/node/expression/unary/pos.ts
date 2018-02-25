@@ -1,9 +1,9 @@
-import TwingNodeExpressionUnary from "../unary";
-import TwingCompiler from "../../../compiler";
-import TwingNodeType from "../../../node-type";
-import TwingNode from "../../../node";
+import {TwingNodeExpressionUnary} from "../unary";
+import {TwingCompiler} from "../../../compiler";
+import {TwingNodeType} from "../../../node-type";
+import {TwingNode} from "../../../node";
 
-class TwingNodeExpressionUnaryPos extends TwingNodeExpressionUnary {
+export class TwingNodeExpressionUnaryPos extends TwingNodeExpressionUnary {
     constructor(expr: TwingNode, lineno: number) {
         super(expr, lineno);
 
@@ -14,5 +14,3 @@ class TwingNodeExpressionUnaryPos extends TwingNodeExpressionUnary {
         return compiler.raw('+');
     }
 }
-
-export default TwingNodeExpressionUnaryPos;

@@ -3,13 +3,13 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingErrorSyntax from "../error/syntax";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeMacro extends TwingNode {
+export class TwingNodeMacro extends TwingNode {
     static VARARGS_NAME = 'varargs';
 
     constructor(name: string, body: TwingNode, macroArguments: TwingNode, lineno: number, tag: string = null) {
@@ -124,5 +124,3 @@ class TwingNodeMacro extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeMacro;

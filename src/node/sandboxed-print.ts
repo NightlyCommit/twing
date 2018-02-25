@@ -1,10 +1,9 @@
-import TwingNodePrint from "./print"
-import TwingCompiler from "../compiler";
-import TwingNode from "../node";
-import TwingNodeExpressionFilter from "./expression/filter";
-import TwingNodeType from "../node-type";
+import {TwingNodePrint} from "./print"
+import {TwingCompiler} from "../compiler";
+import {TwingNode} from "../node";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeSandboxedPrint extends TwingNodePrint {
+export class TwingNodeSandboxedPrint extends TwingNodePrint {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
@@ -29,5 +28,3 @@ class TwingNodeSandboxedPrint extends TwingNodePrint {
         return node;
     }
 }
-
-export default TwingNodeSandboxedPrint;

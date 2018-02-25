@@ -1,12 +1,9 @@
 import {Test} from "tape";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionHash from "../../../../../src/node/expression/hash";
-import TwingNodeExpressionAssignName from "../../../../../src/node/expression/assign-name";
-import TwingNodeExpressionName from "../../../../../src/node/expression/name";
-import TwingNodeExpressionNullCoalesce from "../../../../../src/node/expression/null-coalesce";
-import TwingNodeType from "../../../../../src/node-type";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionName} from "../../../../../src/node/expression/name";
+import {TwingNodeExpressionNullCoalesce} from "../../../../../src/node/expression/null-coalesce";
+import {TwingNodeType} from "../../../../../src/node-type";
 
 const tap = require('tap');
 

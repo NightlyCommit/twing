@@ -4,6 +4,6 @@
  * @param {number} x
  * @returns {number}
  */
-export default function twingAbs(x: number) {
+export function abs(x: number) {
     return Math.abs(x);
 }

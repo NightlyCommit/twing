@@ -1,7 +1,7 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryNotEqual extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryNotEqual extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('!Twing.twingCompare(')
@@ -12,5 +12,3 @@ class TwingNodeExpressionBinaryNotEqual extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryNotEqual;

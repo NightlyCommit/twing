@@ -9,7 +9,8 @@
     "include": "src",
     "exclude": [
       "**/*-interface.ts",
-      "**/*-options.ts"
+      "**/*-options.ts",
+      "**/*.d.ts"
     ],
     "reporter": [
       "text-summary",

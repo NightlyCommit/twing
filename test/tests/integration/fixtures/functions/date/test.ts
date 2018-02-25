@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 import {DateTime, Settings as DateTimeSettings} from "luxon";
 
 export = class extends TwingTestIntegrationTestCase {

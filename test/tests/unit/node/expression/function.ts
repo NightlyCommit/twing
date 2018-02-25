@@ -1,12 +1,12 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingNode from "../../../../../src/node";
-import TwingTestEnvironmentStub from "../../../../environment-stub";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionFunction from "../../../../../src/node/expression/function";
-import TwingFunction from "../../../../../src/function";
-import TwingTestLoaderStub from "../../../../loader-stub";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
+import {TwingNode} from "../../../../../src/node";
+import {TwingTestEnvironmentStub} from "../../../../environment-stub";
+import {TwingMap} from "../../../../../src/map";
+import {TwingNodeExpressionFunction} from "../../../../../src/node/expression/function";
+import {TwingFunction} from "../../../../../src/function";
+import {TwingTestLoaderStub} from "../../../../loader-stub";
 
 const tap = require('tap');
 
@@ -43,7 +43,8 @@ tap.test('node/expression/function', function (test: Test) {
             needs_context: true
         }));
         environment.addFunction(new TwingFunction('barbar', twig_tests_function_barbar, {is_variadic: true}));
-        environment.addFunction(new TwingFunction('anonymous', function () {}));
+        environment.addFunction(new TwingFunction('anonymous', function () {
+        }));
 
         let compiler = new TwingTestCompilerStub(environment);
 

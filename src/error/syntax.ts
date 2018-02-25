@@ -1,8 +1,8 @@
-import TwingError from "../error";
+import {TwingError} from "../error";
 
 const Levenshtein = require('levenshtein');
 
-class TwingErrorSyntax extends TwingError {
+export class TwingErrorSyntax extends TwingError {
     /**
      * Tweaks the error message to include suggestions.
      *
@@ -30,5 +30,3 @@ class TwingErrorSyntax extends TwingError {
         this.appendMessage(` Did you mean "${alternatives.join(', ')}"?`);
     }
 }
-
-export default TwingErrorSyntax;

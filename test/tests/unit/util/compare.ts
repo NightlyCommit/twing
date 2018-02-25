@@ -1,5 +1,5 @@
 import {Test} from "tape";
-import twingCompare from '../../../../src/helper/compare';
+import {twingCompare} from '../../../../src/helper/compare';
 
 const tap = require('tap');
 
@@ -127,7 +127,6 @@ tap.test('equal', function (test: Test) {
             [[stringZero, stringFilled], false],
             [[stringZero, stringEmpty], false],
 
-
             // "-1"
             [[stringMinusOne, booleanTrue], true],
             [[stringMinusOne, booleanFalse], false],
@@ -149,7 +148,6 @@ tap.test('equal', function (test: Test) {
             [[primitiveNull, numberMinusOne], false],
             [[primitiveNull, stringOne], false],
             [[primitiveNull, stringZero], false],
-
 
             [[primitiveNull, stringMinusOne], false],
             [[primitiveNull, primitiveNull], true],

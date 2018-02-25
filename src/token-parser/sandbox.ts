@@ -1,15 +1,14 @@
-import TwingTokenParser from "../token-parser";
-import TwingTokenType from "../token-type";
-import TwingToken from "../token";
-import TwingNodeText from "../node/text";
-import TwingNodeInclude from "../node/include";
-import TwingErrorSyntax from "../error/syntax";
-import TwingNodeSandbox from "../node/sandbox";
-import TwingNodeType from "../node-type";
+import {TwingTokenParser} from "../token-parser";
+import {TwingTokenType} from "../token-type";
+import {TwingToken} from "../token";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingNodeSandbox} from "../node/sandbox";
+import {TwingNodeType} from "../node-type";
+import {TwingNode} from "../node";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 
-class TwingTokenParserSandbox extends TwingTokenParser {
+export class TwingTokenParserSandbox extends TwingTokenParser {
     parse(token: TwingToken) {
         let stream = this.parser.getStream();
 
@@ -21,7 +20,7 @@ class TwingTokenParserSandbox extends TwingTokenParser {
 
         // in a sandbox tag, only include tags are allowed
         if (body.getType() !== TwingNodeType.INCLUDE) {
-            body.getNodes().forEach(function (node) {
+            body.getNodes().forEach(function (node: TwingNode) {
                 if (!(node.getType() === TwingNodeType.TEXT && ctype_space(node.getAttribute('data')))) {
                     if (node.getType() !== TwingNodeType.INCLUDE) {
                         throw new TwingErrorSyntax('Only "include" tags are allowed within a "sandbox" section.', node.getTemplateLine(), stream.getSourceContext());
@@ -41,5 +40,3 @@ class TwingTokenParserSandbox extends TwingTokenParser {
         return 'sandbox';
     }
 }
-
-export default TwingTokenParserSandbox;

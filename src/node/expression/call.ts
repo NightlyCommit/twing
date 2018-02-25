@@ -1,13 +1,13 @@
-import TwingNodeExpression from "../expression";
-import TwingMap from "../../map";
-import TwingNode from "../../node";
-import TwingErrorSyntax from "../../error/syntax";
-import TwingNodeExpressionConstant from "./constant";
-import TwingNodeExpressionArray from "./array";
-import TwingReflectionParameter from "../../reflection-parameter";
-import TwingReflectionMethod from "../../reflection-method";
-import TwingCompiler from "../../compiler";
-import TwingExtension from "../../extension";
+import {TwingNodeExpression} from "../expression";
+import {TwingMap} from "../../map";
+import {TwingNode} from "../../node";
+import {TwingErrorSyntax} from "../../error/syntax";
+import {TwingNodeExpressionConstant} from "./constant";
+import {TwingNodeExpressionArray} from "./array";
+import {TwingReflectionParameter} from "../../reflection-parameter";
+import {TwingReflectionMethod} from "../../reflection-method";
+import {TwingCompiler} from "../../compiler";
+import {TwingExtension} from "../../extension";
 
 const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
@@ -18,7 +18,7 @@ interface TwingNodeExpressionCallReflector {
     callable: Function;
 }
 
-abstract class TwingNodeExpressionCall extends TwingNodeExpression {
+export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
     private reflector: TwingNodeExpressionCallReflector;
 
     protected compileCallable(compiler: TwingCompiler) {
@@ -193,8 +193,6 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1));
             }
             else if (callableParameter.isOptional()) {
-                console.warn('OPTIONAL', name);
-
                 if (parameters.size < 1) {
                     break;
                 }
@@ -311,6 +309,3 @@ abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         return [r, callable];
     }
 }
-
-export default TwingNodeExpressionCall;
-

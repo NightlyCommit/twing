@@ -1,10 +1,10 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeExpressionAssignName from "../node/expression/assign-name";
-import TwingNodeImport from "../node/import";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
+import {TwingNodeImport} from "../node/import";
 
-class TwingTokenParserImport extends TwingTokenParser {
+export class TwingTokenParserImport extends TwingTokenParser {
     parse(token: TwingToken) {
         let macro = this.parser.getExpressionParser().parseExpression();
 
@@ -23,5 +23,3 @@ class TwingTokenParserImport extends TwingTokenParser {
         return 'import';
     }
 }
-
-export default TwingTokenParserImport;

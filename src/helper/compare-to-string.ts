@@ -10,7 +10,7 @@
  * │ "php"   │ TRUE  │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE   │ TRUE  │ FALSE │
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export default function twingCompareString(value: string, compare: any): boolean {
+export function twingCompareString(value: string, compare: any): boolean {
     if (typeof compare === 'string') {
         return value === compare;
     }

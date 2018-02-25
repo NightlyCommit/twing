@@ -3,14 +3,13 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-import TwingNode from "../node";
-import TwingNodeExpression from "./expression";
-import TwingMap from "../map";
-import TwingNodeExpressionName from "./expression/name";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingNodeExpression} from "./expression";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeImport extends TwingNode {
+export class TwingNodeImport extends TwingNode {
     constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, tag: string = null) {
         let nodes = new TwingMap();
 
@@ -48,5 +47,3 @@ class TwingNodeImport extends TwingNode {
         compiler.raw(";\n");
     }
 }
-
-export default TwingNodeImport;

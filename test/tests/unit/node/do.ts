@@ -1,8 +1,8 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeDo from "../../../../src/node/do";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingNodeDo} from "../../../../src/node/do";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 

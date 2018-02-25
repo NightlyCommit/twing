@@ -1,14 +1,14 @@
 import {Test} from "tape";
-import TwingTestEnvironmentStub from "../../environment-stub";
-import TwingParser from "../../../src/parser";
-import TwingSource from "../../../src/source";
-import TwingErrorSyntax from "../../../src/error/syntax";
-import TwingNodeExpressionArray from "../../../src/node/expression/array";
-import TwingMap from "../../../src/map";
-import TwingNodeExpressionConstant from "../../../src/node/expression/constant";
-import TwingNodeExpressionName from "../../../src/node/expression/name";
-import TwingNodeExpressionBinaryConcat from "../../../src/node/expression/binary/concat";
-import TwingTestLoaderStub from "../../loader-stub";
+import {TwingTestEnvironmentStub} from "../../environment-stub";
+import {TwingParser} from "../../../src/parser";
+import {TwingSource} from "../../../src/source";
+import {TwingErrorSyntax} from "../../../src/error/syntax";
+import {TwingNodeExpressionArray} from "../../../src/node/expression/array";
+import {TwingMap} from "../../../src/map";
+import {TwingNodeExpressionConstant} from "../../../src/node/expression/constant";
+import {TwingNodeExpressionName} from "../../../src/node/expression/name";
+import {TwingNodeExpressionBinaryConcat} from "../../../src/node/expression/binary/concat";
+import {TwingTestLoaderStub} from "../../loader-stub";
 
 const tap = require('tap');
 

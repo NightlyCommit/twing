@@ -1,6 +1,6 @@
-import TwingExtension from "../extension";
-import TwingNodeVisitorInterface from "../node-visitor-interface";
-import TwingNodeVisitorOptimizer from "../node-visitor/optimizer";
+import {TwingExtension} from "../extension";
+import {TwingNodeVisitorInterface} from "../node-visitor-interface";
+import {TwingNodeVisitorOptimizer} from "../node-visitor/optimizer";
 
 export class TwingExtensionOptimizer extends TwingExtension {
     private optimizers: number;
@@ -17,5 +17,3 @@ export class TwingExtensionOptimizer extends TwingExtension {
         ];
     }
 }
-
-export default TwingExtensionOptimizer;

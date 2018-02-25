@@ -7,7 +7,7 @@
  * │ FALSE   │ FALSE │ TRUE  │ FALSE │ TRUE  │ FALSE │ FALSE │ TRUE  │ FALSE │ TRUE  │ TRUE    │ FALSE │ TRUE  │
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export default function twingCompareToBoolean(value: boolean, compare: any): boolean {
+export function twingCompareToBoolean(value: boolean, compare: any): boolean {
     if (typeof compare === 'boolean') {
         return value === compare;
     }

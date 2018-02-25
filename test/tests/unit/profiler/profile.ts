@@ -1,8 +1,5 @@
 import {Test} from "tape";
-import TwingLoaderFilesystem from "../../../../src/loader/filesystem";
-import TwingErrorLoader from "../../../../src/error/loader";
-import TwingEnvironment from "../../../../src/environment";
-import TwingProfilerProfile from "../../../../src/profiler/profile";
+import {TwingProfilerProfile} from "../../../../src/profiler/profile";
 
 const tap = require('tap');
 

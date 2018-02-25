@@ -1,11 +1,11 @@
-import TwingCache from "../cache";
+import {TwingCache} from "../cache";
 
 /**
  * Implements a no-cache strategy.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TwingCacheNull extends TwingCache {
+export class TwingCacheNull extends TwingCache {
     generateKey(name: string, className: string): string {
         return '';
     }
@@ -20,5 +20,3 @@ class TwingCacheNull extends TwingCache {
         return 0;
     }
 }
-
-export default TwingCacheNull;

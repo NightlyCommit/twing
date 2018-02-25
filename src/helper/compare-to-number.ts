@@ -8,7 +8,7 @@
  * │ -1      │ TRUE  │ FALSE │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE   │ FALSE │ FALSE │
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export default function twingCompareNumber(value: number, compare: any): boolean {
+export function twingCompareNumber(value: number, compare: any): boolean {
     if (typeof compare === 'number') {
         return value === compare;
     }

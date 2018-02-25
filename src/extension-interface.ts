@@ -3,14 +3,14 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingFilter from "./filter";
-import TwingFunction from "./function";
-import TwingOperatorDefinitionInterface from "./operator-definition-interface";
-import TwingTest from "./test";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingFilter} from "./filter";
+import {TwingFunction} from "./function";
+import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
+import {TwingTest} from "./test";
 
-interface TwingExtensionInterface {
+export interface TwingExtensionInterface {
     /**
      * Returns the token parser instances to add to the existing list.
      *
@@ -51,7 +51,7 @@ interface TwingExtensionInterface {
      *
      * @return array<Map<string, TwingOperatorDefinitionInterface>> First array of unary operators, second array of binary operators
      */
-    getOperators(): {unary: Map<string, TwingOperatorDefinitionInterface>, binary: Map<string, TwingOperatorDefinitionInterface>};
+    getOperators(): { unary: Map<string, TwingOperatorDefinitionInterface>, binary: Map<string, TwingOperatorDefinitionInterface> };
 
     /**
      * Gets the default strategy to use when not defined by the user.
@@ -62,5 +62,3 @@ interface TwingExtensionInterface {
      */
     getDefaultStrategy(name: string): string | Function | false;
 }
-
-export default TwingExtensionInterface;

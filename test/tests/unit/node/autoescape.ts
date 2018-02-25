@@ -1,10 +1,10 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingMap from "../../../../src/map";
-import TwingNodeText from "../../../../src/node/text";
-import TwingNode from "../../../../src/node";
-import TwingNodeAutoEscape from "../../../../src/node/auto-escape";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodeText} from "../../../../src/node/text";
+import {TwingNode} from "../../../../src/node";
+import {TwingNodeAutoEscape} from "../../../../src/node/auto-escape";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 

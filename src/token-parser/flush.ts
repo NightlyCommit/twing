@@ -1,9 +1,9 @@
-import TwingTokenParser from "../token-parser";
-import TwingTokenType from "../token-type";
-import TwingToken from "../token";
-import TwingNodeFlush from "../node/flush";
+import {TwingTokenParser} from "../token-parser";
+import {TwingTokenType} from "../token-type";
+import {TwingToken} from "../token";
+import {TwingNodeFlush} from "../node/flush";
 
-class TwingTokenParserFlush extends TwingTokenParser {
+export class TwingTokenParserFlush extends TwingTokenParser {
     parse(token: TwingToken) {
         this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
 
@@ -14,5 +14,3 @@ class TwingTokenParserFlush extends TwingTokenParser {
         return 'flush';
     }
 }
-
-export default TwingTokenParserFlush;

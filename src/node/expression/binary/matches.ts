@@ -1,7 +1,7 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryMatches extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryMatches extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('Twing.regexParser(')
@@ -12,5 +12,3 @@ class TwingNodeExpressionBinaryMatches extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryMatches;

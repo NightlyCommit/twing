@@ -1,7 +1,6 @@
 import {Test} from "tape";
-import TwingLoaderFilesystem from "../../../../src/loader/filesystem";
-import TwingErrorLoader from "../../../../src/error/loader";
-import TwingEnvironment from "../../../../src/environment";
+import {TwingLoaderFilesystem} from "../../../../src/loader/filesystem";
+import {TwingErrorLoader} from "../../../../src/error/loader";
 
 const tap = require('tap');
 const nodePath = require('path');
@@ -61,8 +60,8 @@ let securityTests = [
 
 let arrayInheritanceTests = new Map([
     ['valid array inheritance', ['array_inheritance_valid_parent.html.twig']],
-    ['array inheritance with null first template',  ['array_inheritance_null_parent.html.twig']],
-    ['array inheritance with empty first template',  ['array_inheritance_empty_parent.html.twig']],
+    ['array inheritance with null first template', ['array_inheritance_null_parent.html.twig']],
+    ['array inheritance with empty first template', ['array_inheritance_empty_parent.html.twig']],
     ['array inheritance with non-existent first template', ['array_inheritance_nonexistent_parent.html.twig']]
 ]);
 

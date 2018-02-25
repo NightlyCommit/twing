@@ -20,5 +20,3 @@ export class TwingMarkup {
         return this.content;
     }
 }
-
-export default TwingMarkup;

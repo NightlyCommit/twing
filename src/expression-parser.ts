@@ -1,30 +1,30 @@
-import TwingParser from "./parser";
-import TwingNodeExpression from "./node/expression";
-import TwingToken from "./token";
-import TwingTokenType from "./token-type";
-import TwingNode from "./node";
-import TwingNodeExpressionConstant from "./node/expression/constant";
-import TwingErrorSyntax from "./error/syntax";
-import TwingLexer from "./lexer";
-import TwingNodeExpressionName from "./node/expression/name";
-import TwingNodeExpressionBinaryConcat from "./node/expression/binary/concat";
-import TwingNodeExpressionGetAttr from "./node/expression/get-attr";
-import TwingNodeExpressionMethodCall from "./node/expression/method-call";
-import TwingNodeExpressionArray from "./node/expression/array";
-import TwingMap from "./map";
-import TwingNodeExpressionConditional from "./node/expression/conditional";
-import TwingEnvironment from "./environment";
-import TwingTemplate from "./template";
-import TwingNodeExpressionAssignName from "./node/expression/assign-name";
-import TwingOperatorDefinitionInterface from "./operator-definition-interface";
-import TwingTest from "./test";
-import TwingNodeExpressionParent from "./node/expression/parent";
-import TwingNodeExpressionBlockReference from "./node/expression/block-reference";
-import TwingNodeExpressionHash from "./node/expression/hash";
-import TwingNodeExpressionUnaryNot from "./node/expression/unary/not";
-import TwingNodeType from "./node-type";
+import {TwingParser} from "./parser";
+import {TwingNodeExpression} from "./node/expression";
+import {TwingToken} from "./token";
+import {TwingTokenType} from "./token-type";
+import {TwingNode} from "./node";
+import {TwingNodeExpressionConstant} from "./node/expression/constant";
+import {TwingErrorSyntax} from "./error/syntax";
+import {TwingLexer} from "./lexer";
+import {TwingNodeExpressionName} from "./node/expression/name";
+import {TwingNodeExpressionBinaryConcat} from "./node/expression/binary/concat";
+import {TwingNodeExpressionGetAttr} from "./node/expression/get-attr";
+import {TwingNodeExpressionMethodCall} from "./node/expression/method-call";
+import {TwingNodeExpressionArray} from "./node/expression/array";
+import {TwingMap} from "./map";
+import {TwingNodeExpressionConditional} from "./node/expression/conditional";
+import {TwingEnvironment} from "./environment";
+import {TwingTemplate} from "./template";
+import {TwingNodeExpressionAssignName} from "./node/expression/assign-name";
+import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
+import {TwingTest} from "./test";
+import {TwingNodeExpressionParent} from "./node/expression/parent";
+import {TwingNodeExpressionBlockReference} from "./node/expression/block-reference";
+import {TwingNodeExpressionHash} from "./node/expression/hash";
+import {TwingNodeExpressionUnaryNot} from "./node/expression/unary/not";
+import {TwingNodeType} from "./node-type";
 
-class TwingExpressionParser {
+export class TwingExpressionParser {
     private parser: TwingParser;
     private env: TwingEnvironment;
     private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
@@ -230,7 +230,7 @@ class TwingExpressionParser {
                 if (alias) {
                     let functionArguments = new TwingNodeExpressionArray(new TwingMap(), line);
 
-                    this.parseArguments().getNodes().forEach(function(n, name) {
+                    this.parseArguments().getNodes().forEach(function (n, name) {
                         functionArguments.addElement(n);
                     });
 
@@ -697,8 +697,7 @@ class TwingExpressionParser {
         return new TwingNode(targets);
     }
 
-    private getFunctionExpressionFactory(name: string, line: number)
-    {
+    private getFunctionExpressionFactory(name: string, line: number) {
         let function_ = this.env.getFunction(name);
 
         if (!function_) {
@@ -779,5 +778,3 @@ class TwingExpressionParser {
         return true;
     }
 }
-
-export default TwingExpressionParser;

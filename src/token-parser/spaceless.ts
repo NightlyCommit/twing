@@ -9,13 +9,13 @@
  * </ul>
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeSpaceless from "../node/spaceless";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeSpaceless} from "../node/spaceless";
 
-class TwingTokenParserSpaceless extends TwingTokenParser {
+export class TwingTokenParserSpaceless extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
 
@@ -34,5 +34,3 @@ class TwingTokenParserSpaceless extends TwingTokenParser {
         return 'spaceless';
     }
 }
-
-export default TwingTokenParserSpaceless;

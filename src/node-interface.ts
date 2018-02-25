@@ -1,7 +1,5 @@
-import TwingCompiler from "./compiler";
+import {TwingCompiler} from "./compiler";
 
-interface TwingNodeInterface {
+export interface TwingNodeInterface {
     compile(compiler: TwingCompiler): any;
 }
-
-export default TwingNodeInterface;

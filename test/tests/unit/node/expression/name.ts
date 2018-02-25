@@ -1,16 +1,13 @@
 import {Test} from "tape";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingNodeExpressionArray from "../../../../../src/node/expression/array";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionName from "../../../../../src/node/expression/name";
-import TwingTestEnvironmentStub from "../../../../environment-stub";
-import TwingTestLoaderStub from "../../../../loader-stub";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionName} from "../../../../../src/node/expression/name";
+import {TwingTestEnvironmentStub} from "../../../../environment-stub";
+import {TwingTestLoaderStub} from "../../../../loader-stub";
 
 const tap = require('tap');
 
 tap.test('node/expression/name', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let node = new TwingNodeExpressionName('foo', 1);
 
         test.same(node.getAttribute('name'), 'foo');

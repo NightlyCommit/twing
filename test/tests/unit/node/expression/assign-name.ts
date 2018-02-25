@@ -1,12 +1,12 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionAssignName from "../../../../../src/node/expression/assign-name";
-import TwingNodeType from "../../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionAssignName} from "../../../../../src/node/expression/assign-name";
+import {TwingNodeType} from "../../../../../src/node-type";
 
 const tap = require('tap');
 
 tap.test('node/expression/assign-name', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let node = new TwingNodeExpressionAssignName('foo', 1);
 
         test.same(node.getAttribute('name'), 'foo');

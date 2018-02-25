@@ -1,10 +1,10 @@
-import TwingExtension from "../extension";
-import TwingNodeVisitorEscaper from "../node-visitor/escaper";
-import TwingTokenParserAutoEscape from "../token-parser/auto-escape";
-import TwingFileExtensionEscapingStrategy from "../file-extension-escaping-strategy";
-import TwingFilter from "../filter";
+import {TwingExtension} from "../extension";
+import {TwingNodeVisitorEscaper} from "../node-visitor/escaper";
+import {TwingTokenParserAutoEscape} from "../token-parser/auto-escape";
+import {TwingFileExtensionEscapingStrategy} from "../file-extension-escaping-strategy";
+import {TwingFilter} from "../filter";
 
-class TwingExtensionEscaper extends TwingExtension {
+export class TwingExtensionEscaper extends TwingExtension {
     private defaultStrategy: string | boolean | Function;
 
     /**
@@ -44,8 +44,7 @@ class TwingExtensionEscaper extends TwingExtension {
      *
      * @param {string|boolean|Function} defaultStrategy An escaping strategy
      */
-    setDefaultStrategy(defaultStrategy: string | boolean | Function)
-    {
+    setDefaultStrategy(defaultStrategy: string | boolean | Function) {
         if (defaultStrategy === 'name') {
             defaultStrategy = TwingFileExtensionEscapingStrategy.guess;
         }
@@ -85,5 +84,3 @@ class TwingExtensionEscaper extends TwingExtension {
 export function twingRawFilter(value: string) {
     return value;
 }
-
-export default TwingExtensionEscaper;

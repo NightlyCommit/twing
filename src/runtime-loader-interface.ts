@@ -3,7 +3,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-abstract class TwingRuntimeLoaderInterface {
+export abstract class TwingRuntimeLoaderInterface {
     /**
      * Creates the runtime implementation of a Twing element (filter/function/test).
      *
@@ -13,5 +13,3 @@ abstract class TwingRuntimeLoaderInterface {
      */
     abstract load(class_: string): any | null;
 }
-
-export default TwingRuntimeLoaderInterface;

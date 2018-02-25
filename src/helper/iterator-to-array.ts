@@ -1,4 +1,4 @@
-export default function iteratorToArray(value: any, useKeys: boolean = false): Array<any> {
+export function iteratorToArray(value: any, useKeys: boolean = false): Array<any> {
     if (Array.isArray(value)) {
         return value
     }

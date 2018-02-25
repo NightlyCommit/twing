@@ -1,4 +1,4 @@
-import TwingEnvironment from "../environment";
+import {TwingEnvironment} from "../environment";
 import {DateTime} from "luxon";
 
 const dateformatConverter = require('dateformat-converter');
@@ -10,7 +10,7 @@ const dateformatConverter = require('dateformat-converter');
  * @param {string} format
  * @returns {string}
  */
-export default function formatDateTime(date: DateTime, format: string = null) {
+export function formatDateTime(date: DateTime, format: string = null) {
     if (format === 'r') {
         return date.toRFC2822();
     }

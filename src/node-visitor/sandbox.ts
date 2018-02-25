@@ -1,14 +1,13 @@
-import TwingBaseNodeVisitor from "../base-node-visitor";
-import TwingEnvironment from "../environment";
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingNodeExpressionFunction from "../node/expression/function";
-import TwingNodeSandboxedPrint from "../node/sandboxed-print";
-import TwingNodeExpression from "../node/expression";
-import TwingNodeCheckSecurity from "../node/check-security";
-import TwingNodeType from "../node-type";
+import {TwingBaseNodeVisitor} from "../base-node-visitor";
+import {TwingEnvironment} from "../environment";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingNodeSandboxedPrint} from "../node/sandboxed-print";
+import {TwingNodeExpression} from "../node/expression";
+import {TwingNodeCheckSecurity} from "../node/check-security";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
+export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private inAModule: boolean = false;
     private tags: TwingMap<string, TwingNode>;
     private filters: TwingMap<string, TwingNode>;
@@ -67,5 +66,3 @@ class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         return 0;
     }
 }
-
-export default TwingNodeVisitorSandbox;
