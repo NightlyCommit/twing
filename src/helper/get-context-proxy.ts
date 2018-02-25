@@ -1,4 +1,4 @@
-import TwingMap from "../map";
+import {TwingMap} from "../map";
 
 /**
  * This helper is mainly used to support TwingNodeExpressionAssignName incomplete assignment syntax
@@ -8,10 +8,10 @@ import TwingMap from "../map";
  */
 export function getContextProxy(context: TwingMap<any, any>) {
     return new Proxy(context, {
-        get: function(target: any, p: any, value: any) {
+        get: function (target: any, p: any, value: any) {
             return target.get(p);
         },
-        set: function(target: any, p: any, value: any, receiver: any) {
+        set: function (target: any, p: any, value: any, receiver: any) {
             return target.set(p, value);
         }
     })

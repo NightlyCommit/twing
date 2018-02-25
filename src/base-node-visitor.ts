@@ -1,8 +1,8 @@
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingNode from "./node";
-import TwingEnvironment from "./environment";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingNode} from "./node";
+import {TwingEnvironment} from "./environment";
 
-abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
+export abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
     getPriority(): number {
         throw new Error("Method not implemented.");
     }
@@ -39,5 +39,3 @@ abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
      */
     abstract doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode;
 }
-
-export default TwingBaseNodeVisitor;

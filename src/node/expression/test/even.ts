@@ -1,7 +1,7 @@
-import TwingNodeExpressionTest from "../test";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionTest} from "../test";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionTestEven extends TwingNodeExpressionTest {
+export class TwingNodeExpressionTestEven extends TwingNodeExpressionTest {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('(')
@@ -11,5 +11,3 @@ class TwingNodeExpressionTestEven extends TwingNodeExpressionTest {
         ;
     }
 }
-
-export default TwingNodeExpressionTestEven;

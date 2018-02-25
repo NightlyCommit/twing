@@ -1,10 +1,10 @@
-import TwingNodeType from "./node-type";
-import TwingNodeInterface from "./node-interface";
-import TwingMap from "./map";
-import TwingCompiler from "./compiler";
-import TwingNodeOutputType from "./node-output-type";
+import {TwingNodeType} from "./node-type";
+import {TwingNodeInterface} from "./node-interface";
+import {TwingMap} from "./map";
+import {TwingCompiler} from "./compiler";
+import {TwingNodeOutputType} from "./node-output-type";
 
-class TwingNode implements TwingNodeInterface {
+export class TwingNode implements TwingNodeInterface {
     protected nodes: TwingMap<string, TwingNode>;
     protected attributes: TwingMap<string, any>;
     protected lineno: number;
@@ -192,7 +192,8 @@ class TwingNode implements TwingNodeInterface {
             catch (e) {
                 throw e;
             }
-        };
+        }
+        ;
     }
 
     getTemplateName() {
@@ -204,5 +205,3 @@ class TwingNode implements TwingNodeInterface {
     }
 
 }
-
-export default TwingNode;

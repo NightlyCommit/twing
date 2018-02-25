@@ -1,7 +1,7 @@
-import TwingCompiler from "../../../compiler";
-import TwingNodeExpressionBinary from "../binary";
+import {TwingCompiler} from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
 
-class TwingNodeExpressionBinaryNotIn extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryNotIn extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('!Twing.twingInFilter(')
@@ -12,5 +12,3 @@ class TwingNodeExpressionBinaryNotIn extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryNotIn;

@@ -1,9 +1,7 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-const range = require('locutus/php/array/range');
-
-class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('Twing.twingRange(')
@@ -14,5 +12,3 @@ class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryRange;

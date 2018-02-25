@@ -1,7 +1,7 @@
-import TwingLoaderInterface from "../loader-interface";
-import TwingSource from "../source";
-import TwingErrorLoader from "../error/loader";
-import TwingMap from "../map";
+import {TwingLoaderInterface} from "../loader-interface";
+import {TwingSource} from "../source";
+import {TwingErrorLoader} from "../error/loader";
+import {TwingMap} from "../map";
 
 /**
  * Loads template from the filesystem.
@@ -66,5 +66,3 @@ export class TwingLoaderArray implements TwingLoaderInterface {
         return true;
     }
 }
-
-export default TwingLoaderArray;

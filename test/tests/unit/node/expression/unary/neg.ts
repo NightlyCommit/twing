@@ -1,8 +1,8 @@
 import {Test} from "tape";
-import TwingNodeExpressionConstant from "../../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../../compiler-stub";
-import TwingNodeExpressionUnaryNeg from "../../../../../../src/node/expression/unary/neg";
-import TwingNodeType from "../../../../../../src/node-type";
+import {TwingNodeExpressionConstant} from "../../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../../compiler-stub";
+import {TwingNodeExpressionUnaryNeg} from "../../../../../../src/node/expression/unary/neg";
+import {TwingNodeType} from "../../../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -20,7 +20,7 @@ tap.test('node/expression/unary/neg', function (test: Test) {
     test.test('compile', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
 
-        test.test('basic', function(test: Test) {
+        test.test('basic', function (test: Test) {
             let expr = new TwingNodeExpressionConstant(1, 1);
             let node = new TwingNodeExpressionUnaryNeg(expr, 1);
 
@@ -29,7 +29,7 @@ tap.test('node/expression/unary/neg', function (test: Test) {
             test.end();
         });
 
-        test.test('with unary neg as body', function(test: Test) {
+        test.test('with unary neg as body', function (test: Test) {
             let expr = new TwingNodeExpressionConstant(1, 1);
             let node = new TwingNodeExpressionUnaryNeg(new TwingNodeExpressionUnaryNeg(expr, 1), 1);
 

@@ -1,8 +1,8 @@
-import TwingLoaderInterface from "../loader-interface";
-import TwingTemplate from "../template";
-import TwingMap from "../map";
-import TwingErrorLoader from "../error/loader";
-import TwingSource from "../source";
+import {TwingLoaderInterface} from "../loader-interface";
+import {TwingTemplate} from "../template";
+import {TwingMap} from "../map";
+import {TwingErrorLoader} from "../error/loader";
+import {TwingSource} from "../source";
 
 /**
  * Loads templates from other loaders.
@@ -108,5 +108,3 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 }
-
-export default TwingLoaderChain;

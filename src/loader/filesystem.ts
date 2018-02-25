@@ -1,6 +1,6 @@
-import TwingLoaderInterface from "../loader-interface";
-import TwingSource from "../source";
-import TwingErrorLoader from "../error/loader";
+import {TwingLoaderInterface} from "../loader-interface";
+import {TwingSource} from "../source";
+import {TwingErrorLoader} from "../error/loader";
 
 const nodePath = require('path');
 const fs = require('fs');
@@ -153,7 +153,6 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return this.findTemplate(name, false) !== null;
     }
 
-
     isFresh(name: string, time: number): boolean {
         let stat = fs.statSync(this.findTemplate(name));
 
@@ -219,7 +218,6 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
             }
         }
 
-
         this.errorCache.set(name, `Unable to find template "${name}" (looked into: ${this.paths.get(namespace)}).`);
 
         if (!throw_) {
@@ -280,5 +278,3 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return nodePath.isAbsolute(file);
     }
 }
-
-export default TwingLoaderFilesystem;

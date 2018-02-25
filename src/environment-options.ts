@@ -30,9 +30,9 @@
  *                   (default to -1 which means that all optimizations are enabled;
  *                   set it to 0 to disable).
  */
-import TwingCacheInterface from "./cache-interface";
+import {TwingCacheInterface} from "./cache-interface";
 
-type TwingEnvironmentOptions = {
+export type TwingEnvironmentOptions = {
     debug?: boolean;
     charset?: string;
     base_template_class?: string;
@@ -42,5 +42,3 @@ type TwingEnvironmentOptions = {
     autoescape?: string | boolean | Function;
     optimizations?: number;
 }
-
-export default TwingEnvironmentOptions;

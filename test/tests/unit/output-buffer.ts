@@ -1,5 +1,5 @@
 import {Test} from "tape";
-import TwingOutputBuffer from "../../../src/output-buffer";
+import {TwingOutputBuffer} from "../../../src/output-buffer";
 
 const tap = require('tap');
 
@@ -88,7 +88,6 @@ tap.test('TwingOutputBuffer', function (test: Test) {
         test.same(TwingOutputBuffer.obGetContents(), '', `obGetContents() should return ''`);
         test.end();
     });
-
 
     test.test('obGetClean', function (test: Test) {
         reset();

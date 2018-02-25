@@ -1,6 +1,6 @@
-import TwingFilter from "./filter";
+import {TwingFilter} from "./filter";
 
-type TwingFilterOptions = {
+export type TwingFilterOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
     is_variadic?: boolean;
@@ -12,5 +12,3 @@ type TwingFilterOptions = {
     deprecated?: string;
     alternative?: TwingFilter;
 }
-
-export default TwingFilterOptions;

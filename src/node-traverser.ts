@@ -6,12 +6,12 @@
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingEnvironment from "./environment";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingNode from "./node";
-import TwingMap from "./map";
+import {TwingEnvironment} from "./environment";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingNode} from "./node";
+import {TwingMap} from "./map";
 
-class TwingNodeTraverser {
+export class TwingNodeTraverser {
     private env: TwingEnvironment;
     private visitors: TwingMap<string, TwingMap<string, TwingNodeVisitorInterface>> = new TwingMap();
 
@@ -75,5 +75,3 @@ class TwingNodeTraverser {
         return visitor.leaveNode(node, this.env);
     }
 }
-
-export default TwingNodeTraverser;

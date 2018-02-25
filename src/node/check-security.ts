@@ -1,8 +1,8 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
 
-class TwingNodeCheckSecurity extends TwingNode {
+export class TwingNodeCheckSecurity extends TwingNode {
     private usedFilters: TwingMap<string, TwingNode>;
     private usedTags: TwingMap<string, TwingNode>;
     private usedFunctions: TwingMap<string, TwingNode>;
@@ -92,5 +92,3 @@ class TwingNodeCheckSecurity extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeCheckSecurity;

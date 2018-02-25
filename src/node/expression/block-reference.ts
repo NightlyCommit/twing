@@ -1,10 +1,10 @@
-import TwingNodeExpression from "../expression";
-import TwingMap from "../../map";
-import TwingNode from "../../node";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingMap} from "../../map";
+import {TwingNode} from "../../node";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionBlockReference extends TwingNodeExpression {
+export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     constructor(name: TwingNode, template: TwingNode = null, lineno: number, tag: string = null) {
         let nodes = new TwingMap();
 
@@ -80,5 +80,3 @@ class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         return compiler.raw(')');
     }
 }
-
-export default TwingNodeExpressionBlockReference;

@@ -1,7 +1,7 @@
 import {Test} from "tape";
-import TwingTestCacheStub from "../../cache-stub";
-import TwingTestLoaderStub from "../../loader-stub";
-import TwingTestEnvironmentStub from "../../environment-stub";
+import {TwingTestCacheStub} from "../../cache-stub";
+import {TwingTestLoaderStub} from "../../loader-stub";
+import {TwingTestEnvironmentStub} from "../../environment-stub";
 
 const path = require('path');
 const tap = require('tap');

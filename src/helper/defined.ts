@@ -1,3 +1,3 @@
-export default function defined(constant: string) {
+export function defined(constant: string) {
     return true;
 }

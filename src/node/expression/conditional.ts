@@ -1,9 +1,9 @@
-import TwingNodeExpression from "../expression";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionConditional extends TwingNodeExpression {
+export class TwingNodeExpressionConditional extends TwingNodeExpression {
     constructor(expr1: TwingNodeExpression, expr2: TwingNodeExpression, expr3: TwingNodeExpression, lineno: number) {
         let nodes = new TwingMap();
 
@@ -28,5 +28,3 @@ class TwingNodeExpressionConditional extends TwingNodeExpression {
         ;
     }
 }
-
-export default TwingNodeExpressionConditional;

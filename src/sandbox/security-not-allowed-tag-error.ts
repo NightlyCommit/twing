@@ -1,4 +1,4 @@
-import TwingSandboxSecurityError from "./security-error";
+import {TwingSandboxSecurityError} from "./security-error";
 
 export class TwingSandboxSecurityNotAllowedTagError extends TwingSandboxSecurityError {
     private tagName: string;
@@ -12,5 +12,3 @@ export class TwingSandboxSecurityNotAllowedTagError extends TwingSandboxSecurity
         return this.tagName;
     }
 }
-
-export default TwingSandboxSecurityNotAllowedTagError;

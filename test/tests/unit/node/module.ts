@@ -1,18 +1,18 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeExpressionAssignName from "../../../../src/node/expression/assign-name";
-import TwingNodeImport from "../../../../src/node/import";
-import TwingNodeText from "../../../../src/node/text";
-import TwingNode from "../../../../src/node";
-import TwingSource from "../../../../src/source";
-import TwingNodeModule from "../../../../src/node/module";
-import TwingMap from "../../../../src/map";
-import TwingNodeExpressionConditional from "../../../../src/node/expression/conditional";
-import TwingNodeSet from "../../../../src/node/set";
-import TwingTestEnvironmentStub from "../../../environment-stub";
-import TwingNodeType from "../../../../src/node-type";
-import TwingTestLoaderStub from "../../../loader-stub";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingNodeExpressionAssignName} from "../../../../src/node/expression/assign-name";
+import {TwingNodeImport} from "../../../../src/node/import";
+import {TwingNodeText} from "../../../../src/node/text";
+import {TwingNode} from "../../../../src/node";
+import {TwingSource} from "../../../../src/source";
+import {TwingNodeModule} from "../../../../src/node/module";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodeExpressionConditional} from "../../../../src/node/expression/conditional";
+import {TwingNodeSet} from "../../../../src/node/set";
+import {TwingTestEnvironmentStub} from "../../../environment-stub";
+import {TwingNodeType} from "../../../../src/node-type";
+import {TwingTestLoaderStub} from "../../../loader-stub";
 
 const tap = require('tap');
 
@@ -39,7 +39,7 @@ tap.test('node/module', function (test: Test) {
     test.test('compile', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
 
-        test.test('basic', function(test: Test) {
+        test.test('basic', function (test: Test) {
             let body = new TwingNodeText('foo', 1);
             let parent: TwingNode = null;
             let blocks = new TwingNode();
@@ -87,7 +87,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
             test.end();
         });
 
-        test.test('with parent', function(test: Test) {
+        test.test('with parent', function (test: Test) {
             let import_ = new TwingNodeImport(new TwingNodeExpressionConstant('foo.twig', 1), new TwingNodeExpressionAssignName('macro', 1), 2);
 
             let bodyNodes = new TwingMap();
@@ -153,7 +153,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
             test.end();
         });
 
-        test.test('with conditional parent, set body and debug', function(test: Test) {
+        test.test('with conditional parent, set body and debug', function (test: Test) {
             let setNames = new TwingMap();
 
             setNames.push(new TwingNodeExpressionAssignName('foo', 4));

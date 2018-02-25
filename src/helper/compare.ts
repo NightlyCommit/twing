@@ -10,12 +10,12 @@
  * @see https://stackoverflow.com/questions/47969711/php-algorithm-loose-equality-comparison
  */
 import {DateTime} from "luxon";
-import compareToArray from './compare-to-array';
-import compareToString from './compare-to-string';
-import compareToNumber from './compare-to-number';
-import compareToBoolean from './compare-to-boolean';
-import compareToDateTime from './compare-to-date-time';
-import compareToNull from './compare-to-null';
+import {twingCompareArray as compareToArray} from './compare-to-array';
+import {twingCompareString as compareToString} from './compare-to-string';
+import {twingCompareNumber as compareToNumber} from './compare-to-number';
+import {twingCompareToBoolean as compareToBoolean} from './compare-to-boolean';
+import {twingCompareToDateTime as compareToDateTime} from './compare-to-date-time';
+import {twingCompareToNull as compareToNull} from './compare-to-null';
 
 export function twingCompare(firstOperand: any, secondOperand: any): boolean {
     // array
@@ -56,6 +56,4 @@ export function twingCompare(firstOperand: any, secondOperand: any): boolean {
 
     // fallback to strict comparison
     return firstOperand === secondOperand;
-};
-
-export default twingCompare;
+}

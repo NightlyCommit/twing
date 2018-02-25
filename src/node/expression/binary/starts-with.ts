@@ -1,7 +1,7 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryStartsWith extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryStartsWith extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('(() => {')
@@ -16,5 +16,3 @@ class TwingNodeExpressionBinaryStartsWith extends TwingNodeExpressionBinary {
         ;
     }
 }
-
-export default TwingNodeExpressionBinaryStartsWith;

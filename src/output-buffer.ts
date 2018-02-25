@@ -1,6 +1,6 @@
 import {isNullOrUndefined} from "util";
 
-class TwingOutputHandler {
+export class TwingOutputHandler {
     static readonly OUTPUT_HANDLER_CLEANABLE = 0x0010;
     static readonly OUTPUT_HANDLER_FLUSHABLE = 0x0020;
     static readonly OUTPUT_HANDLER_REMOVABLE = 0x0040;
@@ -308,5 +308,3 @@ export const obEndClean = TwingOutputBuffer.obEndClean;
 export const obGetClean = TwingOutputBuffer.obGetClean;
 export const obGetContents = TwingOutputBuffer.obGetContents;
 export const flush = TwingOutputBuffer.flush;
-
-export default TwingOutputBuffer;

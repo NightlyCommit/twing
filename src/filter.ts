@@ -1,8 +1,8 @@
-import TwingNodeExpressionFilter from "./node/expression/filter";
-import TwingNode from "./node";
-import TwingNodeExpressionConstant from "./node/expression/constant";
-import TwingFilterOptions from "./filter-options";
-import TwingEnvironment from "./environment";
+import {TwingNodeExpressionFilter} from "./node/expression/filter";
+import {TwingNode} from "./node";
+import {TwingNodeExpressionConstant} from "./node/expression/constant";
+import {TwingFilterOptions} from "./filter-options";
+import {TwingEnvironment} from "./environment";
 
 let merge = require('merge');
 
@@ -119,5 +119,3 @@ export class TwingFilter {
         return value;
     }
 }
-
-export default TwingFilter;

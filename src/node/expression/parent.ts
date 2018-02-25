@@ -1,9 +1,9 @@
-import TwingNodeExpression from "../expression";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionParent extends TwingNodeExpression {
+export class TwingNodeExpressionParent extends TwingNodeExpression {
     constructor(name: string, lineno: number) {
         super(new TwingMap(), new TwingMap([['output', false], ['name', name]]), lineno);
 
@@ -36,5 +36,3 @@ class TwingNodeExpressionParent extends TwingNodeExpression {
         }
     }
 }
-
-export default TwingNodeExpressionParent;

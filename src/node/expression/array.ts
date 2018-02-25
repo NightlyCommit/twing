@@ -1,13 +1,13 @@
-import TwingNodeExpression from "../expression";
-import TwingNodeExpressionConstant from "./constant";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingNodeExpressionConstant} from "./constant";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 let ctype_digit = require('locutus/php/ctype/ctype_digit');
 
-class TwingNodeExpressionArray extends TwingNodeExpression {
+export class TwingNodeExpressionArray extends TwingNodeExpression {
     private index: number;
 
     constructor(elements: TwingMap<string, TwingNodeExpression>, lineno: number) {
@@ -26,8 +26,8 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
         }
     }
 
-    getKeyValuePairs(): Array<{key: TwingNodeExpression, value: TwingNodeExpression}> {
-        let pairs: Array<{key: TwingNodeExpression, value: TwingNodeExpression}> = [];
+    getKeyValuePairs(): Array<{ key: TwingNodeExpression, value: TwingNodeExpression }> {
+        let pairs: Array<{ key: TwingNodeExpression, value: TwingNodeExpression }> = [];
 
         array_chunk(Array.from(this.nodes.values()), 2).forEach(function (pair: Array<TwingNodeExpression>) {
             pairs.push({
@@ -68,5 +68,3 @@ class TwingNodeExpressionArray extends TwingNodeExpression {
         compiler.raw(']');
     }
 }
-
-export default TwingNodeExpressionArray;

@@ -1,6 +1,6 @@
-import TwingCache from "../src/cache";
+import {TwingCache} from "../src/cache";
 
-class TwingTestCacheStub extends TwingCache {
+export class TwingTestCacheStub extends TwingCache {
     generateKey(name: string, className: string): string {
         return 'key'
     }
@@ -17,5 +17,3 @@ class TwingTestCacheStub extends TwingCache {
         return 0;
     }
 }
-
-export default TwingTestCacheStub;

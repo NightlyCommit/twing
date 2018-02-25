@@ -1,12 +1,12 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../compiler-stub";
-import TwingNodeExpressionConstant from "../../../../src/node/expression/constant";
-import TwingNodeInclude from "../../../../src/node/include";
-import TwingMap from "../../../../src/map";
-import TwingNodeExpressionArray from "../../../../src/node/expression/array";
-import TwingNodeExpressionConditional from "../../../../src/node/expression/conditional";
-import TwingNodeExpressionHash from "../../../../src/node/expression/hash";
-import TwingNodeType from "../../../../src/node-type";
+import {TwingTestCompilerStub} from "../../../compiler-stub";
+import {TwingNodeExpressionConstant} from "../../../../src/node/expression/constant";
+import {TwingNodeInclude} from "../../../../src/node/include";
+import {TwingMap} from "../../../../src/map";
+import {TwingNodeExpressionArray} from "../../../../src/node/expression/array";
+import {TwingNodeExpressionConditional} from "../../../../src/node/expression/conditional";
+import {TwingNodeExpressionHash} from "../../../../src/node/expression/hash";
+import {TwingNodeType} from "../../../../src/node-type";
 
 const tap = require('tap');
 
@@ -37,7 +37,7 @@ tap.test('node/include', function (test: Test) {
     test.test('compile', function (test: Test) {
         let compiler = new TwingTestCompilerStub();
 
-        test.test('basic', function(test: Test) {
+        test.test('basic', function (test: Test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
             let node = new TwingNodeInclude(expr, null, false, false, 1);
 
@@ -47,7 +47,7 @@ await this.loadTemplate("foo.twig", null, 1).display(context);
             test.end();
         });
 
-        test.test('with condition', function(test: Test) {
+        test.test('with condition', function (test: Test) {
             let expr = new TwingNodeExpressionConditional(
                 new TwingNodeExpressionConstant(true, 1),
                 new TwingNodeExpressionConstant('foo', 1),
@@ -62,7 +62,7 @@ await this.loadTemplate(((true) ? ("foo") : ("foo")), null, 1).display(context);
             test.end();
         });
 
-        test.test('with variables', function(test: Test) {
+        test.test('with variables', function (test: Test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
             let hashNodes = new TwingMap();
@@ -79,7 +79,7 @@ await this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(conte
             test.end();
         });
 
-        test.test('with variables only', function(test: Test) {
+        test.test('with variables only', function (test: Test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
             let hashNodes = new TwingMap();
@@ -97,7 +97,7 @@ await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo",
             test.end();
         });
 
-        test.test('with only and no variables', function(test: Test) {
+        test.test('with only and no variables', function (test: Test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
             let node = new TwingNodeInclude(expr, null, true, false, 1);
 
@@ -107,7 +107,7 @@ await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
             test.end();
         });
 
-        test.test('with ignore missing', function(test: Test) {
+        test.test('with ignore missing', function (test: Test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
             let hashNodes = new TwingMap();

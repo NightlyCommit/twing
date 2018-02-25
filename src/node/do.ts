@@ -1,9 +1,8 @@
-import TwingNode from "../node";
-import TwingNodeExpression from "./expression";
-import TwingMap from "../map";
-import TwingTemplate from "../template";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingNodeExpression} from "./expression";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
 /**
  * Represents a do node.
@@ -14,7 +13,7 @@ import TwingNodeType from "../node-type";
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric Morand <eric.morand@gmail.com>
  */
-class TwingNodeDo extends TwingNode {
+export class TwingNodeDo extends TwingNode {
     constructor(expr: TwingNodeExpression, lineno: number, tag: string = null) {
         super(new TwingMap([['expr', expr]]), new TwingMap(), lineno, tag);
 
@@ -30,5 +29,3 @@ class TwingNodeDo extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeDo;

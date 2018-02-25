@@ -1,18 +1,18 @@
-import TwingToken from "./token";
-import Source from "./source";
-import TokenType from "./token-type";
-import TwingSyntaxError from "./error/syntax";
+import {TwingToken} from "./token";
+import {TwingSource} from "./source";
+import {TwingTokenType} from "./token-type";
+import {TwingErrorSyntax} from "./error/syntax";
 
 const array_merge = require('locutus/php/array/array_merge');
 
-class TwingTokenStream {
+export class TwingTokenStream {
     tokens: Array<TwingToken>;
     current: number = 0;
-    source: Source;
+    source: TwingSource;
 
-    constructor(tokens: Array<TwingToken>, source: Source = null) {
+    constructor(tokens: Array<TwingToken>, source: TwingSource = null) {
         this.tokens = tokens;
-        this.source = source ? source : new Source('', '');
+        this.source = source ? source : new TwingSource('', '');
     }
 
     toString() {
@@ -32,7 +32,7 @@ class TwingTokenStream {
         this.current++;
 
         if (this.current >= this.tokens.length) {
-            throw new TwingSyntaxError('Unexpected end of template.', this.tokens[this.current - 1].getLine(), this.source);
+            throw new TwingErrorSyntax('Unexpected end of template.', this.tokens[this.current - 1].getLine(), this.source);
         }
 
         return this.tokens[this.current - 1];
@@ -43,7 +43,7 @@ class TwingTokenStream {
      *
      * @return TwingToken|null The next token if the condition is true, null otherwise
      */
-    nextIf(primary: TokenType, secondary: Array<string> | string = null) {
+    nextIf(primary: TwingTokenType, secondary: Array<string> | string = null) {
         if (this.tokens[this.current].test(primary, secondary)) {
             return this.next();
         }
@@ -56,13 +56,13 @@ class TwingTokenStream {
      *
      * @return TwingToken
      */
-    expect(type: TokenType, value: Array<string> | string | number = null, message: string = null) {
+    expect(type: TwingTokenType, value: Array<string> | string | number = null, message: string = null) {
         let token = this.tokens[this.current];
 
         if (!token.test(type, value)) {
             let line = token.getLine();
 
-            throw new TwingSyntaxError(
+            throw new TwingErrorSyntax(
                 `${message ? message + '. ' : ''}Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getValue()}" ("${TwingToken.typeToEnglish(type)}" expected${value ? ` with value "${value}"` : ''}).`,
                 line,
                 this.source
@@ -97,7 +97,7 @@ class TwingTokenStream {
      *
      * @return bool
      */
-    test(primary: TokenType, secondary: Array<string> | string = null) {
+    test(primary: TwingTokenType, secondary: Array<string> | string = null) {
         return this.tokens[this.current].test(primary, secondary);
     }
 
@@ -107,7 +107,7 @@ class TwingTokenStream {
      * @return bool
      */
     isEOF() {
-        return this.tokens[this.current].getType() === TokenType.EOF_TYPE;
+        return this.tokens[this.current].getType() === TwingTokenType.EOF_TYPE;
     }
 
     /**
@@ -128,5 +128,3 @@ class TwingTokenStream {
         return this.source;
     }
 }
-
-export default TwingTokenStream;

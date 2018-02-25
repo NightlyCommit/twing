@@ -1,17 +1,8 @@
-import TwingBaseNodeVisitor from "../base-node-visitor";
-import TwingNode from "../node";
-import TwingEnvironment from "../environment";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionBlockReference from "../node/expression/block-reference";
-import TwingNodeExpressionParent from "../node/expression/parent";
-import TwingNodeExpressionConditional from "../node/expression/conditional";
-import TwingNodeExpressionFilter from "../node/expression/filter";
-import TwingNodeExpressionFunction from "../node/expression/function";
-import TwingNodeExpressionMethodCall from "../node/expression/method-call";
-import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
-import TwingNodeExpressionName from "../node/expression/name";
-import TwingMap from "../map";
-import TwingNodeType from "../node-type";
+import {TwingBaseNodeVisitor} from "../base-node-visitor";
+import {TwingNode} from "../node";
+import {TwingEnvironment} from "../environment";
+import {TwingMap} from "../map";
+import {TwingNodeType} from "../node-type";
 
 var objectHash = require('object-hash');
 
@@ -20,7 +11,7 @@ interface Bucket {
     value: Array<string>
 }
 
-class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
+export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
     private data: TwingMap<string, Array<Bucket>> = new TwingMap();
     private safeVars: Array<any> = [];
 
@@ -40,7 +31,7 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
             return;
         }
 
-        let bucket = this.data.get(hash).find(function(bucket: Bucket) {
+        let bucket = this.data.get(hash).find(function (bucket: Bucket) {
             if (bucket.key === node) {
                 if (bucket.value.includes('html_attr')) {
                     bucket.value.push('html');
@@ -58,12 +49,12 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         let bucket = null;
 
         if (this.data.has(hash)) {
-            bucket = this.data.get(hash).find(function(bucket: Bucket) {
-               if (bucket.key === node) {
-                   bucket.value = safe;
+            bucket = this.data.get(hash).find(function (bucket: Bucket) {
+                if (bucket.key === node) {
+                    bucket.value = safe;
 
-                   return true;
-               }
+                    return true;
+                }
             });
         }
 
@@ -181,5 +172,3 @@ class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return 0;
     }
 }
-
-export default TwingNodeVisitorSafeAnalysis;

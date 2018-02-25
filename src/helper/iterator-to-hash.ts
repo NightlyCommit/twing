@@ -1,4 +1,4 @@
-export default function iteratorToHash(value: any) {
+export function iteratorToHash(value: any) {
     let result: any;
 
     if (value.entries) {

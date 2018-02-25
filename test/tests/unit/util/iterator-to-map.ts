@@ -1,5 +1,5 @@
 import {Test} from "tape";
-import iteratorToMap from '../../../../src/helper/iterator-to-map';
+import {iteratorToMap} from '../../../../src/helper/iterator-to-map';
 
 const tap = require('tap');
 

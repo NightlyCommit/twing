@@ -1,13 +1,13 @@
-import TwingNodeExpressionFilter from "../filter";
-import TwingNode from "../../../node";
-import TwingNodeExpressionConstant from "../constant";
-import TwingNodeExpressionTestDefined from "../test/defined";
-import TwingNodeExpressionConditional from "../conditional";
-import TwingNodeExpression from "../../expression";
-import TwingCompiler from "../../../compiler";
-import TwingNodeType from "../../../node-type";
+import {TwingNodeExpressionFilter} from "../filter";
+import {TwingNode} from "../../../node";
+import {TwingNodeExpressionConstant} from "../constant";
+import {TwingNodeExpressionTestDefined} from "../test/defined";
+import {TwingNodeExpressionConditional} from "../conditional";
+import {TwingNodeExpression} from "../../expression";
+import {TwingCompiler} from "../../../compiler";
+import {TwingNodeType} from "../../../node-type";
 
-class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
+export class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
         let defaultNode = new TwingNodeExpressionFilter(node, new TwingNodeExpressionConstant('default', node.getTemplateLine()), methodArguments, node.getTemplateLine());
 
@@ -28,5 +28,3 @@ class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
         compiler.subcompile(this.getNode('node'));
     }
 }
-
-export default TwingNodeExpressionFilterDefault;

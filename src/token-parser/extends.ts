@@ -9,22 +9,22 @@
  * </ul>
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingSyntaxError from "../error/syntax";
-import TwingTokenType from "../token-type";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingTokenType} from "../token-type";
 
-class TwingTokenParserExtends extends TwingTokenParser {
+export class TwingTokenParserExtends extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let stream = this.parser.getStream();
 
         if (!this.parser.isMainScope()) {
-            throw new TwingSyntaxError('Cannot extend from a block.', token.getLine(), stream.getSourceContext());
+            throw new TwingErrorSyntax('Cannot extend from a block.', token.getLine(), stream.getSourceContext());
         }
 
         if (this.parser.getParent() !== null) {
-            throw new TwingSyntaxError('Multiple extends tags are forbidden.', token.getLine(), stream.getSourceContext());
+            throw new TwingErrorSyntax('Multiple extends tags are forbidden.', token.getLine(), stream.getSourceContext());
         }
 
         this.parser.setParent(this.parser.getExpressionParser().parseExpression());
@@ -38,5 +38,3 @@ class TwingTokenParserExtends extends TwingTokenParser {
         return 'extends';
     }
 }
-
-export default TwingTokenParserExtends;

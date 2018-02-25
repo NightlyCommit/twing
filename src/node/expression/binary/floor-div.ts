@@ -1,7 +1,7 @@
-import TwingNodeExpressionBinaryDiv from "./div";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinaryDiv} from "./div";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryFloorDiv extends TwingNodeExpressionBinaryDiv {
+export class TwingNodeExpressionBinaryFloorDiv extends TwingNodeExpressionBinaryDiv {
     compile(compiler: TwingCompiler) {
         compiler.raw('Math.floor(');
         super.compile(compiler);
@@ -12,5 +12,3 @@ class TwingNodeExpressionBinaryFloorDiv extends TwingNodeExpressionBinaryDiv {
         return compiler.raw('/');
     }
 }
-
-export default TwingNodeExpressionBinaryFloorDiv;

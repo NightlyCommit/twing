@@ -9,20 +9,13 @@
  * </ul>
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeExpressionName from "../node/expression/name";
-import TwingNodeExpressionGetAttr from "../node/expression/get-attr";
-import TwingErrorSyntax from "../error/syntax";
-import TwingTokenStream from "../token-stream";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionAssignName from "../node/expression/assign-name";
-import TwingNodeFor from "../node/for";
-import TwingNodeSet from "../node/set";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingNodeSet} from "../node/set";
 
-class TwingTokenParserSet extends TwingTokenParser {
+export class TwingTokenParserSet extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
@@ -57,12 +50,10 @@ class TwingTokenParserSet extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE,'endset');
+        return token.test(TwingTokenType.NAME_TYPE, 'endset');
     }
 
     getTag() {
         return 'set';
     }
 }
-
-export default TwingTokenParserSet;

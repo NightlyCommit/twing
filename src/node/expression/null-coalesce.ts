@@ -1,14 +1,14 @@
-import TwingNodeExpressionConditional from "./conditional";
-import TwingNodeExpression from "../expression";
-import TwingNodeExpressionTestDefined from "./test/defined";
-import TwingNodeExpressionUnaryNot from "./unary/not";
-import TwingNodeExpressionTestNull from "./test/null";
-import TwingNode from "../../node";
-import TwingNodeExpressionBinaryAnd from "./binary/and";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpressionConditional} from "./conditional";
+import {TwingNodeExpression} from "../expression";
+import {TwingNodeExpressionTestDefined} from "./test/defined";
+import {TwingNodeExpressionUnaryNot} from "./unary/not";
+import {TwingNodeExpressionTestNull} from "./test/null";
+import {TwingNode} from "../../node";
+import {TwingNodeExpressionBinaryAnd} from "./binary/and";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
+export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
     constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number) {
         let test = new TwingNodeExpressionBinaryAnd(
             new TwingNodeExpressionTestDefined(<TwingNodeExpression>left.clone(), 'defined', new TwingNode(), left.getTemplateLine()),
@@ -29,5 +29,3 @@ class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
         return super.compile(compiler);
     }
 }
-
-export default TwingNodeExpressionNullCoalesce;

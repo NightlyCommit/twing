@@ -1,8 +1,8 @@
 import {Test} from "tape";
-import TwingNodeExpressionConstant from "../../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../../compiler-stub";
-import TwingNodeExpressionUnaryPos from "../../../../../../src/node/expression/unary/pos";
-import TwingNodeType from "../../../../../../src/node-type";
+import {TwingNodeExpressionConstant} from "../../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../../compiler-stub";
+import {TwingNodeExpressionUnaryPos} from "../../../../../../src/node/expression/unary/pos";
+import {TwingNodeType} from "../../../../../../src/node-type";
 
 const tap = require('tap');
 

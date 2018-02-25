@@ -1,20 +1,15 @@
-import TwingBaseNodeVisitor from "../base-node-visitor";
-import TwingNode from "../node";
-import TwingEnvironment from "../environment";
-import TwingNodeVisitorSafeAnalysis from "./safe-analysis";
-import TwingNodeTraverser from "../node-traverser";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingMap from "../map";
-import TwingNodeExpressionFilter from "../node/expression/filter";
-import TwingNodePrint from "../node/print";
-import TwingNodeBlock from "../node/block";
-import TwingNodeAutoEscape from "../node/auto-escape";
-import TwingNodeBlockReference from "../node/block-reference";
-import TwingNodeModule from "../node/module";
-import TwingNodeImport from "../node/import";
-import TwingNodeType from "../node-type";
+import {TwingBaseNodeVisitor} from "../base-node-visitor";
+import {TwingNode} from "../node";
+import {TwingEnvironment} from "../environment";
+import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
+import {TwingNodeTraverser} from "../node-traverser";
+import {TwingNodeExpressionConstant} from "../node/expression/constant";
+import {TwingMap} from "../map";
+import {TwingNodeExpressionFilter} from "../node/expression/filter";
+import {TwingNodePrint} from "../node/print";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
+export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
     private blocks: Map<string, any> = new Map();
     private safeAnalysis: TwingNodeVisitorSafeAnalysis;
@@ -151,7 +146,7 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         nodes.push(new TwingNodeExpressionConstant(true, line));
 
         let nodeArgs = new TwingNode(nodes);
-        
+
         return new TwingNodeExpressionFilter(node, name, nodeArgs, line);
     }
 
@@ -159,5 +154,3 @@ class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         return 0;
     }
 }
-
-export default TwingNodeVisitorEscaper;

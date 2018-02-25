@@ -4,7 +4,7 @@
  * @param seq
  * @returns {TwingMap<any, any>}
  */
-import TwingMap from "../map";
+import {TwingMap} from "../map";
 
 export function iteratorToMap(thing: any): TwingMap<any, any> {
     if (thing.entries) {
@@ -27,5 +27,3 @@ export function iteratorToMap(thing: any): TwingMap<any, any> {
         return result;
     }
 }
-
-export default iteratorToMap;

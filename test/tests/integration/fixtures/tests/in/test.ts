@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 class SplFileInfo {
     constructor(dirname: string) {
@@ -7,7 +7,7 @@ class SplFileInfo {
 }
 
 // opendir returns a pointer in PHP
-let opendir = function(dirname: string) {
+let opendir = function (dirname: string) {
     return {};
 };
 

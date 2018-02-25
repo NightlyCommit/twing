@@ -1,10 +1,10 @@
-import TwingExtensionInterface from "./extension-interface";
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingFilter from "./filter";
-import TwingFunction from "./function";
-import TwingOperatorDefinitionInterface from "./operator-definition-interface";
-import TwingTest from "./test";
+import {TwingExtensionInterface} from "./extension-interface";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingFilter} from "./filter";
+import {TwingFunction} from "./function";
+import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
+import {TwingTest} from "./test";
 
 export class TwingExtension implements TwingExtensionInterface {
     getDefaultStrategy(name: string): string | Function {
@@ -39,5 +39,3 @@ export class TwingExtension implements TwingExtensionInterface {
     }
 
 }
-
-export default TwingExtension;

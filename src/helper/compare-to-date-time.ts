@@ -8,7 +8,7 @@
 
 import {DateTime} from "luxon";
 
-export default function twingCompareToDateTime(value: DateTime, compare: any): boolean {
+export function twingCompareToDateTime(value: DateTime, compare: any): boolean {
     if (compare instanceof DateTime) {
         return value.valueOf() === compare.valueOf();
     }

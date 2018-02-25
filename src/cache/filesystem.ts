@@ -1,4 +1,4 @@
-import TwingCache from "../cache";
+import {TwingCache} from "../cache";
 
 let fs = require('fs-extra');
 let path = require('path');
@@ -80,5 +80,3 @@ export class TwingCacheFilesystem extends TwingCache {
         return stat.mtimeMs;
     }
 }
-
-export default TwingCacheFilesystem;

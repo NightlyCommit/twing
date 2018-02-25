@@ -1,7 +1,7 @@
-import TwingExtension from "../extension";
-import TwingProfilerProfile from "../profiler/profile";
-import TwingProfilerNodeVisitorProfiler from "../profiler/node-visitor/profiler";
-import TwingMap from "../map";
+import {TwingExtension} from "../extension";
+import {TwingProfilerProfile} from "../profiler/profile";
+import {TwingProfilerNodeVisitorProfiler} from "../profiler/node-visitor/profiler";
+import {TwingMap} from "../map";
 
 export class TwingExtensionProfiler extends TwingExtension {
     static context: TwingMap<any, any> = new TwingMap();
@@ -33,6 +33,4 @@ export class TwingExtensionProfiler extends TwingExtension {
         return [new TwingProfilerNodeVisitorProfiler(this.constructor.name)];
     }
 }
-
-export default TwingExtensionProfiler;
 

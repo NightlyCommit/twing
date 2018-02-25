@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
 
 /**
  * Let's fake a SimpleXMLElement instance.
@@ -24,7 +24,7 @@ class SimpleXMLElement {
     children() {
         return {
             image: {
-                count: function() {
+                count: function () {
                     return 2;
                 }
             }

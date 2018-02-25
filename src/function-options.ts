@@ -1,4 +1,4 @@
-type TwingFunctionOptions = {
+export type TwingFunctionOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
     is_variadic?: boolean;
@@ -8,5 +8,3 @@ type TwingFunctionOptions = {
     deprecated?: string;
     alternative?: string;
 }
-
-export default TwingFunctionOptions;

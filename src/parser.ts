@@ -1,25 +1,24 @@
-import TwingEnvironment from "./environment";
-import TwingTokenStream from "./token-stream";
-import TwingNodeBlock from "./node/block";
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingExpressionParser from "./expression-parser";
-import TwingSyntaxError from "./error/syntax";
-import TwingNode from "./node";
-import TwingToken from "./token";
-import TwingTokenType from "./token-type";
-import TwingNodeText from "./node/text";
-import TwingNodePrint from "./node/print";
-import TwingNodeType from "./node-type";
-import TwingNodeExpression from "./node/expression";
-import TwingMap from "./map";
-import TwingNodeBody from "./node/body";
-import TwingNodeModule from "./node/module";
-import TwingNodeTraverser from "./node-traverser";
-import TwingNodeMacro from "./node/macro";
-import TwingNodeBlockReference from "./node/block-reference";
-import TwingTokenParser from "./token-parser";
-import TwingNodeOutputType from "./node-output-type";
+import {TwingEnvironment} from "./environment";
+import {TwingTokenStream} from "./token-stream";
+import {TwingNodeBlock} from "./node/block";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingExpressionParser} from "./expression-parser";
+import {TwingErrorSyntax} from "./error/syntax";
+import {TwingNode} from "./node";
+import {TwingToken} from "./token";
+import {TwingTokenType} from "./token-type";
+import {TwingNodeText} from "./node/text";
+import {TwingNodePrint} from "./node/print";
+import {TwingNodeType} from "./node-type";
+import {TwingNodeExpression} from "./node/expression";
+import {TwingMap} from "./map";
+import {TwingNodeBody} from "./node/body";
+import {TwingNodeModule} from "./node/module";
+import {TwingNodeTraverser} from "./node-traverser";
+import {TwingNodeMacro} from "./node/macro";
+import {TwingTokenParser} from "./token-parser";
+import {TwingNodeOutputType} from "./node-output-type";
 
 let ctype_space = require('locutus/php/ctype/ctype_space');
 let md5 = require('locutus/php/strings/md5');
@@ -32,7 +31,7 @@ class TwingParserStackEntry {
     blocks: TwingMap<string, TwingNodeBlock>;
     blockStack: Array<string>;
     macros: TwingMap<string, string>;
-    importedSymbols: Array<Map<string, Map<string, {node: TwingNodeExpression, name: string}>>>;
+    importedSymbols: Array<Map<string, Map<string, { node: TwingNodeExpression, name: string }>>>;
     traits: TwingMap<string, TwingNode>;
     embeddedTemplates: Array<TwingNodeModule>;
 
@@ -126,7 +125,7 @@ export class TwingParser {
             }
         }
         catch (e) {
-            if (e instanceof TwingSyntaxError) {
+            if (e instanceof TwingErrorSyntax) {
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.stream.getSourceContext());
                 }
@@ -202,7 +201,7 @@ export class TwingParser {
                     token = this.getCurrentToken();
 
                     if (token.getType() !== TwingTokenType.NAME_TYPE) {
-                        throw new TwingSyntaxError('A block must start with a tag name', token.getLine(), this.stream.getSourceContext());
+                        throw new TwingErrorSyntax('A block must start with a tag name', token.getLine(), this.stream.getSourceContext());
                     }
 
                     if (test !== null && test[1](token)) {
@@ -221,7 +220,7 @@ export class TwingParser {
                         let e;
 
                         if (test !== null) {
-                            e = new TwingSyntaxError(
+                            e = new TwingErrorSyntax(
                                 `Unexpected "${token.getValue()}" tag`,
                                 token.getLine(),
                                 this.stream.getSourceContext()
@@ -232,7 +231,7 @@ export class TwingParser {
                             }
                         }
                         else {
-                            e = new TwingSyntaxError(
+                            e = new TwingErrorSyntax(
                                 `Unknown "${token.getValue()}" tag.`,
                                 token.getLine(),
                                 this.stream.getSourceContext()
@@ -256,7 +255,7 @@ export class TwingParser {
 
                     break;
                 default:
-                    throw new TwingSyntaxError(
+                    throw new TwingErrorSyntax(
                         'Lexer or parser ended up in unsupported state.',
                         this.getCurrentToken().getLine(),
                         this.stream.getSourceContext()
@@ -344,7 +343,7 @@ export class TwingParser {
         localScopeType.set(alias, {name: name, node: node});
     }
 
-    getImportedSymbol(type: string, alias: string): {node: TwingNodeExpression, name: string} {
+    getImportedSymbol(type: string, alias: string): { node: TwingNodeExpression, name: string } {
         let result = null;
 
         this.importedSymbols.forEach(function (importedSymbol) {
@@ -391,13 +390,13 @@ export class TwingParser {
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
             ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && (node.getOutputType() === TwingNodeOutputType.OUTPUT))) {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
-                throw new TwingSyntaxError(
+                throw new TwingErrorSyntax(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
                     node.getTemplateLine(),
                     this.stream.getSourceContext());
             }
 
-            throw new TwingSyntaxError(
+            throw new TwingErrorSyntax(
                 `A template that extends another one cannot include contents outside Twig blocks. Did you forget to put the contents inside a {% block %} tag?`,
                 node.getTemplateLine(),
                 this.stream.getSourceContext());
@@ -421,5 +420,3 @@ export class TwingParser {
         return node;
     }
 }
-
-export default TwingParser;

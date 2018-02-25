@@ -4,12 +4,12 @@
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingEnvironment from "./environment";
-import TwingTemplate from "./template";
-import TwingMap from "./map";
-import TwingSource from "./source";
+import {TwingEnvironment} from "./environment";
+import {TwingTemplate} from "./template";
+import {TwingMap} from "./map";
+import {TwingSource} from "./source";
 
-class TwingTemplateWrapper {
+export class TwingTemplateWrapper {
     private env: TwingEnvironment;
     private template: TwingTemplate;
 
@@ -91,5 +91,3 @@ class TwingTemplateWrapper {
         return this.template.getSourceContext();
     }
 }
-
-export default TwingTemplateWrapper;

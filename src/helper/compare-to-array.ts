@@ -1,4 +1,4 @@
-import twingCompare from './compare';
+import {twingCompare} from './compare';
 
 /**
  * Compare an array to something else by conforming to PHP loose comparisons rules
@@ -9,7 +9,7 @@ import twingCompare from './compare';
  * │ ["php"] │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ TRUE    │ FALSE │ FALSE |
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export default function twingCompareArray(value: Array<any>, compare: any): boolean {
+export function twingCompareArray(value: Array<any>, compare: any): boolean {
     if (value.length < 1) {
         return (compare === false || compare === null || (Array.isArray(compare) && compare.length < 1));
     }

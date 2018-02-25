@@ -1,8 +1,8 @@
 import {Test} from "tape";
-import TwingNodeExpressionCall from "../../../../../src/node/expression/call";
-import TwingNode from "../../../../../src/node";
-import TwingMap from "../../../../../src/map";
-import TwingErrorSyntax from "../../../../../src/error/syntax";
+import {TwingNodeExpressionCall} from "../../../../../src/node/expression/call";
+import {TwingNode} from "../../../../../src/node";
+import {TwingMap} from "../../../../../src/map";
+import {TwingErrorSyntax} from "../../../../../src/error/syntax";
 
 const tap = require('tap');
 
@@ -41,7 +41,6 @@ class CallableTestClass {
     public __invoke(required: any) {
     }
 }
-
 
 tap.test('node/expression/call', function (test: Test) {
     test.test('getArguments', function (test: Test) {

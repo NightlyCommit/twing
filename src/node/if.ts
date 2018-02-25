@@ -1,9 +1,9 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeIf extends TwingNode {
+export class TwingNodeIf extends TwingNode {
     constructor(tests: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {
         let nodes = new TwingMap();
 
@@ -58,5 +58,3 @@ class TwingNodeIf extends TwingNode {
             .write("}\n");
     }
 }
-
-export default TwingNodeIf;

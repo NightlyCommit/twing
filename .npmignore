@@ -2,10 +2,13 @@
 .idea
 .npmignore
 .nyc_output
+.nycrc
 .rpt2_cache
 .travis.yml
 coverage
+package-lock.json
 src
 tasks
 test
+tmp
 tsconfig.json

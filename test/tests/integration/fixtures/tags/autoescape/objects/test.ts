@@ -1,4 +1,4 @@
-import TwingTestIntegrationTestCase from "../../../../../../integration-test-case";
+import {TwingTestIntegrationTestCase} from "../../../../../../integration-test-case";
 
 class UserForAutoEscapeTest {
     getName() {

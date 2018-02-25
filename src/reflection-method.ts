@@ -1,8 +1,8 @@
-import TwingReflectionParameter from "./reflection-parameter";
+import {TwingReflectionParameter} from "./reflection-parameter";
 
 const parseFunction = require('parse-function');
 
-class TwingReflectionMethod {
+export class TwingReflectionMethod {
     private name: string;
     private parameters: Array<TwingReflectionParameter>;
     private callable: Function;
@@ -69,5 +69,3 @@ class TwingReflectionMethod {
         return this.callable.apply(scope, args);
     }
 }
-
-export default TwingReflectionMethod;

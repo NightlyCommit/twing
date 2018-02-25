@@ -182,5 +182,3 @@ export class TwingMap<K, V> extends Map<any, any> {
         return this.merge(new TwingMap());
     }
 }
-
-export default TwingMap;

@@ -1,13 +1,11 @@
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingTokenParserInclude from "./include";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeExpressionName from "../node/expression/name";
-import TwingNodeEmbed from "../node/embed";
-import TwingNodeModule from "../node/module";
-import TwingNodeType from "../node-type";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingTokenParserInclude} from "./include";
+import {TwingNodeEmbed} from "../node/embed";
+import {TwingNodeModule} from "../node/module";
+import {TwingNodeType} from "../node-type";
 
-class TwingTokenParserEmbed extends TwingTokenParserInclude {
+export class TwingTokenParserEmbed extends TwingTokenParserInclude {
     parse(token: TwingToken) {
         let stream = this.parser.getStream();
 
@@ -61,5 +59,3 @@ class TwingTokenParserEmbed extends TwingTokenParserInclude {
         return 'embed';
     }
 }
-
-export default TwingTokenParserEmbed;

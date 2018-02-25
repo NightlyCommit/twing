@@ -1,6 +1,6 @@
 import {DateTime} from "luxon";
 
-export default function relativeDate(date: string): DateTime {
+export function relativeDate(date: string): DateTime {
     let result = null;
     let regExp = /^([-|\+])([0-9]+?)(.*)/g;
 

@@ -1,7 +1,7 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
-import TwingTestToStringStub from "../../../../../to-string-stub";
-import TwingTestCountableStub from "../../../../../countable-stub";
-import TwingTestMagicCallStub from "../../../../../magic-call-stub";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
+import {TwingTestToStringStub} from "../../../../../to-string-stub";
+import {TwingTestCountableStub} from "../../../../../countable-stub";
+import {TwingTestMagicCallStub} from "../../../../../magic-call-stub";
 
 export = class extends TwingTestIntegrationTestCase {
     getDescription() {

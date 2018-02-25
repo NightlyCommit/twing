@@ -1,7 +1,7 @@
-import TwingNodeExpressionArray from "./array";
-import TwingCompiler from "../../compiler";
+import {TwingNodeExpressionArray} from "./array";
+import {TwingCompiler} from "../../compiler";
 
-class TwingNodeExpressionHash extends TwingNodeExpressionArray {
+export class TwingNodeExpressionHash extends TwingNodeExpressionArray {
     compile(compiler: TwingCompiler) {
         compiler
             .raw('new Twing.TwingMap([')
@@ -28,5 +28,3 @@ class TwingNodeExpressionHash extends TwingNodeExpressionArray {
         compiler.raw('])');
     }
 }
-
-export default TwingNodeExpressionHash;

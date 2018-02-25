@@ -1,5 +1,5 @@
 import {Test} from "tape";
-import compareArray from '../../../../src/helper/compare-to-array';
+import {twingCompareArray as compareArray} from '../../../../src/helper/compare-to-array';
 
 const tap = require('tap');
 

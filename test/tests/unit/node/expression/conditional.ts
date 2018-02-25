@@ -1,12 +1,12 @@
 import {Test} from "tape";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionConditional from "../../../../../src/node/expression/conditional";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionConditional} from "../../../../../src/node/expression/conditional";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
 
 const tap = require('tap');
 
 tap.test('node/expression/conditional', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let expr1 = new TwingNodeExpressionConstant(1, 1);
         let expr2 = new TwingNodeExpressionConstant(2, 1);
         let expr3 = new TwingNodeExpressionConstant(3, 1);

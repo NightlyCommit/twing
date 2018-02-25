@@ -1,5 +1,5 @@
-import TwingTestIntegrationTestCase from "../../../../../integration-test-case";
-import TwingMarkup from "../../../../../../src/markup";
+import {TwingTestIntegrationTestCase} from "../../../../../integration-test-case";
+import {TwingMarkup} from "../../../../../../src/markup";
 
 class ToStringStub {
     private value: string;

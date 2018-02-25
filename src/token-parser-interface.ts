@@ -1,13 +1,13 @@
-import TwingParser from "./parser";
-import TwingToken from "./token";
-import TwingNode from "./node";
+import {TwingParser} from "./parser";
+import {TwingToken} from "./token";
+import {TwingNode} from "./node";
 
 /**
  * Interface implemented by token parsers.
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-interface TwingTokenParserInterface {
+export interface TwingTokenParserInterface {
     /**
      * Sets the parser associated with this token parser.
      */
@@ -29,5 +29,3 @@ interface TwingTokenParserInterface {
      */
     getTag(): string;
 }
-
-export default TwingTokenParserInterface;

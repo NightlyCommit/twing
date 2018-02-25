@@ -11,15 +11,15 @@
  * {% endif %}
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingErrorSyntax from "../error/syntax";
-import TwingNodeIf from "../node/if";
-import TwingMap from "../map";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingNodeIf} from "../node/if";
+import {TwingMap} from "../map";
 
-class TwingTokenParserIf extends TwingTokenParser {
+export class TwingTokenParserIf extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
         let expr = this.parser.getExpressionParser().parseExpression();
@@ -80,5 +80,3 @@ class TwingTokenParserIf extends TwingTokenParser {
         return 'if';
     }
 }
-
-export default TwingTokenParserIf;

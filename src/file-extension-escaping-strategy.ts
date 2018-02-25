@@ -1,6 +1,6 @@
 const path = require('path');
 
-class TwingFileExtensionEscapingStrategy {
+export class TwingFileExtensionEscapingStrategy {
     /**
      * Guesses the best autoescaping strategy based on the file name.
      *
@@ -36,5 +36,3 @@ class TwingFileExtensionEscapingStrategy {
         }
     }
 }
-
-export default TwingFileExtensionEscapingStrategy;

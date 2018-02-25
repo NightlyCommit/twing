@@ -1,6 +1,6 @@
-import TwingNode from "./node";
-import TwingEnvironment from "./environment";
-import TwingMap from "./map";
+import {TwingNode} from "./node";
+import {TwingEnvironment} from "./environment";
+import {TwingMap} from "./map";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
@@ -8,7 +8,7 @@ const md5 = require('locutus/php/strings/md5');
 const uniqid = require('locutus/php/misc/uniqid');
 const mt_rand = require('locutus/php/math/mt_rand');
 
-class TwingCompiler {
+export class TwingCompiler {
     private lastLine: number;
     private source: string;
     private indentation: number;
@@ -255,5 +255,3 @@ class TwingCompiler {
         return `${prefix}${md5(uniqid(mt_rand(), true))}`;
     }
 }
-
-export default TwingCompiler;

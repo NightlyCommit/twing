@@ -1,9 +1,9 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNodeWith from "../node/with";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeWith} from "../node/with";
 
-class TwingTokenParserWith extends TwingTokenParser {
+export class TwingTokenParserWith extends TwingTokenParser {
     parse(token: TwingToken) {
         let stream = this.parser.getStream();
 
@@ -26,12 +26,10 @@ class TwingTokenParserWith extends TwingTokenParser {
     }
 
     decideWithEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE,'endwith');
+        return token.test(TwingTokenType.NAME_TYPE, 'endwith');
     }
 
     getTag() {
         return 'with';
     }
 }
-
-export default TwingTokenParserWith;

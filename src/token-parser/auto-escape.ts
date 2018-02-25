@@ -9,16 +9,15 @@
  * </ul>
  * </pre>
  */
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingErrorSyntax from "../error/syntax";
-import TwingTokenType from "../token-type";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeAutoEscape from "../node/auto-escape";
-import TwingNodeType from "../node-type";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeAutoEscape} from "../node/auto-escape";
+import {TwingNodeType} from "../node-type";
 
-class TwingTokenParserAutoEscape extends TwingTokenParser {
+export class TwingTokenParserAutoEscape extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
@@ -54,5 +53,3 @@ class TwingTokenParserAutoEscape extends TwingTokenParser {
         return 'autoescape';
     }
 }
-
-export default TwingTokenParserAutoEscape;

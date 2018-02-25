@@ -1,7 +1,7 @@
-import TwingExtension from "../extension";
-import TwingSandboxSecurityPolicyInterface from "../sandbox/sandbox-policy-interface";
-import TwingTokenParserSandbox from "../token-parser/sandbox";
-import TwingNodeVisitorSandbox from "../node-visitor/sandbox";
+import {TwingExtension} from "../extension";
+import {TwingSandboxSecurityPolicyInterface} from "../sandbox/sandbox-policy-interface";
+import {TwingTokenParserSandbox} from "../token-parser/sandbox";
+import {TwingNodeVisitorSandbox} from "../node-visitor/sandbox";
 
 export class TwingExtensionSandbox extends TwingExtension {
     private sandboxedGlobally: boolean;
@@ -77,5 +77,3 @@ export class TwingExtensionSandbox extends TwingExtension {
         return obj;
     }
 }
-
-export default TwingExtensionSandbox;

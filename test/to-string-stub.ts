@@ -1,4 +1,4 @@
-class TwingTestToStringStub {
+export class TwingTestToStringStub {
     private value: string;
 
     constructor(value: string) {
@@ -9,5 +9,3 @@ class TwingTestToStringStub {
         return this.value;
     }
 }
-
-export default TwingTestToStringStub;

@@ -1,13 +1,11 @@
-
-import TwingTokenParser from "../token-parser";
-import TwingNode from "../node";
-import TwingToken from "../token";
-import TwingSyntaxError from "../error/syntax";
-import TwingTokenType from "../token-type";
-import TwingNodeExpressionBlockReference from "../node/expression/block-reference";
-import TwingNodeExpressionConstant from "../node/expression/constant";
-import TwingNodeBlock from "../node/block";
-import TwingNodePrint from "../node/print";
+import {TwingTokenParser} from "../token-parser";
+import {TwingNode} from "../node";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNodeExpressionBlockReference} from "../node/expression/block-reference";
+import {TwingNodeExpressionConstant} from "../node/expression/constant";
+import {TwingNodeBlock} from "../node/block";
+import {TwingNodePrint} from "../node/print";
 
 /**
  * Filters a section of a template by applying filters.
@@ -18,7 +16,7 @@ import TwingNodePrint from "../node/print";
  * {% endfilter %}
  * </pre>
  */
-class TwingTokenParserFilter extends TwingTokenParser {
+export class TwingTokenParserFilter extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let name = this.parser.getVarName();
         let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, token.getLine()), null, token.getLine(), this.getTag());
@@ -38,12 +36,10 @@ class TwingTokenParserFilter extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE,'endfilter');
+        return token.test(TwingTokenType.NAME_TYPE, 'endfilter');
     }
 
     getTag() {
         return 'filter';
     }
 }
-
-export default TwingTokenParserFilter;

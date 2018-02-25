@@ -1,6 +1,6 @@
-class TwingTestFoo {
+export class TwingTestFoo {
     static BAR_NAME = 'bar';
-    
+
     public position: number = 0;
     public array: Map<any, any>;
 
@@ -33,5 +33,3 @@ class TwingTestFoo {
         return 'not';
     }
 }
-
-export default TwingTestFoo;

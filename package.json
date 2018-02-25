@@ -22,6 +22,7 @@
     "url": "git://github.com/ericmorand/twing"
   },
   "main": "build/node/twing.js",
+  "types": "twing.d.ts",
   "engines": {
     "node": ">=7.6.0"
   },
@@ -30,7 +31,7 @@
     "prepublish": "npm run build",
     "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
-    "build": "tsc && node tasks/build.js",
+    "build": "node tasks/build.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -87,6 +88,6 @@
     "tape": "^4.8.0",
     "tokenizer": "1.1.x",
     "ts-node": "^4.1.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.7.2"
   }
 }

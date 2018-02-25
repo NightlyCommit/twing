@@ -1,16 +1,16 @@
 import {Test} from "tape";
-import TwingMap from "../../../../../src/map";
-import TwingNodeExpressionConstant from "../../../../../src/node/expression/constant";
-import TwingTestCompilerStub from "../../../../compiler-stub";
-import TwingNodeExpressionName from "../../../../../src/node/expression/name";
-import TwingNodeExpressionArray from "../../../../../src/node/expression/array";
-import TwingNodeExpressionGetAttr from "../../../../../src/node/expression/get-attr";
-import TwingTemplate from "../../../../../src/template";
+import {TwingMap} from "../../../../../src/map";
+import {TwingNodeExpressionConstant} from "../../../../../src/node/expression/constant";
+import {TwingTestCompilerStub} from "../../../../compiler-stub";
+import {TwingNodeExpressionName} from "../../../../../src/node/expression/name";
+import {TwingNodeExpressionArray} from "../../../../../src/node/expression/array";
+import {TwingNodeExpressionGetAttr} from "../../../../../src/node/expression/get-attr";
+import {TwingTemplate} from "../../../../../src/template";
 
 const tap = require('tap');
 
 tap.test('node/expression/get-attr', function (test: Test) {
-    test.test('constructor', function(test: Test) {
+    test.test('constructor', function (test: Test) {
         let expr = new TwingNodeExpressionName('foo', 1);
         let attr = new TwingNodeExpressionConstant('bar', 1);
         let args = new TwingNodeExpressionArray(new TwingMap(), 1);

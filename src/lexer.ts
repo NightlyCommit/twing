@@ -3,13 +3,13 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import TwingToken from "./token";
-import TwingSource from "./source";
-import TwingTokenType from "./token-type";
-import TwingTokenStream from "./token-stream";
-import TwingErrorSyntax from "./error/syntax";
-import TwingEnvironment from "./environment";
-import TwingLexerState from "./lexer-state";
+import {TwingToken} from "./token";
+import {TwingSource} from "./source";
+import {TwingTokenType} from "./token-type";
+import {TwingTokenStream} from "./token-stream";
+import {TwingErrorSyntax} from "./error/syntax";
+import {TwingEnvironment} from "./environment";
+import {TwingLexerState} from "./lexer-state";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
 let ctype_alpha = require('locutus/php/ctype/ctype_alpha');
@@ -482,5 +482,3 @@ export class TwingLexer {
         this.state = this.states.pop();
     }
 }
-
-export default TwingLexer;

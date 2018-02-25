@@ -9,15 +9,15 @@
  *
  * @internal
  */
-import TwingErrorRuntime from "./error/runtime";
-import TwingSource from "./source";
-import TwingMap from "./map";
-import TwingNodeBlock from "./node/block";
-import TwingError from "./error";
-import TwingEnvironment from "./environment";
-import TwingTemplateWrapper from "./template-wrapper";
-import TwingOutputBuffer from './output-buffer';
-import iteratorToMap from "./helper/iterator-to-map";
+import {TwingErrorRuntime} from "./error/runtime";
+import {TwingSource} from "./source";
+import {TwingMap} from "./map";
+import {TwingNodeBlock} from "./node/block";
+import {TwingError} from "./error";
+import {TwingEnvironment} from "./environment";
+import {TwingTemplateWrapper} from "./template-wrapper";
+import {TwingOutputBuffer} from './output-buffer';
+import {iteratorToMap} from "./helper/iterator-to-map";
 
 const merge = require('merge');
 
@@ -446,5 +446,3 @@ export abstract class TwingTemplate {
      */
     async abstract doDisplay(context: {}, blocks: TwingMap<string, Array<any>>): Promise<void>;
 }
-
-export default TwingTemplate;

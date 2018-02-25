@@ -1,10 +1,8 @@
-import TwingNodeExpressionBinary from "../binary";
-import TwingCompiler from "../../../compiler";
+import {TwingNodeExpressionBinary} from "../binary";
+import {TwingCompiler} from "../../../compiler";
 
-class TwingNodeExpressionBinaryLess extends TwingNodeExpressionBinary {
+export class TwingNodeExpressionBinaryLess extends TwingNodeExpressionBinary {
     operator(compiler: TwingCompiler) {
         return compiler.raw('<');
     }
 }
-
-export default TwingNodeExpressionBinaryLess;

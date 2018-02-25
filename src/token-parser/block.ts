@@ -1,12 +1,12 @@
-import TwingTokenParser from "../token-parser";
-import TwingToken from "../token";
-import TwingTokenType from "../token-type";
-import TwingNode from "../node";
-import TwingErrorSyntax from "../error/syntax";
-import TwingMap from "../map";
-import TwingNodeBlock from "../node/block";
-import TwingNodePrint from "../node/print";
-import TwingNodeBlockReference from "../node/block-reference";
+import {TwingTokenParser} from "../token-parser";
+import {TwingToken} from "../token";
+import {TwingTokenType} from "../token-type";
+import {TwingNode} from "../node";
+import {TwingErrorSyntax} from "../error/syntax";
+import {TwingMap} from "../map";
+import {TwingNodeBlock} from "../node/block";
+import {TwingNodePrint} from "../node/print";
+import {TwingNodeBlockReference} from "../node/block-reference";
 
 /**
  * Marks a section of a template as being reusable.
@@ -20,7 +20,7 @@ import TwingNodeBlockReference from "../node/block-reference";
  */
 const varValidator = require('var-validator');
 
-class TwingTokenParserBlock extends TwingTokenParser {
+export class TwingTokenParserBlock extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
@@ -76,12 +76,10 @@ class TwingTokenParserBlock extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE,'endblock');
+        return token.test(TwingTokenType.NAME_TYPE, 'endblock');
     }
 
     getTag() {
         return 'block';
     }
 }
-
-export default TwingTokenParserBlock;

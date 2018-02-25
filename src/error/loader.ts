@@ -1,5 +1,5 @@
-import TwingError from "../error";
-import TwingSource from "../source";
+import {TwingError} from "../error";
+import {TwingSource} from "../source";
 
 /**
  * Exception thrown when an error occurs during template loading.
@@ -22,5 +22,3 @@ export class TwingErrorLoader extends TwingError {
         // this.setTemplateLine(false);
     }
 }
-
-export default TwingErrorLoader;

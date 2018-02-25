@@ -5,7 +5,7 @@
  */
 import {isNullOrUndefined} from "util";
 
-export default function isTraversable(value: any) {
+export function isTraversable(value: any) {
     if (!isNullOrUndefined(value)) {
         if (typeof value === 'string') {
             return false;

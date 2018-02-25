@@ -1,37 +1,37 @@
-import TwingTokenParserInterface from "./token-parser-interface";
-import TwingNodeVisitorInterface from "./node-visitor-interface";
-import TwingExtensionSet from "./extension-set";
-import TwingExtensionCore from "./extension/core";
-import TwingExtensionInterface from "./extension-interface";
-import TwingFilter from "./filter";
-import TwingLexer from "./lexer";
-import TwingParser from "./parser";
-import TwingTokenStream from "./token-stream";
-import TwingSource from "./source";
-import TwingLoaderInterface from "./loader-interface";
-import TwingErrorLoader from "./error/loader";
-import TwingMap from "./map";
-import TwingTest from "./test";
-import TwingFunction from "./function";
-import TwingErrorSyntax from "./error/syntax";
-import TwingOperatorDefinitionInterface from "./operator-definition-interface";
-import TwingExtensionEscaper from "./extension/escaper";
-import TwingTemplate from "./template";
-import TwingError from "./error";
-import TwingTemplateWrapper from "./template-wrapper";
-import TwingEnvironmentOptions from "./environment-options";
+import {TwingTokenParserInterface} from "./token-parser-interface";
+import {TwingNodeVisitorInterface} from "./node-visitor-interface";
+import {TwingExtensionSet} from "./extension-set";
+import {TwingExtensionCore} from "./extension/core";
+import {TwingExtensionInterface} from "./extension-interface";
+import {TwingFilter} from "./filter";
+import {TwingLexer} from "./lexer";
+import {TwingParser} from "./parser";
+import {TwingTokenStream} from "./token-stream";
+import {TwingSource} from "./source";
+import {TwingLoaderInterface} from "./loader-interface";
+import {TwingErrorLoader} from "./error/loader";
+import {TwingMap} from "./map";
+import {TwingTest} from "./test";
+import {TwingFunction} from "./function";
+import {TwingErrorSyntax} from "./error/syntax";
+import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
+import {TwingExtensionEscaper} from "./extension/escaper";
+import {TwingTemplate} from "./template";
+import {TwingError} from "./error";
+import {TwingTemplateWrapper} from "./template-wrapper";
+import {TwingEnvironmentOptions} from "./environment-options";
 import {TwingLoaderArray} from "./loader/array";
-import TwingLoaderChain from "./loader/chain";
-import TwingExtensionOptimizer from "./extension/optimizer";
-import TwingCompiler from "./compiler";
-import TwingNode from "./node";
-import TwingNodeModule from "./node/module";
-import TwingCacheInterface from "./cache-interface";
-import TwingCacheNull from "./cache/null";
-import TwingCacheFilesystem from "./cache/filesystem";
-import TwingCache from "./cache";
-import TwingErrorRuntime from "./error/runtime";
-import TwingRuntimeLoaderInterface from "./runtime-loader-interface";
+import {TwingLoaderChain} from "./loader/chain";
+import {TwingExtensionOptimizer} from "./extension/optimizer";
+import {TwingCompiler} from "./compiler";
+import {TwingNode} from "./node";
+import {TwingNodeModule} from "./node/module";
+import {TwingCacheInterface} from "./cache-interface";
+import {TwingCacheNull} from "./cache/null";
+import {TwingCacheFilesystem} from "./cache/filesystem";
+import {TwingCache} from "./cache";
+import {TwingErrorRuntime} from "./error/runtime";
+import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
 
 let merge = require('merge');
 let hash = require('hash.js');
@@ -575,7 +575,6 @@ export class TwingEnvironment {
         return this.loader;
     }
 
-
     /**
      * Sets the default template charset.
      *
@@ -809,7 +808,6 @@ export class TwingEnvironment {
         this.extensionSet.registerUndefinedFunctionCallback(callable);
     }
 
-
     /**
      * Gets registered functions.
      *
@@ -824,7 +822,6 @@ export class TwingEnvironment {
     getFunctions() {
         return this.extensionSet.getFunctions();
     }
-
 
     /**
      * Registers a Global.
@@ -922,5 +919,3 @@ export class TwingEnvironment {
         ].join(':');
     }
 }
-
-export default TwingEnvironment;

@@ -1,9 +1,9 @@
-import TwingNodeExpression from "../expression";
-import TwingMap from "../../map";
-import TwingCompiler from "../../compiler";
-import TwingNodeType from "../../node-type";
+import {TwingNodeExpression} from "../expression";
+import {TwingMap} from "../../map";
+import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
 
-class TwingNodeExpressionName extends TwingNodeExpression {
+export class TwingNodeExpressionName extends TwingNodeExpression {
     private specialVars: TwingMap<string, string>;
 
     constructor(name: string, lineno: number) {
@@ -83,5 +83,3 @@ class TwingNodeExpressionName extends TwingNodeExpression {
         return !this.isSpecial() && !this.getAttribute('is_defined_test');
     }
 }
-
-export default TwingNodeExpressionName;

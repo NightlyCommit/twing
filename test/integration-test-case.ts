@@ -1,14 +1,13 @@
-import TwingEnvironmentOptions from "../src/environment-options";
-import TwingEnvironment from "../src/environment";
-import TwingTokenParser from "../src/token-parser";
-import TwingToken from "../src/token";
-import TwingNodePrint from "../src/node/print";
-import TwingTokenType from "../src/token-type";
-import TwingNodeExpressionConstant from "../src/node/expression/constant";
-import TwingExtension from "../src/extension";
-import TwingExtensionDebug from "../src/extension/debug";
-import TwingTest from "../src/test";
-import escape from "../src/helper/escape";
+import {TwingEnvironmentOptions} from "../src/environment-options";
+import {TwingEnvironment} from "../src/environment";
+import {TwingTokenParser} from "../src/token-parser";
+import {TwingToken} from "../src/token";
+import {TwingNodePrint} from "../src/node/print";
+import {TwingTokenType} from "../src/token-type";
+import {TwingNodeExpressionConstant} from "../src/node/expression/constant";
+import {TwingExtension} from "../src/extension";
+import {TwingExtensionDebug} from "../src/extension/debug";
+import {escape} from "../src/helper/escape";
 
 const path = require('path');
 
@@ -98,7 +97,7 @@ class TwingTestExtension extends TwingExtension {
     getTests() {
         return [
             new Twing.TwingTest('multi word', this.is_multi_word),
-            new Twing.TwingTest('async_foo', function(value: number) {
+            new Twing.TwingTest('async_foo', function (value: number) {
                 return new Promise((resolve) => {
                     resolve(value >= 0);
                 })
@@ -109,7 +108,6 @@ class TwingTestExtension extends TwingExtension {
     sectionFilter(value: string) {
         return `§${value}§`;
     }
-
 
     sectionFunction(value: string) {
         return `§${value}§`;
@@ -123,7 +121,6 @@ class TwingTestExtension extends TwingExtension {
         return `*${value}*`;
     }
 
-
     is_multi_word(value: string) {
         return value.indexOf(' ') > -1;
     }
@@ -136,7 +133,6 @@ class TwingTestExtension extends TwingExtension {
         return 'magic_' + arguments_[0];
     }
 
-
     static __callStatic(method: string, arguments_: IArguments) {
         if (method !== 'magicStaticCall') {
             throw new Error('Unexpected call to __callStatic');
@@ -146,7 +142,7 @@ class TwingTestExtension extends TwingExtension {
     }
 }
 
-class TwingTestIntegrationTestCase {
+export class TwingTestIntegrationTestCase {
     protected name: string;
     protected twing: TwingEnvironment;
 
@@ -228,7 +224,6 @@ function preserves_safety(value: string) {
     return value.toUpperCase();
 }
 
-
 function dynamic_path(element: string, item: string) {
     return element + '/' + item;
 }
@@ -236,6 +231,3 @@ function dynamic_path(element: string, item: string) {
 function dynamic_foo(foo: string, bar: string, item: string) {
     return foo + '/' + bar + '/' + item;
 }
-
-
-export default TwingTestIntegrationTestCase;

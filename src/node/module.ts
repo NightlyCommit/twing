@@ -1,19 +1,15 @@
-import TwingNode from "../node";
-import TwingSource from "../source";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeExpressionConstant from "./expression/constant";
-import TwingNodeBody from "./body";
-import TwingNodeText from "./text";
-import TwingNodeBlockReference from "./block-reference";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingSource} from "../source";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 
 /**
  * Represents a module node.
  */
-class TwingNodeModule extends TwingNode {
+export class TwingNodeModule extends TwingNode {
     public source: TwingSource;
 
     constructor(body: TwingNode, parent: TwingNode = null, blocks: TwingNode, macros: TwingNode, traits: TwingNode, embeddedTemplates: Array<{}>, source: TwingSource) {
@@ -425,7 +421,6 @@ class TwingNodeModule extends TwingNode {
         ;
     }
 
-
     compileGetSourceContext(compiler: TwingCompiler) {
         compiler
             .write("getSourceContext() {\n")
@@ -450,5 +445,3 @@ class TwingNodeModule extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeModule;

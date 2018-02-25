@@ -1,4 +1,4 @@
-import TwingSandboxSecurityError from "./security-error";
+import {TwingSandboxSecurityError} from "./security-error";
 
 export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
     private filterName: string;
@@ -12,5 +12,3 @@ export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecur
         return this.filterName;
     }
 }
-
-export default TwingSandboxSecurityNotAllowedFilterError;

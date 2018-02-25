@@ -1,9 +1,9 @@
-import TwingNode from "../node";
-import TwingMap from "../map";
-import TwingCompiler from "../compiler";
-import TwingNodeType from "../node-type";
+import {TwingNode} from "../node";
+import {TwingMap} from "../map";
+import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
 
-class TwingNodeBlock extends TwingNode {
+export class TwingNodeBlock extends TwingNode {
     constructor(name: string, body: TwingNode, lineno: number, tag: string = null) {
         super(new TwingMap([['body', body]]), new TwingMap([['name', name]]), lineno, tag);
 
@@ -25,5 +25,3 @@ class TwingNodeBlock extends TwingNode {
         ;
     }
 }
-
-export default TwingNodeBlock;

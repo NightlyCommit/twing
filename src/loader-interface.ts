@@ -1,4 +1,4 @@
-import TwingSource from "./source";
+import {TwingSource} from "./source";
 
 export interface TwingLoaderInterface {
     /**
@@ -45,5 +45,3 @@ export interface TwingLoaderInterface {
      */
     exists(name: string): boolean;
 }
-
-export default TwingLoaderInterface;

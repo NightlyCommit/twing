@@ -1,4 +1,4 @@
-interface TwingCacheInterface {
+export interface TwingCacheInterface {
     /**
      * Generates a cache key for the given template class name.
      *
@@ -33,5 +33,3 @@ interface TwingCacheInterface {
      */
     getTimestamp(key: string): number;
 }
-
-export default TwingCacheInterface;

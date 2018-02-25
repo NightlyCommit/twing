@@ -1,9 +1,9 @@
 import {Test} from "tape";
-import TwingExtensionCore from "../../../../src/extension/core";
-import TwingFilter from "../../../../src/filter";
-import TwingMap from "../../../../src/map";
-import TwingTestEnvironmentStub from "../../../environment-stub";
-import TwingTestLoaderStub from "../../../loader-stub";
+import {TwingExtensionCore} from "../../../../src/extension/core";
+import {TwingFilter} from "../../../../src/filter";
+import {TwingMap} from "../../../../src/map";
+import {TwingTestEnvironmentStub} from "../../../environment-stub";
+import {TwingTestLoaderStub} from "../../../loader-stub";
 import {DateTime, Interval, Settings} from "luxon";
 
 const tap = require('tap');
@@ -29,8 +29,6 @@ tap.test('extension core', function (test: Test) {
                 year: 2001,
                 hour: 12
             });
-
-            console.warn(date);
 
             test.same(callable(env, date), 'January 1, 2001 12:00');
             test.same(callable(env, date, 'U'), date.toJSDate().getTime());

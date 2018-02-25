@@ -1,9 +1,9 @@
-import iteratorToHash from "../helper/iterator-to-hash";
-import isTraversable from "../helper/is-traversable";
+import {iteratorToHash} from "./iterator-to-hash";
+import {isTraversable} from "./is-traversable";
 
 const locutusVarDump = require('locutus/php/var/var_dump');
 
-export default function varDump(thing: any): string {
+export function varDump(thing: any): string {
     let result: string;
     let consoleLog = console ? console.log : null;
 
