@@ -30,8 +30,8 @@ export class TwingReflectionMethod {
             this.parameters = [];
 
             for (let k in functionDefinition.defaults) {
-                // @see https://stackoverflow.com/questions/3360356/why-the-open-quote-and-bracket-for-eval-jsonstring-when-parsing-json
-                let defaultValue = eval('(' + functionDefinition.defaults[k] + ')');
+                // @see https://github.com/rollup/rollup/wiki/Troubleshooting#avoiding-eval
+                let defaultValue = new Function(`return (${functionDefinition.defaults[k]});`)();
 
                 let reflectionParameter = new TwingReflectionParameter(k, defaultValue);
 
