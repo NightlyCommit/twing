@@ -28,7 +28,7 @@
   },
   "scripts": {
     "pretest": "npm run build",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && tsc",
     "test": "TS_NODE_CACHE=0 npm run fastest",
     "fastest": "tape -r ts-node/register/type-check 'test/tests/**/*.ts' | tap-mocha-reporter spec",
     "build": "node tasks/build.js",
