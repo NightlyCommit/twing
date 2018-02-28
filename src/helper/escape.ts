@@ -1,4 +1,3 @@
-import {TwingMarkup} from "../markup";
 import {TwingEnvironment} from "../environment";
 import {TwingMap} from "../map";
 import {TwingErrorRuntime} from "../error/runtime";
@@ -8,11 +7,11 @@ import {TwingErrorRuntime} from "../error/runtime";
  *
  * Implemented as a helper since it's needed by the test suite. May change in the future.
  *
- * @param TwingEnvironment $env
- * @param mixed            $string     The value to be escaped
- * @param string           $strategy   The escaping strategy
- * @param string           $charset    The charset
- * @param bool             $autoescape Whether the function is called by the auto-escaping feature (true) or by the developer (false)
+ * @param {TwingEnvironment} env
+ * @param {*} string The value to be escaped
+ * @param {string} strategy The escaping strategy
+ * @param {string} charset The charset
+ * @param {boolean} autoescape Whether the function is called by the auto-escaping feature (true) or by the developer (false)
  *
  * @returns {string}
  */
@@ -21,7 +20,7 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
     const secureFilters = require('secure-filters');
     const array_merge = require('locutus/php/array/array_merge');
 
-    if (autoescape && string instanceof TwingMarkup) {
+    if (autoescape && string && (string.TwingIsSafe === true)) {
         return string;
     }
 

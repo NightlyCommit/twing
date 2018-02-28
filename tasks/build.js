@@ -18,7 +18,12 @@ fs.emptyDir(outputDir).then(
             plugins: [
                 rollupPluginMultiEntry(),
                 rollupPluginTypescript({
-                    typescript: require('typescript')
+                    typescript: require('typescript'),
+                    tsconfigOverride: {
+                        compilerOptions: {
+                            declaration: false
+                        }
+                    }
                 })
             ]
         }).then(
