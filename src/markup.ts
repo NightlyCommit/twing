@@ -1,6 +1,15 @@
+import {iconv} from "./helper/iconv";
+
+/**
+ * Marks a content as safe.
+ *
+ * @author Eric MORAND <eric.morand@gmail.com>
+ */
 export class TwingMarkup {
     private content: string;
     private charset: string;
+
+    TwingIsSafe: boolean = true;
 
     constructor(content: string, charset: string) {
         this.content = content;
@@ -12,8 +21,9 @@ export class TwingMarkup {
     }
 
     count(): number {
-        // return mb_strlen($this->content, $this->charset);
-        return this.content.length;
+        let content = iconv(this.charset, 'utf-8', this.content).toString();
+
+        return content.length;
     }
 
     toJSON() {
