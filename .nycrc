@@ -4,19 +4,14 @@
     "branches": 100,
     "functions": 100,
     "extension": [
-      ".ts"
+      ".js"
     ],
-    "include": "src",
+    "include": "lib",
     "exclude": [
-      "**/*-interface.ts",
-      "**/*-options.ts",
-      "**/*.d.ts"
+      "**/*-interface.js"
     ],
     "reporter": [
       "text-summary",
       "html"
-    ],
-    "require": [
-      "ts-node/register/type-check"
     ]
 }
