@@ -2,7 +2,7 @@ import {TwingCacheInterface} from "../cache-interface";
 
 let fs = require('fs-extra');
 let path = require('path');
-let hashJs = require('hash.js');
+let hashJs = require('sha.js');
 let tmp = require('tmp');
 
 /**
@@ -26,7 +26,7 @@ export class TwingCacheFilesystem implements TwingCacheInterface {
     }
 
     generateKey(name: string, className: string) {
-        let hash: string = hashJs.sha256().update(className).digest('hex');
+        let hash: string = hashJs('sha256').update(className).digest('hex');
 
         return path.join(
             this.directory,
