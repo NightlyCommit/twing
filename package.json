@@ -30,13 +30,15 @@
     "prelib": "npm run clean",
     "pretest": "npm run lib",
     "prepublish": "npm run lib -- --sourceMap false",
+    "preversion": "node tasks/preversion.js",
     "test": "npm run fastest:all",
     "fastest:all": "tape 'test/tests/**/*.js' | tap-mocha-reporter spec",
     "fastest:integration": "tape 'test/tests/integration/*.js' | tap-mocha-reporter spec",
     "fastest:unit": "tape 'test/tests/unit/**/*.js' | tap-mocha-reporter spec",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "lib": "tsc --project ."
+    "lib": "tsc --project .",
+    "version": "node tasks/version.js && git add ."
   },
   "dependencies": {
     "@ericmorand/parse-function": "^5.2.0",
