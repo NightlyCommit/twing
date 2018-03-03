@@ -109,7 +109,7 @@ export class TwingLexer {
 
     tokenize(source: TwingSource): TwingTokenStream {
         this.source = source;
-        this.code = source.getCode(); //.replace('\r\n', '\n').replace('\r', '\n');
+        this.code = source.getCode().replace(/\r\n|\r/g, '\n');
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;

@@ -328,5 +328,16 @@ tap.test('lexer', function (test) {
         test.end();
     });
 
+    test.test('should normalize new lines', function (test) {
+        let lexer = createLexer();
+        let data = '\r\rfoo\r\nbar\roof\n\r';
+
+        let token = lexer.tokenize(new TwingSource(data, 'index')).next();
+
+        test.same(token.value, '\n\nfoo\nbar\noof\n\n');
+
+        test.end();
+    });
+
     test.end();
 });
