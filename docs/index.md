@@ -110,5 +110,5 @@ Browse the online reference to learn more about built-in features.
 * Math (+, -, /, %, //, *, **)
 * Logic (and, or, not, (), b-and, b-xor, b-or)
 * Comparisons (==, !=, <, >, >=, <=, ===, starts with, ends with, matches)
-* Others (.., |, ~, ., [], ?:)
+* Others (.., &#124;, ~, ., [], ?:)
 
