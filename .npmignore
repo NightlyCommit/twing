@@ -6,6 +6,7 @@
 /.nycrc
 /.travis.yml
 /coverage
+/docs
 /package-lock.json
 /src
 /tasks
