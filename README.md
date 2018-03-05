@@ -25,8 +25,6 @@ The recommended way to install Twing is via npm:
 
 ## Basic API Usage
 
-This section gives you a brief introduction to the node.js API for Twing.
-
 ```js
 const Twing = require('twing');
 
@@ -38,39 +36,20 @@ let twing = new Twing.TwingEnvironment(loader);
 let output = await twing.render('index.twig', {name: 'Fabien'});
 ```
 
-Twing uses a loader (`TwingLoaderArray`) to locate templates, and an
-environment (`TwingEnvironment`) to store the configuration.
+## More information
 
-The `render()` method loads the template passed as a first argument and
-renders it with the variables passed as a second argument.
+Read the [documentation](http://ericmorand.github.io/twing) for more information.
 
-As templates are generally stored on the filesystem, Twing also comes with a
-filesystem loader:
+## Contributing
 
-```js
-const Twing = require('twing');
+* Fork this repository
+* Code
+* Implement tests using [node-tap](https://github.com/tapjs/node-tap)
+* Issue a pull request keeping in mind that all pull requests must reference an issue in the issue queue
 
-let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
-let twing = new Twing.TwingEnvironment(loader);
+## License
 
-let ouput = await twing.render('index.html', {'name': 'Fabien'});
-```
-
-## Asynchronous by nature
-
-Starting with 0.4.0, Twing is asynchronous by nature. It means that `TwingEnvironment::render`,`TwingEnvironment::display` and the belonging `TwingTemplate` functions return a Promise. This asynchronous nature makes possible to implement asynchronous filters, functions and tests.
-
-```js
-class SleepExtenstion extends Twing.TwingExtension {
-    getFunctions() {
-        return [
-            new Twing.TwingFunction('sleep', function(duration) {
-                return new Promise((resolve) => setTimeout(resolve, duration));      
-            })
-        ];
-    }
-}
-```
+Copyright © 2018 [Eric MORAND](https://github.com/ericmorand). Released under the [2-Clause BSD License](https://github.com/ericmorand/twing/blob/master/LICENSE).
 
 [npm-image]: https://badge.fury.io/js/twing.svg?v=0.8.1
 [npm-url]: https://npmjs.org/package/twing
