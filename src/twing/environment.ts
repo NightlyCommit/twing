@@ -527,7 +527,7 @@ export class TwingEnvironment {
                 return self.loadTemplate(name);
             }
             catch (e) {
-                if (e.name === TwingErrorLoader.name) {
+                if (e instanceof TwingErrorLoader) {
                     error = e;
                 }
                 else {
