@@ -1,4 +1,4 @@
-module.exports = class TwingTestToStringStub {
+module.exports = class {
     constructor(value) {
         this.value = value;
     }

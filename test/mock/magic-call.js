@@ -1,4 +1,4 @@
-module.exports = class TwingTestMagicCallStub {
+module.exports = class {
     constructor() {
         this.toString = '';
     }

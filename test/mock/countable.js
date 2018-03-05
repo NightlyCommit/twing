@@ -3,7 +3,7 @@
  * that when \Countable is implemented, it is preferred over the __toString()
  * method.
  */
-module.exports = class TwingTestCountableStub {
+module.exports = class {
     constructor(count) {
         this.length = count;
     }

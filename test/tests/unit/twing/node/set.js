@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionAssignName = require('../../../../../lib/twing/node/expression/assign-name').TwingNodeExpressionAssignName;
@@ -35,7 +35,7 @@ tap.test('node/set', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
             let namesNodes = new TwingMap();

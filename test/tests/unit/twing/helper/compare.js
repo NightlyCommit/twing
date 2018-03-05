@@ -16,7 +16,7 @@ let arrayEmpty = ['[]', []];
 let stringFilled = ['"php"', 'php'];
 let stringEmpty = ['""', ''];
 
-tap.test('equal', function (test) {
+tap.test('compare', function (test) {
     test.test('should conform to PHP loose comparisons rules', function (test) {
         let rules = new Map([
             // TRUE

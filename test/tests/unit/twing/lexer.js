@@ -2,6 +2,7 @@ const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvir
 const TwingLexer = require('../../../../lib/twing/lexer').TwingLexer;
 const TwingTokenType = require('../../../../lib/twing/token-type').TwingTokenType;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
+const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 
 const tap = require('tap');
 
@@ -309,10 +310,11 @@ tap.test('lexer', function (test) {
     test.test('testUnterminatedVariable', function (test) {
         let lexer = createLexer();
         let data = '{{ bar ';
+        let source = new TwingSource(data, 'index');
 
         test.throws(function () {
-            lexer.tokenize(new TwingSource(data, 'index'));
-        });
+            lexer.tokenize(source);
+        }, new TwingErrorSyntax('Unclosed "variable".', 1, source));
 
         test.end();
     });
@@ -320,10 +322,11 @@ tap.test('lexer', function (test) {
     test.test('testUnterminatedBlock', function (test) {
         let lexer = createLexer();
         let data = '{% bar ';
+        let source = new TwingSource(data, 'index');
 
         test.throws(function () {
-            lexer.tokenize(new TwingSource(data, 'index'));
-        });
+            lexer.tokenize(source);
+        }, new TwingErrorSyntax('Unclosed "block".', 1, source));
 
         test.end();
     });

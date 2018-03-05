@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeText;
 const TwingNodeSandbox = require('../../../../../lib/twing/node/sandbox').TwingNodeSandbox;
 const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
@@ -19,7 +19,7 @@ tap.test('node/sandboxed', function (test) {
     test.test('compile', function (test) {
         let body = new TwingNodeText('foo', 1);
         let node = new TwingNodeSandbox(body, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 (async () => {

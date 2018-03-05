@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNodeExpressionParent = require('../../../../../../lib/twing/node/expression/parent').TwingNodeExpressionParent;
 const TwingNodeType = require('../../../../../../lib/twing/node-type').TwingNodeType;
 
@@ -15,7 +15,7 @@ tap.test('node/expression/parent', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         let node = new TwingNodeExpressionParent('foo', 1);
 

@@ -1,7 +1,7 @@
 const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionArray = require('../../../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
-const TwingTestCompilerStub = require('../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNodeType = require('../../../../../../lib/twing/node-type').TwingNodeType;
 
 const tap = require('tap');
@@ -23,7 +23,7 @@ tap.test('node/expression/array', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         let elements = new TwingMap();
 

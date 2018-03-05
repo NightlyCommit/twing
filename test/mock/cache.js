@@ -1,4 +1,4 @@
-module.exports = class TwingTestCacheStub {
+module.exports = class {
     constructor() {
         this.implementsTwingCacheInterface = true;
     }

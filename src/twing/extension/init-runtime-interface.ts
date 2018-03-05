@@ -4,11 +4,13 @@
  * Explicitly implement this interface if you really need to implement the
  * deprecated initRuntime() method in your extensions.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingEnvironment} from "../environment";
 
 export interface TwingExtensionsInitRuntimeInterface {
+    implementsTwingExtensionInitRuntimeInterface: boolean,
+
     /**
      * Initializes the runtime environment.
      *

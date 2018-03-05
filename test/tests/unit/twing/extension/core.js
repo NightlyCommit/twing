@@ -1,7 +1,7 @@
 const TwingExtensionCore = require('../../../../../lib/twing/extension/core').TwingExtensionCore;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
-const TwingTestEnvironmentStub = require('../../../../environment-stub');
-const TwingTestLoaderStub = require('../../../../loader-stub');
+const TwingTestEnvironmentStub = require('../../../../mock/environment');
+const TwingTestMockLoader = require('../../../../mock/loader');
 const Luxon = require('luxon');
 
 const tap = require('tap');
@@ -21,7 +21,7 @@ tap.test('TwingExtensionCore', function (test) {
 
             let filter = getFilter('date');
             let callable = filter.getCallable();
-            let env = new TwingTestEnvironmentStub(new TwingTestLoaderStub());
+            let env = new TwingTestEnvironmentStub(new TwingTestMockLoader());
 
             let date = Luxon.DateTime.fromObject({
                 year: 2001,

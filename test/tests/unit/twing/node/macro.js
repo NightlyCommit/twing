@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
@@ -36,7 +36,7 @@ tap.test('node/macro', function (test) {
             ['bar', new TwingNodeExpressionConstant('Foo', 1)]
         ]), new TwingMap(), 1);
         let node = new TwingNodeMacro('foo', body, arguments_, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 async macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {

@@ -15,14 +15,14 @@ import {TwingSource} from "../source";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingErrorLoader extends TwingError {
-    static type: string = 'TwingErrorLoader';
-
     constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
         super('', lineno, source, previous);
 
         this.appendMessage(message);
         this.setTemplateLine(false);
+    }
 
-        this.type = TwingErrorLoader.type;
+    // @see Twig_Error_Loader::__construct to witness some stupidity
+    init() {
     }
 }

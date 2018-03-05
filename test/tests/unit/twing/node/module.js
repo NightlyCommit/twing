@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionAssignName = require('../../../../../lib/twing/node/expression/assign-name').TwingNodeExpressionAssignName;
 const TwingNodeImport = require('../../../../../lib/twing/node/import').TwingNodeImport;
@@ -9,9 +9,9 @@ const TwingNodeModule = require('../../../../../lib/twing/node/module').TwingNod
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionConditional = require('../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeSet = require('../../../../../lib/twing/node/set').TwingNodeSet;
-const TwingTestEnvironmentStub = require('../../../../environment-stub');
+const TwingTestEnvironmentStub = require('../../../../mock/environment');
 const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
-const TwingTestLoaderStub = require('../../../../loader-stub');
+const TwingTestMockLoader = require('../../../../mock/loader');
 
 const tap = require('tap');
 
@@ -36,7 +36,7 @@ tap.test('node/module', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
             let body = new TwingNodeText('foo', 1);
@@ -180,11 +180,11 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
             let traits = new TwingNode();
             let source = new TwingSource('{{ foo }}', 'foo.twig');
 
-            let loader = new TwingTestLoaderStub();
+            let loader = new TwingTestMockLoader();
             let twing = new TwingTestEnvironmentStub(loader, {debug: true});
             let node = new TwingNodeModule(body, extends_, blocks, macros, traits, [], source);
 
-            compiler = new TwingTestCompilerStub(twing);
+            compiler = new TwingTestMockCompiler(twing);
 
             test.same(compiler.compile(node).getSource(), `const Twing = require('twing/lib/runtime');
 

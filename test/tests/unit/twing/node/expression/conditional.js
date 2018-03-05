@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNodeExpressionConditional = require('../../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 
@@ -19,7 +19,7 @@ tap.test('node/expression/conditional', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         let expr1 = new TwingNodeExpressionConstant(1, 1);
         let expr2 = new TwingNodeExpressionConstant(2, 1);

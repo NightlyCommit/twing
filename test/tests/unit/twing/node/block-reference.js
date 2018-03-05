@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeBlockReference = require('../../../../../lib/twing/node/block-reference').TwingNodeBlockReference;
 const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
 
@@ -16,7 +16,7 @@ tap.test('node/block-reference', function (test) {
 
     test.test('compile', function (test) {
         let node = new TwingNodeBlockReference('foo', 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 await this.displayBlock(\'foo\', context, blocks);

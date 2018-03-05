@@ -1,13 +1,13 @@
 const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingTestCompilerStub = require('../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNode = require('../../../../../../lib/twing/node').TwingNode;
 const TwingNodeExpressionTest = require('../../../../../../lib/twing/node/expression/test').TwingNodeExpressionTest;
-const TwingTestEnvironmentStub = require('../../../../../environment-stub');
+const TwingTestEnvironmentStub = require('../../../../../mock/environment');
 const TwingTest = require('../../../../../../lib/twing/test').TwingTest;
 const TwingNodeExpressionTestNull = require('../../../../../../lib/twing/node/expression/test/null').TwingNodeExpressionTestNull;
 const TwingNodeType = require('../../../../../../lib/twing/node-type').TwingNodeType;
-const TwingTestLoaderStub = require('../../../../../loader-stub');
+const TwingTestMockLoader = require('../../../../../mock/loader');
 
 const tap = require('tap');
 
@@ -34,14 +34,14 @@ tap.test('node/expression/test', function (test) {
     });
 
     test.test('compile', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let environment = new TwingTestEnvironmentStub(loader);
 
         environment.addTest(new TwingTest('barbar', twig_tests_test_barbar, {is_variadic: true, need_context: true}));
         environment.addTest(new TwingTest('anonymous', function () {
         }));
 
-        let compiler = new TwingTestCompilerStub(environment);
+        let compiler = new TwingTestMockCompiler(environment);
 
         test.test('basic', function (test) {
             let expr = new TwingNodeExpressionConstant('foo', 1);

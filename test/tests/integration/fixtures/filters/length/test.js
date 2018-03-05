@@ -1,7 +1,7 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
-const TwingTestToStringStub = require('../../../../../to-string-stub');
-const TwingTestCountableStub = require('../../../../../countable-stub');
-const TwingTestMagicCallStub = require('../../../../../magic-call-stub');
+const TwingTestToStringStub = require('../../../../../mock/to-string');
+const TwingTestCountableStub = require('../../../../../mock/countable');
+const TwingTestMagicCallStub = require('../../../../../mock/magic-call');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {

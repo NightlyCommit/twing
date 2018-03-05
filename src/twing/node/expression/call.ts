@@ -8,6 +8,7 @@ import {TwingReflectionParameter} from "../../reflection-parameter";
 import {TwingReflectionMethod} from "../../reflection-method";
 import {TwingCompiler} from "../../compiler";
 import {TwingExtension} from "../../extension";
+import {TwingEnvironment} from "../../environment";
 
 const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
@@ -25,25 +26,32 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let callable = this.getAttribute('callable');
         let closingParenthesis = false;
 
-        let [r, callable_] = this.reflectCallable(callable);
-
-        compiler.raw('await ');
-
-        if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
-            if (r.isStatic()) {
-                compiler.raw(`${callable_[0]}::${callable_[1]}`);
-            }
-            else {
-                compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}`);
-            }
-        }
-        else if (r instanceof TwingReflectionMethod && callable_[0] instanceof TwingExtension) {
-            compiler.raw(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
+        if (typeof callable === 'string' && callable.indexOf('::') < 0) {
+            compiler.raw(callable);
         }
         else {
-            closingParenthesis = true;
+            let [r, callable_] = this.reflectCallable(callable, compiler.getEnvironment());
 
-            compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
+            compiler.raw('await ');
+
+            if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
+                if (r.isStatic()) {
+                    compiler.raw(`${callable_[0]}.${callable_[1]}`);
+                }
+                else {
+                    closingParenthesis = true;
+
+                    compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
+                }
+            }
+            else if (r instanceof TwingReflectionMethod && callable_[0] instanceof TwingExtension) {
+                compiler.raw(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
+            }
+            else {
+                closingParenthesis = true;
+
+                compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
+            }
         }
 
         this.compileArguments(compiler);
@@ -98,7 +106,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
         if (this.hasNode('arguments')) {
             let callable = this.getAttribute('callable');
-            let arguments_ = this.getArguments(callable, this.getNode('arguments'));
+            let arguments_ = this.getArguments(callable, this.getNode('arguments'), compiler.getEnvironment());
 
             for (let node of arguments_) {
                 if (!first) {
@@ -114,7 +122,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         compiler.raw(']');
     }
 
-    protected getArguments(callable: Function = null, argumentsNode: TwingNode): Array<TwingNode> {
+    protected getArguments(callable: Function = null, argumentsNode: TwingNode, env: TwingEnvironment): Array<TwingNode> {
         let self = this;
         let callType = this.getAttribute('type');
         let callName = this.getAttribute('name');
@@ -155,7 +163,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             throw new Error(message);
         }
 
-        let callableParameters = this.getCallableParameters(callable, isVariadic);
+        let callableParameters = this.getCallableParameters(callable, isVariadic, env);
         let arguments_: Array<TwingNode> = [];
 
         let names: Array<string> = [];
@@ -246,8 +254,8 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         return snakeCase(name).toLowerCase();
     }
 
-    private getCallableParameters(callable: Function, isVariadic: boolean): Array<TwingReflectionParameter> {
-        let r = this.reflectCallable(callable)[0];
+    private getCallableParameters(callable: Function, isVariadic: boolean, env: TwingEnvironment): Array<TwingReflectionParameter> {
+        let r = this.reflectCallable(callable, env)[0];
 
         if (!r) {
             return [];
@@ -289,17 +297,44 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         return parameters;
     }
 
-    private reflectCallable(callable: Function | any): [TwingReflectionMethod, any] {
+    private reflectCallable(callable: Function | any, env: TwingEnvironment): [TwingReflectionMethod, any] {
         let r: TwingReflectionMethod;
         let name: string;
+        let pos: number;
 
-        if (typeof callable === 'object' && Reflect.has(callable, '__invoke')) {
+        if (Array.isArray(callable)) {
+            let runtime = env.getRuntime(callable[0]);
+
+            if (typeof runtime[callable[1]] !== 'function') {
+                return [null, []];
+            }
+
+            r = new TwingReflectionMethod(runtime[callable[1]], callable[1]);
+        }
+        else if (typeof callable === 'object' && Reflect.has(callable, '__invoke')) {
             name = `${callable.constructor.name}::__invoke`;
 
             callable = Reflect.get(callable, '__invoke');
-        }
 
-        r = new TwingReflectionMethod(callable, name);
+            r = new TwingReflectionMethod(callable, name);
+        }
+        else if (typeof callable === 'string' && ((pos = callable.indexOf('::')) > -1)) {
+            let class_ = callable.substr(0, pos);
+            let method = callable.substr(pos + 2);
+
+            let runtime = env.getRuntime(class_);
+
+            if (typeof runtime[method] !== 'function') {
+                return [null, []];
+            }
+
+            r = new TwingReflectionMethod(runtime[method], callable);
+
+            callable = [class_, method];
+        }
+        else {
+            r = new TwingReflectionMethod(callable, name);
+        }
 
         this.reflector = {
             r: r,
