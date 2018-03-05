@@ -77,10 +77,10 @@ export class TwingExtensionEscaper extends TwingExtension {
 /**
  * Marks a variable as being safe.
  *
- * @param string $string A PHP variable
+ * @param {string} string A variable
  *
  * @return string
  */
-export function twingRawFilter(value: string) {
-    return value;
+export function twingRawFilter(string: string) {
+    return string;
 }

@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeInclude = require('../../../../../lib/twing/node/include').TwingNodeInclude;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
@@ -34,7 +34,7 @@ tap.test('node/include', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);

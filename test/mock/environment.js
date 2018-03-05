@@ -1,4 +1,4 @@
-const TwingEnvironment = require('../lib/twing/environment').TwingEnvironment;
+const TwingEnvironment = require('../../lib/twing/environment').TwingEnvironment;
 
 module.exports = class extends TwingEnvironment {
     constructor(loader, options = {}) {

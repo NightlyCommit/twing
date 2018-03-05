@@ -9,7 +9,7 @@ tap.test('TwingErrorLoader', function (test) {
 
         test.same(error.getRawMessage(), 'foo', 'raw message should be set');
         test.same(error.getTemplateLine(), false, 'template line should be set');
-        test.same(error.message, 'foo in "bar"', 'message should be set');
+        test.same(error.message, 'foo', 'message should be set');
 
         test.end();
     });

@@ -141,7 +141,7 @@ export abstract class TwingTemplate {
             await parent.displayBlock(name, context, blocks, false);
         }
         else {
-            throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, null, -1, this.getSourceContext());
+            throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, -1, this.getSourceContext());
         }
     }
 
@@ -187,11 +187,6 @@ export abstract class TwingTemplate {
             }
             catch (e) {
                 if (e instanceof TwingError) {
-                    if (!e.getTemplate()) {
-                        e.setTemplate(template);
-                        e.guess();
-                    }
-
                     if (!e.getSourceContext()) {
                         e.setSourceContext(template.getSourceContext());
                     }
@@ -206,7 +201,7 @@ export abstract class TwingTemplate {
                     throw e;
                 }
                 else {
-                    throw new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, template, -1, template.getSourceContext(), e);
+                    throw new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, -1, template.getSourceContext(), e);
                 }
             }
         }
@@ -214,10 +209,10 @@ export abstract class TwingTemplate {
             parent.displayBlock(name, context, this.blocks.merge(blocks), false);
         }
         else if (blocks.has(name)) {
-            throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, null, -1, blocks.get(name)[0].getTemplateName(), null);
+            throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getTemplateName());
         }
         else {
-            throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, null, -1, this.getTemplateName(), null);
+            throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, -1, this.getTemplateName(), null);
         }
     }
 
@@ -407,11 +402,6 @@ export abstract class TwingTemplate {
         }
         catch (e) {
             if (e instanceof TwingError) {
-                if (!e.getTemplate()) {
-                    e.setTemplate(this);
-                    e.guess();
-                }
-
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.getSourceContext());
                 }
@@ -426,7 +416,7 @@ export abstract class TwingTemplate {
                 throw e;
             }
 
-            throw new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, this, -1, this.getSourceContext(), e);
+            throw new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, -1, this.getSourceContext(), e);
         }
     }
 

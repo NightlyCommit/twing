@@ -1702,7 +1702,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
                 message = `Impossible to access an attribute ("${item}") on a ${typeof object} variable ("${object}").`;
             }
 
-            throw new TwingErrorRuntime(message, null, -1, source);
+            throw new TwingErrorRuntime(message, -1, source);
         }
     }
 
@@ -1724,7 +1724,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
             message = `Impossible to invoke a method ("${item}") on a ${typeof object} variable ("${object}").`;
         }
 
-        throw new TwingErrorRuntime(message, null, -1, source);
+        throw new TwingErrorRuntime(message, -1, source);
     }
 
     // object method
@@ -1760,7 +1760,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
             return;
         }
 
-        throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()", "${getFallback}()", "${isFallback}()" or "${hasFallback}()" or "__call()" exist in class "${object.constructor.name}".`, null, -1, source);
+        throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()", "${getFallback}()", "${isFallback}()" or "${hasFallback}()" or "__call()" exist in class "${object.constructor.name}".`, -1, source);
     }
 
     if (isDefinedTest) {

@@ -1,8 +1,8 @@
-const TwingSource = require('../lib/twing/source').TwingSource;
+const TwingSource = require('../../lib/twing/source').TwingSource;
 
 module.exports = class {
     getSourceContext(name) {
-        return new TwingSource('', 'foo.twig');
+        return new TwingSource('', '', '');
     }
 
     getCacheKey(name) {

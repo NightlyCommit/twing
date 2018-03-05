@@ -1,6 +1,6 @@
 const TwingNodeExpressionBinaryAdd = require('../../../../../../../lib/twing/node/expression/binary/add').TwingNodeExpressionBinaryAdd;
 const TwingNodeExpressionConstant = require('../../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingTestCompilerStub = require('../../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 
 const tap = require('tap');
 
@@ -20,7 +20,7 @@ tap.test('node/expression/binary/add', function (test) {
         let left = new TwingNodeExpressionConstant(1, 1);
         let right = new TwingNodeExpressionConstant(2, 1);
         let node = new TwingNodeExpressionBinaryAdd(left, right, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), '(1 + 2)');
 

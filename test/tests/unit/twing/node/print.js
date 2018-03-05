@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodePrint = require('../../../../../lib/twing/node/print').TwingNodePrint;
 const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
@@ -18,7 +18,7 @@ tap.test('node/print', function (test) {
 
     test.test('compile', function (test) {
         let node = new TwingNodePrint(new TwingNodeExpressionConstant('foo', 1), 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 Twing.echo("foo");

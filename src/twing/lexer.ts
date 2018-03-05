@@ -109,7 +109,15 @@ export class TwingLexer {
 
     tokenize(source: TwingSource): TwingTokenStream {
         this.source = source;
-        this.code = source.getCode().replace(/\r\n|\r/g, '\n');
+
+        // in PHP str_replace returns an empty string if called on a non-string object
+        if (typeof source.getCode() !== 'string') {
+            this.code = '';
+        }
+        else {
+            this.code = source.getCode().replace(/\r\n|\r/g, '\n');
+        }
+
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;
@@ -264,7 +272,7 @@ export class TwingLexer {
             this.moveCursor(match[0]);
 
             if (this.cursor >= this.end) {
-                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexerState.STATE_BLOCK ? 'block' : 'variables'}".`, this.currentVarBlockLine, this.source);
+                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexerState.STATE_BLOCK ? 'block' : 'variable'}".`, this.currentVarBlockLine, this.source);
             }
         }
 
@@ -300,7 +308,7 @@ export class TwingLexer {
             // closing bracket
             else if (')]}'.indexOf(punctuationCandidate) > -1) {
                 if (this.brackets.length < 1) {
-                    throw new TwingErrorSyntax(`Unexpected "${punctuationCandidate}"`, this.lineno, this.source);
+                    throw new TwingErrorSyntax(`Unexpected "${punctuationCandidate}".`, this.lineno, this.source);
                 }
 
                 let bracket = this.brackets.pop();

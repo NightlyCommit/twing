@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeSpaceless = require('../../../../../lib/twing/node/spaceless').TwingNodeSpaceless;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeText;
@@ -29,7 +29,7 @@ tap.test('node/spaceless', function (test) {
 
         let body = new TwingNode(bodyNodes);
         let node = new TwingNodeSpaceless(body, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 Twing.obStart();

@@ -58,7 +58,6 @@ tap.test('Twing library', function (test) {
         TwingExtensionCore: './twing/extension/core',
         TwingExtensionDebug: './twing/extension/debug',
         TwingExtensionEscaper: './twing/extension/escaper',
-        TwingExtensionInitRuntime: './twing/extension/init-runtime',
         TwingExtensionOptimizer: './twing/extension/optimizer',
         TwingExtensionProfiler: './twing/extension/profiler',
         TwingExtensionSandbox: './twing/extension/sandbox',

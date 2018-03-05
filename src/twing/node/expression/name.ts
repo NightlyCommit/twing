@@ -66,7 +66,7 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
                     .string(name)
                     .raw(') : (() => { throw new Twing.TwingErrorRuntime(\'Variable ')
                     .string(name)
-                    .raw(' does not exist.\', this, ')
+                    .raw(' does not exist.\', ')
                     .repr(this.lineno)
                     .raw(', this.getSourceContext()); })()')
                     .raw(')')

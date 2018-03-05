@@ -1,5 +1,5 @@
 const TwingNodeExpressionConstant = require('../../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingTestCompilerStub = require('../../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 const TwingNodeExpressionUnaryNeg = require('../../../../../../../lib/twing/node/expression/unary/neg').TwingNodeExpressionUnaryNeg;
 const TwingNodeType = require('../../../../../../../lib/twing/node-type').TwingNodeType;
 
@@ -17,7 +17,7 @@ tap.test('node/expression/unary/neg', function (test) {
     });
 
     test.test('compile', function (test) {
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
             let expr = new TwingNodeExpressionConstant(1, 1);

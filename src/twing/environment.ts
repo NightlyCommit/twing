@@ -395,17 +395,23 @@ export class TwingEnvironment {
 
                 templates = _eval(content, fileName, {}, true);
 
-                if (!templates) {
-                    throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`);
+                TwingReflectionObject.register(cls, {
+                    fileName: fileName
+                });
+
+                if (!templates[cls]) {
+                    throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
                 }
             }
         }
+
+        TwingError.register(this.getTemplateClass(name, index), templates);
 
         // to be removed in 3.0
         this.extensionSet.initRuntime(this);
 
         if (this.loading.has(cls)) {
-            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${this.loading.merge(new TwingMap([[0, name]]))}.`);
+            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${this.loading.merge(new TwingMap([[0, name]])).join(' -> ')}.`);
         }
 
         let mainTemplate: TwingTemplate;
@@ -414,6 +420,10 @@ export class TwingEnvironment {
 
         try {
             for (let key in templates) {
+                TwingReflectionObject.register(key, {
+                    fileName: fileName
+                });
+
                 let Tpl = templates[key];
                 let template = new Tpl(this);
 
@@ -421,10 +431,6 @@ export class TwingEnvironment {
                     key = cls;
                     mainTemplate = template;
                 }
-
-                TwingReflectionObject.register(template, {
-                    fileName: fileName
-                });
 
                 this.loadedTemplates.set(key, template);
             }

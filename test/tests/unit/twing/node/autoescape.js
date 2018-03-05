@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeText;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
@@ -30,7 +30,7 @@ tap.test('node/autoescape', function (test) {
 
         let body = new TwingNode(bodyNodes);
         let node = new TwingNodeAutoEscape(true, body, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 Twing.echo("foo");

@@ -73,7 +73,6 @@ import {
 } from "./twing/extension/core";
 import {TwingExtensionDebug, twingVarDump} from "./twing/extension/debug";
 import {TwingExtensionEscaper, twingRawFilter} from "./twing/extension/escaper";
-import {TwingExtensionInitRuntime} from "./twing/extension/init-runtime";
 import {TwingExtensionOptimizer} from "./twing/extension/optimizer";
 import {TwingExtensionProfiler} from "./twing/extension/profiler";
 import {TwingExtensionSandbox} from "./twing/extension/sandbox";
@@ -267,7 +266,6 @@ let Twing = {
     TwingExtensionCore: TwingExtensionCore,
     TwingExtensionDebug: TwingExtensionDebug,
     TwingExtensionEscaper: TwingExtensionEscaper,
-    TwingExtensionInitRuntime: TwingExtensionInitRuntime,
     TwingExtensionOptimizer: TwingExtensionOptimizer,
     TwingExtensionProfiler: TwingExtensionProfiler,
     TwingExtensionSandbox: TwingExtensionSandbox,

@@ -1,4 +1,4 @@
-const TwingTestCompilerStub = require('../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionAssignName = require('../../../../../lib/twing/node/expression/assign-name').TwingNodeExpressionAssignName;
 const TwingNodeImport = require('../../../../../lib/twing/node/import').TwingNodeImport;
@@ -23,7 +23,7 @@ tap.test('node/import', function (test) {
         let macro = new TwingNodeExpressionConstant('foo.twig', 1);
         let var_ = new TwingNodeExpressionAssignName('macro', 1);
         let node = new TwingNodeImport(macro, var_, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
 Twing.getContextProxy(context)["macro"] = this.loadTemplate("foo.twig", null, 1);

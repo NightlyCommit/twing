@@ -8,7 +8,8 @@ import {TwingMap} from "./map";
 import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingTest} from "./test";
 import {TwingEnvironment} from "./environment";
-import {TwingExtensionInitRuntime} from "./extension/init-runtime";
+
+const merge = require('merge');
 
 export class TwingExtensionSet {
     private extensions: Map<string, TwingExtensionInterface>;
@@ -22,7 +23,7 @@ export class TwingExtensionSet {
     private functions: TwingMap<string, TwingFunction>;
     private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
     private binaryOperators: Map<string, TwingOperatorDefinitionInterface>;
-    private globals: TwingMap<string, {}>;
+    private globals: {};
     private functionCallbacks: Array<Function> = [];
     private filterCallbacks: Array<Function> = [];
     private lastModified: number = 0;
@@ -44,8 +45,10 @@ export class TwingExtensionSet {
         this.runtimeInitialized = true;
 
         for (let [name, extension] of this.extensions) {
-            if (extension instanceof TwingExtensionInitRuntime) {
-                extension.initRuntime(env);
+            let candidate: any = extension;
+
+            if (candidate.implementsTwingExtensionInitRuntimeInterface) {
+                candidate.initRuntime(env);
             }
         }
     }
@@ -110,12 +113,28 @@ export class TwingExtensionSet {
         return this.parsers;
     }
 
-    getGlobals() {
-        if (this.globals) {
+    getGlobals(): {} {
+        if (this.globals !== undefined) {
             return this.globals;
         }
 
-        let globals = new TwingMap();
+        let globals = {};
+
+        for (let [name, extension] of this.getExtensions()) {
+            let candidate: any = extension;
+
+            if (!candidate.implementsTwingExtensionGlobalsInterface) {
+                continue;
+            }
+
+            let extGlobals = candidate.getGlobals();
+
+            if (typeof extGlobals !== 'object') {
+                throw new Error(`"${extension.constructor.name}::getGlobals()" must return a hash of globals.`);
+            }
+
+            globals = merge.recursive(globals, extGlobals);
+        }
 
         if (this.initialized) {
             this.globals = globals;

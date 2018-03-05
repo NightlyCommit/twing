@@ -1,12 +1,12 @@
-const TwingTestCompilerStub = require('../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNode = require('../../../../../../lib/twing/node').TwingNode;
 const TwingNodeExpressionFilter = require('../../../../../../lib/twing/node/expression/filter').TwingNodeExpressionFilter;
-const TwingTestEnvironmentStub = require('../../../../../environment-stub');
+const TwingTestEnvironmentStub = require('../../../../../mock/environment');
 const TwingFilter = require('../../../../../../lib/twing/filter').TwingFilter;
 const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
 const TwingErrorSyntax = require('../../../../../../lib/twing/error/syntax').TwingErrorSyntax;
-const TwingTestLoaderStub = require('../../../../../loader-stub');
+const TwingTestMockLoader = require('../../../../../mock/loader');
 
 const tap = require('tap');
 
@@ -38,7 +38,7 @@ tap.test('node/expression/filter', function (test) {
     });
 
     test.test('compile', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let environment = new TwingTestEnvironmentStub(loader);
         environment.addFilter(new TwingFilter('bar', twig_tests_filter_dummy, {needs_environment: true}));
         environment.addFilter(new TwingFilter('barbar', twig_tests_filter_barbar, {
@@ -48,7 +48,7 @@ tap.test('node/expression/filter', function (test) {
         environment.addFilter(new TwingFilter('anonymous', function () {
         }));
 
-        let compiler = new TwingTestCompilerStub(environment);
+        let compiler = new TwingTestMockCompiler(environment);
 
         test.test('basic', function (test) {
             let expr = new TwingNodeExpressionConstant('foo', 1);

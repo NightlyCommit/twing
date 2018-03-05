@@ -6,63 +6,63 @@
 import {TwingSource} from "./source";
 import {TwingTemplate} from "./template";
 import {TwingReflectionObject} from "./reflection-object";
+import {StackFrame} from "stack-trace";
+import {TwingMap} from "./map";
 
 const stackTrace = require('stack-trace');
 
 export class TwingError extends Error {
-    sourceName: string;
+    name_: string = null;
+
+    protected static registry: Map<string, string> = new Map();
 
     private lineno: number | boolean;
-    private rawMessage: string;
-    private sourcePath: string;
-    private sourceCode: string;
-    private fileName: string;
-    private previous: Error;
-    private template: TwingTemplate;
+    private rawMessage: string = null;
+    private sourcePath: string = null;
+    private sourceCode: string = null;
+    private previous: Error = null;
 
-    protected type: string;
-
-    static type: string = 'TwingError';
-
-    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null, template: TwingTemplate = null) {
+    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
         super(message);
 
         this.name = this.constructor.name;
         this.previous = previous;
 
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, this.constructor);
-        }
+        Error.captureStackTrace(this, this.constructor);
 
-        if (template) {
-            this.template = template;
-        }
+        this.rawMessage = message;
 
-        let sourceName;
+        this.init(lineno, source)
+    }
+
+    protected init(lineno: number = -1, source: TwingSource | string | null = null) {
+        let name: string;
 
         if (source === null) {
-            sourceName = null;
+            name = null;
         }
         else if (!(source instanceof TwingSource)) {
-            sourceName = source;
+            name = source as string;
         }
         else {
-            sourceName = source.getName();
+            name = source.getName();
 
             this.sourceCode = source.getCode();
             this.sourcePath = source.getPath();
         }
 
         this.lineno = lineno;
-        this.sourceName = sourceName;
+        this.name_ = name;
 
-        if (this.template && (lineno === -1 || sourceName === null || this.sourcePath === null)) {
+        if (lineno === -1 || name === null || this.sourcePath === null) {
             this.guessTemplateInfo();
         }
 
-        this.rawMessage = message;
-
         this.updateRepr();
+    }
+
+    public static register(key: string, value: string) {
+        TwingError.registry.set(key, value);
     }
 
     getMessage() {
@@ -71,22 +71,6 @@ export class TwingError extends Error {
 
     getPrevious() {
         return this.previous;
-    }
-
-    /**
-     *
-     * @returns {StackFrame[]}
-     */
-    getTrace() {
-        return stackTrace.parse(this);
-    }
-
-    getFile() {
-        return this.fileName ? this.fileName : this.sourcePath;
-    }
-
-    getType(): string {
-        return this.type;
     }
 
     /**
@@ -124,7 +108,7 @@ export class TwingError extends Error {
      * @return TwingSource|null
      */
     getSourceContext() {
-        return this.sourceName ? new TwingSource(this.sourceCode, this.sourceName, this.sourcePath) : null;
+        return this.name_ ? new TwingSource(this.sourceCode, this.name_, this.sourcePath) : null;
     }
 
     /**
@@ -132,31 +116,14 @@ export class TwingError extends Error {
      */
     setSourceContext(source: TwingSource = null) {
         if (source === null) {
-            this.sourceCode = this.sourceName = this.sourcePath = null;
+            this.sourceCode = this.name_ = this.sourcePath = null;
         }
         else {
             this.sourceCode = source.getCode();
-            this.sourceName = source.getName();
+            this.name_ = source.getName();
             this.sourcePath = source.getPath();
         }
 
-        this.updateRepr();
-    }
-
-    /**
-     *
-     * @returns {TwingTemplate}
-     */
-    getTemplate() {
-        return this.template;
-    }
-
-    /**
-     *
-     * @param {TwingTemplate} template
-     */
-    setTemplate(template: TwingTemplate) {
-        this.template = template;
         this.updateRepr();
     }
 
@@ -175,9 +142,6 @@ export class TwingError extends Error {
         this.message = this.rawMessage;
 
         if (this.sourcePath && (this.lineno > 0)) {
-            // this.file = this.sourcePath;
-            // this.line = this.lineno;
-
             return;
         }
 
@@ -195,14 +159,14 @@ export class TwingError extends Error {
             questionMark = true;
         }
 
-        if (this.sourceName) {
+        if (this.name_) {
             let sourceName;
 
-            if (typeof this.sourceName === 'string' || typeof this.sourceName === 'object' && Reflect.has(this.sourceName, 'toString')) {
-                sourceName = `"${this.sourceName}"`;
+            if (typeof this.name_ === 'string' || typeof this.name_ === 'object' && Reflect.has(this.name_, 'toString')) {
+                sourceName = `"${this.name_}"`;
             }
             else {
-                sourceName = JSON.stringify(this.sourceName);
+                sourceName = JSON.stringify(this.name_);
             }
 
             this.message += ` in ${sourceName}`;
@@ -222,16 +186,74 @@ export class TwingError extends Error {
     }
 
     guessTemplateInfo(): void {
-        let template = this.template;
+        let TwingTemplate = require('./template').TwingTemplate;
+
+        let template: TwingTemplate = null;
+        let templateClass: string = null;
+
+        // construct the backtrace from the errors stack traces
+        // we can't rely on stackTrace.get() for this because of https://github.com/nodejs/node/issues/11865
+        let e: any = this;
+        let errors = [e];
+        let backtrace: StackFrame[] = [];
+
+        while (e.getPrevious && (e = e.getPrevious())) {
+            errors.push(e);
+        }
+
+        while (e = errors.pop()) {
+            for (let trace of stackTrace.parse(e)) {
+                backtrace.push(trace);
+            }
+        }
+
+        for (let trace of backtrace) {
+            let templates: any;
+            let currentClass = trace.getTypeName();
+
+            if (TwingError.registry.has(currentClass)) {
+                templates = TwingError.registry.get(currentClass);
+
+                let objectConstructor = templates[trace.getTypeName()];
+                let object: any;
+                let safeEnvironment = {
+                    loadTemplate: () => {
+                        return {
+                            isTraitable: (): boolean => {
+                                return true;
+                            },
+                            getBlocks: (): TwingMap<string, Array<any>> => {
+                                return new TwingMap();
+                            },
+                            loadTemplate: (): any => {
+                                return null;
+                            }
+                        };
+                    }
+                };
+
+                object = new objectConstructor(safeEnvironment);
+
+                if (object && (object instanceof TwingTemplate) && (object.constructor.name !== 'TwingTemplate')) {
+                    let isEmbedContainer: boolean = (!!templateClass && templateClass.indexOf(currentClass) === 0);
+
+                    if (this.name_ === null || (this.name_ == object.getTemplateName() && !isEmbedContainer)) {
+                        template = object;
+                        templateClass = trace.getTypeName();
+                    }
+                }
+            }
+        }
 
         // update template name
-        if (template !== null && this.sourceName === null) {
-            this.sourceName = template.getTemplateName();
+        if (template !== null && this.name_ === null) {
+            this.name_ = template.getTemplateName();
         }
 
         // update template path if any
         if (template !== null && this.sourcePath === null) {
             let src = template.getSourceContext();
+
             this.sourceCode = src.getCode();
             this.sourcePath = src.getPath();
         }
@@ -240,12 +262,11 @@ export class TwingError extends Error {
             return;
         }
 
-        let r = new TwingReflectionObject(template);
+        let r = new TwingReflectionObject(templateClass);
         let file = r.getFileName();
 
-        let e: any = this;
-
-        let errors = [e];
+        e = this;
+        errors = [e];
 
         while (e.getPrevious && (e = e.getPrevious())) {
             errors.push(e);
@@ -270,7 +291,6 @@ export class TwingError extends Error {
                         if (codeLine <= trace.getLineNumber()) {
                             // update template line
                             this.lineno = templateLine;
-                            this.fileName = trace.getFileName();
 
                             return;
                         }

@@ -20,11 +20,11 @@ class TwingTestsErrorTestFoo {
 tap.test('TwingError', function (test) {
     test.test('constructor', function (test) {
         let previous = new Error();
-        let error = new TwingError('foo', 1, 'bar', previous);
+        let error = new TwingError('foo', -1, 'bar', previous);
 
         test.same(error.getRawMessage(), 'foo', 'raw message should be set');
-        test.same(error.getTemplateLine(), 1, 'template line should be set');
-        test.same(error.getMessage(), 'foo in "bar" at line 1', 'message should be set');
+        test.same(error.getTemplateLine(), -1, 'template line should be set');
+        test.same(error.getMessage(), 'foo in "bar"', 'message should be set');
 
         test.end();
     });
@@ -79,7 +79,7 @@ tap.test('TwingError', function (test) {
         let twing = new TwingEnvironment(loader, {
             strict_variables: true,
             debug: true,
-            cache: false
+            cache: 'tmp'
         });
 
         let template = twing.loadTemplate('index.html');
@@ -122,7 +122,6 @@ tap.test('TwingError', function (test) {
             test.same(e.getMessage(), 'Variable "foo" does not exist.');
             test.same(e.getTemplateLine(), 3);
             test.same(e.getSourceContext().getName(), 'index.html');
-            test.same(e.getFile(), path.resolve('test/tests/integration/fixtures/errors/index.html'));
         }
 
         test.end();

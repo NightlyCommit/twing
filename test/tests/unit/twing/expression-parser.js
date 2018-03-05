@@ -1,4 +1,4 @@
-const TwingTestEnvironmentStub = require('../../../environment-stub');
+const TwingTestEnvironmentStub = require('../../../mock/environment');
 const TwingParser = require('../../../../lib/twing/parser').TwingParser;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
@@ -7,7 +7,7 @@ const TwingMap = require('../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionConstant = require('../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionName = require('../../../../lib/twing/node/expression/name').TwingNodeExpressionName;
 const TwingNodeExpressionBinaryConcat = require('../../../../lib/twing/node/expression/binary/concat').TwingNodeExpressionBinaryConcat;
-const TwingTestLoaderStub = require('../../../loader-stub');
+const TwingTestMockLoader = require('../../../mock/loader');
 
 const tap = require('tap');
 
@@ -28,7 +28,7 @@ tap.test('expression-parser', function (test) {
             ['{% set %}{% endset %})', 'Only variables can be assigned to. Unexpected token "end of statement block" of value "null" ("name" expected).']
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
@@ -117,7 +117,7 @@ tap.test('expression-parser', function (test) {
             ],
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
@@ -145,7 +145,7 @@ tap.test('expression-parser', function (test) {
             ['{{ {"a": "b", 2} }}', 'A hash key must be followed by a colon (:). Unexpected token "punctuation" of value "}" ("punctuation" expected with value ":")']
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
@@ -161,7 +161,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('stringExpressionDoesNotConcatenateTwoConsecutiveStrings', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ "a" "b" }}', 'index');
         let stream = env.tokenize(source);
@@ -213,7 +213,7 @@ tap.test('expression-parser', function (test) {
             ]
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
@@ -235,7 +235,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('attributeCallDoesNotSupportNamedArguments', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foo.bar(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
@@ -249,7 +249,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% from _self import foo %}{% macro foo() %}{% endmacro %}{{ foo(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
@@ -263,7 +263,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% macro foo("a") %}{% endmacro %}', 'index');
         let stream = env.tokenize(source);
@@ -282,7 +282,7 @@ tap.test('expression-parser', function (test) {
             '{% macro foo(name = [["b", "a #{foo} a"]]) %}{% endmacro %}'
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
@@ -309,7 +309,7 @@ tap.test('expression-parser', function (test) {
             '{% macro foo(name = {a: {b: "a"}}) %}{% endmacro %}'
         ];
 
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
@@ -324,7 +324,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownFunction', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ cycl() }}', 'index');
         let stream = env.tokenize(source);
@@ -338,7 +338,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownFunctionWithoutSuggestions', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foobar() }}', 'index');
         let stream = env.tokenize(source);
@@ -352,7 +352,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownFilter', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1|lowe }}', 'index');
         let stream = env.tokenize(source);
@@ -366,7 +366,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownFilterWithoutSuggestions', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1|foobar }}', 'index');
         let stream = env.tokenize(source);
@@ -380,7 +380,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownTest', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1 is nul }}', 'index');
         let stream = env.tokenize(source);
@@ -394,7 +394,7 @@ tap.test('expression-parser', function (test) {
     });
 
     test.test('unknownTestWithoutSuggestions', function (test) {
-        let loader = new TwingTestLoaderStub();
+        let loader = new TwingTestMockLoader();
         let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1 is foobar}}', 'index');
         let stream = env.tokenize(source);

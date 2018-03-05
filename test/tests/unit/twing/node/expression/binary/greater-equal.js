@@ -1,5 +1,5 @@
 const TwingNodeExpressionConstant = require('../../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingTestCompilerStub = require('../../../../../../compiler-stub');
+const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 const TwingNodeExpressionBinaryGreaterEqual = require('../../../../../../../lib/twing/node/expression/binary/greater-equal').TwingNodeExpressionBinaryGreaterEqual;
 
 const tap = require('tap');
@@ -20,7 +20,7 @@ tap.test('node/expression/binary/greater-equal', function (test) {
         let left = new TwingNodeExpressionConstant(1, 1);
         let right = new TwingNodeExpressionConstant(2, 1);
         let node = new TwingNodeExpressionBinaryGreaterEqual(left, right, 1);
-        let compiler = new TwingTestCompilerStub();
+        let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), '(1 >= 2)');
 
