@@ -1,16 +1,16 @@
-# Twing
+Introduction
+============
 
-First-class Twig engine for Node.js
+This is the documentation for Twing, the TypeScript-written Node.js port of [TwigPHP](https://github.com/twigphp/Twig).
 
-## Philosophy behind Twing
+The key-features are...
 
-We believe that a first-class Twig engine should be able to render any template to the exact same result as the official PHP engine. That means that it should implement 100% of the syntax defined by the language specifications and that it should render that syntax using PHP logic.
+* *Fast*: Twing compiles templates down to plain optimized JavaScript code. The overhead compared to regular JavaScript code was reduced to the very minimum.
 
-We also believe that a first-class Twig engine should be able to catch-up easily when Twig specifications evolve. Its code architecture and philosophy should then be as close as possible as the PHP implementation.
+* *Secure*: Twing has a sandbox mode to evaluate untrusted template code. This allows Twing to be used as a template language for applications where users
+  may modify the template design.
 
-Finally, we believe that a first-class Twig engine should allow users to build on their experience with TwigPHP and get support from the huge community that comes with it.
-
-That's what Twing is. A maintainability-first engine that pass 100% of the TwigPHP integration tests, is as close as possible to its code structure and expose an as-close-as-possible API.
+* *Flexible*: Twing is powered by a flexible lexer and parser. This allows the developer to define their own custom tags and filters, and to create their own DSL.
 
 ## Prerequisites
 
@@ -57,7 +57,7 @@ let ouput = await twing.render('index.html', {'name': 'Fabien'});
 
 ## Asynchronous by nature
 
-Starting with 0.4.0, Twing is asynchronous by nature. It means that `TwingEnvironment::render`,`TwingEnvironment::display` and the belonging `TwingTemplate` functions return a Promise. This asynchronous nature makes possible to implement asynchronous filters, functions and tests.
+Twing is asynchronous by nature. It means that `TwingEnvironment::render`,`TwingEnvironment::display` and the belonging `TwingTemplate` functions return a Promise. This asynchronous nature makes possible to implement asynchronous filters, functions and tests.
 
 ```js
 class SleepExtenstion extends Twing.TwingExtension {
