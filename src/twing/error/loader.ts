@@ -22,7 +22,7 @@ export class TwingErrorLoader extends TwingError {
         this.setTemplateLine(false);
     }
 
-    // @see Twig_Error_Loader::__construct to witness some stupidity
+    // @see Twig_Error_Loader::__construct for the reason to this
     init() {
     }
 }
