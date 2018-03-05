@@ -354,7 +354,7 @@ export class TwingEnvironment {
      *
      * @throws {TwingErrorLoader}  When the template cannot be found
      * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
-     * @throws {TwingErrorSyntax  When an error occurred during compilation
+     * @throws {TwingErrorSyntax}  When an error occurred during compilation
      *
      * @internal
      */
