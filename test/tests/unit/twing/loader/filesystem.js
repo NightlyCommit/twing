@@ -1,9 +1,15 @@
 const TwingLoaderFilesystem = require('../../../../../lib/twing/loader/filesystem').TwingLoaderFilesystem;
 const TwingErrorLoader = require('../../../../../lib/twing/error/loader').TwingErrorLoader;
+const TwingSource = require('../../../../../lib/twing/source').TwingSource;
+const TwingEnvironment = require('../../../../../lib/twing/environment').TwingEnvironment;
 
 const tap = require('tap');
 const nodePath = require('path');
 const os = require('os');
+
+let moduleAlias = require('module-alias');
+
+moduleAlias.addAlias('twing/lib/runtime', nodePath.resolve('lib/runtime.js'));
 
 let fixturesPath = nodePath.resolve('test/tests/unit/twing/loader/fixtures');
 
@@ -182,39 +188,64 @@ tap.test('loader filesystem', function (test) {
         test.end();
     });
 
-    // test.test('load-template-and-render-block-with-cache', function (test) {
-    //     let loader = new TwingLoaderFilesystem([]);
-    //     loader.addPath(nodePath.join(fixturesPath, 'themes/theme2'));
-    //     loader.addPath(nodePath.join(fixturesPath, 'themes/theme1'));
-    //     loader.addPath(nodePath.join(fixturesPath, 'themes/theme1'), 'default_theme');
-    //
-    //     let twing = new TwingEnvironment(loader);
-    //
-    //     let template = twing.loadTemplate('blocks.html.twig');
-    //
-    //     test.same(template.renderBlock('b1', {}), 'block from theme 1');
-    //
-    //     template = twing.loadTemplate('blocks.html.twig');
-    //
-    //     test.same(template.renderBlock('b2', {}), 'block from theme 2');
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('array-inheritance', function (test) {
-    //    for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
-    //        let templateName = arrayInheritanceTest[0];
-    //        let loader = new TwingLoaderFilesystem([]);
-    //        loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
-    //
-    //        let twing = new TwingEnvironment(loader);
-    //        let template = twing.loadTemplate(templateName);
-    //
-    //        test.same(template.renderBlock('body', {}), 'VALID Child', testMessage);
-    //    }
-    //
-    //     test.end();
-    // });
+    test.test('load-template-and-render-block-with-cache', async function (test) {
+        let loader = new TwingLoaderFilesystem([]);
+        loader.addPath(nodePath.join(fixturesPath, 'themes/theme2'));
+        loader.addPath(nodePath.join(fixturesPath, 'themes/theme1'));
+        loader.addPath(nodePath.join(fixturesPath, 'themes/theme1'), 'default_theme');
+
+        let twing = new TwingEnvironment(loader);
+
+        let template = twing.loadTemplate('blocks.html.twig');
+
+        test.same(await template.renderBlock('b1', {}), 'block from theme 1');
+
+        template = twing.loadTemplate('blocks.html.twig');
+
+        test.same(await template.renderBlock('b2', {}), 'block from theme 2');
+
+        test.end();
+    });
+
+    test.test('array-inheritance', async function (test) {
+       for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
+           let templateName = arrayInheritanceTest[0];
+           let loader = new TwingLoaderFilesystem([]);
+           loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
+
+           let twing = new TwingEnvironment(loader, {cache: 'tmp'});
+           let template = twing.loadTemplate(templateName);
+
+           test.same(await template.renderBlock('body', {}), 'VALID Child', testMessage);
+       }
+
+        test.end();
+    });
+
+    test.test('should normalize template name', function(test) {
+        let loader = new TwingLoaderFilesystem(fixturesPath);
+
+        let names = [
+            'named/index.html',
+            'named//index.html',
+            'named///index.html',
+            '../fixtures/named/index.html',
+            '..//fixtures//named//index.html',
+            '..///fixtures///named///index.html',
+            'named\\index.html',
+            'named\\\\index.html',
+            'named\\\\\\index.html',
+            '..\\fixtures\\named\\index.html',
+            '..\\\\fixtures\\\\named\\\\index.html',
+            '..\\\\\\fixtures\\named\\\\\\index.html',
+        ];
+
+        for (let name of names) {
+            test.same(loader.getSourceContext(name), new TwingSource('named path\n', name, nodePath.resolve(fixturesPath, 'named/index.html')));
+        }
+
+        test.end();
+    });
 
     test.end();
 });

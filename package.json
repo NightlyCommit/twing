@@ -84,7 +84,6 @@
     "tap": "^11.0.1",
     "tap-mocha-reporter": "^3.0.6",
     "tape": "^4.9.0",
-    "testdouble": "^3.5.2",
     "twig": "^1.10.5",
     "typescript": "^2.7.2"
   }
