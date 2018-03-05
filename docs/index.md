@@ -5,7 +5,7 @@ Twing
 
 Read the online documentation to learn more about Twing.
 
-* [Introduction]({{ site.baseurl }}/docs/intro )
+* [Introduction]({{ site.baseurl }}/intro)
 
 [npm-image]: https://badge.fury.io/js/twing.svg?v=0.8.1
 [npm-url]: https://npmjs.org/package/twing
