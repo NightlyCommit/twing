@@ -167,7 +167,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
      *
      * @returns {string} The template name or null
      */
-    findTemplate(name: string, throw_: boolean = true): string {
+    protected findTemplate(name: string, throw_: boolean = true): string {
         name = this.normalizeName(name);
 
         if (this.cache.has(name)) {
@@ -227,15 +227,15 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         throw new TwingErrorLoader(this.errorCache.get(name));
     }
 
-    normalizeName(name: string) {
+    private normalizeName(name: string) {
         if (name === null) {
             return '';
         }
 
-        return nodePath.normalize(name);
+        return name.replace(/\\/g, '/').replace(/\/{2,}/g, '/')
     }
 
-    parseName(name: string, default_: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
+    private parseName(name: string, default_: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
         if (name[0] === '@') {
             let pos = name.indexOf('/');
 
@@ -252,7 +252,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return [default_, name];
     }
 
-    validateName(name: string) {
+    private validateName(name: string) {
         if (name.indexOf(`\0`) > -1) {
             throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
         }

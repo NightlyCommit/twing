@@ -17,7 +17,6 @@ const path = require('path');
 const tap = require('tap');
 const sinon = require('sinon');
 const tmp = require('tmp');
-const testdouble = require('testdouble');
 
 let moduleAlias = require('module-alias');
 
