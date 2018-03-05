@@ -1,4 +1,4 @@
-##Twing Documentation
+## Twing Documentation
 
 Read the online documentation to learn more about Twing.
 
@@ -14,7 +14,7 @@ Read the online documentation to learn more about Twing.
 * API
 * [License](https://github.com/ericmorand/twing/blob/master/LICENSE)
 
-##Twing Reference
+## Twing Reference
 
 Browse the online reference to learn more about built-in features.
 
