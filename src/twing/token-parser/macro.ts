@@ -9,7 +9,6 @@
  */
 import {TwingToken} from "../token";
 import {TwingTokenParser} from "../token-parser";
-import {TwingTokenType} from "../token-type";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeBody} from "../node/body";
 import {TwingMap} from "../map";
@@ -22,7 +21,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
+        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
         let safeName = name;
 
         if (!varValidator.isValid(name)) {
@@ -31,13 +30,13 @@ export class TwingTokenParserMacro extends TwingTokenParser {
 
         let macroArguments = this.parser.getExpressionParser().parseArguments(true, true);
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         this.parser.pushLocalScope();
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        if (token = stream.nextIf(TwingTokenType.NAME_TYPE)) {
+        if (token = stream.nextIf(TwingToken.NAME_TYPE)) {
             let value = token.getValue();
 
             if (value != name) {
@@ -47,7 +46,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
 
         this.parser.popLocalScope();
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         let nodes = new TwingMap();
 
@@ -59,7 +58,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, 'endmacro');
+        return token.test(TwingToken.NAME_TYPE, 'endmacro');
     }
 
     getTag() {

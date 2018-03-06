@@ -15,7 +15,6 @@ import {max} from "./twing/helper/max";
 import {min} from "./twing/helper/min";
 import {regexParser} from "./twing/helper/regex-parser";
 import {relativeDate} from "./twing/helper/relative-date";
-import {TokenPosition} from "./twing/token-position";
 import {TwingBaseNodeVisitor} from "./twing/base-node-visitor";
 import {TwingCacheFilesystem} from "./twing/cache/filesystem";
 import {TwingCacheNull} from "./twing/cache/null";
@@ -238,7 +237,6 @@ let Twing = {
     range: range,
     regexParser: regexParser,
     relativeDate: relativeDate,
-    TokenPosition: TokenPosition,
     twingArrayBatch: twingArrayBatch,
     twingArrayMerge: twingArrayMerge,
     TwingBaseNodeVisitor: TwingBaseNodeVisitor,

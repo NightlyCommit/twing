@@ -1,6 +1,6 @@
 const TwingTokenParser = require('../lib/twing/token-parser').TwingTokenParser;
 const TwingNodePrint = require('../lib/twing/node/print').TwingNodePrint;
-const TwingTokenType = require('../lib/twing/token-type').TwingTokenType;
+const TwingToken = require('../lib/twing/token').TwingToken;
 const TwingNodeExpressionConstant = require('../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingExtension = require('../lib/twing/extension').TwingExtension;
 const TwingExtensionDebug = require('../lib/twing/extension/debug').TwingExtensionDebug;
@@ -20,7 +20,7 @@ moduleAlias.addAlias('twing', path.resolve('./lib/runtime.js'));
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
-        this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
         return new TwingNodePrint(new TwingNodeExpressionConstant('§', -1), -1);
     }
@@ -146,7 +146,7 @@ class TwingTestExtension extends TwingExtension {
 module.exports = class TwingTestIntegrationTestCaseBase {
     constructor(name) {
         this.name = name;
-        this.twing;
+        this.twing = null;
     }
 
     setTwing(twing) {

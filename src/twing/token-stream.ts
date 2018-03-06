@@ -1,6 +1,5 @@
 import {TwingToken} from "./token";
 import {TwingSource} from "./source";
-import {TwingTokenType} from "./token-type";
 import {TwingErrorSyntax} from "./error/syntax";
 
 const array_merge = require('locutus/php/array/array_merge');
@@ -43,7 +42,7 @@ export class TwingTokenStream {
      *
      * @return TwingToken|null The next token if the condition is true, null otherwise
      */
-    nextIf(primary: TwingTokenType, secondary: Array<string> | string = null) {
+    nextIf(primary: string, secondary: Array<string> | string = null) {
         if (this.tokens[this.current].test(primary, secondary)) {
             return this.next();
         }
@@ -56,7 +55,7 @@ export class TwingTokenStream {
      *
      * @return TwingToken
      */
-    expect(type: TwingTokenType, value: Array<string> | string | number = null, message: string = null) {
+    expect(type: string, value: Array<string> | string | number = null, message: string = null) {
         let token = this.tokens[this.current];
 
         if (!token.test(type, value)) {
@@ -97,7 +96,7 @@ export class TwingTokenStream {
      *
      * @return bool
      */
-    test(primary: TwingTokenType, secondary: Array<string> | string = null) {
+    test(primary: string, secondary: Array<string> | string = null) {
         return this.tokens[this.current].test(primary, secondary);
     }
 
@@ -107,7 +106,7 @@ export class TwingTokenStream {
      * @return bool
      */
     isEOF() {
-        return this.tokens[this.current].getType() === TwingTokenType.EOF_TYPE;
+        return this.tokens[this.current].getType() === TwingToken.EOF_TYPE;
     }
 
     /**

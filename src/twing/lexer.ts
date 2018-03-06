@@ -5,7 +5,6 @@
  */
 import {TwingToken} from "./token";
 import {TwingSource} from "./source";
-import {TwingTokenType} from "./token-type";
 import {TwingTokenStream} from "./token-stream";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingEnvironment} from "./environment";
@@ -163,7 +162,7 @@ export class TwingLexer {
             }
         }
 
-        this.pushTwingToken(TwingTokenType.EOF_TYPE);
+        this.pushTwingToken(TwingToken.EOF_TYPE);
 
         if (this.brackets.length > 0) {
             let bracket = this.brackets.pop();
@@ -180,7 +179,7 @@ export class TwingLexer {
     private lexData() {
         // if no matches are left we return the rest of the template as simple text token
         if (this.position === (this.positions.length - 1)) {
-            this.pushTwingToken(TwingTokenType.TEXT_TYPE, this.code.substring(this.cursor));
+            this.pushTwingToken(TwingToken.TEXT_TYPE, this.code.substring(this.cursor));
             this.cursor = this.end;
 
             return;
@@ -207,7 +206,7 @@ export class TwingLexer {
             text = text.trimRight();
         }
 
-        this.pushTwingToken(TwingTokenType.TEXT_TYPE, text);
+        this.pushTwingToken(TwingToken.TEXT_TYPE, text);
         this.moveCursor(textContent + position[0]);
 
         switch (position[1]) {
@@ -228,13 +227,13 @@ export class TwingLexer {
                     this.lineno = parseInt(match[1]);
                 }
                 else {
-                    this.pushTwingToken(TwingTokenType.BLOCK_START_TYPE);
+                    this.pushTwingToken(TwingToken.BLOCK_START_TYPE);
                     this.pushState(TwingLexer.STATE_BLOCK);
                     this.currentVarBlockLine = this.lineno;
                 }
                 break;
             case this.options.tag_variable[0]:
-                this.pushTwingToken(TwingTokenType.VAR_START_TYPE);
+                this.pushTwingToken(TwingToken.VAR_START_TYPE);
                 this.pushState(TwingLexer.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
                 break;
@@ -246,7 +245,7 @@ export class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_block.exec(string)) !== null)) {
-            this.pushTwingToken(TwingTokenType.BLOCK_END_TYPE);
+            this.pushTwingToken(TwingToken.BLOCK_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         }
@@ -259,7 +258,7 @@ export class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_var.exec(this.code.substring(this.cursor))) !== null)) {
-            this.pushTwingToken(TwingTokenType.VAR_END_TYPE);
+            this.pushTwingToken(TwingToken.VAR_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         } else {
@@ -288,17 +287,17 @@ export class TwingLexer {
         if ((match = this.regexes.operator.exec(candidate)) !== null) {
             let tokenValue = match[0].replace(/\s+/, ' ');
 
-            this.pushTwingToken(TwingTokenType.OPERATOR_TYPE, tokenValue);
+            this.pushTwingToken(TwingToken.OPERATOR_TYPE, tokenValue);
             this.moveCursor(match[0]);
         }
         // names
         else if ((match = TwingLexer.REGEX_NAME.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingTokenType.NAME_TYPE, match[0]);
+            this.pushTwingToken(TwingToken.NAME_TYPE, match[0]);
             this.moveCursor(match[0]);
         }
         // numbers
         else if ((match = TwingLexer.REGEX_NUMBER.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingTokenType.NUMBER_TYPE, Number(match[0]));
+            this.pushTwingToken(TwingToken.NUMBER_TYPE, Number(match[0]));
             this.moveCursor(match[0]);
         }
         // punctuation
@@ -331,13 +330,13 @@ export class TwingLexer {
                 }
             }
 
-            this.pushTwingToken(TwingTokenType.PUNCTUATION_TYPE, punctuationCandidate);
+            this.pushTwingToken(TwingToken.PUNCTUATION_TYPE, punctuationCandidate);
 
             this.cursor++;
         }
         // strings
         else if ((match = TwingLexer.REGEX_STRING.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingTokenType.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
+            this.pushTwingToken(TwingToken.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
             this.moveCursor(match[0]);
         }
         // opening double quoted string
@@ -374,7 +373,7 @@ export class TwingLexer {
             text = text.trimRight();
         }
 
-        this.pushTwingToken(TwingTokenType.TEXT_TYPE, text);
+        this.pushTwingToken(TwingToken.TEXT_TYPE, text);
     }
 
     private lexComment() {
@@ -395,12 +394,12 @@ export class TwingLexer {
                 value: this.options.interpolation[0],
                 line: this.lineno
             });
-            this.pushTwingToken(TwingTokenType.INTERPOLATION_START_TYPE);
+            this.pushTwingToken(TwingToken.INTERPOLATION_START_TYPE);
             this.moveCursor(match[0]);
             this.pushState(TwingLexer.STATE_INTERPOLATION);
         }
         else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
-            this.pushTwingToken(TwingTokenType.STRING_TYPE, stripcslashes(match[0]));
+            this.pushTwingToken(TwingToken.STRING_TYPE, stripcslashes(match[0]));
             this.moveCursor(match[0]);
         }
         else if ((TwingLexer.REGEX_DQ_STRING_DELIM.exec(this.code.substring(this.cursor))) !== null) {
@@ -421,7 +420,7 @@ export class TwingLexer {
 
         if (this.options.interpolation[0] === bracket.value && (match = this.regexes.interpolation_end.exec(this.code.substring(this.cursor))) !== null) {
             this.brackets.pop();
-            this.pushTwingToken(TwingTokenType.INTERPOLATION_END_TYPE);
+            this.pushTwingToken(TwingToken.INTERPOLATION_END_TYPE);
             this.moveCursor(match[0]);
             this.popState();
         } else {
@@ -470,8 +469,8 @@ export class TwingLexer {
         return new RegExp(patterns.join('|'));
     };
 
-    private pushTwingToken(type: TwingTokenType, value: any = null) {
-        if ((type === TwingTokenType.TEXT_TYPE) && (value.length < 1)) {
+    private pushTwingToken(type: string, value: any = null) {
+        if ((TwingToken.TEXT_TYPE === type) && (value.length < 1)) {
             return;
         }
 

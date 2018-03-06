@@ -1,14 +1,23 @@
-import {TokenPosition} from "./token-position";
-import {TwingTokenType} from "./token-type";
-
 export class TwingToken {
-    position: TokenPosition;
-    type: TwingTokenType;
-    value: string;
-    lineno: number;
+    private value: string;
+    private type: string;
+    private lineno: number;
 
-    constructor(type: TwingTokenType, value: string, lineno: number) {
-        this.position = new TokenPosition;
+    static EOF_TYPE = 'EOF_TYPE';
+    static TEXT_TYPE = 'TEXT_TYPE';
+    static BLOCK_START_TYPE = 'BLOCK_START_TYPE';
+    static VAR_START_TYPE = 'VAR_START_TYPE';
+    static BLOCK_END_TYPE = 'BLOCK_END_TYPE';
+    static VAR_END_TYPE = 'VAR_END_TYPE';
+    static NAME_TYPE = 'NAME_TYPE';
+    static NUMBER_TYPE = 'NUMBER_TYPE';
+    static STRING_TYPE = 'STRING_TYPE';
+    static OPERATOR_TYPE = 'OPERATOR_TYPE';
+    static PUNCTUATION_TYPE = 'PUNCTUATION_TYPE';
+    static INTERPOLATION_START_TYPE = 'INTERPOLATION_START_TYPE';
+    static INTERPOLATION_END_TYPE = 'INTERPOLATION_END_TYPE';
+
+    constructor(type: string, value: string, lineno: number) {
         this.type = type;
         this.value = value;
         this.lineno = lineno;
@@ -26,7 +35,7 @@ export class TwingToken {
      * @param values string|Array<string>
      * @returns {boolean}
      */
-    public test(type: TwingTokenType, values: Array<string> | string | number = null) {
+    public test(type: string, values: Array<string> | string | number = null) {
         return (this.type === type) && (
             values === null ||
             (Array.isArray(values) && values.includes(this.value)) ||
@@ -53,33 +62,33 @@ export class TwingToken {
         return `${TwingToken.typeToEnglish(this.type)}(${this.value})`;
     }
 
-    static typeToEnglish(type: TwingTokenType): string {
+    static typeToEnglish(type: string): string {
         switch (type) {
-            case TwingTokenType.EOF_TYPE:
+            case TwingToken.EOF_TYPE:
                 return 'end of template';
-            case TwingTokenType.TEXT_TYPE:
+            case TwingToken.TEXT_TYPE:
                 return 'text';
-            case TwingTokenType.BLOCK_START_TYPE:
+            case TwingToken.BLOCK_START_TYPE:
                 return 'begin of statement block';
-            case TwingTokenType.VAR_START_TYPE:
+            case TwingToken.VAR_START_TYPE:
                 return 'begin of print statement';
-            case TwingTokenType.BLOCK_END_TYPE:
+            case TwingToken.BLOCK_END_TYPE:
                 return 'end of statement block';
-            case TwingTokenType.VAR_END_TYPE:
+            case TwingToken.VAR_END_TYPE:
                 return 'end of print statement';
-            case TwingTokenType.NAME_TYPE:
+            case TwingToken.NAME_TYPE:
                 return 'name';
-            case TwingTokenType.NUMBER_TYPE:
+            case TwingToken.NUMBER_TYPE:
                 return 'number';
-            case TwingTokenType.STRING_TYPE:
+            case TwingToken.STRING_TYPE:
                 return 'string';
-            case TwingTokenType.OPERATOR_TYPE:
+            case TwingToken.OPERATOR_TYPE:
                 return 'operator';
-            case TwingTokenType.PUNCTUATION_TYPE:
+            case TwingToken.PUNCTUATION_TYPE:
                 return 'punctuation';
-            case TwingTokenType.INTERPOLATION_START_TYPE:
+            case TwingToken.INTERPOLATION_START_TYPE:
                 return 'begin of string interpolation';
-            case TwingTokenType.INTERPOLATION_END_TYPE:
+            case TwingToken.INTERPOLATION_END_TYPE:
                 return 'end of string interpolation';
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);

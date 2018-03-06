@@ -1,6 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingNodeInclude} from "../node/include";
 import {TwingNodeExpression} from "../node/expression";
 
@@ -13,6 +12,10 @@ export class TwingTokenParserInclude extends TwingTokenParser {
         return new TwingNodeInclude(expr, parsedArguments.variables, parsedArguments.only, parsedArguments.ignoreMissing, token.getLine(), this.getTag());
     }
 
+    getTag() {
+        return 'include';
+    }
+
     /**
      *
      * @returns {{variables: TwingNodeExpression; only: boolean; ignoreMissing: boolean}}
@@ -22,34 +25,30 @@ export class TwingTokenParserInclude extends TwingTokenParser {
 
         let ignoreMissing = false;
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'ignore')) {
-            stream.expect(TwingTokenType.NAME_TYPE, 'missing');
+        if (stream.nextIf(TwingToken.NAME_TYPE, 'ignore')) {
+            stream.expect(TwingToken.NAME_TYPE, 'missing');
 
             ignoreMissing = true;
         }
 
         let variables = null;
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'with')) {
+        if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
             variables = this.parser.getExpressionParser().parseExpression();
         }
 
         let only = false;
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'only')) {
+        if (stream.nextIf(TwingToken.NAME_TYPE, 'only')) {
             only = true;
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         return {
             variables: variables,
             only: only,
             ignoreMissing: ignoreMissing
         };
-    }
-
-    getTag() {
-        return 'include';
     }
 }

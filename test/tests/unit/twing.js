@@ -30,7 +30,6 @@ tap.test('Twing library', function (test) {
         range: './twing/helper/range',
         regexParser: './twing/helper/regex-parser',
         relativeDate: './twing/helper/relative-date',
-        TokenPosition: './twing/token-position',
         twingArrayBatch: './twing/extension/core',
         twingArrayMerge: './twing/extension/core',
         TwingBaseNodeVisitor: './twing/base-node-visitor',
