@@ -1,5 +1,5 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingEnvironment} from "../environment";
 import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
 import {TwingNodeTraverser} from "../node-traverser";
@@ -7,7 +7,6 @@ import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingMap} from "../map";
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];

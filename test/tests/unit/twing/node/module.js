@@ -10,7 +10,7 @@ const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeExpressionConditional = require('../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeSet = require('../../../../../lib/twing/node/set').TwingNodeSet;
 const TwingTestEnvironmentStub = require('../../../../mock/environment');
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 const TwingTestMockLoader = require('../../../../mock/loader');
 
 const tap = require('tap');

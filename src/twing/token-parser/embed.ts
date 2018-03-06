@@ -3,7 +3,7 @@ import {TwingTokenType} from "../token-type";
 import {TwingTokenParserInclude} from "./include";
 import {TwingNodeEmbed} from "../node/embed";
 import {TwingNodeModule} from "../node/module";
-import {TwingNodeType} from "../node-type";
+import {TwingNodeType} from "../node";
 
 export class TwingTokenParserEmbed extends TwingTokenParserInclude {
     parse(token: TwingToken) {

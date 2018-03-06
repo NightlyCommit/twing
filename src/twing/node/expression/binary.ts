@@ -1,8 +1,7 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingNode} from "../../node";
+import {TwingNode, TwingNodeType} from "../../node";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
 
 export abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
     constructor(left: TwingNode, right: TwingNode, lineno: number) {

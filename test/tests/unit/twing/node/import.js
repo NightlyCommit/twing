@@ -2,7 +2,7 @@ const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionAssignName = require('../../../../../lib/twing/node/expression/assign-name').TwingNodeExpressionAssignName;
 const TwingNodeImport = require('../../../../../lib/twing/node/import').TwingNodeImport;
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 

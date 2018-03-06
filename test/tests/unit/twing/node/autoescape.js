@@ -3,7 +3,7 @@ const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeText;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
 const TwingNodeAutoEscape = require('../../../../../lib/twing/node/auto-escape').TwingNodeAutoEscape;
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 

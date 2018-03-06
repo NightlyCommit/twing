@@ -2,7 +2,7 @@ import {TwingNodeExpression} from "../expression";
 import {TwingNodeExpressionArray} from "./array";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
+import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, method: string, methodArguments: TwingNodeExpressionArray, lineno: number) {

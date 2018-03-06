@@ -3,10 +3,9 @@ import {TwingNodeExpression} from "../expression";
 import {TwingNodeExpressionTestDefined} from "./test/defined";
 import {TwingNodeExpressionUnaryNot} from "./unary/not";
 import {TwingNodeExpressionTestNull} from "./test/null";
-import {TwingNode} from "../../node";
+import {TwingNode, TwingNodeType} from "../../node";
 import {TwingNodeExpressionBinaryAnd} from "./binary/and";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
 
 export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
     constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number) {

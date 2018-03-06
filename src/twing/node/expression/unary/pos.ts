@@ -1,7 +1,6 @@
 import {TwingNodeExpressionUnary} from "../unary";
 import {TwingCompiler} from "../../../compiler";
-import {TwingNodeType} from "../../../node-type";
-import {TwingNode} from "../../../node";
+import {TwingNode, TwingNodeType} from "../../../node";
 
 export class TwingNodeExpressionUnaryPos extends TwingNodeExpressionUnary {
     constructor(expr: TwingNode, lineno: number) {

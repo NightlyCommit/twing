@@ -1,10 +1,9 @@
 import {TwingNodeExpressionTest} from "../test";
-import {TwingNode} from "../../../node";
+import {TwingNode, TwingNodeType} from "../../../node";
 import {TwingNodeExpression} from "../../expression";
 import {TwingNodeExpressionConstant} from "../constant";
 import {TwingErrorSyntax} from "../../../error/syntax";
 import {TwingCompiler} from "../../../compiler";
-import {TwingNodeType} from "../../../node-type";
 
 /**
  * Checks if a variable is defined in the active context.

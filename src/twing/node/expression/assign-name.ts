@@ -1,6 +1,6 @@
 import {TwingNodeExpressionName} from "./name";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
+import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
     constructor(name: string, lineno: number) {

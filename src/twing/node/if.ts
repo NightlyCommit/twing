@@ -1,7 +1,6 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingMap} from "../map";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeIf extends TwingNode {
     constructor(tests: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {

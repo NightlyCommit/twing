@@ -6,7 +6,7 @@ const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodePrint = require('../../../../../lib/twing/node/print').TwingNodePrint;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
 const TwingNodeFor = require('../../../../../lib/twing/node/for').TwingNodeFor;
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 

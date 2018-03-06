@@ -1,12 +1,11 @@
 import {TwingBaseNodeVisitor} from "../../base-node-visitor";
-import {TwingNode} from "../../node";
+import {TwingNode, TwingNodeType} from "../../node";
 import {TwingEnvironment} from "../../environment";
 import {TwingMap} from "../../map";
 import {TwingProfilerProfile} from "../profile";
 import {TwingNodeBody} from "../../node/body";
 import {TwingProfilerNodeEnterProfile} from "../node/enter-profile";
 import {TwingProfilerNodeLeaveProfile} from "../node/leave-profile";
-import {TwingNodeType} from "../../node-type";
 
 let md5 = require('locutus/php/strings/md5');
 let uniqid = require('locutus/php/misc/uniqid');

@@ -1,8 +1,7 @@
 import {TwingNodeExpressionCall} from "./call";
-import {TwingNode} from "../../node";
+import {TwingNode, TwingNodeType} from "../../node";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
 
 export class TwingNodeExpressionTest extends TwingNodeExpressionCall {
     constructor(node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode = null, lineno: number) {

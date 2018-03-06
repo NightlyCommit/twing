@@ -3,8 +3,7 @@ import {TwingTokenType} from "../token-type";
 import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSandbox} from "../node/sandbox";
-import {TwingNodeType} from "../node-type";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 

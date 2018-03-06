@@ -1,10 +1,8 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
 import {TwingNodeOutputInterface} from "../node-output-interface";
 import {TwingNodeExpression} from "./expression";
 import {TwingMap} from "../map";
-import {TwingNodeType} from "../node-type";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeOutputType} from "../node-output-type";
 
 export class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface {
     constructor(expr: TwingNodeExpression, line: number, tag: string = null) {

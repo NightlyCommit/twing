@@ -3,11 +3,10 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingMap} from "../map";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeMacro extends TwingNode {
     static VARARGS_NAME = 'varargs';

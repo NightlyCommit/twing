@@ -1,8 +1,7 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingEnvironment} from "../environment";
 import {TwingMap} from "../map";
-import {TwingNodeType} from "../node-type";
 
 var objectHash = require('object-hash');
 
