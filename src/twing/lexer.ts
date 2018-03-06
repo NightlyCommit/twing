@@ -9,7 +9,6 @@ import {TwingTokenType} from "./token-type";
 import {TwingTokenStream} from "./token-stream";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingEnvironment} from "./environment";
-import {TwingLexerState} from "./lexer-state";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
 let ctype_alpha = require('locutus/php/ctype/ctype_alpha');
@@ -29,6 +28,12 @@ let stripcslashes = function (string: string) {
 };
 
 export class TwingLexer {
+    static STATE_DATA = 0;
+    static STATE_BLOCK = 1;
+    static STATE_VAR = 2;
+    static STATE_STRING = 3;
+    static STATE_INTERPOLATION = 4;
+
     static REGEX_NAME = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/;
     static REGEX_NUMBER = /^[0-9]+(?:\.[0-9]+)?/;
     static REGEX_STRING = /^"([^#"\\]*(?:\\.[^#"\\]*)*)"|^'([^'\\]*(?:\\.[^'\\]*)*)'/;
@@ -36,23 +41,23 @@ export class TwingLexer {
     static REGEX_DQ_STRING_PART = /^[^#"\\]*(?:(?:\\\\.|#(?!{))[^#"\\]*)*/;
     static PUNCTUATION = '()[]{}?:.,|';
 
-    brackets: Array<{ value: string, line: number }>;
-    code: string;
-    currentVarBlockLine: number;
-    cursor: number;
-    end: number;
-    env: TwingEnvironment;
-    lineno: number;
-    options: {
+    private brackets: Array<{ value: string, line: number }>;
+    private code: string;
+    private currentVarBlockLine: number;
+    private cursor: number;
+    private end: number;
+    private env: TwingEnvironment;
+    private lineno: number;
+    private options: {
         interpolation: Array<string>,
         tag_block: Array<string>,
         tag_comment: Array<string>,
         tag_variable: Array<string>,
         whitespace_trim: string
     };
-    position: number;
-    positions: Array<RegExpExecArray>;
-    regexes: {
+    private position: number;
+    private positions: Array<RegExpExecArray>;
+    private regexes: {
         interpolation_end: RegExp,
         interpolation_start: RegExp,
         lex_block: RegExp,
@@ -64,10 +69,10 @@ export class TwingLexer {
         operator: RegExp,
         lex_raw_data: RegExp
     };
-    source: TwingSource;
-    state: TwingLexerState;
-    states: Array<TwingLexerState>;
-    tokens: Array<TwingToken>;
+    private source: TwingSource;
+    private state: number;
+    private states: Array<number>;
+    private tokens: Array<TwingToken>;
 
     constructor(env: TwingEnvironment, options: {} = {}) {
         this.env = env;
@@ -122,7 +127,7 @@ export class TwingLexer {
         this.end = this.code.length;
         this.lineno = 1;
         this.tokens = [];
-        this.state = TwingLexerState.STATE_DATA;
+        this.state = TwingLexer.STATE_DATA;
         this.states = [];
         this.brackets = [];
         this.position = -1;
@@ -140,19 +145,19 @@ export class TwingLexer {
 
             // https://stackoverflow.com/questions/45197320/typescript-switch-statement-throws-not-comparable-to-type-error
             switch (+this.state) {
-                case TwingLexerState.STATE_DATA:
+                case TwingLexer.STATE_DATA:
                     this.lexData();
                     break;
-                case TwingLexerState.STATE_BLOCK:
+                case TwingLexer.STATE_BLOCK:
                     this.lexBlock();
                     break;
-                case TwingLexerState.STATE_VAR:
+                case TwingLexer.STATE_VAR:
                     this.lexVar();
                     break;
-                case TwingLexerState.STATE_STRING:
+                case TwingLexer.STATE_STRING:
                     this.lexString();
                     break;
-                case TwingLexerState.STATE_INTERPOLATION:
+                case TwingLexer.STATE_INTERPOLATION:
                     this.lexInterpolation();
                     break;
             }
@@ -224,13 +229,13 @@ export class TwingLexer {
                 }
                 else {
                     this.pushTwingToken(TwingTokenType.BLOCK_START_TYPE);
-                    this.pushState(TwingLexerState.STATE_BLOCK);
+                    this.pushState(TwingLexer.STATE_BLOCK);
                     this.currentVarBlockLine = this.lineno;
                 }
                 break;
             case this.options.tag_variable[0]:
                 this.pushTwingToken(TwingTokenType.VAR_START_TYPE);
-                this.pushState(TwingLexerState.STATE_VAR);
+                this.pushState(TwingLexer.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
                 break;
         }
@@ -272,7 +277,7 @@ export class TwingLexer {
             this.moveCursor(match[0]);
 
             if (this.cursor >= this.end) {
-                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexerState.STATE_BLOCK ? 'block' : 'variable'}".`, this.currentVarBlockLine, this.source);
+                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexer.STATE_BLOCK ? 'block' : 'variable'}".`, this.currentVarBlockLine, this.source);
             }
         }
 
@@ -341,7 +346,7 @@ export class TwingLexer {
                 value: '"',
                 line: this.lineno
             });
-            this.pushState(TwingLexerState.STATE_STRING);
+            this.pushState(TwingLexer.STATE_STRING);
             this.moveCursor(match[0]);
         }
         // unlexable
@@ -392,7 +397,7 @@ export class TwingLexer {
             });
             this.pushTwingToken(TwingTokenType.INTERPOLATION_START_TYPE);
             this.moveCursor(match[0]);
-            this.pushState(TwingLexerState.STATE_INTERPOLATION);
+            this.pushState(TwingLexer.STATE_INTERPOLATION);
         }
         else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
             this.pushTwingToken(TwingTokenType.STRING_TYPE, stripcslashes(match[0]));
@@ -473,7 +478,7 @@ export class TwingLexer {
         this.tokens.push(new TwingToken(type, value, this.lineno));
     }
 
-    private pushState(state: TwingLexerState) {
+    private pushState(state: number) {
         this.states.push(this.state);
         this.state = state;
     }
