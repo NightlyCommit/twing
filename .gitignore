@@ -1,6 +1,10 @@
 /.idea
 /.nyc_output
 /coverage
+/docs/.bundle
+/docs/_site
+/docs/Gemfile.lock
+/docs/vendor
 /lib
 /node_modules
 /npm-debug.log
