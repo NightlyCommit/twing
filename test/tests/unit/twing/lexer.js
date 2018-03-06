@@ -1,6 +1,6 @@
 const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvironment;
 const TwingLexer = require('../../../../lib/twing/lexer').TwingLexer;
-const TwingTokenType = require('../../../../lib/twing/token-type').TwingTokenType;
+const TwingToken = require('../../../../lib/twing/token').TwingToken;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 
@@ -35,9 +35,9 @@ tap.test('lexer', function (test) {
 
         let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-        stream.expect(TwingTokenType.BLOCK_START_TYPE);
+        stream.expect(TwingToken.BLOCK_START_TYPE);
 
-        test.same(stream.expect(TwingTokenType.NAME_TYPE).getValue(), '§');
+        test.same(stream.expect(TwingToken.NAME_TYPE).getValue(), '§');
 
         test.end();
     });
@@ -49,9 +49,9 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.VAR_START_TYPE);
+            stream.expect(TwingToken.VAR_START_TYPE);
 
-            test.same(stream.expect(TwingTokenType.NAME_TYPE).getValue(), '§');
+            test.same(stream.expect(TwingToken.NAME_TYPE).getValue(), '§');
         });
 
         test.end();
@@ -60,8 +60,8 @@ tap.test('lexer', function (test) {
     test.test('testBracketsNesting', function (test) {
         let template = '{{ {"a":{"b":"c"}} }}';
 
-        test.equal(countToken(template, TwingTokenType.PUNCTUATION_TYPE, '{'), 2);
-        test.equal(countToken(template, TwingTokenType.PUNCTUATION_TYPE, '}'), 2);
+        test.equal(countToken(template, TwingToken.PUNCTUATION_TYPE, '{'), 2);
+        test.equal(countToken(template, TwingToken.PUNCTUATION_TYPE, '}'), 2);
 
         test.end();
     });
@@ -73,13 +73,13 @@ tap.test('lexer', function (test) {
         let stream = lexer.tokenize(new TwingSource(template, 'index'));
 
         // foo\nbar\n
-        test.equal(stream.expect(TwingTokenType.TEXT_TYPE).getLine(), 1);
+        test.equal(stream.expect(TwingToken.TEXT_TYPE).getLine(), 1);
         // \n (after {% line %})
-        test.equal(stream.expect(TwingTokenType.TEXT_TYPE).getLine(), 10);
+        test.equal(stream.expect(TwingToken.TEXT_TYPE).getLine(), 10);
         // {{
-        test.equal(stream.expect(TwingTokenType.VAR_START_TYPE).getLine(), 11);
+        test.equal(stream.expect(TwingToken.VAR_START_TYPE).getLine(), 11);
         // baz
-        test.equal(stream.expect(TwingTokenType.NAME_TYPE).getLine(), 12);
+        test.equal(stream.expect(TwingToken.NAME_TYPE).getLine(), 12);
 
         test.end();
     });
@@ -91,11 +91,11 @@ tap.test('lexer', function (test) {
         let stream = lexer.tokenize(new TwingSource(template, 'index'));
 
         // foo\nbar
-        test.equal(stream.expect(TwingTokenType.TEXT_TYPE).getLine(), 1);
+        test.equal(stream.expect(TwingToken.TEXT_TYPE).getLine(), 1);
         // {{
-        test.equal(stream.expect(TwingTokenType.VAR_START_TYPE).getLine(), 10);
+        test.equal(stream.expect(TwingToken.VAR_START_TYPE).getLine(), 10);
         // baz
-        test.equal(stream.expect(TwingTokenType.NAME_TYPE).getLine(), 11);
+        test.equal(stream.expect(TwingToken.NAME_TYPE).getLine(), 11);
 
         test.end();
     });
@@ -179,8 +179,8 @@ tap.test('lexer', function (test) {
             test.doesNotThrow(function () {
                 let stream = lexer.tokenize(new TwingSource(fixture.template, 'index'));
 
-                stream.expect(TwingTokenType.VAR_START_TYPE);
-                stream.expect(TwingTokenType.STRING_TYPE, fixture.expected);
+                stream.expect(TwingToken.VAR_START_TYPE);
+                stream.expect(TwingToken.STRING_TYPE, fixture.expected);
             });
         });
 
@@ -194,15 +194,15 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.TEXT_TYPE, 'foo ');
-            stream.expect(TwingTokenType.VAR_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'bar ');
-            stream.expect(TwingTokenType.INTERPOLATION_START_TYPE);
-            stream.expect(TwingTokenType.NAME_TYPE, 'baz');
-            stream.expect(TwingTokenType.OPERATOR_TYPE, '+');
-            stream.expect(TwingTokenType.NUMBER_TYPE, '1');
-            stream.expect(TwingTokenType.INTERPOLATION_END_TYPE);
-            stream.expect(TwingTokenType.VAR_END_TYPE);
+            stream.expect(TwingToken.TEXT_TYPE, 'foo ');
+            stream.expect(TwingToken.VAR_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'bar ');
+            stream.expect(TwingToken.INTERPOLATION_START_TYPE);
+            stream.expect(TwingToken.NAME_TYPE, 'baz');
+            stream.expect(TwingToken.OPERATOR_TYPE, '+');
+            stream.expect(TwingToken.NUMBER_TYPE, '1');
+            stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+            stream.expect(TwingToken.VAR_END_TYPE);
         });
 
         test.end();
@@ -215,9 +215,9 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.VAR_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'bar #{baz+1}');
-            stream.expect(TwingTokenType.VAR_END_TYPE);
+            stream.expect(TwingToken.VAR_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'bar #{baz+1}');
+            stream.expect(TwingToken.VAR_END_TYPE);
         });
 
         test.end();
@@ -230,9 +230,9 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.VAR_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'bar # baz');
-            stream.expect(TwingTokenType.VAR_END_TYPE);
+            stream.expect(TwingToken.VAR_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'bar # baz');
+            stream.expect(TwingToken.VAR_END_TYPE);
         });
 
         test.end();
@@ -256,15 +256,15 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.VAR_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'bar ');
-            stream.expect(TwingTokenType.INTERPOLATION_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'foo');
-            stream.expect(TwingTokenType.INTERPOLATION_START_TYPE);
-            stream.expect(TwingTokenType.NAME_TYPE, 'bar');
-            stream.expect(TwingTokenType.INTERPOLATION_END_TYPE);
-            stream.expect(TwingTokenType.INTERPOLATION_END_TYPE);
-            stream.expect(TwingTokenType.VAR_END_TYPE);
+            stream.expect(TwingToken.VAR_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'bar ');
+            stream.expect(TwingToken.INTERPOLATION_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'foo');
+            stream.expect(TwingToken.INTERPOLATION_START_TYPE);
+            stream.expect(TwingToken.NAME_TYPE, 'bar');
+            stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+            stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+            stream.expect(TwingToken.VAR_END_TYPE);
         });
 
         test.end();
@@ -277,16 +277,16 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.BLOCK_START_TYPE);
-            stream.expect(TwingTokenType.NAME_TYPE, 'foo');
-            stream.expect(TwingTokenType.STRING_TYPE, 'bar ');
-            stream.expect(TwingTokenType.INTERPOLATION_START_TYPE);
-            stream.expect(TwingTokenType.STRING_TYPE, 'foo');
-            stream.expect(TwingTokenType.INTERPOLATION_START_TYPE);
-            stream.expect(TwingTokenType.NAME_TYPE, 'bar');
-            stream.expect(TwingTokenType.INTERPOLATION_END_TYPE);
-            stream.expect(TwingTokenType.INTERPOLATION_END_TYPE);
-            stream.expect(TwingTokenType.BLOCK_END_TYPE);
+            stream.expect(TwingToken.BLOCK_START_TYPE);
+            stream.expect(TwingToken.NAME_TYPE, 'foo');
+            stream.expect(TwingToken.STRING_TYPE, 'bar ');
+            stream.expect(TwingToken.INTERPOLATION_START_TYPE);
+            stream.expect(TwingToken.STRING_TYPE, 'foo');
+            stream.expect(TwingToken.INTERPOLATION_START_TYPE);
+            stream.expect(TwingToken.NAME_TYPE, 'bar');
+            stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+            stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+            stream.expect(TwingToken.BLOCK_END_TYPE);
         });
 
         test.end();
@@ -299,9 +299,9 @@ tap.test('lexer', function (test) {
         test.doesNotThrow(function () {
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            stream.expect(TwingTokenType.VAR_START_TYPE);
-            stream.expect(TwingTokenType.NUMBER_TYPE, 1);
-            stream.expect(TwingTokenType.OPERATOR_TYPE, 'and');
+            stream.expect(TwingToken.VAR_START_TYPE);
+            stream.expect(TwingToken.NUMBER_TYPE, 1);
+            stream.expect(TwingToken.OPERATOR_TYPE, 'and');
         });
 
         test.end();

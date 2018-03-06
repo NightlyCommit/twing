@@ -4,7 +4,6 @@ const TwingNode = require('../../../../lib/twing/node').TwingNode;
 const TwingTokenStream = require('../../../../lib/twing/token-stream').TwingTokenStream;
 const TwingTokenParser = require('../../../../lib/twing/token-parser').TwingTokenParser;
 const TwingToken = require('../../../../lib/twing/token').TwingToken;
-const TwingTokenType = require('../../../../lib/twing/token-type').TwingTokenType;
 const TwingMap = require('../../../../lib/twing/map').TwingMap;
 const TwingNodeText = require('../../../../lib/twing/node/text').TwingNodeText;
 const TwingNodeSet = require('../../../../lib/twing/node/set').TwingNodeSet;
@@ -29,14 +28,14 @@ class TestTokenParser extends TwingTokenParser {
     parse(token) {
         // simulate the parsing of another template right in the middle of the parsing of the active template
         this.parser.parse(new TwingTokenStream([
-            new TwingToken(TwingTokenType.BLOCK_START_TYPE, '', 1),
-            new TwingToken(TwingTokenType.NAME_TYPE, 'extends', 1),
-            new TwingToken(TwingTokenType.STRING_TYPE, 'base', 1),
-            new TwingToken(TwingTokenType.BLOCK_END_TYPE, '', 1),
-            new TwingToken(TwingTokenType.EOF_TYPE, '', 1),
+            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
+            new TwingToken(TwingToken.NAME_TYPE, 'extends', 1),
+            new TwingToken(TwingToken.STRING_TYPE, 'base', 1),
+            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1),
+            new TwingToken(TwingToken.EOF_TYPE, '', 1),
         ]));
 
-        this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
         return new TwingNode();
     }
@@ -84,10 +83,10 @@ let getFilterBodyNodesData = function () {
 tap.test('parser', function (test) {
     test.test('testUnknownTag', function (test) {
         let stream = new TwingTokenStream([
-            new TwingToken(TwingTokenType.BLOCK_START_TYPE, '', 1),
-            new TwingToken(TwingTokenType.NAME_TYPE, 'foo', 1),
-            new TwingToken(TwingTokenType.BLOCK_END_TYPE, '', 1),
-            new TwingToken(TwingTokenType.EOF_TYPE, '', 1),
+            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
+            new TwingToken(TwingToken.NAME_TYPE, 'foo', 1),
+            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1),
+            new TwingToken(TwingToken.EOF_TYPE, '', 1),
         ]);
 
         let parser = new TwingParser(testEnv);
@@ -101,10 +100,10 @@ tap.test('parser', function (test) {
 
     test.test('testUnknownTagWithoutSuggestions', function (test) {
         let stream = new TwingTokenStream([
-            new TwingToken(TwingTokenType.BLOCK_START_TYPE, '', 1),
-            new TwingToken(TwingTokenType.NAME_TYPE, 'foobar', 1),
-            new TwingToken(TwingTokenType.BLOCK_END_TYPE, '', 1),
-            new TwingToken(TwingTokenType.EOF_TYPE, '', 1),
+            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
+            new TwingToken(TwingToken.NAME_TYPE, 'foobar', 1),
+            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1),
+            new TwingToken(TwingToken.EOF_TYPE, '', 1),
         ]);
 
         let parser = new TwingParser(testEnv);
@@ -174,13 +173,13 @@ tap.test('parser', function (test) {
         let parser = new TwingParser(twig);
 
         parser.parse(new TwingTokenStream([
-            new TwingToken(TwingTokenType.BLOCK_START_TYPE, '', 1),
-            new TwingToken(TwingTokenType.NAME_TYPE, 'test', 1),
-            new TwingToken(TwingTokenType.BLOCK_END_TYPE, '', 1),
-            new TwingToken(TwingTokenType.VAR_START_TYPE, '', 1),
-            new TwingToken(TwingTokenType.NAME_TYPE, 'foo', 1),
-            new TwingToken(TwingTokenType.VAR_END_TYPE, '', 1),
-            new TwingToken(TwingTokenType.EOF_TYPE, '', 1),
+            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
+            new TwingToken(TwingToken.NAME_TYPE, 'test', 1),
+            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1),
+            new TwingToken(TwingToken.VAR_START_TYPE, '', 1),
+            new TwingToken(TwingToken.NAME_TYPE, 'foo', 1),
+            new TwingToken(TwingToken.VAR_END_TYPE, '', 1),
+            new TwingToken(TwingToken.EOF_TYPE, '', 1),
         ]));
 
         test.isEqual(parser.getParent(), null);

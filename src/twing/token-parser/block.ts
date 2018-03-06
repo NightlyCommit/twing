@@ -1,6 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingMap} from "../map";
@@ -24,7 +23,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
+        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
 
         let safeName = name;
 
@@ -44,10 +43,10 @@ export class TwingTokenParserBlock extends TwingTokenParser {
 
         let body;
 
-        if (stream.nextIf(TwingTokenType.BLOCK_END_TYPE)) {
+        if (stream.nextIf(TwingToken.BLOCK_END_TYPE)) {
             body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-            let token = stream.nextIf(TwingTokenType.NAME_TYPE);
+            let token = stream.nextIf(TwingToken.NAME_TYPE);
 
             if (token) {
                 let value = token.getValue();
@@ -65,7 +64,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             body = new TwingNode(nodes);
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         block.setNode('body', body);
 
@@ -76,7 +75,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, 'endblock');
+        return token.test(TwingToken.NAME_TYPE, 'endblock');
     }
 
     getTag() {

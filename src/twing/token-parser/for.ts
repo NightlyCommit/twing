@@ -12,12 +12,10 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingNodeExpressionName} from "../node/expression/name";
 import {TwingNodeExpressionGetAttr} from "../node/expression/get-attr";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenStream} from "../token-stream";
-import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeFor} from "../node/for";
 
@@ -27,29 +25,29 @@ export class TwingTokenParserFor extends TwingTokenParser {
         let stream = this.parser.getStream();
         let targets = this.parser.getExpressionParser().parseAssignmentExpression();
 
-        stream.expect(TwingTokenType.OPERATOR_TYPE, 'in');
+        stream.expect(TwingToken.OPERATOR_TYPE, 'in');
 
         let seq = this.parser.getExpressionParser().parseExpression();
 
         let ifexpr = null;
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'if')) {
+        if (stream.nextIf(TwingToken.NAME_TYPE, 'if')) {
             ifexpr = this.parser.getExpressionParser().parseExpression();
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         let body = this.parser.subparse([this, this.decideForFork]);
         let elseToken;
 
         if (stream.next().getValue() == 'else') {
-            stream.expect(TwingTokenType.BLOCK_END_TYPE);
+            stream.expect(TwingToken.BLOCK_END_TYPE);
             elseToken = this.parser.subparse([this, this.decideForEnd], true);
         } else {
             elseToken = null;
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         let keyTarget;
         let valueTarget;
@@ -76,11 +74,11 @@ export class TwingTokenParserFor extends TwingTokenParser {
     }
 
     decideForFork(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, ['else', 'endfor']);
+        return token.test(TwingToken.NAME_TYPE, ['else', 'endfor']);
     }
 
     decideForEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, 'endfor');
+        return token.test(TwingToken.NAME_TYPE, 'endfor');
     }
 
     // the loop variable cannot be used in the condition
@@ -99,6 +97,11 @@ export class TwingTokenParserFor extends TwingTokenParser {
     }
 
     // check usage of non-defined loop-items
+
+    getTag() {
+        return 'for';
+    }
+
     // it does not catch all problems (for instance when a for is included into another or when the variable is used in an include)
     private checkLoopUsageBody(stream: TwingTokenStream, node: TwingNode) {
         let self = this;
@@ -121,9 +124,5 @@ export class TwingTokenParserFor extends TwingTokenParser {
                 self.checkLoopUsageBody(stream, n);
             }
         });
-    }
-
-    getTag() {
-        return 'for';
     }
 }

@@ -14,7 +14,6 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeIf} from "../node/if";
 import {TwingMap} from "../map";
@@ -25,7 +24,7 @@ export class TwingTokenParserIf extends TwingTokenParser {
         let expr = this.parser.getExpressionParser().parseExpression();
         let stream = this.parser.getStream();
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         let body = this.parser.subparse([this, this.decideIfFork]);
         let tests = new TwingMap();
@@ -42,13 +41,13 @@ export class TwingTokenParserIf extends TwingTokenParser {
         while (!end) {
             switch (stream.next().getValue()) {
                 case 'else':
-                    stream.expect(TwingTokenType.BLOCK_END_TYPE);
+                    stream.expect(TwingToken.BLOCK_END_TYPE);
                     elseNode = this.parser.subparse([this, this.decideIfEnd]);
                     break;
 
                 case 'elseif':
                     expr = this.parser.getExpressionParser().parseExpression();
-                    stream.expect(TwingTokenType.BLOCK_END_TYPE);
+                    stream.expect(TwingToken.BLOCK_END_TYPE);
                     body = this.parser.subparse([this, this.decideIfFork]);
                     tests.push(expr);
                     tests.push(body);
@@ -63,17 +62,17 @@ export class TwingTokenParserIf extends TwingTokenParser {
             }
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         return new TwingNodeIf(new TwingNode(tests), elseNode, lineno, this.getTag());
     }
 
     decideIfFork(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, ['elseif', 'else', 'endif']);
+        return token.test(TwingToken.NAME_TYPE, ['elseif', 'else', 'endif']);
     }
 
     decideIfEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, 'endif');
+        return token.test(TwingToken.NAME_TYPE, 'endif');
     }
 
     getTag() {

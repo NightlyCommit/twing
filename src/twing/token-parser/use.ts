@@ -1,6 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNode, TwingNodeType} from "../node";
@@ -17,24 +16,24 @@ export class TwingTokenParserUse extends TwingTokenParser {
 
         let targets = new TwingMap();
 
-        if (stream.nextIf(TwingTokenType.NAME_TYPE, 'with')) {
+        if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
             do {
-                let name = stream.expect(TwingTokenType.NAME_TYPE).getValue();
+                let name = stream.expect(TwingToken.NAME_TYPE).getValue();
                 let alias = name;
 
-                if (stream.nextIf(TwingTokenType.NAME_TYPE, 'as')) {
-                    alias = stream.expect(TwingTokenType.NAME_TYPE).getValue();
+                if (stream.nextIf(TwingToken.NAME_TYPE, 'as')) {
+                    alias = stream.expect(TwingToken.NAME_TYPE).getValue();
                 }
 
                 targets.set(name, new TwingNodeExpressionConstant(alias, token.getLine()));
 
-                if (!stream.nextIf(TwingTokenType.PUNCTUATION_TYPE, ',')) {
+                if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
                     break;
                 }
             } while (true);
         }
 
-        stream.expect(TwingTokenType.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         this.parser.addTrait(new TwingNode(new TwingMap([['template', template], ['targets', new TwingNode(targets)]])));
 

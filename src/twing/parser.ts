@@ -7,7 +7,6 @@ import {TwingExpressionParser} from "./expression-parser";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingNode, TwingNodeOutputType, TwingNodeType} from "./node";
 import {TwingToken} from "./token";
-import {TwingTokenType} from "./token-type";
 import {TwingNodeText} from "./node/text";
 import {TwingNodePrint} from "./node/print";
 import {TwingNodeExpression} from "./node/expression";
@@ -181,24 +180,24 @@ export class TwingParser {
 
         while (!this.stream.isEOF()) {
             switch (this.getCurrentToken().getType()) {
-                case TwingTokenType.TEXT_TYPE:
+                case TwingToken.TEXT_TYPE:
                     token = this.stream.next();
                     rv.push(new TwingNodeText(token.getValue(), token.getLine()));
 
                     break;
-                case TwingTokenType.VAR_START_TYPE:
+                case TwingToken.VAR_START_TYPE:
                     token = this.stream.next();
                     let expression = this.expressionParser.parseExpression();
 
-                    this.stream.expect(TwingTokenType.VAR_END_TYPE);
+                    this.stream.expect(TwingToken.VAR_END_TYPE);
                     rv.push(new TwingNodePrint(expression, token.getLine()));
 
                     break;
-                case TwingTokenType.BLOCK_START_TYPE:
+                case TwingToken.BLOCK_START_TYPE:
                     this.stream.next();
                     token = this.getCurrentToken();
 
-                    if (token.getType() !== TwingTokenType.NAME_TYPE) {
+                    if (token.getType() !== TwingToken.NAME_TYPE) {
                         throw new TwingErrorSyntax('A block must start with a tag name', token.getLine(), this.stream.getSourceContext());
                     }
 

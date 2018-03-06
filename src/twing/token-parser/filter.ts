@@ -1,7 +1,6 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
 import {TwingToken} from "../token";
-import {TwingTokenType} from "../token-type";
 import {TwingNodeExpressionBlockReference} from "../node/expression/block-reference";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNodeBlock} from "../node/block";
@@ -22,11 +21,11 @@ export class TwingTokenParserFilter extends TwingTokenParser {
         let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, token.getLine()), null, token.getLine(), this.getTag());
         let filter = this.parser.getExpressionParser().parseFilterExpressionRaw(ref, this.getTag());
 
-        this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        this.parser.getStream().expect(TwingTokenType.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
         let block = new TwingNodeBlock(name, body, token.getLine());
 
@@ -36,7 +35,7 @@ export class TwingTokenParserFilter extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingTokenType.NAME_TYPE, 'endfilter');
+        return token.test(TwingToken.NAME_TYPE, 'endfilter');
     }
 
     getTag() {
