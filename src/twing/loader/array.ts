@@ -60,7 +60,7 @@ export class TwingLoaderArray implements TwingLoaderInterface {
 
     isFresh(name: string, time: number): boolean {
         if (!this.exists(name)) {
-            throw new Error(`Template "${name}" is not defined.`);
+            throw new TwingErrorLoader(`Template "${name}" is not defined.`);
         }
 
         return true;

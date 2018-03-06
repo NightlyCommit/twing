@@ -7,7 +7,7 @@ import {TwingSource} from "../source";
 /**
  * Loads templates from other loaders.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderChain implements TwingLoaderInterface {
     private hasSourceCache: TwingMap<string, TwingTemplate> = new TwingMap();
@@ -45,7 +45,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 
     exists(name: string) {
@@ -84,7 +84,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 
     isFresh(name: string, time: number) {
@@ -105,6 +105,6 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 }
