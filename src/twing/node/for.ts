@@ -1,11 +1,10 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
 import {TwingMap} from "../map";
 import {TwingNodeExpressionAssignName} from "./expression/assign-name";
 import {TwingNodeForLoop} from "./for-loop";
 import {TwingNodeIf} from "./if";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;

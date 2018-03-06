@@ -1,7 +1,7 @@
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
 const TwingNodeFlush = require('../../../../../lib/twing/node/flush').TwingNodeFlush;
 const TwingTestMockCompiler = require('../../../../mock/compiler');
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 

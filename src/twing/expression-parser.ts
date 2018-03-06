@@ -2,7 +2,7 @@ import {TwingParser} from "./parser";
 import {TwingNodeExpression} from "./node/expression";
 import {TwingToken} from "./token";
 import {TwingTokenType} from "./token-type";
-import {TwingNode} from "./node";
+import {TwingNode, TwingNodeType} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingLexer} from "./lexer";
@@ -22,7 +22,6 @@ import {TwingNodeExpressionParent} from "./node/expression/parent";
 import {TwingNodeExpressionBlockReference} from "./node/expression/block-reference";
 import {TwingNodeExpressionHash} from "./node/expression/hash";
 import {TwingNodeExpressionUnaryNot} from "./node/expression/unary/not";
-import {TwingNodeType} from "./node-type";
 
 export class TwingExpressionParser {
     private parser: TwingParser;

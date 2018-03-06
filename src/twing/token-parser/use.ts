@@ -3,9 +3,8 @@ import {TwingToken} from "../token";
 import {TwingTokenType} from "../token-type";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingMap} from "../map";
-import {TwingNodeType} from "../node-type";
 
 export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {

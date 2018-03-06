@@ -1,7 +1,7 @@
 import {TwingNodeExpression} from "../expression";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
+import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionConditional extends TwingNodeExpression {
     constructor(expr1: TwingNodeExpression, expr2: TwingNodeExpression, expr3: TwingNodeExpression, lineno: number) {

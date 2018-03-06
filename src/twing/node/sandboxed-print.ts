@@ -1,7 +1,6 @@
 import {TwingNodePrint} from "./print"
 import {TwingCompiler} from "../compiler";
-import {TwingNode} from "../node";
-import {TwingNodeType} from "../node-type";
+import {TwingNode, TwingNodeType} from "../node";
 
 export class TwingNodeSandboxedPrint extends TwingNodePrint {
     compile(compiler: TwingCompiler) {

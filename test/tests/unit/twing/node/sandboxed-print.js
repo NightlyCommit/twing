@@ -1,7 +1,7 @@
 const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeSandboxedPrint = require('../../../../../lib/twing/node/sandboxed-print').TwingNodeSandboxedPrint;
-const TwingNodeType = require('../../../../../lib/twing/node-type').TwingNodeType;
+const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 

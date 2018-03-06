@@ -2,7 +2,7 @@ import {TwingNodeExpression} from "../expression";
 import {TwingNodeExpressionConstant} from "./constant";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
+import {TwingNodeType} from "../../node";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 let ctype_digit = require('locutus/php/ctype/ctype_digit');

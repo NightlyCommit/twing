@@ -1,8 +1,7 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingSource} from "../source";
 import {TwingMap} from "../map";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeType} from "../node-type";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 

@@ -10,12 +10,11 @@
  * </pre>
  */
 import {TwingTokenParser} from "../token-parser";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenType} from "../token-type";
 import {TwingNodeAutoEscape} from "../node/auto-escape";
-import {TwingNodeType} from "../node-type";
 
 export class TwingTokenParserAutoEscape extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {

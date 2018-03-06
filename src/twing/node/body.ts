@@ -1,6 +1,5 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingMap} from "../map";
-import {TwingNodeType} from "../node-type";
 
 /**
  * Represents a body node.

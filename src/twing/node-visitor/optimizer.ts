@@ -1,7 +1,6 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingEnvironment} from "../environment";
-import {TwingNodeType} from "../node-type";
 
 const isInteger = require('is-integer');
 

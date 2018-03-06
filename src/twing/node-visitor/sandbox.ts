@@ -1,11 +1,10 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingEnvironment} from "../environment";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingMap} from "../map";
 import {TwingNodeSandboxedPrint} from "../node/sandboxed-print";
 import {TwingNodeExpression} from "../node/expression";
 import {TwingNodeCheckSecurity} from "../node/check-security";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private inAModule: boolean = false;

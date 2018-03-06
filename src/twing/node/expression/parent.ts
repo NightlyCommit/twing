@@ -1,7 +1,7 @@
 import {TwingNodeExpression} from "../expression";
 import {TwingMap} from "../../map";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node-type";
+import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionParent extends TwingNodeExpression {
     constructor(name: string, lineno: number) {

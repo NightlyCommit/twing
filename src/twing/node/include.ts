@@ -1,8 +1,7 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
 import {TwingMap} from "../map";
 import {TwingCompiler} from "../compiler";
-import {TwingNodeType} from "../node-type";
 
 export class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression = null, only: boolean = false, ignoreMissing: boolean = false, lineno: number, tag: string = null) {
