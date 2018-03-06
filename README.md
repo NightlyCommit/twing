@@ -21,7 +21,7 @@ Twing needs at least **node.js 7.6.0** to run.
 
 The recommended way to install Twing is via npm:
 
-`npm i twing --save`
+`npm install twing --save`
 
 ## Basic API Usage
 

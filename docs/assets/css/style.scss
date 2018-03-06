@@ -1,0 +1,11 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+a {
+    &:hover {
+         font-weight: initial;
+         text-decoration: underline;
+     }
+}
