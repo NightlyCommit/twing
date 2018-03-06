@@ -3,7 +3,7 @@ export class TwingSource {
     private name: string;
     private path: string;
 
-    constructor(code: string, name: string, path: string = null) {
+    constructor(code: string, name: string, path: string = '') {
         this.code = code;
         this.name = name;
         this.path = path;
