@@ -5,22 +5,22 @@ import {TwingEnvironment} from "../environment";
 const isInteger = require('is-integer');
 
 /**
- * Twig_NodeVisitor_Optimizer tries to optimizes the AST.
+ * TwingNodeVisitorOptimizer tries to optimizes the AST.
  *
  * This visitor is always the last registered one.
  *
  * You can configure which optimizations you want to activate via the
  * optimizer mode.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
-    readonly OPTIMIZE_ALL = -1;
-    readonly OPTIMIZE_NONE = 0;
-    readonly OPTIMIZE_FOR = 2;
-    readonly OPTIMIZE_RAW_FILTER = 4;
+    static readonly OPTIMIZE_ALL = -1;
+    static readonly OPTIMIZE_NONE = 0;
+    static readonly OPTIMIZE_FOR = 2;
+    static readonly OPTIMIZE_RAW_FILTER = 4;
     // obsolete, does not do anything
-    readonly OPTIMIZE_VAR_ACCESS = 8;
+    static readonly OPTIMIZE_VAR_ACCESS = 8;
 
     private loops: Array<TwingNode> = [];
     private loopsTargets: Array<TwingNode> = [];
@@ -32,7 +32,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     constructor(optimizers: number = -1) {
         super();
 
-        if (!isInteger(optimizers) || optimizers > (this.OPTIMIZE_FOR | this.OPTIMIZE_RAW_FILTER | this.OPTIMIZE_VAR_ACCESS)) {
+        if (!isInteger(optimizers) || optimizers > (TwingNodeVisitorOptimizer.OPTIMIZE_FOR | TwingNodeVisitorOptimizer.OPTIMIZE_RAW_FILTER | TwingNodeVisitorOptimizer.OPTIMIZE_VAR_ACCESS)) {
             throw new Error(`Optimizer mode "${optimizers}" is not valid.`);
         }
 
@@ -40,7 +40,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     }
 
     doEnterNode(node: TwingNode, env: TwingEnvironment) {
-        if (this.OPTIMIZE_FOR === (this.OPTIMIZE_FOR & this.optimizers)) {
+        if (TwingNodeVisitorOptimizer.OPTIMIZE_FOR === (TwingNodeVisitorOptimizer.OPTIMIZE_FOR & this.optimizers)) {
             this.enterOptimizeFor(node, env);
         }
 
@@ -48,11 +48,11 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     }
 
     doLeaveNode(node: TwingNode, env: TwingEnvironment) {
-        if (this.OPTIMIZE_FOR === (this.OPTIMIZE_FOR & this.optimizers)) {
+        if (TwingNodeVisitorOptimizer.OPTIMIZE_FOR === (TwingNodeVisitorOptimizer.OPTIMIZE_FOR & this.optimizers)) {
             this.leaveOptimizeFor(node, env);
         }
 
-        if (this.OPTIMIZE_RAW_FILTER === (this.OPTIMIZE_RAW_FILTER & this.optimizers)) {
+        if (TwingNodeVisitorOptimizer.OPTIMIZE_RAW_FILTER === (TwingNodeVisitorOptimizer.OPTIMIZE_RAW_FILTER & this.optimizers)) {
             node = this.optimizeRawFilter(node, env);
         }
 

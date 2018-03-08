@@ -14,7 +14,7 @@ import {
 } from "./twing/extension/core";
 import {TwingMap} from "./twing/map";
 import {TwingMarkup} from "./twing/markup";
-import {echo, flush, obEndClean, obGetClean, obGetContents, obStart} from "./twing/output-buffer";
+import {echo, flush, obEndClean, obGetClean, obGetContents, obStart} from "./twing/output-buffering";
 import {range} from "./twing/helper/range";
 import {TwingSandboxSecurityError} from "./twing/sandbox/security-error";
 import {TwingSandboxSecurityNotAllowedFilterError} from "./twing/sandbox/security-not-allowed-filter-error";

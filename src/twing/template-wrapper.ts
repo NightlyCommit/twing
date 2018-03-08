@@ -1,13 +1,14 @@
 /**
  * Exposes a template to userland.
  *
- * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingEnvironment} from "./environment";
 import {TwingTemplate} from "./template";
 import {TwingMap} from "./map";
 import {TwingSource} from "./source";
+import {iteratorToMap} from "./helper/iterator-to-map";
+import {TwingOutputBuffering} from "./output-buffering";
 
 export class TwingTemplateWrapper {
     private env: TwingEnvironment;
@@ -27,7 +28,7 @@ export class TwingTemplateWrapper {
     /**
      * Renders the template.
      *
-     * @param context An hash of parameters to pass to the template
+     * @param {*} context A hash of parameters to pass to the template
      *
      * @returns {string} The rendered template
      */
@@ -38,8 +39,8 @@ export class TwingTemplateWrapper {
     /**
      * Checks if a block is defined.
      *
-     * @param {string} name    The block name
-     * @param context           A hash of parameters to pass to the template
+     * @param {string} name The block name
+     * @param {*} context A hash of parameters to pass to the template
      *
      * @returns {boolean}
      */
@@ -50,7 +51,7 @@ export class TwingTemplateWrapper {
     /**
      * Returns defined block names in the template.
      *
-     * @param context A hash of parameters to pass to the template
+     * @param {*} context A hash of parameters to pass to the template
      *
      * @returns {Array<string>} An array of defined template block names
      */
@@ -62,24 +63,46 @@ export class TwingTemplateWrapper {
      * Renders a template block.
      *
      * @param {string} name The block name to render
-     * @param context A hash of parameters to pass to the template
-     * @param {TwingMap<string, TwingTemplateBlock>} blocks The current set of blocks
+     * @param {*} context A hash of parameters to pass to the template
      *
      * @returns {string} The rendered block
      */
-    renderBlock(name: string, context: any = {}, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
+    async renderBlock(name: string, context: any = {}): Promise<string> {
+        if (!(context instanceof TwingMap)) {
+            context = iteratorToMap(context);
+        }
+
         context = this.env.mergeGlobals(context);
 
-        return this.template.displayBlock(name, context, blocks);
+        let level = TwingOutputBuffering.obGetLevel();
+
+        TwingOutputBuffering.obStart();
+
+        try {
+            await this.template.displayBlock(name, context);
+        }
+        catch (e) {
+            while (TwingOutputBuffering.obGetLevel() > level) {
+                TwingOutputBuffering.obEndClean();
+            }
+
+            throw e;
+        }
+
+        return TwingOutputBuffering.obGetClean() as string;
     }
 
     /**
      * Displays a template block.
      *
      * @param {string} name The block name to render
-     * @param context An array of parameters to pass to the template
+     * @param {*} context A hash of parameters to pass to the template
      */
-    displayBlock(name: string, context: any = {}) {
+    async displayBlock(name: string, context: any = {}): Promise<void> {
+        if (!(context instanceof TwingMap)) {
+            context = iteratorToMap(context);
+        }
+
         return this.template.displayBlock(name, this.env.mergeGlobals(context));
     }
 

@@ -1,5 +1,8 @@
 import {TwingMap} from "../map";
 
+const unserialize = require('locutus/php/var/unserialize');
+const serialize = require('locutus/php/var/serialize');
+
 export class TwingProfilerProfile {
     static ROOT = 'ROOT';
     static BLOCK = 'block';
@@ -132,12 +135,35 @@ export class TwingProfilerProfile {
         this.enter();
     }
 
-    // make no sense in JavaScript
-    // serialize(): string {
-    //     return JSON.stringify([this.template, this.name, this.type, this.starts, this.ends, this.profiles]);
-    // }
-    //
-    // unserialize(data: string) {
-    //     [this.template, this.name, this.type, this.starts, this.ends, this.profiles] = JSON.parse(data);
-    // }
+    getIterator() {
+        return this.profiles[Symbol.iterator];
+    }
+
+    serialize(): string {
+        return serialize([this.template, this.name, this.type, this.starts, this.ends, this.profiles]);
+    }
+
+    static unserialize(data: string) {
+        let result = new TwingProfilerProfile();
+        let resultData: any = unserialize(data);
+
+        result.template = resultData.template;
+        result.name = resultData.name;
+        result.type = resultData.type;
+        result.starts = new TwingMap(resultData.starts);
+        result.ends = new TwingMap(resultData.ends);
+        result.profiles = [];
+
+        for (let profileData of resultData.profiles) {
+            let profile = new TwingProfilerProfile(
+                profileData.template,
+                profileData.type,
+                profileData.name
+            );
+
+            result.profiles.push(profile);
+        }
+
+        return result;
+    }
 }

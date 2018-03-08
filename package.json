@@ -34,7 +34,7 @@
     "test": "npm run fastest:all",
     "fastest:all": "tape 'test/tests/**/*.js' | tap-mocha-reporter spec",
     "fastest:integration": "tape 'test/tests/integration/*.js' | tap-mocha-reporter spec",
-    "fastest:unit": "tape 'test/tests/unit/**/*.js' | tap-mocha-reporter spec",
+    "fastest:unit": "tape 'test/tests/unit/**/profile.js' | tap-mocha-reporter spec",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lib": "tsc --project .",

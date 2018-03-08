@@ -16,7 +16,7 @@ import {TwingNodeBlock} from "./node/block";
 import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
 import {TwingTemplateWrapper} from "./template-wrapper";
-import {TwingOutputBuffer} from './output-buffer';
+import {TwingOutputBuffering} from './output-buffering';
 import {iteratorToMap} from "./helper/iterator-to-map";
 import {TwingErrorSyntax} from "./error/syntax";
 
@@ -158,7 +158,7 @@ export abstract class TwingTemplate {
      *
      * @internal
      */
-    async displayBlock(name: string, context: any, blocks: TwingMap<string, [TwingTemplate, string]> = new TwingMap(), useBlocks = true) {
+    async displayBlock(name: string, context: any, blocks: TwingMap<string, [TwingTemplate, string]> = new TwingMap(), useBlocks = true): Promise<void> {
         let block: string;
         let template: TwingTemplate;
         let parent: TwingTemplate;
@@ -231,11 +231,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     async renderParentBlock(name: string, context: any, blocks: Map<string, TwingNodeBlock> = new Map()) {
-        TwingOutputBuffer.obStart();
+        TwingOutputBuffering.obStart();
 
         await this.displayParentBlock(name, context, blocks);
 
-        return TwingOutputBuffer.obGetClean() as string;
+        return TwingOutputBuffering.obGetClean() as string;
     }
 
     /**
@@ -254,11 +254,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     async renderBlock(name: string, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap(), useBlocks = true): Promise<string> {
-        TwingOutputBuffer.obStart();
+        TwingOutputBuffering.obStart();
 
         await this.displayBlock(name, context, blocks, useBlocks);
 
-        return TwingOutputBuffer.obGetClean() as string;
+        return TwingOutputBuffering.obGetClean() as string;
     }
 
     /**
@@ -302,19 +302,15 @@ export abstract class TwingTemplate {
      * @returns {Array<string>}
      */
     getBlockNames(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()): Array<string> {
-        let names = merge(
-            {},
-            [...blocks.keys()],
-            [...this.blocks.keys()]
-        );
+        let names: any = new Set([...blocks.keys(), ...this.blocks.keys()]);
 
         let parent: TwingTemplate = this.getParent(context);
 
         if (parent) {
-            names = merge({}, names, parent.getBlockNames(context));
+            names = new Set([...names, ...parent.getBlockNames(context)]);
         }
 
-        return names;
+        return [...names];
     }
 
     public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = null): TwingTemplate | TwingTemplateWrapper {
@@ -378,22 +374,22 @@ export abstract class TwingTemplate {
     }
 
     async render(context: any): Promise<string> {
-        let level = TwingOutputBuffer.obGetLevel();
+        let level = TwingOutputBuffering.obGetLevel();
 
-        TwingOutputBuffer.obStart();
+        TwingOutputBuffering.obStart();
 
         try {
             await this.display(context);
         }
         catch (e) {
-            while (TwingOutputBuffer.obGetLevel() > level) {
-                TwingOutputBuffer.obEndClean();
+            while (TwingOutputBuffering.obGetLevel() > level) {
+                TwingOutputBuffering.obEndClean();
             }
 
             throw e;
         }
 
-        return TwingOutputBuffer.obGetClean() as string;
+        return TwingOutputBuffering.obGetClean() as string;
     }
 
     protected async displayWithErrorHandling(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
