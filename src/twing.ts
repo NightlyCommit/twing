@@ -170,7 +170,7 @@ import {TwingNodeVisitorSafeAnalysis} from "./twing/node-visitor/safe-analysis";
 import {TwingNodeVisitorSandbox} from "./twing/node-visitor/sandbox";
 import {TwingNodeWith} from "./twing/node/with";
 import {TwingNode} from "./twing/node";
-import {TwingOutputBuffer, TwingOutputHandler} from "./twing/output-buffer";
+import {TwingOutputBuffering, TwingOutputHandler} from "./twing/output-buffering";
 import {TwingParser} from "./twing/parser";
 import {TwingProfilerNodeEnterProfile} from "./twing/profiler/node/enter-profile";
 import {TwingProfilerNodeLeaveProfile} from "./twing/profiler/node/leave-profile";
@@ -210,6 +210,10 @@ import {TwingTokenParserWith} from "./twing/token-parser/with";
 import {TwingTokenParser} from "./twing/token-parser";
 import {TwingTokenStream} from "./twing/token-stream";
 import {varDump} from "./twing/helper/var-dump";
+import {TwingProfilerDumperBase} from "./twing/profiler/dumper/base";
+import {TwingProfilerDumperBlackfire} from "./twing/profiler/dumper/blackfire";
+import {TwingProfilerDumperHtml} from "./twing/profiler/dumper/html";
+import {TwingProfilerDumperText} from "./twing/profiler/dumper/text";
 
 let Twing = {
     abs: abs,
@@ -369,9 +373,13 @@ let Twing = {
     TwingNodeVisitorSandbox: TwingNodeVisitorSandbox,
     TwingNodeWith: TwingNodeWith,
     twingNumberFormatFilter: twingNumberFormatFilter,
-    TwingOutputBuffer: TwingOutputBuffer,
+    TwingOutputBuffering: TwingOutputBuffering,
     TwingOutputHandler: TwingOutputHandler,
     TwingParser: TwingParser,
+    TwingProfilerDumperBase: TwingProfilerDumperBase,
+    TwingProfilerDumperBlackfire: TwingProfilerDumperBlackfire,
+    TwingProfilerDumperHtml: TwingProfilerDumperHtml,
+    TwingProfilerDumperText: TwingProfilerDumperText,
     TwingProfilerNodeEnterProfile: TwingProfilerNodeEnterProfile,
     TwingProfilerNodeLeaveProfile: TwingProfilerNodeLeaveProfile,
     TwingProfilerNodeVisitorProfiler: TwingProfilerNodeVisitorProfiler,

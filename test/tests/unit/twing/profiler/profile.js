@@ -1,6 +1,8 @@
 const TwingProfilerProfile = require('../../../../../lib/twing/profiler/profile').TwingProfilerProfile;
 
 const tap = require('tap');
+const unserialize = require('locutus/php/var/unserialize');
+const serialize = require('locutus/php/var/serialize');
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -83,6 +85,32 @@ tap.test('profiler profile', function (test) {
                 test.end();
             }
         );
+    });
+
+    test.test('serialize', function(test) {
+        let profile = new TwingProfilerProfile('template', 'type', 'name');
+        let profile1 = new TwingProfilerProfile('template1', 'type1', 'name1');
+        profile.addProfile(profile1);
+        profile.leave();
+        profile1.leave();
+
+        let profile2 = TwingProfilerProfile.unserialize(serialize(profile));
+        let profiles = profile.getProfiles();
+
+        test.same(profiles.length, 1);
+
+        let profile3 = profiles[0];
+
+        test.same(profile2.getTemplate(), profile.getTemplate(), 'getTemplate');
+        test.same(profile2.getType(), profile.getType(), 'getType');
+        test.same(profile2.getName(), profile.getName(), 'getName');
+        test.same(profile2.getDuration(), profile.getDuration(), 'getDuration');
+
+        test.same(profile3.getTemplate(), profile3.getTemplate(), 'getTemplate');
+        test.same(profile3.getType(), profile3.getType(), 'getType');
+        test.same(profile3.getName(), profile3.getName(), 'getName');
+
+        test.end();
     });
 
     test.test('reset', async function (test) {

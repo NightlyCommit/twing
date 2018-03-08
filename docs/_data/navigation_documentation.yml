@@ -5,6 +5,7 @@ docs:
   url: installation.html
 - title: Twing for Template Designers
 - title: Twing for Developers
+  url: api.html
 - title: Extending Twing
 - title: Twing Internals
 - title: Deprecated Features
