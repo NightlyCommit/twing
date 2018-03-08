@@ -41,7 +41,6 @@
     "version": "node tasks/version.js && git add ."
   },
   "dependencies": {
-    "@ericmorand/parse-function": "^5.2.0",
     "camelcase": "^4.1.0",
     "capitalize": "^1.0.0",
     "dateformat-converter": "^2.0.1",
@@ -59,6 +58,7 @@
     "moment-timezone": "^0.5.14",
     "object-hash": "^1.2.0",
     "pad": "^2.0.3",
+    "parse-function": "^5.2.3",
     "regex-parser": "^2.2.8",
     "secure-filters": "^1.1.0",
     "sha.js": "^2.4.10",

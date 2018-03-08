@@ -1,6 +1,6 @@
 import {TwingReflectionParameter} from "./reflection-parameter";
 
-const parseFunction = require('@ericmorand/parse-function');
+const parseFunction = require('parse-function');
 
 export class TwingReflectionMethod {
     private name: string;
