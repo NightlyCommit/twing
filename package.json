@@ -38,7 +38,8 @@
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lib": "tsc --project .",
-    "version": "node tasks/version.js && git add ."
+    "version": "node tasks/version.js && git add .",
+    "docs": "cd docs && bundle exec jekyll serve"
   },
   "dependencies": {
     "camelcase": "^4.1.0",
