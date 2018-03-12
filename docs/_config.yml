@@ -1,3 +1,4 @@
 theme: jekyll-theme-minimal
 sass:
     sass_dir: ./assets/css
+baseurl: /twing

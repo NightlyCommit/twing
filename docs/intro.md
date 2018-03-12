@@ -71,4 +71,4 @@ class SleepExtenstion extends Twing.TwingExtension {
 }
 ```
 
-[back]({% link index.md %})
+[back]({{ site.baseurl }}{% link index.md %})
