@@ -15,7 +15,7 @@ tap.test('Twing library', function (test) {
         compareToNull: './twing/helper/compare-to-null',
         defined: './twing/helper/defined',
         escape: './twing/helper/escape',
-        formatDateInterval: './twing/helper/format-date-interval',
+        formatDuration: './twing/helper/format-duration',
         formatDateTime: './twing/helper/format-date-time',
         getContextProxy: './twing/helper/get-context-proxy',
         iconv: './twing/helper/iconv',

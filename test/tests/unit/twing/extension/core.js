@@ -33,93 +33,101 @@ tap.test('TwingExtensionCore', function (test) {
             test.same(callable(env, date, 'j-U'), '1-' + date.toJSDate().getTime());
 
             /************/
-            /* interval */
+            /* duration */
             /************/
-            let interval;
+            let duration;
 
             // default format
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({days: 1})); // 1 day exactly
+            duration = Luxon.Duration.fromObject({days: 1}); // 1 day exactly
 
-            test.same(callable(env, interval), '1 days');
+            test.same(callable(env, duration), '1 days', 'should use the default format');
 
             // microseconds
-            interval = Luxon.Interval.fromDateTimes(date, date.plus(2)); // +2000 microseconds exactly
+            duration = Luxon.Duration.fromObject({milliseconds: 2}); // +2000 microseconds exactly
 
-            test.same(callable(env, interval, '%F microseconds'), '002000 microseconds');
-            test.same(callable(env, interval, '%f microseconds'), '2000 microseconds');
+            test.same(callable(env, duration, '%F microseconds'), '002000 microseconds');
+            test.same(callable(env, duration, '%f microseconds'), '2000 microseconds');
 
             // seconds
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({seconds: 2})); // 2 seconds exactly
+            duration = Luxon.Duration.fromObject({seconds: 2}); // 2 seconds exactly
 
-            test.same(callable(env, interval, '%S seconds'), '02 seconds');
-            test.same(callable(env, interval, '%s seconds'), '2 seconds');
+            test.same(callable(env, duration, '%S seconds'), '02 seconds');
+            test.same(callable(env, duration, '%s seconds'), '2 seconds');
 
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({seconds: 2, milliseconds: 6})); // 2 seconds and 6 milliseconds
+            duration = Luxon.Duration.fromObject({seconds: 2, milliseconds: 6}); // 2 seconds and 6 milliseconds
 
-            test.same(callable(env, interval, '%S seconds'), '02 seconds');
-            test.same(callable(env, interval, '%s seconds'), '2 seconds');
+            test.same(callable(env, duration, '%S seconds'), '02 seconds');
+            test.same(callable(env, duration, '%s seconds'), '2 seconds');
 
             // minutes
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({minutes: 2})); // 2 minutes exactly
+            duration = Luxon.Duration.fromObject({minutes: 2}); // 2 minutes exactly
 
-            test.same(callable(env, interval, '%I minutes'), '02 minutes');
-            test.same(callable(env, interval, '%i minutes'), '2 minutes');
+            test.same(callable(env, duration, '%I minutes'), '02 minutes');
+            test.same(callable(env, duration, '%i minutes'), '2 minutes');
 
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({minutes: 2, seconds: 6})); // 2 minutes and 6 seconds
+            duration = Luxon.Duration.fromObject({minutes: 2, seconds: 6}); // 2 minutes and 6 seconds
 
-            test.same(callable(env, interval, '%I minutes'), '02 minutes');
-            test.same(callable(env, interval, '%i minutes'), '2 minutes');
+            test.same(callable(env, duration, '%I minutes'), '02 minutes');
+            test.same(callable(env, duration, '%i minutes'), '2 minutes');
 
             // hours
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({hours: 2})); // 2 hours exactly
+            duration = Luxon.Duration.fromObject({hours: 2}); // 2 hours exactly
 
-            test.same(callable(env, interval, '%H hours'), '02 hours');
-            test.same(callable(env, interval, '%h hours'), '2 hours');
+            test.same(callable(env, duration, '%H hours'), '02 hours');
+            test.same(callable(env, duration, '%h hours'), '2 hours');
 
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({hours: 2, minutes: 6})); // 2 hours and 6 minutes
+            duration = Luxon.Duration.fromObject({hours: 2, minutes: 6}); // 2 hours and 6 minutes
 
-            test.same(callable(env, interval, '%H hours'), '02 hours');
-            test.same(callable(env, interval, '%h hours'), '2 hours');
+            test.same(callable(env, duration, '%H hours'), '02 hours');
+            test.same(callable(env, duration, '%h hours'), '2 hours');
 
             // days
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({days: 2})); // 2 days exactly
+            duration = Luxon.Duration.fromObject({days: 2}); // 2 days exactly
 
-            test.same(callable(env, interval, '%D days'), '02 days');
-            test.same(callable(env, interval, '%a days'), '2 days');
-            test.same(callable(env, interval, '%d days'), '2 days');
+            test.same(callable(env, duration, '%D days'), '02 days');
+            test.same(callable(env, duration, '%a days'), '2 days');
+            test.same(callable(env, duration, '%d days'), '2 days');
 
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({days: 2, hours: 6})); // 2 days and 6 hours
+            duration = Luxon.Duration.fromObject({days: 2, hours: 6}); // 2 days and 6 hours
 
-            test.same(callable(env, interval, '%D days'), '02 days');
-            test.same(callable(env, interval, '%a days'), '2 days');
-            test.same(callable(env, interval, '%d days'), '2 days');
+            test.same(callable(env, duration, '%D days'), '02 days');
+            test.same(callable(env, duration, '%R%D days'), '+02 days', 'should format positive duration with a sign when using %R');
+            test.same(callable(env, duration, '%r%D days'), '02 days', 'should format negative duration without a sign when using %r');
+            test.same(callable(env, duration, '%a days'), '2 days');
+            test.same(callable(env, duration, '%d days'), '2 days');
+
+            duration = Luxon.Duration.fromObject({days: -2}); // -2 days exactly
+
+            test.same(callable(env, duration, '%D days'), '02 days', 'should format negative duration without a sign by default');
+            test.same(callable(env, duration, '%R%D days'), '-02 days', 'should format negative duration with a sign when using %R');
+            test.same(callable(env, duration, '%r%D days'), '-02 days', 'should format negative duration with a sign when using %r');
 
             // months
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({months: 2})); // 2 months exactly
+            duration = Luxon.Duration.fromObject({months: 2}); // 2 months exactly
 
-            test.same(callable(env, interval, '%M months'), '02 months');
-            test.same(callable(env, interval, '%m months'), '2 months');
+            test.same(callable(env, duration, '%M months'), '02 months');
+            test.same(callable(env, duration, '%m months'), '2 months');
 
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({months: 2, days: 6})); // 2 months and 6 days
+            duration = Luxon.Duration.fromObject({months: 2, days: 6}); // 2 months and 6 days
 
-            test.same(callable(env, interval, '%M months'), '02 months');
-            test.same(callable(env, interval, '%m months'), '2 months');
-
-            // years
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({years: 2})); // 2 years exactly
-
-            test.same(callable(env, interval, '%Y years'), '02 years');
-            test.same(callable(env, interval, '%y years'), '2 years');
-
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({years: 2, months: 6})); // 2 years and 6 months
-
-            test.same(callable(env, interval, '%Y years'), '02 years');
-            test.same(callable(env, interval, '%y years'), '2 years');
+            test.same(callable(env, duration, '%M months'), '02 months');
+            test.same(callable(env, duration, '%m months'), '2 months');
 
             // years
-            interval = Luxon.Interval.fromDateTimes(date, date.plus({years: 2, months: 6})); // 2 years and 6 months
+            duration = Luxon.Duration.fromObject({years: 2}); // 2 years exactly
 
-            test.same(callable(env, interval, '%Y years and %M months'), '02 years and 06 months');
+            test.same(callable(env, duration, '%Y years'), '02 years');
+            test.same(callable(env, duration, '%y years'), '2 years');
+
+            duration = Luxon.Duration.fromObject({years: 2, months: 6}); // 2 years and 6 months
+
+            test.same(callable(env, duration, '%Y years'), '02 years');
+            test.same(callable(env, duration, '%y years'), '2 years');
+
+            // years
+            duration = Luxon.Duration.fromObject({years: 2, months: 6}); // 2 years and 6 months
+
+            test.same(callable(env, duration, '%Y years and %M months'), '02 years and 06 months');
 
             test.end();
         });

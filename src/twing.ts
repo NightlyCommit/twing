@@ -1,7 +1,7 @@
 import {abs} from "./twing/helper/abs";
 import {defined} from "./twing/helper/defined";
 import {escape} from "./twing/helper/escape";
-import {formatDateInterval} from "./twing/helper/format-date-interval";
+import {formatDuration} from "./twing/helper/format-duration";
 import {formatDateTime} from "./twing/helper/format-date-time";
 import {getContextProxy} from "./twing/helper/get-context-proxy";
 import {iconv} from "./twing/helper/iconv";
@@ -226,7 +226,7 @@ let Twing = {
     compareToNull: compareToNull,
     defined: defined,
     escape: escape,
-    formatDateInterval: formatDateInterval,
+    formatDuration: formatDuration,
     formatDateTime: formatDateTime,
     getContextProxy: getContextProxy,
     iconv: iconv,

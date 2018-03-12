@@ -1,4 +1,4 @@
-import {Duration, Interval} from "luxon";
+import {Duration} from "luxon";
 
 const pad = require('pad');
 
@@ -12,21 +12,21 @@ const padStart = function (value: number, length: number, padString: string): st
 
 /**
  *
- * @param {"luxon".luxon.Interval} interval
+ * @param {"luxon".luxon.Duration} duration
  * @param {string} format
  * @returns {string} The formatted interval.
- *
- * @see http://php.net/manual/en/dateinterval.format.php
  */
-export function formatDateInterval(interval: Interval, format: string): string {
+export function formatDuration(duration: Duration, format: string): string {
     let result: string;
-    let units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
-    let duration: Duration = interval.toDuration(units);
-
-    // console.warn(interval);
 
     result = format.replace(/%([YyMmDdaHhIiSsFfRr])/g, function (match, token) {
         let result: any;
+        let isNegative: boolean = false;
+
+        if (duration.as('milliseconds') < 0) {
+            isNegative = true;
+            duration = duration.negate();
+        }
 
         switch (token) {
             case 'Y': {
@@ -103,12 +103,12 @@ export function formatDateInterval(interval: Interval, format: string): string {
             }
             case 'R': {
                 // Sign "-" when negative, "+" when positive
-                result = interval.length() >= 0 ? (interval.length() > 0 ? '+' : '') : '-';
+                result = isNegative ? '-' : '+';
                 break;
             }
             case 'r': {
                 // Sign "-" when negative, empty when positive
-                result = interval.length() > 0 ? '' : '-';
+                result = isNegative ? '-' : '';
                 break;
             }
         }
