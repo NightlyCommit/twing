@@ -1,15 +1,21 @@
 docs:
-- title: Introduction
-  url: intro.html
-- title: Installation
-  url: installation.html
-- title: Twing for Template Designers
-- title: Twing for Developers
-  url: api.html
-- title: Extending Twing
-- title: Twing Internals
-- title: Deprecated Features
-- title: Twing recipes
-- title: Coding standards
-- title: API
-
+  introduction:
+    title: Introduction
+    url: intro.html
+  installation:
+    title: Installation
+    url: installation.html
+  templates:
+    title: Twing for Template Designers
+    url: templates.html
+  api:
+    title: Twing for Developers
+    url: api.html
+  extending:
+    title: Extending Twing
+  internals:
+    title: Twing Internals
+  recipes:
+    title: Twing recipes
+  coding_standards:
+    title: Coding standards

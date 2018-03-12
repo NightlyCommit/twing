@@ -1,92 +1,180 @@
 sections:
-- title: Tags
-  items:
-  - title: autoescape
-  - title: block
-  - title: do
-  - title: embed
-  - title: extends
-  - title: filter
-  - title: flush
-  - title: for
-  - title: from
-  - title: if
-  - title: import
-  - title: include
-  - title: macro
-  - title: sandbox
-  - title: set
-  - title: spaceless
-  - title: use
-  - title: verbatim
-  - title: with
-- title: Filters
-  items:
-  - title: abs
-  - title: batch
-  - title: capitalize
-  - title: convert_encoding
-  - title: date
-  - title: date_modify
-  - title: default
-  - title: escape
-  - title: first
-  - title: format
-  - title: join
-  - title: json_encode
-  - title: keys
-  - title: last
-  - title: length
-  - title: lower
-  - title: merge
-  - title: nl2br
-  - title: number_format
-  - title: raw
-  - title: replace
-  - title: reverse
-  - title: round
-  - title: slice
-  - title: sort
-  - title: split
-  - title: striptags
-  - title: title
-  - title: trim
-  - title: upper
-  - title: url_encode
-- title: Functions
-  items:
-  - title: attribute
-  - title: block
-  - title: constant
-  - title: cycle
-  - title: date
-  - title: dump
-  - title: include
-  - title: max
-  - title: min
-  - title: parent
-  - title: random
-  - title: range
-  - title: source
-  - title: template_from_string
-- title: Tests
-  items:
-  - title: constant
-  - title: defined
-  - title: divisibleby
-  - title: empty
-  - title: even
-  - title: iterable
-  - title: null
-  - title: odd
-  - title: sameas
-- title: Operators
-  items:
-  - title: in
-  - title: is
-  - title: Math (+, -, /, %, //, *, **)
-  - title: Logic (and, or, not, (), b-and, b-xor, b-or)
-  - title: Comparisons (==, !=, <, >, >=, <=, ===, starts with, ends with, matches)
-  - title: Others (.., &#124;, ~, ., [], ?:)
-
-
+  tags:
+    title: tags
+    url: tags/index.html
+    items:
+      autoescape:
+        title: autoescape
+      block:
+        title: block
+      do:
+        title: do
+      embed:
+        title: embed
+      extends:
+        title: extends
+      filter:
+        title: filter
+      flush:
+        title: flush
+      for:
+        title: for
+      from:
+        title: from
+      if:
+        title: if
+      import:
+        title: import
+      include:
+        title: include
+      macro:
+        title: macro
+      sandbox:
+        title: sandbox
+      set:
+        title: set
+        url: tags/set.html
+      spaceless:
+        title: spaceless
+      use:
+        title: use
+      verbatim:
+        title: verbatim
+      with:
+        title: with
+  filters:
+    title: filters
+    url: filters/index.html
+    items:
+      abs:
+        title: abs
+      batch:
+        title: batch
+      capitalize:
+        title: capitalize
+      convert_encoding:
+        title: convert_encoding
+      date:
+        title: date
+      date_modify:
+        title: date_modify
+      default:
+        title: default
+      escape:
+        title: escape
+      first:
+        title: first
+      format:
+        title: format
+      join:
+        title: join
+      json_encode:
+        title: json_encode
+      keys:
+        title: keys
+      last:
+        title: last
+      length:
+        title: length
+      lower:
+        title: lower
+      merge:
+        title: merge
+      nl2br:
+        title: nl2br
+      number_format:
+        title: number_format
+      raw:
+        title: raw
+      replace:
+        title: replace
+      reverse:
+        title: reverse
+      round:
+        title: round
+      slice:
+        title: slice
+      sort:
+        title: sort
+      split:
+        title: split
+      striptags:
+        title: striptags
+      title:
+        title: title
+      trim:
+        title: trim
+      upper:
+        title: upper
+      url_encode:
+        title: url_encode
+  functions:
+    title: functions
+    url: functions/index.html
+    items:
+      attribute:
+        title: attribute
+      block:
+        title: block
+      constant:
+        title: constant
+      cycle:
+        title: cycle
+      date:
+        title: date
+      dump:
+        title: dump
+      include:
+        title: include
+      max:
+        title: max
+      min:
+        title: min
+      parent:
+        title: parent
+      random:
+        title: random
+      range:
+        title: range
+      source:
+        title: source
+      template_from_string:
+        title: template_from_string
+  tests:
+    title: tests
+    url: tests/index.html
+    items:
+      constant:
+        title: constant
+      defined:
+        title: defined
+      divisibleby:
+        title: divisibleby
+      empty:
+        title: empty
+      even:
+        title: even
+      iterable:
+        title: iterable
+      null:
+        title: null
+      odd:
+        title: odd
+      sameas:
+        title: sameas
+  operators:
+    title: operators
+    url: operators/index.html
+    items:
+      in:
+        title: in
+      is:
+        title: is
+      math:
+        title: Math (+, -, /, %, //, *, **)
+      logic:
+        title: Logic (and, or, not, (), b-and, b-xor, b-or)
+      comparisons:
+        title: Comparisons (==, !=, <, >, >=, <=, ===, starts with, ends with, matches)
+      others:
+        title: Others (.., &#124;, ~, ., [], ?:)

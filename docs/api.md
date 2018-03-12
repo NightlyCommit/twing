@@ -480,13 +480,13 @@ by a policy instance. By default, Twing comes with one policy class:
 tags, filters, properties, and methods:
 
 ```javascript
-let $tags = ['if'];
+let tags = ['if'];
 let filters = ['upper'];
 let methods = new Map([
-    ['Article': ['getTitle', 'getBody']],
+    ['Article', ['getTitle', 'getBody']],
 ]);
 let properties = new Map([
-    ['Article': ['title', 'body']],
+    ['Article', ['title', 'body']],
 ]);
 let functions = ['range'];
 let policy = new Twing.TwingSandboxSecurityPolicy(tags, filters, methods, properties, functions);
@@ -613,3 +613,5 @@ When no output buffer is active, `TwingOutputBuffering.echo()` writes to _proces
 When an output buffer is active, `TwingOutputBuffering.echo()` writes to this active buffer. The content of the active output buffer can be retrieved by calling `TwingOutputBuffering.obGetContents()`. The active buffer can be ended and unstacked by calling `TwingOutputBuffering.obEndClean()`.
 
 > See `lib/output-buffering.d.ts` for implementation details.
+
+[back]({% link index.md %})
