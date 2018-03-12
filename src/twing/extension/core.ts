@@ -58,7 +58,7 @@ import {TwingNodeExpressionBinaryStartsWith} from "../node/expression/binary/sta
 import {TwingNodeExpressionBinaryEndsWith} from "../node/expression/binary/ends-with";
 import {TwingFilter} from "../filter";
 
-import {DateTime, Interval, Settings as DateTimeSettings} from 'luxon';
+import {DateTime, Duration, Settings as DateTimeSettings} from 'luxon';
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNodeExpressionFilterDefault} from "../node/expression/filter/default";
 import {TwingNodeExpressionTestNull} from "../node/expression/test/null";
@@ -74,7 +74,7 @@ import {TwingErrorRuntime} from "../error/runtime";
 import {iteratorToArray} from "../helper/iterator-to-array";
 import * as moment from "moment";
 import {formatDateTime} from "../helper/format-date-time";
-import {formatDateInterval} from "../helper/format-date-interval";
+import {formatDuration} from "../helper/format-duration";
 import {iteratorToHash} from "../helper/iterator-to-hash";
 import {isNullOrUndefined} from "util";
 import {iteratorToMap} from "../helper/iterator-to-map";
@@ -639,25 +639,25 @@ export function twingRandom(env: TwingEnvironment, values: any = null): any {
  * </pre>
  *
  * @param {TwingEnvironment} env
- * @param {DateTime|Interval|string} date A date
+ * @param {DateTime|Duration|string} date A date
  * @param {string|null} format The target format, null to use the default
  * @param {string|null|false} timezone The target timezone, null to use the default, false to leave unchanged
  *
  * @return string The formatted date
  */
-export function twingDateFormatFilter(env: TwingEnvironment, date: DateTime | Interval | string, format: string = null, timezone: string | null | false = null) {
+export function twingDateFormatFilter(env: TwingEnvironment, date: DateTime | Duration | string, format: string = null, timezone: string | null | false = null) {
     if (format === null) {
         let coreExtension = env.getCoreExtension();
 
         let formats = coreExtension.getDateFormat();
 
-        format = date instanceof Interval ? formats[1] : formats[0];
+        format = date instanceof Duration ? formats[1] : formats[0];
     }
 
     date = twingDateConverter(env, date, timezone);
 
-    if (date instanceof Interval) {
-        return formatDateInterval(date, format);
+    if (date instanceof Duration) {
+        return formatDuration(date, format);
     }
 
     return formatDateTime(date, format);
@@ -671,12 +671,12 @@ export function twingDateFormatFilter(env: TwingEnvironment, date: DateTime | In
  * </pre>
  *
  * @param {TwingEnvironment} env
- * @param {DateTime|DateTimeInterval|string} date A date
+ * @param {DateTime|Duration|string} date A date
  * @param {string} modifier A modifier string
  *
  * @returns {DateTime} A new date object
  */
-export function twingDateModifyFilter(env: TwingEnvironment, date: Date | DateTime | Interval | string, modifier: string = null) {
+export function twingDateModifyFilter(env: TwingEnvironment, date: Date | DateTime | Duration | string, modifier: string = null) {
     let dateTime: DateTime = twingDateConverter(env, date) as DateTime;
 
     let regExp = new RegExp(/(\+|-)([0-9])(.*)/);
@@ -705,12 +705,12 @@ export function twingDateModifyFilter(env: TwingEnvironment, date: Date | DateTi
  * </pre>
  *
  * @param {TwingEnvironment} env
- * @param {Date | DateTime | Interval | number | string} date A date or null to use the current time
+ * @param {Date | DateTime | Duration | number | string} date A date or null to use the current time
  * @param {string | null | false} timezone The target timezone, null to use the default, false to leave unchanged
  *
  * @returns {DateTime} A DateTime instance
  */
-export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime | Interval | number | string, timezone: string | null | false = null): DateTime | Interval {
+export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime | Duration | number | string, timezone: string | null | false = null): DateTime | Duration {
     let result: DateTime;
     let coreExtension = env.getCoreExtension();
 
@@ -729,7 +729,7 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
         return date;
     }
 
-    if (date instanceof Interval) {
+    if (date instanceof Duration) {
         return date;
     }
 
