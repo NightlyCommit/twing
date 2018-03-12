@@ -28,7 +28,7 @@ npm install twing --save
 git clone git://github.com/ericmorand/twing.git
 ```
 
-[back]({% link index.md %})
+[back]({{ site.baseurl }}{% link index.md %})
 
 [download-url]: https://github.com/ericmorand/twing/releases
 [npm-url]: https://docs.npmjs.com/getting-started/installing-node

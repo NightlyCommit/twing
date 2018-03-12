@@ -682,7 +682,7 @@ The above sample shows the default whitespace control modifier, and how you can 
 
 {% endraw %}
 
-[back]({% link index.md %})
+[back]({{ site.baseurl }}{% link index.md %})
 
 [tags]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.tags.url }}
 [tag-autoescape]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.tags.items.autoescape.url }}

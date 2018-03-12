@@ -614,4 +614,4 @@ When an output buffer is active, `TwingOutputBuffering.echo()` writes to this ac
 
 > See `lib/output-buffering.d.ts` for implementation details.
 
-[back]({% link index.md %})
+[back]({{ site.baseurl }}{% link index.md %})

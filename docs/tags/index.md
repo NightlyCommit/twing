@@ -13,4 +13,4 @@ Tags
     {% endfor %}
 </ul>
 
-[back]({% link index.md %})
+[back]({{ site.baseurl }}{% link index.md %})
