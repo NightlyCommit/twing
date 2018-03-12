@@ -15,7 +15,7 @@
 <body>
 <div class="wrapper">
     <header>
-        <a href="./"> <h1>{{ site.title | default: site.github.repository_name }}</h1> </a>
+        <a href="{% link index.md %}"> <h1>{{ site.title | default: site.github.repository_name }}</h1> </a>
         <p>{{ site.description | default: site.github.project_tagline }}</p>
 
         {% if site.github.is_project_page %}
@@ -35,10 +35,7 @@
         {% endif %}
     </header>
     <section>
-
         {{ content }}
-
-        <a href="./">back</a>
     </section>
     <footer>
         {% if site.github.is_project_page %}
