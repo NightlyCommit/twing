@@ -87,6 +87,7 @@ import {TwingTemplate} from "../template";
 import {escape} from "../helper/escape";
 import {range} from "../helper/range";
 import {relativeDate} from "../helper/relative-date";
+import {examineObject} from "../helper/examine-object";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -1614,15 +1615,14 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
 
     let message: string;
 
-    let isFloat = function (data: any) {
-        return !isNaN(data) && !Number.isInteger(data);
-    };
+    let isFloat = require('locutus/php/var/is_float');
+    let isBool = require('locutus/php/var/is_bool');
 
     // ANY_CALL or ARRAY_CALL
     if (type !== TwingTemplate.METHOD_CALL) {
         let arrayItem;
 
-        if (typeof item === 'boolean') {
+        if (isBool(item)) {
             arrayItem = item ? 1 : 0;
         }
         else if (isFloat(item)) {
@@ -1633,21 +1633,21 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
         }
 
         if (object) {
-            if (Array.isArray(object) && object[arrayItem]) {
+            if (Array.isArray(object) && (typeof object[arrayItem] !== 'undefined')) {
                 if (isDefinedTest) {
                     return true;
                 }
 
                 return object[arrayItem];
             }
-            else if (object instanceof Map && object.has(item)) {
+            else if (object instanceof Map && object.has(arrayItem)) {
                 if (isDefinedTest) {
                     return true;
                 }
 
                 return object.get(item);
             }
-            else if (typeof object === 'object' && Reflect.has(object, item) && (typeof Reflect.get(object, item) !== 'function')) {
+            else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
                 if (isDefinedTest) {
                     return true;
                 }
@@ -1727,29 +1727,112 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
         throw new TwingErrorRuntime(message, -1, source);
     }
 
+
+    if (object instanceof TwingTemplate) {
+        throw new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.');
+    }
+
+    // object property
+    if (type !== TwingTemplate.METHOD_CALL) {
+        if (Reflect.has(object, item) && (typeof object[item] !== 'function')) {
+            if (isDefinedTest) {
+                return true;
+            }
+
+            if (env.hasExtension('TwingExtensionSandbox')) {
+                let extension = env.getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
+
+                extension.checkPropertyAllowed(object, item);
+            }
+
+            return object[item];
+        }
+    }
+
+    if (typeof twingGetAttribute.cache == 'undefined') {
+        twingGetAttribute.cache = new TwingMap();
+    }
+
+    let cache = twingGetAttribute.cache;
+    let class_ = object.constructor.name;
+    let classCache: TwingMap<string, string> = cache.has(class_) ? cache.get(class_) : null;
+
     // object method
     // precedence: getXxx() > isXxx() > hasXxx()
-    let functionName;
-    let getFallback = `get${capitalize(item)}`;
-    let isFallback = `is${capitalize(item)}`;
-    let hasFallback = `has${capitalize(item)}`;
+    if (!classCache) {
+        let methods: Array<string> = [];
 
-    if (Reflect.has(object, item)) {
-        functionName = item;
-    }
-    else if (Reflect.has(object, getFallback)) {
-        functionName = getFallback;
-    }
-    else if (Reflect.has(object, isFallback)) {
-        functionName = isFallback;
-    }
-    else if (Reflect.has(object, hasFallback)) {
-        functionName = hasFallback;
-    }
-    else if (Reflect.has(object, '__call')) {
-        functionName = '__call';
+        for (let property of examineObject(object)) {
+            let candidate = object[property];
 
-        _arguments.unshift(item);
+            if (typeof candidate === 'function') {
+                methods.push(property);
+            }
+        }
+
+        methods.sort();
+
+        let lcMethods: Array<string> = methods.map((method) => {
+            return method.toLowerCase();
+        });
+
+        classCache = new TwingMap();
+
+        for (let i = 0; i < methods.length; i++) {
+            let method: string = methods[i];
+            let lcName: string = lcMethods[i];
+
+            classCache.set(method, method);
+            classCache.set(lcName, method);
+
+            let name: string;
+
+            if (lcName[0] === 'g' && lcName.indexOf('get') === 0) {
+                name = method.substr(3);
+                lcName = lcName.substr(3);
+            }
+            else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
+                name = method.substr(2);
+                lcName = lcName.substr(2);
+            }
+            else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
+                name = method.substr(3);
+                lcName = lcName.substr(3);
+
+                if (lcMethods.includes('is' + lcName)) {
+                    continue;
+                }
+            }
+            else {
+                continue;
+            }
+
+            // skip get() and is() methods (in which case, name is empty)
+            if (name) {
+                if (!classCache.has(name)) {
+                    classCache.set(name, method);
+                }
+
+                if (!classCache.has(lcName)) {
+                    classCache.set(lcName, method);
+                }
+            }
+        }
+
+        if (class_ !== 'Object') {
+            cache.set(class_, classCache);
+        }
+    }
+
+    let itemAsString: string = item as string;
+    let method: string = null;
+    let lcItem: string;
+
+    if (classCache.has(item)) {
+        method = classCache.get(item);
+    }
+    else if (classCache.has(lcItem = itemAsString.toLowerCase())) {
+        method = classCache.get(lcItem);
     }
     else {
         if (isDefinedTest) {
@@ -1760,12 +1843,22 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
             return;
         }
 
-        throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()", "${getFallback}()", "${isFallback}()" or "${hasFallback}()" or "__call()" exist in class "${object.constructor.name}".`, -1, source);
+        throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()" or "get${item}()"/"is${item}()"/"has${item}()" exist and have public access in class "${object.constructor.name}".`, -1, source);
     }
 
     if (isDefinedTest) {
         return true;
     }
 
-    return Reflect.get(object, functionName).apply(object, _arguments);
+    if (env.hasExtension('TwingExtensionSandbox')) {
+        let extension = env.getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
+
+        extension.checkMethodAllowed(object, method);
+    }
+
+    return Reflect.get(object, method).apply(object, _arguments);
+}
+
+export namespace twingGetAttribute {
+    export let cache: TwingMap<string, TwingMap<string, string>>;
 }

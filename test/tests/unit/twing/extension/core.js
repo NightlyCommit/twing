@@ -1,7 +1,9 @@
 const TwingExtensionCore = require('../../../../../lib/twing/extension/core').TwingExtensionCore;
+const twingGetAttribute = require('../../../../../lib/twing/extension/core').twingGetAttribute;
 const TwingMap = require('../../../../../lib/twing/map').TwingMap;
-const TwingTestEnvironmentStub = require('../../../../mock/environment');
+const TwingTestMockEnvironment = require('../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../mock/loader');
+const TwingSource = require('../../../../../lib/twing/source').TwingSource;
 const Luxon = require('luxon');
 
 const tap = require('tap');
@@ -14,6 +16,40 @@ let getFilter = function (name) {
     });
 };
 
+class Foo {
+    foo() {
+        return 'foo';
+    }
+
+    getFoo() {
+        return 'getFoo';
+    }
+
+    getBar() {
+        return 'getBar';
+    }
+
+    isBar() {
+        return 'isBar';
+    }
+
+    hasBar() {
+        return 'hasBar';
+    }
+
+    isOof() {
+        return 'isOof';
+    }
+
+    hasFooBar() {
+        return 'hasFooBar';
+    }
+
+    __call() {
+
+    }
+}
+
 tap.test('TwingExtensionCore', function (test) {
     test.test('filter', function (test) {
         test.test('date', function (test) {
@@ -21,7 +57,7 @@ tap.test('TwingExtensionCore', function (test) {
 
             let filter = getFilter('date');
             let callable = filter.getCallable();
-            let env = new TwingTestEnvironmentStub(new TwingTestMockLoader());
+            let env = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
             let date = Luxon.DateTime.fromObject({
                 year: 2001,
@@ -161,6 +197,33 @@ tap.test('TwingExtensionCore', function (test) {
             }, new Error('The merge filter only works with arrays or "Traversable", got "string" as second argument.'));
 
             test.same(callable(['a'], ['b']), new TwingMap([[0, 'a'], [1, 'b']]));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('twingGetAttribute', function(test) {
+        let env = new TwingTestMockEnvironment(new TwingTestMockLoader());
+        let source = new TwingSource('', '');
+
+        test.test('should support method calls', function(test) {
+            let foo = new Foo();
+
+            let actual = twingGetAttribute(env, source, foo, 'bar');
+
+            console.warn(actual);
+
+            test.same(twingGetAttribute(env, source, foo, 'foo'), 'foo', 'should resolve methods by their name');
+            test.same(twingGetAttribute(env, source, foo, 'bar'), 'getBar', 'should resolve get{name} if {name} doesn\'t exist');
+            test.same(twingGetAttribute(env, source, foo, 'Oof'), 'isOof', 'should resolve is{name} if {name} and get{name} don\'t exist');
+            test.same(twingGetAttribute(env, source, foo, 'fooBar'), 'hasFooBar', 'should resolve has{name} if {name}, get{name} and is{name} don\'t exist');
+
+            test.same(twingGetAttribute(env, source, foo, 'getfoo'), 'getFoo', 'should resolve method in a case-insensitive way');
+            test.same(twingGetAttribute(env, source, foo, 'GeTfOo'), 'getFoo', 'should resolve method in a case-insensitive way');
+
+            test.same(twingGetAttribute(env, source, foo, 'GeTfOo'), 'getFoo', 'support __call');
 
             test.end();
         });

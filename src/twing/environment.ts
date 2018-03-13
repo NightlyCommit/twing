@@ -31,6 +31,7 @@ import {TwingCacheFilesystem} from "./cache/filesystem";
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
 import {TwingReflectionObject} from "./reflection-object";
+import {TwingExtensionSandbox} from "./extension/sandbox";
 
 const merge = require('merge');
 const hash = require('sha.js');
