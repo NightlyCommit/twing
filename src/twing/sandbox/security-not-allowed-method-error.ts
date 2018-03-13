@@ -2,7 +2,7 @@ import {TwingSandboxSecurityError} from "./security-error";
 
 export class TwingSandboxSecurityNotAllowedMethodError extends TwingSandboxSecurityError {
     private className: string;
-    private methodName: string
+    private methodName: string;
 
     constructor(message: string, className: string, methodName: string, lineno: number = -1, filename: string = null, previous: Error = null) {
         super(message, lineno, filename, previous);
@@ -14,7 +14,7 @@ export class TwingSandboxSecurityNotAllowedMethodError extends TwingSandboxSecur
         return this.className;
     }
 
-    getPropertyName() {
+    getMethodName() {
         return this.methodName;
     }
 }
