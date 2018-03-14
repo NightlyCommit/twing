@@ -208,21 +208,21 @@ tap.test('loader filesystem', function (test) {
     });
 
     test.test('array-inheritance', async function (test) {
-       for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
-           let templateName = arrayInheritanceTest[0];
-           let loader = new TwingLoaderFilesystem([]);
-           loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
+        for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
+            let templateName = arrayInheritanceTest[0];
+            let loader = new TwingLoaderFilesystem([]);
+            loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
 
-           let twing = new TwingEnvironment(loader, {cache: 'tmp'});
-           let template = twing.loadTemplate(templateName);
+            let twing = new TwingEnvironment(loader, {cache: 'tmp'});
+            let template = twing.loadTemplate(templateName);
 
-           test.same(await template.renderBlock('body', {}), 'VALID Child', testMessage);
-       }
+            test.same(await template.renderBlock('body', {}), 'VALID Child', testMessage);
+        }
 
         test.end();
     });
 
-    test.test('should normalize template name', function(test) {
+    test.test('should normalize template name', function (test) {
         let loader = new TwingLoaderFilesystem(fixturesPath);
 
         let names = [
@@ -243,6 +243,40 @@ tap.test('loader filesystem', function (test) {
         for (let name of names) {
             test.same(loader.getSourceContext(name), new TwingSource('named path\n', name, nodePath.resolve(fixturesPath, 'named/index.html')));
         }
+
+        test.end();
+    });
+
+    test.test('addPath and prependPath should trim trailing slashes', function (test) {
+        // ensure that trailing slashes are removed by addPath
+        let loader = new TwingLoaderFilesystem(fixturesPath);
+        loader.addPath(nodePath.join(fixturesPath, 'normal/'));
+        loader.addPath(nodePath.join(fixturesPath, 'normal//'));
+        loader.addPath(nodePath.join(fixturesPath, 'normal\\'));
+        loader.addPath(nodePath.join(fixturesPath, 'normal\\\\'));
+
+        test.same(loader.getPaths(), [
+            fixturesPath,
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal')
+        ]);
+
+        // ensure that trailing slashes are removed by prependPath
+        loader = new TwingLoaderFilesystem(fixturesPath);
+        loader.prependPath(nodePath.join(fixturesPath, 'normal/'));
+        loader.prependPath(nodePath.join(fixturesPath, 'normal//'));
+        loader.prependPath(nodePath.join(fixturesPath, 'normal\\'));
+        loader.prependPath(nodePath.join(fixturesPath, 'normal\\\\'));
+
+        test.same(loader.getPaths(), [
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal'),
+            nodePath.join(fixturesPath, 'normal'),
+            fixturesPath
+        ]);
 
         test.end();
     });
