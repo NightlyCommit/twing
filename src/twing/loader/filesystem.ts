@@ -4,6 +4,7 @@ import {TwingErrorLoader} from "../error/loader";
 
 const nodePath = require('path');
 const fs = require('fs');
+const rtrim = require('locutus/php/strings/rtrim');
 
 /**
  * Loads template from the filesystem.
@@ -89,18 +90,17 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
 
         let checkPath = this.isAbsolutePath(path) ? path : nodePath.join(this.rootPath, path);
 
-        let stat = fs.statSync(checkPath);
+        let stat = fs.statSync(this.normalizeName(checkPath));
 
         if (!stat.isDirectory()) {
             throw new TwingErrorLoader(`The "${path}" directory does not exist ("${checkPath}").`);
         }
 
         if (!this.paths.has(namespace)) {
-            this.paths.set(namespace, [path]);
+            this.paths.set(namespace, []);
         }
-        else {
-            this.paths.get(namespace).push(path);
-        }
+
+        this.paths.get(namespace).push(rtrim(path, '\/\\\\'));
     }
 
     /**
@@ -117,11 +117,13 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
 
         let checkPath = this.isAbsolutePath(path) ? path : nodePath.join(this.rootPath, path);
 
-        let stat = fs.statSync(checkPath);
+        let stat = fs.statSync(this.normalizeName(checkPath));
 
         if (!stat.isDirectory()) {
             throw new TwingErrorLoader(`The "${path}" directory does not exist ("${checkPath}").`);
         }
+
+        path = rtrim(path, '\/\\\\');
 
         if (!this.paths.has(namespace)) {
             this.paths.set(namespace, [path]);
