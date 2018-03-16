@@ -94,6 +94,7 @@ const nl2br = require('locutus/php/strings/nl2br');
 const strip_tags = require('locutus/php/strings/strip_tags');
 const mt_rand = require('locutus/php/math/mt_rand');
 const array_rand = require('locutus/php/array/array_rand');
+const runes = require('runes');
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -598,11 +599,12 @@ export function twingRandom(env: TwingEnvironment, values: any = null): any {
         return values < 0 ? mt_rand(values, 0) : mt_rand(0, values);
     }
 
-    if (isTraversable(values)) {
-        values = iteratorToArray(values);
+    if (typeof values === 'string') {
+        values = new Buffer(values);
     }
-    else if (typeof values === 'string') {
-        if (values === '') {
+
+    if (Buffer.isBuffer(values)) {
+        if (values.toString() === '') {
             return '';
         }
 
@@ -612,13 +614,17 @@ export function twingRandom(env: TwingEnvironment, values: any = null): any {
             values = iconv(charset, 'UTF-8', values);
         }
 
-        values = values.split('');
+        // unicode split
+        values = runes(values.toString());
 
-        if ('UTF-8' !== charset) {
+        if (charset !== 'UTF-8') {
             values = values.map(function (value: string) {
-                return iconv('UTF-8', charset, value);
+                return iconv('UTF-8', charset, new Buffer(value));
             });
         }
+    }
+    else if (isTraversable(values)) {
+        values = iteratorToArray(values);
     }
 
     if (!Array.isArray(values)) {
@@ -925,14 +931,14 @@ export function twingUrlencodeFilter(url: string | {}): string {
  * @return array The merged array
  */
 export function twingArrayMerge(arr1: any, arr2: any) {
-    if (isTraversable(arr1)) {
+    if (!isNullOrUndefined(arr1) && (isTraversable(arr1) || (typeof arr1 === 'object'))) {
         arr1 = iteratorToMap(arr1);
     }
     else {
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr1) ? typeof arr1 : arr1}" as first argument.`);
     }
 
-    if (isTraversable(arr2)) {
+    if (!isNullOrUndefined(arr2) && (isTraversable(arr2) || (typeof arr2 === 'object'))) {
         arr2 = iteratorToMap(arr2);
     }
     else {
@@ -954,23 +960,23 @@ export function twingArrayMerge(arr1: any, arr2: any) {
  * @returns The sliced variable
  */
 export function twingSlice(env: TwingEnvironment, item: any, start: number, length: number = null, preserveKeys: boolean = false): string | TwingMap<any, any> {
-
-    if (typeof item === 'string') {
-        if (length === null) {
-            length = item.length - start;
-        }
-
-        return item.substr(start, length);
-    }
-    else {
+    if (isTraversable(item)) {
         let iterableItem = iteratorToMap(item);
 
         if (length === null) {
             length = iterableItem.size - start;
         }
 
-        return iterableItem.slice(start, length, Array.isArray(item) ? preserveKeys : true);
+        return iterableItem.slice(start, length, preserveKeys);
     }
+
+    item = '' + (item ? item : '');
+
+    if (length === null) {
+        length = item.length - start;
+    }
+
+    return item.substr(start, length);
 }
 
 /**
@@ -1116,8 +1122,15 @@ export function twingDefaultFilter(value: any, defaultValue: any = '') {
  *
  * @returns {Array<*>} The keys
  */
-function twingGetArrayKeysFilter(array: Array<any>) {
-    let traversable = iteratorToMap(array);
+export function twingGetArrayKeysFilter(array: Array<any>) {
+    let traversable;
+
+    if (isNullOrUndefined(array)) {
+        traversable = new TwingMap();
+    }
+    else {
+        traversable = iteratorToMap(array);
+    }
 
     return [...traversable.keys()];
 }
@@ -1126,35 +1139,16 @@ function twingGetArrayKeysFilter(array: Array<any>) {
  * Reverses a variable.
  *
  * @param {TwingEnvironment} env
- * @param item An array, a Traversable instance, or a string
+ * @param {*} item A traversable instance, or a string
  * @param {boolean} preserveKeys Whether to preserve key or not
  *
  * @returns The reversed input
  */
 export function twingReverseFilter(env: TwingEnvironment, item: any, preserveKeys: boolean = false): string | TwingMap<any, any> {
     if (typeof item === 'string') {
-        let string = '' + item;
+        let esrever = require('esrever');
 
-        let charset = env.getCharset();
-
-        if (charset !== 'UTF-8') {
-            item = iconv('UTF-8', charset, string);
-        }
-
-        let regExp = /./ug;
-        let match: RegExpExecArray;
-
-        string = '';
-
-        while ((match = regExp.exec(item)) !== null) {
-            string = match[0] + string;
-        }
-
-        if (charset !== 'UTF-8') {
-            string = iconv(charset, 'UTF-8', string).toString();
-        }
-
-        return string;
+        return esrever.reverse(item);
     }
     else {
         return iteratorToMap(item).reverse(preserveKeys);
@@ -1277,7 +1271,7 @@ export function twingEscapeFilterIsSafe(filterArgs: TwingNode) {
 }
 
 export function twingConvertEncoding(string: string, to: string, from: string) {
-    return iconv(from, to, string);
+    return iconv(from, to, new Buffer(string));
 }
 
 /**

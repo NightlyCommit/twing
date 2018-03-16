@@ -6,18 +6,18 @@ import {iconv} from "./helper/iconv";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingMarkup {
-    private content: string;
+    private content: Buffer;
     private charset: string;
 
     TwingIsSafe: boolean = true;
 
     constructor(content: string, charset: string) {
-        this.content = content;
+        this.content = new Buffer(content);
         this.charset = charset;
     }
 
     toString() {
-        return this.content;
+        return this.content.toString();
     }
 
     count(): number {
@@ -27,6 +27,6 @@ export class TwingMarkup {
     }
 
     toJSON() {
-        return this.content;
+        return this.content.toString();
     }
 }

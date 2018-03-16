@@ -67,6 +67,7 @@ tap.test('Twing library', function (test) {
         TwingFilter: './twing/filter',
         twingFirst: './twing/extension/core',
         TwingFunction: './twing/function',
+        twingGetArrayKeysFilter: './twing/extension/core',
         twingGetAttribute: './twing/extension/core',
         twingInFilter: './twing/extension/core',
         twingJoinFilter: './twing/extension/core',
