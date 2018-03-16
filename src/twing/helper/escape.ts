@@ -1,6 +1,7 @@
 import {TwingEnvironment} from "../environment";
 import {TwingMap} from "../map";
 import {TwingErrorRuntime} from "../error/runtime";
+import {TwingExtensionCore} from "../extension/core";
 
 /**
  * Escapes a string.
@@ -33,6 +34,10 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
         }
     }
 
+    if (charset === null) {
+        charset = env.getCharset();
+    }
+
     switch (strategy) {
         case 'html':
             return htmlspecialchars(string);
@@ -43,7 +48,7 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
         case 'html_attr':
             return secureFilters.html(string);
         default:
-            let coreExtension = env.getCoreExtension();
+            let coreExtension = env.getExtension('TwingExtensionCore') as TwingExtensionCore;
             let escapers: TwingMap<string, Function> = coreExtension.getEscapers();
 
             if (escapers.has(strategy)) {

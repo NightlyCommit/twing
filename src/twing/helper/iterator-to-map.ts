@@ -18,6 +18,14 @@ export function iteratorToMap(thing: any): TwingMap<any, any> {
                 result.push(value);
             }
         }
+        else if (typeof thing['next'] === 'function') {
+            let i: number = 0;
+            let next: any;
+
+            while ((next = thing.next()) && !next.done) {
+                result.set(i++, next.value);
+            }
+        }
         else {
             for (let k in thing) {
                 result.set(k, thing[k]);

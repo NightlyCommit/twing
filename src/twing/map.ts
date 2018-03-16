@@ -1,3 +1,5 @@
+import {isNumber} from "util";
+
 export class TwingMap<K, V> extends Map<any, any> {
     push(item: any) {
         this.set(this.size, item);
@@ -77,10 +79,19 @@ export class TwingMap<K, V> extends Map<any, any> {
         }
 
         for (let [key, value] of this) {
-            // console.warn('>> IT', index, start, start + length);
-
             if ((index >= start) && (index < start + length)) {
-                result.set(preserveKeys ? key : keyIndex, value);
+                let newKey;
+
+                // Note that array_slice() will reorder and reset the ***numeric*** array indices by default. [...]
+                // see http://php.net/manual/en/function.array-slice.php
+                if (isNumber(key)) {
+                    newKey = preserveKeys ? key : keyIndex;
+                }
+                else {
+                    newKey = key;
+                }
+
+                result.set(newKey, value);
 
                 keyIndex++;
             }

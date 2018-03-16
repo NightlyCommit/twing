@@ -15,6 +15,14 @@ export function iteratorToArray(value: any, useKeys: boolean = false): Array<any
                 result.push(entry);
             }
         }
+        else if (typeof value['next'] === 'function') {
+            let i: number = 0;
+            let next: any;
+
+            while ((next = value.next()) && !next.done) {
+                result.push(next.value);
+            }
+        }
         else if (typeof value === 'object') {
             for (let k in value) {
                 result.push(value[k]);
