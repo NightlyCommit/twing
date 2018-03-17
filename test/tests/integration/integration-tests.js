@@ -39,7 +39,7 @@ tap.test('integration tests', async function (test) {
         // config
         let config = merge({
             strict_variables: true,
-            cache: 'tmp'
+            cache: false
         }, integrationTest.getConfig());
 
         let loader = new TwingLoaderArray(templates);

@@ -6,9 +6,10 @@ const path = require('path');
 tap.test('Twing runtime', function (test) {
     let exports = {
         compare: './twing/helper/compare',
+        count: './twing/helper/count',
+        each: './twing/helper/each',
         echo: './twing/output-buffering',
         flush: './twing/output-buffering',
-        getContextProxy: './twing/helper/get-context-proxy',
         isCountable: './twing/helper/is-countable',
         iteratorToMap: './twing/helper/iterator-to-map',
         obEndClean: './twing/output-buffering',
@@ -40,6 +41,10 @@ tap.test('Twing runtime', function (test) {
         let exportedSymbol = require(path.resolve('lib', fileName))[key];
 
         test.same(exportedSymbol, Runtime[key], `${key} is exported`);
+    }
+
+    for (let key in Runtime) {
+        test.true(exports[key], `${key} is legit`);
     }
 
     test.end();
