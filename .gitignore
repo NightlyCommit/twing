@@ -7,5 +7,5 @@
 /docs/vendor
 /lib
 /node_modules
-/npm-debug.log
 /tmp
+npm-debug.log

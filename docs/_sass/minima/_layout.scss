@@ -1,0 +1,267 @@
+@import "../variables";
+@import "../mixins";
+
+/**
+ * Site header
+ */
+.site-header {
+  border-top: 5px solid $grey-color-dark;
+  border-bottom: 1px solid $grey-color-light;
+  min-height: $spacing-unit * 1.865 - 1px;
+
+  // Positioning context for the mobile navigation icon
+  position: relative;
+}
+
+.site-title {
+  font-weight: 300;
+  line-height: $base-line-height * 2.25;
+  letter-spacing: -1px;
+  margin-bottom: 0;
+  float: left;
+
+  a {
+    &, &:visited {
+      color: $grey-color-dark;
+    }
+  }
+
+  a, ul {
+    display: inline-block;
+  }
+
+  ul {
+    margin-left: 2.0em;
+  }
+
+  .project-link {
+    font-size: 1.5em;
+    vertical-align: middle;
+  }
+
+  @include clear-fix;
+
+  @include media-query($on-tablet-landscape) {
+    .project-link {
+      font-size: 2.0em;
+    }
+  }
+}
+
+.site-nav {
+  float: right;
+  line-height: $base-line-height * 2.25;
+
+  position: absolute;
+  top: 9px;
+  right: $spacing-unit / 2 * 1px;
+  background-color: $background-color;
+  border: 1px solid $grey-color-light;
+  border-radius: 5px;
+  text-align: right;
+
+  .nav-trigger {
+    display: none;
+  }
+
+  label[for="nav-trigger"] {
+    display: block;
+    float: right;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .menu-icon {
+    display: block;
+    float: right;
+    width: 36px;
+    height: 26px;
+    line-height: 0;
+    padding-top: 10px;
+    text-align: center;
+
+    > svg path {
+      fill: $grey-color-dark;
+    }
+  }
+
+  input ~ .trigger {
+    clear: both;
+    display: none;
+  }
+
+  input:checked ~ .trigger {
+    display: block;
+    padding-bottom: 5px;
+  }
+
+  .page-link {
+    display: block;
+    padding: 5px 10px;
+  }
+
+  .page-link {
+    color: $text-color;
+    line-height: $base-line-height;
+  }
+
+  @include media-query($on-tablet-landscape) {
+    position: initial;
+    border: none;
+    background: none;
+    float: none;
+    text-align: left;
+
+    input ~ .trigger {
+      display: block;
+    }
+
+    label[for="nav-trigger"] {
+      display: none;
+    }
+
+    .page-link {
+      display: inline-block;
+      padding: 0;
+
+      // Gaps between nav items, but not on the last one
+      &:not(:last-child) {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+
+/**
+ * Site footer
+ */
+.site-footer {
+  border-top: 1px solid $grey-color-light;
+  padding: $spacing-unit * 1px 0;
+}
+
+.footer-heading {
+  @include relative-font-size(1.125);
+  margin-bottom: $spacing-unit / 2 * 1px;
+}
+
+.contact-list,
+.social-media-list {
+  list-style: none;
+  margin-left: 0;
+
+  li {
+    display: inline-block;
+    padding-right: 1.0em;
+  }
+}
+
+.footer-col-wrapper {
+  @include relative-font-size(0.9375);
+  color: $grey-color;
+  margin-left: -$spacing-unit / 2 * 1px;
+  @include clear-fix;
+}
+
+/**
+ * Page content
+ */
+.page-content {
+  padding: $spacing-unit * 1px 0;
+
+  h1, h2, h3, h4, h5, h6, p, ul, .highlight {
+    margin: 1.0em 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    a {
+      &, &:visited {
+        color: $text-color;
+      }
+    }
+  }
+
+  h1 {
+    padding-bottom: 0.50em;
+    border-bottom: solid 1px $grey-color-light;
+
+    @include media-query($on-tablet-landscape) {
+      margin: 0.5em 0;
+      padding-bottom: 0.25em;
+    }
+  }
+
+  ul {
+    margin-left: 1.0em;
+  }
+}
+
+.page-heading {
+  @include relative-font-size(1.25);
+}
+
+.post-list {
+  margin-left: 0;
+  list-style: none;
+
+  > li {
+    margin-bottom: $spacing-unit * 1px;
+  }
+}
+
+.post-meta {
+  font-size: $small-font-size;
+  color: $grey-color;
+}
+
+.post-link {
+  display: block;
+  @include relative-font-size(1.5);
+}
+
+/**
+ * Posts
+ */
+.post-header {
+  margin-bottom: $spacing-unit * 1px;
+}
+
+.post-title {
+  @include relative-font-size(2.625);
+  letter-spacing: -1px;
+  line-height: 1;
+
+  @include media-query($on-desktop-small) {
+    @include relative-font-size(2.25);
+  }
+}
+
+.post-content {
+  margin-bottom: $spacing-unit * 1px;
+
+  h2 {
+    @include relative-font-size(1.5);
+
+    @include media-query($on-tablet-landscape) {
+      @include relative-font-size(2);
+    }
+  }
+
+  h3 {
+    @include relative-font-size(1.25);
+
+    @include media-query($on-tablet-landscape) {
+      @include relative-font-size(1.75);
+    }
+  }
+
+  h4 {
+    @include relative-font-size(1);
+
+    @include media-query($on-tablet-landscape) {
+      @include relative-font-size(1.50);
+    }
+  }
+}

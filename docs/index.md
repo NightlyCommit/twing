@@ -1,37 +1,19 @@
-## Twing Documentation
+# Twing Documentation
 
 Read the online documentation to learn more about Twing.
 
-<ul>
-    {% for item in site.data.navigation_documentation.docs %}
-        <li>
-        {% if item[1].url %}
-            <a href="{{ site.baseurl }}/{{ item[1].url }}" alt="{{ item[1].title }}">{{ item[1].title }}</a>
-        {% else %}
-            <span>{{ item[1].title }}</span>
-        {% endif %}
-        </li>
-   {% endfor %}
-   <li><a href="{{ site.github.repository_url }}/blob/master/LICENSE">License</a></li>
-</ul>
+{% include toc.html items=site.data.navigation_documentation.docs %}
 
-## Twing Reference
+# [Twig Language Reference][language-reference-url]
 
-Browse the online reference to learn more about built-in features.
+Browse the online Twig language reference to learn more about built-in features.
 
 <div>
     {% for section in site.data.navigation_reference.sections %}
-    <h3>{{ section[1].title }}</h3>
-    <ul>
-        {% for item in section[1].items %}
-            <li>
-            {% if item[1].url %}
-                <a href="{{ site.baseurl }}/{{ item[1].url }}" alt="{{ item[1].title }}">{{ item[1].title }}</a>
-            {% else %}
-                <span>{{ item[1].title }}</span>
-            {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+        <h2>{{ section[1].title }}</h2>
+        {% assign items = section[1].items %}
+        {% include toc.html items=items %}
     {% endfor %}
 </div>
+
+[language-reference-url]: {{ site.baseurl }}{% link language-reference/index.md %}

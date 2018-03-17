@@ -1,0 +1,21 @@
+@import "variables";
+
+@mixin media-query($device) {
+  @debug $device / $base-font-size;
+
+  @media screen and (min-width: ($device / $base-font-size) * 1em) {
+    @content;
+  }
+}
+
+@mixin relative-font-size($ratio) {
+  font-size: $ratio * 1em;
+}
+
+@mixin clear-fix() {
+  &:after {
+    clear: both;
+    display: block;
+    content: "";
+  }
+}

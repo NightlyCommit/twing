@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This is the documentation for Twing, the TypeScript-written Node.js port of [TwigPHP](https://github.com/twigphp/Twig).
+This is the documentation for Twing, the TypeScript-written Node.js implementation of the [Twig Language][language-reference-url].
 
 The key-features are...
 
@@ -70,5 +70,7 @@ class SleepExtenstion extends Twing.TwingExtension {
     }
 }
 ```
+[back][back-url]
 
-[back]({{ site.baseurl }}{% link index.md %})
+[back-url]: {{ site.baseurl }}{% link index.md %}
+[language-reference-url]: {{ site.baseurl }}{% link language-reference/index.md %}
