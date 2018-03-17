@@ -1026,6 +1026,10 @@ export function twingLast(env: TwingEnvironment, item: any) {
  * @returns {string} The concatenated string
  */
 export function twingJoinFilter(value: Array<any>, glue: string = '') {
+    if (isNullOrUndefined(value)) {
+        return '';
+    }
+
     if (isTraversable(value)) {
         value = iteratorToArray(value, false);
     }
