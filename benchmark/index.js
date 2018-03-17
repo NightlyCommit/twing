@@ -69,6 +69,6 @@ let  benchmark = async function (iterations = 100000) {
     console.warn('Time taken per iteration: ' + diff / iterations);
 }
 
-fs.removeSync('cache');
+// fs.removeSync('benchmark/cache');
 
 benchmark();

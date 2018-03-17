@@ -53,10 +53,24 @@ export class TwingNodeFor extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("context.set('_parent', context.clone());\n")
-            .write("context.set('_seq',  Twing.twingEnsureTraversable(")
+            .write("context.set('_parent', context.clone());\n\n")
+            .write('await (async () => {\n')
+            .indent()
+            .write('let c = Twing.twingEnsureTraversable(')
             .subcompile(this.getNode('seq'))
-            .raw("));\n")
+            .raw(");\n\n")
+            .write('if (c === context) {\n')
+            .indent()
+            .write("context.set('_seq', context.clone());\n")
+            .outdent()
+            .write("}\n")
+            .write("else {\n")
+            .indent()
+            .write("context.set('_seq', c);\n")
+            .outdent()
+            .write("}\n")
+            .outdent()
+            .write("})();\n\n")
         ;
 
         if (this.hasNode('else')) {
@@ -75,9 +89,9 @@ export class TwingNodeFor extends TwingNode {
 
             if (!this.getAttribute('ifexpr')) {
                 compiler
-                    .write("if (Twing.isCountable(context.get('_seq'))) {\n")
+                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Twing.isCountable(context.get('_seq')))) {\n")
                     .indent()
-                    .write("let length = context.get('_seq').size;\n")
+                    .write("let length = Twing.count(context.get('_seq'));\n")
                     .write("let loop = context.get('loop');\n")
                     .write("loop.set('revindex0', length - 1);\n")
                     .write("loop.set('revindex', length);\n")

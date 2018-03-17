@@ -1,9 +1,10 @@
+import {compare} from "./twing/helper/compare";
+import {count} from "./twing/helper/count";
 import {each} from "./twing/helper/each";
 import {getContextProxy} from "./twing/helper/get-context-proxy";
 import {isCountable} from "./twing/helper/is-countable";
 import {iteratorToMap} from "./twing/helper/iterator-to-map";
 import {regexParser} from "./twing/helper/regex-parser";
-import {compare} from "./twing/helper/compare";
 import {TwingErrorLoader} from "./twing/error/loader";
 import {TwingErrorRuntime} from "./twing/error/runtime";
 import {
@@ -26,6 +27,7 @@ import {TwingTemplate} from "./twing/template";
 
 let Twing = {
     compare: compare,
+    count: count,
     each: each,
     echo: echo,
     flush: flush,

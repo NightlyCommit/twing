@@ -30,14 +30,16 @@ module.exports.__TwingTemplate_7c9b54223910bda255d08fc175981e9ba1e2ba3330dec4fc2
         // line 6
         context.set('_parent', context.clone());
         context.set('_seq',  Twing.twingEnsureTraversable((context.has("data") ? context.get("data") : null)));
-        for (let [__key__, __value__] of context.get('_seq')) {
-            Twing.getContextProxy(context)["_key"] = __key__;
-            Twing.getContextProxy(context)["row"] = __value__;
+        await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
+            // Twing.getContextProxy(context)["_key"] = __key__;
+            // Twing.getContextProxy(context)["row"] = __value__;
+            context.set("_key", __key__);
+            context.set("row", __value__);
             // line 7
             Twing.echo("        ");
             Twing.echo(context.get("row"));
             Twing.echo("\n    ");
-        }
+        });
         (() => {
             let parent = context.get('_parent');
             context.delete('_seq');
