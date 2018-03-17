@@ -39,8 +39,8 @@ Many IDEs support syntax highlighting and auto-completion for Twig:
 
 * *Textmate* via the `Twig bundle`
 * *Vim* via the `Jinja syntax plugin` or the `vim-twig plugin`
-* *Netbeans* via the `Twig syntax plugin` (until 7.1, native as of 7.2)
-* *PhpStorm* and *WebStorm* natively, namespaces and completion support via `Twig Extended` plugin
+* *Netbeans* via the `Twig syntax plugin` (until 7.1, natively as of 7.2)
+* *PhpStorm* and *WebStorm* natively
 * *Eclipse* via the `Twig plugin`
 * *Sublime Text* via the `Twig bundle`
 * *GtkSourceView* via the `Twig language definition` (used by gedit and other projects)

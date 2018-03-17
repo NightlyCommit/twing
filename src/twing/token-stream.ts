@@ -84,8 +84,7 @@ export class TwingTokenStream {
         let index = this.current + number;
 
         if (index >= this.tokens.length) {
-            // throw new Twig_Error_Syntax('Unexpected end of template.', $this->tokens[$this->active + $number - 1]->getLine(), $this->source);
-            throw 'Unexpected end of template.';
+            throw new TwingErrorSyntax('Unexpected end of template.', this.tokens[this.current + number - 1].getLine(), this.source);
         }
 
         return this.tokens[index];

@@ -1,7 +1,7 @@
 sections:
   tags:
     title: tags
-    url: tags/index.html
+    url: language-reference/tags/index.html
     items:
       autoescape:
         title: autoescape
@@ -33,7 +33,7 @@ sections:
         title: sandbox
       set:
         title: set
-        url: tags/set.html
+        url: language-reference/tags/set.html
       spaceless:
         title: spaceless
       use:

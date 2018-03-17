@@ -68,4 +68,4 @@ The `set` tag can also be used to 'capture' chunks of text:
 ```
 {% endraw %}
 
-[back]({{ site.baseurl }}{% link tags/index.md %})
+[back]({{ site.baseurl }}{% link language-reference/tags/index.md %})

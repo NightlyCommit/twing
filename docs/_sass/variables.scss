@@ -1,0 +1,23 @@
+$base-font-family: "Roboto", Helvetica, Arial, sans-serif;
+$base-font-size:   16;
+$base-font-weight: 400;
+$small-font-size:  $base-font-size * 0.875;
+$base-line-height: 1.5;
+
+$spacing-unit:     30;
+
+$text-color:       #333;
+$background-color: #fdfdfd;
+$brand-color:      #2a7ae2;
+
+$grey-color:       #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark:  darken($grey-color, 25%);
+
+$on-mobile-large: 375;
+$on-tablet-portrait: 768;
+$on-tablet-landscape: 1024;
+$on-desktop-small: 1280;
+$on-desktop-medium: 1440;
+$on-desktop-large: 1920;
+

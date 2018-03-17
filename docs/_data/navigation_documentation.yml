@@ -13,6 +13,7 @@ docs:
     url: api.html
   extending:
     title: Extending Twing
+    url: advanced.html
   internals:
     title: Twing Internals
   recipes:
