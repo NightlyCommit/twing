@@ -94,7 +94,7 @@ export class TwingNodeFor extends TwingNode {
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
         compiler
-            .write("for (let [__key__, __value__] of context.get('_seq')) {\n")
+            .write("await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {\n")
             .indent()
             .subcompile(this.getNode('key_target'), false)
             .raw(' = __key__;\n')
@@ -102,7 +102,7 @@ export class TwingNodeFor extends TwingNode {
             .raw(' = __value__;\n')
             .subcompile(this.getNode('body'))
             .outdent()
-            .write("}\n")
+            .write("});\n")
         ;
 
         if (this.hasNode('else')) {

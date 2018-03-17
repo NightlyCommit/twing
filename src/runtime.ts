@@ -1,3 +1,4 @@
+import {each} from "./twing/helper/each";
 import {getContextProxy} from "./twing/helper/get-context-proxy";
 import {isCountable} from "./twing/helper/is-countable";
 import {iteratorToMap} from "./twing/helper/iterator-to-map";
@@ -25,6 +26,7 @@ import {TwingTemplate} from "./twing/template";
 
 let Twing = {
     compare: compare,
+    each: each,
     echo: echo,
     flush: flush,
     getContextProxy: getContextProxy,

@@ -1363,12 +1363,12 @@ export function twingCapitalizeStringFilter(env: TwingEnvironment, string: strin
 /**
  * @internal
  */
-export function twingEnsureTraversable(seq: any): TwingMap<any, any> {
+export function twingEnsureTraversable(seq: any): any{
     if (isTraversable(seq)) {
-        return iteratorToMap(seq);
+        return seq;
     }
 
-    return new TwingMap();
+    return [];
 }
 
 /**
