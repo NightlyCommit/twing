@@ -8,4 +8,5 @@
 /lib
 /node_modules
 /tmp
+/benchmark/cache
 npm-debug.log

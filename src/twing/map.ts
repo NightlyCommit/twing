@@ -1,6 +1,23 @@
 import {isNumber} from "util";
 
 export class TwingMap<K, V> extends Map<any, any> {
+    private assignmentProxy: ProxyConstructor;
+
+    getAssignmentProxy() {
+        if (!this.assignmentProxy) {
+            this.assignmentProxy = new Proxy(this, {
+                get: function (target: any, p: any, value: any) {
+                    return target.get(p);
+                },
+                set: function (target: any, p: any, value: any, receiver: any) {
+                    return target.set(p, value);
+                }
+            });
+        }
+
+        return this.assignmentProxy;
+    }
+
     push(item: any) {
         this.set(this.size, item);
 
