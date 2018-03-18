@@ -2,6 +2,8 @@ import {TwingNodeInterface} from "./node-interface";
 import {TwingMap} from "./map";
 import {TwingCompiler} from "./compiler";
 
+const var_export = require('locutus/php/var/var_export');
+
 export enum TwingNodeType {
     AUTO_ESCAPE = 'auto_escape',
     BLOCK = 'block',
@@ -100,39 +102,33 @@ export class TwingNode implements TwingNodeInterface {
         return result;
     }
 
-    toString(indentation: number = 0) {
-        let repr = [
-            this.constructor.name + ' (' + this.getType() + ')'
-        ];
+    toString() {
+        let attributes = [];
 
-        if (this.attributes.size > 0) {
-            let attributes: Array<string> = [];
+        for (let [name, value] of this.attributes) {
+            let attributeRepr = '' + var_export(value, true);
 
-            repr.push(' '.repeat(indentation + 2) + 'ATTRIBUTES');
-
-            this.attributes.forEach(function (values, index) {
-                if (!Array.isArray(values)) {
-                    values = [values];
-                }
-
-                for (let value of values) {
-                    attributes.push(' '.repeat(indentation + 4) + `${index}: ${value && value instanceof TwingNode ? value.toString(indentation + 4) : value}`);
-                }
-            });
-
-            repr.push(attributes.join('\n'));
+            attributes.push(`${name}: ${attributeRepr.replace(/\n/g, '')}`);
         }
 
+        let repr = [this.constructor.name + '(' + attributes.join(', ')];
+
         if (this.nodes.size > 0) {
-            let nodes: Array<string> = [];
+            for (let [name, node] of this.nodes) {
+                let len = ('' + name).length + 4;
+                let nodeRepr = [];
 
-            repr.push(' '.repeat(indentation + 2) + 'NODES');
+                for (let line of node.toString().split('\n')) {
+                    nodeRepr.push(' '.repeat(len) + line);
+                }
 
-            this.nodes.forEach(function (node, index) {
-                nodes.push(' '.repeat(indentation + 4) + `${index}: ${node.toString(indentation + 4)}`)
-            });
+                repr.push(`  ${name}: ${nodeRepr.join('\n').trimLeft()}`);
+            }
 
-            repr.push(nodes.join('\n'));
+            repr.push(')');
+        }
+        else {
+            repr[0] += ')';
         }
 
         return repr.join('\n');

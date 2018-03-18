@@ -15,7 +15,9 @@ export class TwingTokenStream {
     }
 
     toString() {
-        return this.tokens.join('\n');
+        return this.tokens.map(function(token) {
+            return token.toString();
+        }).join('\n');
     }
 
     injectTokens(tokens: Array<TwingToken>) {
@@ -42,7 +44,7 @@ export class TwingTokenStream {
      *
      * @return TwingToken|null The next token if the condition is true, null otherwise
      */
-    nextIf(primary: string, secondary: Array<string> | string = null) {
+    nextIf(primary: number, secondary: Array<string> | string = null) {
         if (this.tokens[this.current].test(primary, secondary)) {
             return this.next();
         }
@@ -55,7 +57,7 @@ export class TwingTokenStream {
      *
      * @return TwingToken
      */
-    expect(type: string, value: Array<string> | string | number = null, message: string = null) {
+    expect(type: number, value: Array<string> | string | number = null, message: string = null) {
         let token = this.tokens[this.current];
 
         if (!token.test(type, value)) {
@@ -95,7 +97,7 @@ export class TwingTokenStream {
      *
      * @return bool
      */
-    test(primary: string, secondary: Array<string> | string = null) {
+    test(primary: number, secondary: Array<string> | string = null) {
         return this.tokens[this.current].test(primary, secondary);
     }
 

@@ -1,23 +1,23 @@
 export class TwingToken {
     private value: string;
-    private type: string;
+    private type: number;
     private lineno: number;
 
-    static EOF_TYPE = 'EOF_TYPE';
-    static TEXT_TYPE = 'TEXT_TYPE';
-    static BLOCK_START_TYPE = 'BLOCK_START_TYPE';
-    static VAR_START_TYPE = 'VAR_START_TYPE';
-    static BLOCK_END_TYPE = 'BLOCK_END_TYPE';
-    static VAR_END_TYPE = 'VAR_END_TYPE';
-    static NAME_TYPE = 'NAME_TYPE';
-    static NUMBER_TYPE = 'NUMBER_TYPE';
-    static STRING_TYPE = 'STRING_TYPE';
-    static OPERATOR_TYPE = 'OPERATOR_TYPE';
-    static PUNCTUATION_TYPE = 'PUNCTUATION_TYPE';
-    static INTERPOLATION_START_TYPE = 'INTERPOLATION_START_TYPE';
-    static INTERPOLATION_END_TYPE = 'INTERPOLATION_END_TYPE';
+    static EOF_TYPE = -1;
+    static TEXT_TYPE = 0;
+    static BLOCK_START_TYPE = 1;
+    static VAR_START_TYPE = 2;
+    static BLOCK_END_TYPE = 3;
+    static VAR_END_TYPE = 4;
+    static NAME_TYPE = 5;
+    static NUMBER_TYPE = 6;
+    static STRING_TYPE = 7;
+    static OPERATOR_TYPE = 8;
+    static PUNCTUATION_TYPE = 9;
+    static INTERPOLATION_START_TYPE = 10;
+    static INTERPOLATION_END_TYPE = 11;
 
-    constructor(type: string, value: string, lineno: number) {
+    constructor(type: number, value: string, lineno: number) {
         this.type = type;
         this.value = value;
         this.lineno = lineno;
@@ -31,11 +31,11 @@ export class TwingToken {
      *  * type and value (or array of possible values)
      *  * just value (or array of possible values) (NAME_TYPE is used as type)
      *
-     * @param type TwingTokenType
-     * @param values string|Array<string>
+     * @param {number} type
+     * @param {string|Array<string>} values
      * @returns {boolean}
      */
-    public test(type: string, values: Array<string> | string | number = null) {
+    public test(type: number, values: Array<string> | string | number = null) {
         return (this.type === type) && (
             values === null ||
             (Array.isArray(values) && values.includes(this.value)) ||
@@ -59,10 +59,76 @@ export class TwingToken {
     }
 
     toString() {
-        return `${TwingToken.typeToEnglish(this.type)}(${this.value})`;
+        return `${TwingToken.typeToString(this.type, true)}(${this.value ? this.value : ''})`;
     }
 
-    static typeToEnglish(type: string): string {
+    /**
+     * Returns the constant representation (internal) of a given type.
+     *
+     * @param {int} type The type as an integer
+     * @param {boolean} short Whether to return a short representation or not
+     *
+     * @returns {string} The string representation
+     */
+    static typeToString(type: number, short: boolean = false) {
+        let name: string;
+
+        switch (type) {
+            case TwingToken.EOF_TYPE:
+                name = 'EOF_TYPE';
+                break;
+            case TwingToken.TEXT_TYPE:
+                name = 'TEXT_TYPE';
+                break;
+            case TwingToken.BLOCK_START_TYPE:
+                name = 'BLOCK_START_TYPE';
+                break;
+            case TwingToken.VAR_START_TYPE:
+                name = 'VAR_START_TYPE';
+                break;
+            case TwingToken.BLOCK_END_TYPE:
+                name = 'BLOCK_END_TYPE';
+                break;
+            case TwingToken.VAR_END_TYPE:
+                name = 'VAR_END_TYPE';
+                break;
+            case TwingToken.NAME_TYPE:
+                name = 'NAME_TYPE';
+                break;
+            case TwingToken.NUMBER_TYPE:
+                name = 'NUMBER_TYPE';
+                break;
+            case TwingToken.STRING_TYPE:
+                name = 'STRING_TYPE';
+                break;
+            case TwingToken.OPERATOR_TYPE:
+                name = 'OPERATOR_TYPE';
+                break;
+            case TwingToken.PUNCTUATION_TYPE:
+                name = 'PUNCTUATION_TYPE';
+                break;
+            case TwingToken.INTERPOLATION_START_TYPE:
+                name = 'INTERPOLATION_START_TYPE';
+                break;
+            case TwingToken.INTERPOLATION_END_TYPE:
+                name = 'INTERPOLATION_END_TYPE';
+                break;
+            default:
+                throw new Error(`Token of type "${type}" does not exist.`);
+        }
+
+        return short ? name : 'TwingToken.' + name;
+    }
+
+
+    /**
+     * Returns the English representation of a given type.
+     *
+     * @param {int} type The type as an integer
+     *
+     * @returns {string} The string representation
+     */
+    static typeToEnglish(type: number): string {
         switch (type) {
             case TwingToken.EOF_TYPE:
                 return 'end of template';

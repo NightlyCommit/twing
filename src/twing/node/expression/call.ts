@@ -34,21 +34,21 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
             if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
                 if (r.isStatic()) {
-                    compiler.write(`${callable_[0]}.${callable_[1]}`);
+                    compiler.raw(`${callable_[0]}.${callable_[1]}`);
                 }
                 else {
                     closingParenthesis = true;
 
-                    compiler.write(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
+                    compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
                 }
             }
             else if (r instanceof TwingReflectionMethod && callable_[0] instanceof TwingExtension) {
-                compiler.write(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
+                compiler.raw(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
             }
             else {
                 closingParenthesis = true;
 
-                compiler.write(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
+                compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
             }
         }
 

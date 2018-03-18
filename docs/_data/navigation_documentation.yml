@@ -16,6 +16,7 @@ docs:
     url: advanced.html
   internals:
     title: Twing Internals
+    url: internals.html
   recipes:
     title: Twing recipes
   coding_standards:
