@@ -337,7 +337,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('macrosInASandbox', async function (test) {
-        let twing = getEnvironment(true, {autoescape: 'html'}, {index: `
+        let twing = getEnvironment(true, {autoescape: 'html', cache: 'tmp'}, {index: `
 {%- import _self as macros %}
 
 {%- macro test(text) %}<p>{{ text }}</p>{% endmacro %}

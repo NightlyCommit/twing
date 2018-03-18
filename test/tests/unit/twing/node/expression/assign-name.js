@@ -18,7 +18,7 @@ tap.test('node/expression/assign-name', function (test) {
 
         let node = new TwingNodeExpressionAssignName('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), 'Twing.getContextProxy(context)["foo"]');
+        test.same(compiler.compile(node).getSource(), 'context.getAssignmentProxy()["foo"]');
         test.end();
     });
 

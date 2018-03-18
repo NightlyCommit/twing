@@ -95,6 +95,13 @@ const strip_tags = require('locutus/php/strings/strip_tags');
 const mt_rand = require('locutus/php/math/mt_rand');
 const array_rand = require('locutus/php/array/array_rand');
 const runes = require('runes');
+const isFloat = require('locutus/php/var/is_float');
+const isBool = require('locutus/php/var/is_bool');
+const capitalize = require('capitalize');
+const strtr = require('locutus/php/strings/strtr');
+const round = require('locutus/php/math/round');
+const ceil = require('locutus/php/math/ceil');
+const floor = require('locutus/php/math/floor');
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -811,8 +818,6 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
  * @returns {string}
  */
 export function twingReplaceFilter(str: string, from: any) {
-    const strtr = require('locutus/php/strings/strtr');
-
     if (isTraversable(from)) {
         from = iteratorToHash(from);
     }
@@ -833,10 +838,6 @@ export function twingReplaceFilter(str: string, from: any) {
  * @returns int|float The rounded number
  */
 export function twingRound(value: any, precision = 0, method = 'common') {
-    const round = require('locutus/php/math/round');
-    const ceil = require('locutus/php/math/ceil');
-    const floor = require('locutus/php/math/floor');
-
     if (method === 'common') {
         return round(value, precision);
     }
@@ -1355,20 +1356,22 @@ export function twingTitleStringFilter(env: TwingEnvironment, string: string) {
  * @returns {string} The capitalized string
  */
 export function twingCapitalizeStringFilter(env: TwingEnvironment, string: string) {
-    const capitalize = require('capitalize');
-
     return capitalize(string);
 }
 
 /**
  * @internal
  */
-export function twingEnsureTraversable(seq: any): TwingMap<any, any> {
+export function twingEnsureTraversable(seq: any): any {
     if (isTraversable(seq)) {
-        return iteratorToMap(seq);
+        // if (seq instanceof TwingMap) {
+        //     return seq.clone();
+        // }
+
+        return seq;
     }
 
-    return new TwingMap();
+    return [];
 }
 
 /**
@@ -1609,12 +1612,7 @@ export function twingArrayBatch(items: Array<any>, size: number, fill: any = nul
  * @internal
  */
 export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, object: any, item: any, _arguments: Array<any> = [], type: string = TwingTemplate.ANY_CALL, isDefinedTest: boolean = false, ignoreStrictCheck: boolean = false) {
-    const capitalize = require('capitalize');
-
     let message: string;
-
-    let isFloat = require('locutus/php/var/is_float');
-    let isBool = require('locutus/php/var/is_bool');
 
     // ANY_CALL or ARRAY_CALL
     if (type !== TwingTemplate.METHOD_CALL) {

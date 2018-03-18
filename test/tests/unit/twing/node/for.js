@@ -67,12 +67,23 @@ tap.test('node/for', function (test) {
 
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
-context.set('_seq',  Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null)));
-for (let [__key__, __value__] of context.get('_seq')) {
-    Twing.getContextProxy(context)["key"] = __key__;
-    Twing.getContextProxy(context)["item"] = __value__;
+
+await (async () => {
+    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+
+    if (c === context) {
+        context.set('_seq', context.clone());
+    }
+    else {
+        context.set('_seq', c);
+    }
+})();
+
+await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
+    context.getAssignmentProxy()["key"] = __key__;
+    context.getAssignmentProxy()["item"] = __value__;
     Twing.echo((context.has("foo") ? context.get("foo") : null));
-}
+});
 (() => {
     let parent = context.get('_parent');
     context.delete('_seq');
@@ -112,24 +123,35 @@ for (let [__key__, __value__] of context.get('_seq')) {
 
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
-context.set('_seq',  Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null)));
+
+await (async () => {
+    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+
+    if (c === context) {
+        context.set('_seq', context.clone());
+    }
+    else {
+        context.set('_seq', c);
+    }
+})();
+
 context.set('loop', new Twing.TwingMap([
   ['parent', context.get('_parent')],
   ['index0', 0],
   ['index', 1],
   ['first', true]
 ]));
-if (Twing.isCountable(context.get('_seq'))) {
-    let length = context.get('_seq').size;
+if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Twing.isCountable(context.get('_seq')))) {
+    let length = Twing.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);
     loop.set('revindex', length);
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-for (let [__key__, __value__] of context.get('_seq')) {
-    Twing.getContextProxy(context)["k"] = __key__;
-    Twing.getContextProxy(context)["v"] = __value__;
+await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
+    context.getAssignmentProxy()["k"] = __key__;
+    context.getAssignmentProxy()["v"] = __value__;
     Twing.echo((context.has("foo") ? context.get("foo") : null));
     (() => {
         let loop = context.get('loop');
@@ -142,7 +164,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             loop.set('last', loop.get('revindex0') === 0);
         }
     })();
-}
+});
 (() => {
     let parent = context.get('_parent');
     context.delete('_seq');
@@ -182,16 +204,27 @@ for (let [__key__, __value__] of context.get('_seq')) {
 
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
-context.set('_seq',  Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null)));
+
+await (async () => {
+    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+
+    if (c === context) {
+        context.set('_seq', context.clone());
+    }
+    else {
+        context.set('_seq', c);
+    }
+})();
+
 context.set('loop', new Twing.TwingMap([
   ['parent', context.get('_parent')],
   ['index0', 0],
   ['index', 1],
   ['first', true]
 ]));
-for (let [__key__, __value__] of context.get('_seq')) {
-    Twing.getContextProxy(context)["k"] = __key__;
-    Twing.getContextProxy(context)["v"] = __value__;
+await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
+    context.getAssignmentProxy()["k"] = __key__;
+    context.getAssignmentProxy()["v"] = __value__;
     if (true) {
         Twing.echo((context.has("foo") ? context.get("foo") : null));
         (() => {
@@ -201,7 +234,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             loop.set('first', false);
         })();
     }
-}
+});
 (() => {
     let parent = context.get('_parent');
     context.delete('_seq');
@@ -241,7 +274,18 @@ for (let [__key__, __value__] of context.get('_seq')) {
 
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
-context.set('_seq',  Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null)));
+
+await (async () => {
+    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+
+    if (c === context) {
+        context.set('_seq', context.clone());
+    }
+    else {
+        context.set('_seq', c);
+    }
+})();
+
 context.set('_iterated', false);
 context.set('loop', new Twing.TwingMap([
   ['parent', context.get('_parent')],
@@ -249,17 +293,17 @@ context.set('loop', new Twing.TwingMap([
   ['index', 1],
   ['first', true]
 ]));
-if (Twing.isCountable(context.get('_seq'))) {
-    let length = context.get('_seq').size;
+if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Twing.isCountable(context.get('_seq')))) {
+    let length = Twing.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);
     loop.set('revindex', length);
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-for (let [__key__, __value__] of context.get('_seq')) {
-    Twing.getContextProxy(context)["k"] = __key__;
-    Twing.getContextProxy(context)["v"] = __value__;
+await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
+    context.getAssignmentProxy()["k"] = __key__;
+    context.getAssignmentProxy()["v"] = __value__;
     Twing.echo((context.has("foo") ? context.get("foo") : null));
     context.set('_iterated',  true);
     (() => {
@@ -273,7 +317,7 @@ for (let [__key__, __value__] of context.get('_seq')) {
             loop.set('last', loop.get('revindex0') === 0);
         }
     })();
-}
+});
 if (context.get('_iterated') === false) {
     Twing.echo((context.has("foo") ? context.get("foo") : null));
 }
