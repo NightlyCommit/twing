@@ -131,14 +131,14 @@ export abstract class TwingTemplate {
      *
      * @internal
      */
-    async displayParentBlock(name: string, context: any, blocks: Map<string, TwingNodeBlock> = new Map()) {
+    displayParentBlock(name: string, context: any, blocks: Map<string, TwingNodeBlock> = new Map()) {
         let parent;
 
         if (this.traits.has(name)) {
             this.traits.get(name)[0].displayBlock(name, context, blocks, false);
         }
         else if ((parent = this.getParent(context)) !== false) {
-            await parent.displayBlock(name, context, blocks, false);
+            parent.displayBlock(name, context, blocks, false);
         }
         else {
             throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, -1, this.getSourceContext());
@@ -158,7 +158,7 @@ export abstract class TwingTemplate {
      *
      * @internal
      */
-    async displayBlock(name: string, context: any, blocks: TwingMap<string, [TwingTemplate, string]> = new TwingMap(), useBlocks = true): Promise<void> {
+    displayBlock(name: string, context: any, blocks: TwingMap<string, [TwingTemplate, string]> = new TwingMap(), useBlocks = true): void {
         let block: string;
         let template: TwingTemplate;
         let parent: TwingTemplate;
@@ -183,7 +183,7 @@ export abstract class TwingTemplate {
 
         if (template !== null) {
             try {
-                await Reflect.get(template, block).call(template, context, blocks);
+                Reflect.get(template, block).call(template, context, blocks);
             }
             catch (e) {
                 if (e instanceof TwingError) {
@@ -230,10 +230,10 @@ export abstract class TwingTemplate {
      *
      * @internal
      */
-    async renderParentBlock(name: string, context: any, blocks: Map<string, TwingNodeBlock> = new Map()) {
+    renderParentBlock(name: string, context: any, blocks: Map<string, TwingNodeBlock> = new Map()) {
         TwingOutputBuffering.obStart();
 
-        await this.displayParentBlock(name, context, blocks);
+        this.displayParentBlock(name, context, blocks);
 
         return TwingOutputBuffering.obGetClean() as string;
     }
@@ -253,10 +253,10 @@ export abstract class TwingTemplate {
      *
      * @internal
      */
-    async renderBlock(name: string, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap(), useBlocks = true): Promise<string> {
+    renderBlock(name: string, context: any, blocks: TwingMap<string, Array<any>> = new TwingMap(), useBlocks = true): string {
         TwingOutputBuffering.obStart();
 
-        await this.displayBlock(name, context, blocks, useBlocks);
+        this.displayBlock(name, context, blocks, useBlocks);
 
         return TwingOutputBuffering.obGetClean() as string;
     }
@@ -365,21 +365,21 @@ export abstract class TwingTemplate {
         return this.blocks;
     }
 
-    async display(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
+    display(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
         if (!(context instanceof TwingMap)) {
             context = iteratorToMap(context);
         }
 
-        await this.displayWithErrorHandling(this.env.mergeGlobals(context), this.blocks.merge(blocks));
+        this.displayWithErrorHandling(this.env.mergeGlobals(context), this.blocks.merge(blocks));
     }
 
-    async render(context: any): Promise<string> {
+    render(context: any): string {
         let level = TwingOutputBuffering.obGetLevel();
 
         TwingOutputBuffering.obStart();
 
         try {
-            await this.display(context);
+            this.display(context);
         }
         catch (e) {
             while (TwingOutputBuffering.obGetLevel() > level) {
@@ -392,9 +392,9 @@ export abstract class TwingTemplate {
         return TwingOutputBuffering.obGetClean() as string;
     }
 
-    protected async displayWithErrorHandling(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
+    protected displayWithErrorHandling(context: any, blocks: TwingMap<string, Array<any>> = new TwingMap()) {
         try {
-            await this.doDisplay(context, blocks);
+            this.doDisplay(context, blocks);
         }
         catch (e) {
             if (e instanceof TwingError) {
@@ -422,5 +422,5 @@ export abstract class TwingTemplate {
      * @param {*} context An array of parameters to pass to the template
      * @param {TwingMap<string, Array<*>>} blocks  An array of blocks to pass to the template
      */
-    async abstract doDisplay(context: {}, blocks: TwingMap<string, Array<any>>): Promise<void>;
+    abstract doDisplay(context: {}, blocks: TwingMap<string, Array<any>>): void;
 }

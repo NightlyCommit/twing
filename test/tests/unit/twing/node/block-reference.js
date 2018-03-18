@@ -19,7 +19,7 @@ tap.test('node/block-reference', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
-await this.displayBlock(\'foo\', context, blocks);
+this.displayBlock(\'foo\', context, blocks);
 `);
 
         test.end();

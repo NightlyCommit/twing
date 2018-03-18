@@ -19,7 +19,7 @@ tap.test('node/expression/parent', function (test) {
 
         let node = new TwingNodeExpressionParent('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), 'await this.renderParentBlock("foo", context, blocks)');
+        test.same(compiler.compile(node).getSource(), 'this.renderParentBlock("foo", context, blocks)');
         test.end();
     });
 

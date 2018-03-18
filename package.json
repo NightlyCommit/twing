@@ -40,7 +40,8 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lib": "tsc --project .",
     "version": "node tasks/version.js && git add .",
-    "docs": "cd docs && bundle exec jekyll serve"
+    "docs": "cd docs && bundle exec jekyll serve",
+    "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
   "dependencies": {
     "camelcase": "^4.1.0",

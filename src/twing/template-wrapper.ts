@@ -67,7 +67,7 @@ export class TwingTemplateWrapper {
      *
      * @returns {string} The rendered block
      */
-    async renderBlock(name: string, context: any = {}): Promise<string> {
+    renderBlock(name: string, context: any = {}): string {
         if (!(context instanceof TwingMap)) {
             context = iteratorToMap(context);
         }
@@ -79,7 +79,7 @@ export class TwingTemplateWrapper {
         TwingOutputBuffering.obStart();
 
         try {
-            await this.template.displayBlock(name, context);
+            this.template.displayBlock(name, context);
         }
         catch (e) {
             while (TwingOutputBuffering.obGetLevel() > level) {
@@ -98,7 +98,7 @@ export class TwingTemplateWrapper {
      * @param {string} name The block name to render
      * @param {*} context A hash of parameters to pass to the template
      */
-    async displayBlock(name: string, context: any = {}): Promise<void> {
+    displayBlock(name: string, context: any = {}): void {
         if (!(context instanceof TwingMap)) {
             context = iteratorToMap(context);
         }

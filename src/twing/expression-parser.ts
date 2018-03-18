@@ -403,6 +403,7 @@ export class TwingExpressionParser {
                     name = Buffer.from(name).toString('hex');
                 }
 
+                node = new TwingNodeExpressionConstant(node.getAttribute('name'), node.getTemplateLine());
                 node = new TwingNodeExpressionMethodCall(node, 'macro_' + name, arguments_, lineno);
                 node.setAttribute('safe', true);
 

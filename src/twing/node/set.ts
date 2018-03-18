@@ -41,17 +41,26 @@ export class TwingNodeSet extends TwingNode {
         compiler.addDebugInfo(this);
 
         if (this.getNode('names').getNodes().size > 1) {
-            compiler.write('[');
+            let values = this.getNode('values');
 
             for (let [idx, node] of this.getNode('names').getNodes()) {
                 if (idx) {
-                    compiler.raw(', ');
+                    compiler.raw(' ');
                 }
 
-                compiler.subcompile(node);
-            }
+                compiler
+                    .write('context.set(')
+                    .subcompile(node)
+                    .raw(', ')
+                ;
 
-            compiler.raw(']');
+                let value = values.getNode(idx);
+
+                compiler
+                    .subcompile(value)
+                    .raw(');')
+                ;
+            }
         }
         else {
             if (this.getAttribute('capture')) {
@@ -67,43 +76,33 @@ export class TwingNodeSet extends TwingNode {
                 }
             }
 
-            compiler.subcompile(this.getNode('names'), false);
+            compiler
+                .write('context.set(')
+                .subcompile(this.getNode('names'), true)
+                .raw(', ')
+            ;
 
             if (this.getAttribute('capture')) {
-                compiler.raw(" = ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset())");
+                compiler.raw("((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));");
             }
         }
 
         if (!this.getAttribute('capture')) {
-            compiler.raw(' = ');
-
-            if (this.getNode('names').getNodes().size > 1) {
-                compiler.write('[');
-
-                for (let [idx, $value] of this.getNode('values').getNodes()) {
-                    if (idx) {
-                        compiler.raw(', ');
-                    }
-
-                    compiler.subcompile($value);
-                }
-
-                compiler.raw(']');
+            if (this.getAttribute('safe')) {
+                compiler
+                    .write("((tmp = ")
+                    .subcompile(this.getNode('values'))
+                    .raw(") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));")
+                ;
             }
-            else {
-                if (this.getAttribute('safe')) {
-                    compiler
-                        .write("((tmp = ")
-                        .subcompile(this.getNode('values'))
-                        .raw(") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset())")
-                    ;
-                }
-                else {
-                    compiler.subcompile(this.getNode('values'));
-                }
+            else if (this.getNode('names').getNodes().size === 1) {
+                compiler
+                    .subcompile(this.getNode('values'))
+                    .raw(');')
+                ;
             }
         }
 
-        compiler.raw(";\n");
+        compiler.raw("\n");
     }
 }

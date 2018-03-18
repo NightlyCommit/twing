@@ -53,7 +53,7 @@ let template = twing.load('index.html');
 To render the template with some variables, call the ``render()`` function:
 
 ```javascript
-await template.render({'the': 'variables', 'go': 'here'});
+template.render({'the': 'variables', 'go': 'here'});
 ```
 
 > The ``display()`` method is a shortcut to output the template directly. See [Output buffering](#output-buffering) section for more details.
@@ -61,17 +61,15 @@ await template.render({'the': 'variables', 'go': 'here'});
 You can also load and render the template in one fell swoop:
 
 ```javascript
-await twing.render('index.html', {'the': 'variables', 'go': 'here'});
+twing.render('index.html', {'the': 'variables', 'go': 'here'});
 ```
 
 If a template defines blocks, they can be rendered individually via the
 ``renderBlock()`` call:
 
 ```javascript
-await template.renderBlock('block_name', {'the': 'variables', 'go': 'here'});
+template.renderBlock('block_name', {'the': 'variables', 'go': 'here'});
 ```
-
-> `render`, `display` and `renderBlock` are asynchronous functions.
 
 ## Environment Options
 
@@ -219,7 +217,7 @@ let loader = new Twing.TwingLoaderArray({
 });
 let twing = new Twing.TwingEnvironment(loader);
 
-await twing.render('index.html', {'name': 'Fabien'});
+twing.render('index.html', {'name': 'Fabien'});
 ```
 {% endraw %}
 

@@ -53,7 +53,7 @@ tap.test('node/set', function (test) {
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-context.getAssignmentProxy()["foo"] = "foo";
+context.set("foo", "foo");
 `);
 
             test.end();
@@ -78,7 +78,7 @@ context.getAssignmentProxy()["foo"] = "foo";
 let tmp;
 Twing.obStart();
 Twing.echo("foo");
-context.getAssignmentProxy()["foo"] = ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset());
+context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
 `);
 
             test.end();
@@ -96,7 +96,7 @@ context.getAssignmentProxy()["foo"] = ((tmp = Twing.obGetClean()) === '') ? '' :
 
             test.same(compiler.compile(node).getSource(), `// line 1
 let tmp;
-context.getAssignmentProxy()["foo"] = ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset());
+context.set("foo", ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
 `);
 
             test.end();
@@ -120,7 +120,7 @@ context.getAssignmentProxy()["foo"] = ((tmp = "foo") === '') ? '' : new Twing.Tw
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-[context.getAssignmentProxy()["foo"], context.getAssignmentProxy()["bar"]] = ["foo", "bar"];
+context.set("foo", "foo"); context.set("bar", "bar");
 `);
 
             test.end();

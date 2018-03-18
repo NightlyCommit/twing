@@ -19,17 +19,13 @@ export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
         super(nodes, attributes, lineno);
 
         this.type = TwingNodeType.EXPRESSION_METHOD_CALL;
-
-        if (node.getType() == TwingNodeType.EXPRESSION_NAME) {
-            node.setAttribute('always_defined', true);
-        }
     }
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('await ')
-            .subcompile(this.getNode('node'))
-            .raw('.')
+            .raw('context.get(')
+            .subcompile(this.getNode('node'), true)
+            .raw(').')
             .raw(this.getAttribute('method'))
             .raw('(')
         ;

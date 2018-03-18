@@ -28,8 +28,6 @@ export class TwingNodeInclude extends TwingNode {
             ;
         }
 
-        compiler.write('await ');
-
         this.addGetTemplate(compiler);
 
         compiler.raw('.display(');
@@ -62,7 +60,7 @@ export class TwingNodeInclude extends TwingNode {
 
     addGetTemplate(compiler: TwingCompiler) {
         compiler
-            .raw('this.loadTemplate(')
+            .write('this.loadTemplate(')
             .subcompile(this.getNode('expr'))
             .raw(', ')
             .repr(this.getTemplateName())

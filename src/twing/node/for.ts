@@ -54,7 +54,7 @@ export class TwingNodeFor extends TwingNode {
         compiler
             .addDebugInfo(this)
             .write("context.set('_parent', context.clone());\n\n")
-            .write('await (async () => {\n')
+            .write('(() => {\n')
             .indent()
             .write('let c = Twing.twingEnsureTraversable(')
             .subcompile(this.getNode('seq'))
@@ -108,12 +108,14 @@ export class TwingNodeFor extends TwingNode {
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
         compiler
-            .write("await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {\n")
+            .write("Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {\n")
             .indent()
-            .subcompile(this.getNode('key_target'), false)
-            .raw(' = __key__;\n')
-            .subcompile(this.getNode('value_target'), false)
-            .raw(' = __value__;\n')
+            .write('context.set(')
+            .subcompile(this.getNode('key_target'), true)
+            .raw(', __key__);\n')
+            .write('context.set(')
+            .subcompile(this.getNode('value_target'), true)
+            .raw(', __value__);\n')
             .subcompile(this.getNode('body'))
             .outdent()
             .write("});\n")

@@ -31,8 +31,7 @@ export class TwingNodeMacro extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write('async ')
-            .raw(`macro_${this.getAttribute('name')}(`)
+            .write(`macro_${this.getAttribute('name')}(`)
         ;
 
         let count = this.getNode('arguments').getNodes().size;

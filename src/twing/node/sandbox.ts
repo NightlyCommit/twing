@@ -13,7 +13,7 @@ export class TwingNodeSandbox extends TwingNode {
         compiler
             .addDebugInfo(this)
             .write("(")
-            .raw("async () => {\n")
+            .raw("() => {\n")
             .indent()
             .write("let sandbox = this.env.getExtension('TwingExtensionSandbox');\n")
             .write('let alreadySandboxed = sandbox.isSandboxed();\n')

@@ -23,7 +23,7 @@ tap.test('node/block', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
-async block_foo(context, blocks = new Twing.TwingMap()) {
+block_foo(context, blocks = new Twing.TwingMap()) {
     Twing.echo("foo");
 }
 
