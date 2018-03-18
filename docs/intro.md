@@ -14,7 +14,7 @@ The key-features are...
 
 ## Prerequisites
 
-Twing needs at least **node.js 6.0.0** to run.
+Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** to enjoy the best performance possible.
 
 ## Installation
 

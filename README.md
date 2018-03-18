@@ -15,7 +15,7 @@ That's what Twing is. A maintainability-first engine that pass 100% of the TwigP
 
 ## Prerequisites
 
-Twing needs at least **node.js 7.6.0** to run.
+Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** to enjoy the best performance possible.
 
 ## Installation
 
@@ -33,8 +33,17 @@ let loader = new Twing.TwingLoaderArray({
 });
 let twing = new Twing.TwingEnvironment(loader);
 
-let output = await twing.render('index.twig', {name: 'Fabien'});
+let output = twing.render('index.twig', {name: 'Fabien'});
 ```
+
+## About async support
+
+Unfortunately, async support had to be removed starting from 0.10.0, for two reasons:
+
+* Unpredictable behavior when used with Promise because of the output buffering mechanism not being ready for async operations. Twing rendering was reliable only when called using `await` and thus only when used synchronously. There was no point at keeping async support if the engine is only able to return predictable results when used synchronously.
+* Sub-par performance because of the huge overhead introduced by the async/await syntax.
+
+Async support will be re-added post-1.0 and as an option. Since performance issues are likely to persist in the future (the overhead is inherent to the use of Promise under the hood), users who only need sync support should not be impacted by the performance cost of async support. In the mean time, when async support will be re-introduced, usage of Promise will be possible and that should compensate for the overhead for those that need async support.
 
 ## More information
 
