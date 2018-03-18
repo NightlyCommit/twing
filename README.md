@@ -60,11 +60,11 @@ Read the [documentation](http://ericmorand.github.io/twing) for more information
 
 Copyright © 2018 [Eric MORAND](https://github.com/ericmorand). Released under the [2-Clause BSD License](https://github.com/ericmorand/twing/blob/master/LICENSE).
 
-[npm-image]: https://badge.fury.io/js/twing.svg?v=0.9.1
+[npm-image]: https://badge.fury.io/js/twing.svg?v=0.10.0
 [npm-url]: https://npmjs.org/package/twing
-[travis-image]: https://travis-ci.org/ericmorand/twing.svg?branch=master&v=0.9.1
+[travis-image]: https://travis-ci.org/ericmorand/twing.svg?branch=master&v=0.10.0
 [travis-url]: https://travis-ci.org/ericmorand/twing
-[daviddm-image]: https://david-dm.org/ericmorand/twing.svg?theme=shields.io&v=0.9.1
+[daviddm-image]: https://david-dm.org/ericmorand/twing.svg?theme=shields.io&v=0.10.0
 [daviddm-url]: https://david-dm.org/ericmorand/twing
-[coveralls-image]: https://coveralls.io/repos/github/ericmorand/twing/badge.svg?v=0.9.1
+[coveralls-image]: https://coveralls.io/repos/github/ericmorand/twing/badge.svg?v=0.10.0
 [coveralls-url]: https://coveralls.io/github/ericmorand/twing
