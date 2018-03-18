@@ -25,7 +25,7 @@ let directory = path.resolve('test/tests/integration/fixtures');
 
 let files = finder.from(directory).findFiles('test.js');
 
-tap.test('integration tests', async function (test) {
+tap.test('integration tests', function (test) {
     for (let file of files) {
         let dirname = path.dirname(file);
 
@@ -67,7 +67,7 @@ tap.test('integration tests', async function (test) {
 
         if (!expectedErrorMessage) {
             try {
-                let actual = await twing.render('index.twig', data);
+                let actual = twing.render('index.twig', data);
 
                 test.same(actual.trim(), expected.trim(), testMessage);
             }
@@ -79,7 +79,7 @@ tap.test('integration tests', async function (test) {
         }
         else {
             try {
-                await twing.render('index.twig', data);
+                twing.render('index.twig', data);
 
                 test.fail('should throw an error');
             }

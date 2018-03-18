@@ -68,7 +68,7 @@ tap.test('node/for', function (test) {
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
 
-await (async () => {
+(() => {
     let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
 
     if (c === context) {
@@ -79,9 +79,9 @@ await (async () => {
     }
 })();
 
-await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
-    context.getAssignmentProxy()["key"] = __key__;
-    context.getAssignmentProxy()["item"] = __value__;
+Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+    context.set("key", __key__);
+    context.set("item", __value__);
     Twing.echo((context.has("foo") ? context.get("foo") : null));
 });
 (() => {
@@ -124,7 +124,7 @@ await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
 
-await (async () => {
+(() => {
     let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
 
     if (c === context) {
@@ -149,9 +149,9 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
-    context.getAssignmentProxy()["k"] = __key__;
-    context.getAssignmentProxy()["v"] = __value__;
+Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+    context.set("k", __key__);
+    context.set("v", __value__);
     Twing.echo((context.has("foo") ? context.get("foo") : null));
     (() => {
         let loop = context.get('loop');
@@ -205,7 +205,7 @@ await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
 
-await (async () => {
+(() => {
     let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
 
     if (c === context) {
@@ -222,9 +222,9 @@ context.set('loop', new Twing.TwingMap([
   ['index', 1],
   ['first', true]
 ]));
-await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
-    context.getAssignmentProxy()["k"] = __key__;
-    context.getAssignmentProxy()["v"] = __value__;
+Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+    context.set("k", __key__);
+    context.set("v", __value__);
     if (true) {
         Twing.echo((context.has("foo") ? context.get("foo") : null));
         (() => {
@@ -275,7 +275,7 @@ await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
             test.same(compiler.compile(node).getSource(), `// line 1
 context.set('_parent', context.clone());
 
-await (async () => {
+(() => {
     let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
 
     if (c === context) {
@@ -301,9 +301,9 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-await Twing.each.bind(this)(context.get('_seq'), async (__key__, __value__) => {
-    context.getAssignmentProxy()["k"] = __key__;
-    context.getAssignmentProxy()["v"] = __value__;
+Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+    context.set("k", __key__);
+    context.set("v", __value__);
     Twing.echo((context.has("foo") ? context.get("foo") : null));
     context.set('_iterated',  true);
     (() => {

@@ -50,44 +50,44 @@ tap.test('node/expression/function', function (test) {
         test.test('basic', function (test) {
             let node = createFunction('foo');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foo\').getCallable()(...[])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foo\').getCallable()(...[])');
 
             node = createFunction('foo', new TwingMap([
                 [0, new TwingNodeExpressionConstant('bar', 1)],
                 [1, new TwingNodeExpressionConstant('foobar', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foo\').getCallable()(...["bar", "foobar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foo\').getCallable()(...["bar", "foobar"])');
 
             node = createFunction('bar');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'bar\').getCallable()(...[this.env])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'bar\').getCallable()(...[this.env])');
 
             node = createFunction('bar', new TwingMap([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'bar\').getCallable()(...[this.env, "bar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'bar\').getCallable()(...[this.env, "bar"])');
 
             node = createFunction('foofoo');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foofoo\').getCallable()(...[context])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foofoo\').getCallable()(...[context])');
 
             node = createFunction('foofoo', new TwingMap([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foofoo\').getCallable()(...[context, "bar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foofoo\').getCallable()(...[context, "bar"])');
 
             node = createFunction('foobar');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foobar\').getCallable()(...[this.env, context])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foobar\').getCallable()(...[this.env, context])');
 
             node = createFunction('foobar', new TwingMap([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'foobar\').getCallable()(...[this.env, context, "bar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foobar\').getCallable()(...[this.env, context, "bar"])');
 
             test.test('named arguments', function (test) {
                 let node = createFunction('date', new TwingMap([
@@ -95,7 +95,7 @@ tap.test('node/expression/function', function (test) {
                     ['date', new TwingNodeExpressionConstant(0, 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'date\').getCallable()(...[this.env, 0, "America/Chicago"])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'date\').getCallable()(...[this.env, 0, "America/Chicago"])');
 
                 test.end();
             });
@@ -103,19 +103,19 @@ tap.test('node/expression/function', function (test) {
             test.test('arbitrary named arguments', function (test) {
                 let node = createFunction('barbar');
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'barbar\').getCallable()(...[])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[])');
 
                 node = createFunction('barbar', new TwingMap([
                     ['foo', new TwingNodeExpressionConstant('bar', 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'barbar\').getCallable()(...[null, null, ["bar"]])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[null, null, ["bar"]])');
 
                 node = createFunction('barbar', new TwingMap([
                     ['arg2', new TwingNodeExpressionConstant('bar', 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'barbar\').getCallable()(...[null, "bar"])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[null, "bar"])');
 
                 node = createFunction('barbar', new TwingMap([
                     [0, new TwingNodeExpressionConstant('1', 1)],
@@ -124,7 +124,7 @@ tap.test('node/expression/function', function (test) {
                     ['foo', new TwingNodeExpressionConstant('bar', 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'barbar\').getCallable()(...["1", "2", ["3", "bar"]])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...["1", "2", ["3", "bar"]])');
 
                 test.end();
             });
@@ -134,7 +134,7 @@ tap.test('node/expression/function', function (test) {
                     [0, new TwingNodeExpressionConstant('foo', 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'await this.env.getFunction(\'anonymous\').getCallable()(...["foo"])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'anonymous\').getCallable()(...["foo"])');
 
                 test.end();
             });

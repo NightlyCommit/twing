@@ -14,7 +14,7 @@ The key-features are...
 
 ## Prerequisites
 
-Twing needs at least **node.js 7.6.0** to run.
+Twing needs at least **node.js 6.0.0** to run.
 
 ## Installation
 
@@ -34,7 +34,7 @@ let loader = new Twing.TwingLoaderArray({
 });
 let twing = new Twing.TwingEnvironment(loader);
 
-let output = await twing.render('index.twig', {name: 'Fabien'});
+let output = twing.render('index.twig', {name: 'Fabien'});
 ```
 
 Twing uses a loader (`TwingLoaderArray`) to locate templates, and an
@@ -52,23 +52,7 @@ const Twing = require('twing');
 let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
 let twing = new Twing.TwingEnvironment(loader);
 
-let ouput = await twing.render('index.html', {'name': 'Fabien'});
-```
-
-## Asynchronous by nature
-
-Twing is asynchronous by nature. It means that `TwingEnvironment::render`,`TwingEnvironment::display` and the belonging `TwingTemplate` functions return a Promise. This asynchronous nature makes possible to implement asynchronous filters, functions and tests.
-
-```js
-class SleepExtenstion extends Twing.TwingExtension {
-    getFunctions() {
-        return [
-            new Twing.TwingFunction('sleep', function(duration) {
-                return new Promise((resolve) => setTimeout(resolve, duration));      
-            })
-        ];
-    }
-}
+let ouput = twing.render('index.html', {'name': 'Fabien'});
 ```
 [back][back-url]
 

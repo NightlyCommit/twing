@@ -19,14 +19,14 @@ let setup = function () {
     })
 };
 
-let benchmarkOnce = async function (instance, data) {
+let benchmarkOnce = function (instance, data) {
     /** @var Twing.TwingEnvironment instance */
     let template = instance.load('index.html.twig');
 
-    return await template.render(data);
+    return template.render(data);
 };
 
-let benchmark = async function (iterations) {
+let benchmark = function (iterations) {
     console.warn('Benchmarking Twing');
 
     let instance = setup();
@@ -35,30 +35,29 @@ let benchmark = async function (iterations) {
     };
 
     // Prime the cache
-    let result = await benchmarkOnce(instance, data);
-
-    console.warn('Cache warmed', result);
+    let renderResult = benchmarkOnce(instance, data);
+    console.warn('Cache warmed', renderResult);
 
     let start = process.hrtime();
 
     for (let i = 0; i < iterations; i++) {
-        await benchmarkOnce(instance, data);
+        benchmarkOnce(instance, data);
     }
 
     let diff = process.hrtime(start);
 
-    diff = (diff[0] * NS_PER_SEC + diff[1]) / 1000000000;
+    let duration = diff[0] * NS_PER_SEC + diff[1];
 
-    return diff;
+    return duration;
 };
 
 fs.removeSync('tmp/benchmark');
 
 let iterations = 100000;
 
-benchmark(iterations).then(
-    function (diff) {
-        console.warn('Time taken: ' + diff);
-        console.warn('Time taken per iteration: ' + diff / iterations);
-    }
-);
+let duration = benchmark(iterations);
+
+duration /= 1000000000; // s
+
+console.warn('Time taken: ' + duration);
+console.warn('Time taken per iteration: ' + duration / iterations);

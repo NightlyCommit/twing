@@ -26,7 +26,7 @@ tap.test('node/import', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
-context.getAssignmentProxy()["macro"] = this.loadTemplate("foo.twig", null, 1);
+context.set("macro", this.loadTemplate("foo.twig", null, 1));
 `);
 
         test.end();

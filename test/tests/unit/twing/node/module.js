@@ -63,7 +63,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         ]);
     }
 
-    async doDisplay(context, blocks = new Twing.TwingMap()) {
+    doDisplay(context, blocks = new Twing.TwingMap()) {
         // line 1
         Twing.echo("foo");
     }
@@ -123,11 +123,11 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         return "layout.twig";
     }
 
-    async doDisplay(context, blocks = new Twing.TwingMap()) {
+    doDisplay(context, blocks = new Twing.TwingMap()) {
         // line 2
-        context.getAssignmentProxy()["macro"] = this.loadTemplate("foo.twig", "foo.twig", 2);
+        context.set("macro", this.loadTemplate("foo.twig", "foo.twig", 2));
         // line 1
-        await this.parent.display(context, this.blocks.merge(blocks));
+        this.parent.display(context, this.blocks.merge(blocks));
     }
 
     getTemplateName() {
@@ -198,11 +198,11 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         return this.loadTemplate(((true) ? ("foo") : ("foo")), "foo.twig", 2);
     }
 
-    async doDisplay(context, blocks = new Twing.TwingMap()) {
+    doDisplay(context, blocks = new Twing.TwingMap()) {
         // line 4
-        context.getAssignmentProxy()["foo"] = "foo";
+        context.set("foo", "foo");
         // line 2
-        await this.getParent(context).display(context, this.blocks.merge(blocks));
+        this.getParent(context).display(context, this.blocks.merge(blocks));
     }
 
     getTemplateName() {

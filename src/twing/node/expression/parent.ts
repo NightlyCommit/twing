@@ -22,14 +22,14 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
         if (this.getAttribute('output')) {
             compiler
                 .addDebugInfo(this)
-                .write('await this.displayParentBlock(')
+                .write('this.displayParentBlock(')
                 .string(name)
                 .raw(", context, blocks);\n")
             ;
         }
         else {
             compiler
-                .raw('await this.renderParentBlock(')
+                .raw('this.renderParentBlock(')
                 .string(name)
                 .raw(', context, blocks)')
             ;

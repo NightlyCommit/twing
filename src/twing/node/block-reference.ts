@@ -18,8 +18,7 @@ export class TwingNodeBlockReference extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write('await ')
-            .raw(`this.displayBlock('${this.getAttribute('name')}', context, blocks);\n`)
+            .write(`this.displayBlock('${this.getAttribute('name')}', context, blocks);\n`)
         ;
     }
 }

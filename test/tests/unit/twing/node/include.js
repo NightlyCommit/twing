@@ -41,7 +41,7 @@ tap.test('node/include', function (test) {
             let node = new TwingNodeInclude(expr, null, false, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-await this.loadTemplate("foo.twig", null, 1).display(context);
+this.loadTemplate("foo.twig", null, 1).display(context);
 `);
             test.end();
         });
@@ -56,7 +56,7 @@ await this.loadTemplate("foo.twig", null, 1).display(context);
             let node = new TwingNodeInclude(expr, null, false, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-await this.loadTemplate(((true) ? ("foo") : ("foo")), null, 1).display(context);
+this.loadTemplate(((true) ? ("foo") : ("foo")), null, 1).display(context);
 `);
             test.end();
         });
@@ -73,7 +73,7 @@ await this.loadTemplate(((true) ? ("foo") : ("foo")), null, 1).display(context);
             let node = new TwingNodeInclude(expr, vars, false, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-await this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(context, new Twing.TwingMap([["foo", true]])));
+this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(context, new Twing.TwingMap([["foo", true]])));
 `);
             test.end();
         });
@@ -91,7 +91,7 @@ await this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(conte
             let node = new TwingNodeInclude(expr, vars, true, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
+this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
 `);
             test.end();
         });
@@ -101,7 +101,7 @@ await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo",
             let node = new TwingNodeInclude(expr, null, true, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
+this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
 `);
             test.end();
         });
@@ -120,7 +120,7 @@ await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
 
             test.same(compiler.compile(node).getSource(), `// line 1
 try {
-    await this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
+    this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
 }
 catch (e) {
     if (e instanceof Twing.TwingErrorLoader) {

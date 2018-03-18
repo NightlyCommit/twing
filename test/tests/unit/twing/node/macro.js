@@ -39,7 +39,7 @@ tap.test('node/macro', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
-async macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
+macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
     let context = this.env.mergeGlobals(new Twing.TwingMap([
         ["foo", __foo__],
         ["bar", __bar__],

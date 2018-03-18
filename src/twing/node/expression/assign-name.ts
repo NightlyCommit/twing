@@ -11,9 +11,7 @@ export class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('context.getAssignmentProxy()[')
             .string(this.getAttribute('name'))
-            .raw(']')
         ;
     }
 }

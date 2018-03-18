@@ -22,7 +22,7 @@ tap.test('node/sandboxed', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1
-(async () => {
+(() => {
     let sandbox = this.env.getExtension('TwingExtensionSandbox');
     let alreadySandboxed = sandbox.isSandboxed();
     if (!alreadySandboxed) {
