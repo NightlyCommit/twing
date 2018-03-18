@@ -125,7 +125,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
     async doDisplay(context, blocks = new Twing.TwingMap()) {
         // line 2
-        Twing.getContextProxy(context)["macro"] = this.loadTemplate("foo.twig", "foo.twig", 2);
+        context.getAssignmentProxy()["macro"] = this.loadTemplate("foo.twig", "foo.twig", 2);
         // line 1
         await this.parent.display(context, this.blocks.merge(blocks));
     }
@@ -200,7 +200,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
     async doDisplay(context, blocks = new Twing.TwingMap()) {
         // line 4
-        Twing.getContextProxy(context)["foo"] = "foo";
+        context.getAssignmentProxy()["foo"] = "foo";
         // line 2
         await this.getParent(context).display(context, this.blocks.merge(blocks));
     }

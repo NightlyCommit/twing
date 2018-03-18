@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="{% block htmlbody "some-body-tag" %}">
+<head>
+    <title>Some title</title>
+
+    <style>
+        a {
+            background-color: red;
+        }
+
+        table {
+            color: orange;
+        }
+    </style>
+
+    <script>
+        const foo = function () {
+            global = 'foo';
+        };
+    </script>
+
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+    <h1>Overall Title</h1>
+{% endblock %}
+</body>
+</html>

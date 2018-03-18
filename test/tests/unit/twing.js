@@ -13,11 +13,12 @@ tap.test('Twing library', function (test) {
         compareToBoolean: './twing/helper/compare-to-boolean',
         compareToDateTime: './twing/helper/compare-to-date-time',
         compareToNull: './twing/helper/compare-to-null',
+        count: './twing/helper/count',
         defined: './twing/helper/defined',
+        each: './twing/helper/each',
         escape: './twing/helper/escape',
         formatDuration: './twing/helper/format-duration',
         formatDateTime: './twing/helper/format-date-time',
-        getContextProxy: './twing/helper/get-context-proxy',
         iconv: './twing/helper/iconv',
         isCountable: './twing/helper/is-countable',
         isTraversable: './twing/helper/is-traversable',
@@ -233,6 +234,11 @@ tap.test('Twing library', function (test) {
 
         test.same(exportedSymbol, Twing[key], `${key} is exported`);
     }
+
+    for (let key in Twing) {
+        test.true(exports[key], `${key} is legit`);
+    }
+
 
     test.end();
 });

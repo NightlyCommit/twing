@@ -1,9 +1,10 @@
 import {abs} from "./twing/helper/abs";
+import {count} from "./twing/helper/count";
 import {defined} from "./twing/helper/defined";
+import {each} from "./twing/helper/each";
 import {escape} from "./twing/helper/escape";
 import {formatDuration} from "./twing/helper/format-duration";
 import {formatDateTime} from "./twing/helper/format-date-time";
-import {getContextProxy} from "./twing/helper/get-context-proxy";
 import {iconv} from "./twing/helper/iconv";
 import {isCountable} from "./twing/helper/is-countable";
 import {isTraversable} from "./twing/helper/is-traversable";
@@ -225,11 +226,12 @@ let Twing = {
     compareToBoolean: compareToBoolean,
     compareToDateTime: compareToDateTime,
     compareToNull: compareToNull,
+    count: count,
     defined: defined,
+    each: each,
     escape: escape,
     formatDuration: formatDuration,
     formatDateTime: formatDateTime,
-    getContextProxy: getContextProxy,
     iconv: iconv,
     isCountable: isCountable,
     isTraversable: isTraversable,

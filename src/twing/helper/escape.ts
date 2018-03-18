@@ -3,6 +3,10 @@ import {TwingMap} from "../map";
 import {TwingErrorRuntime} from "../error/runtime";
 import {TwingExtensionCore} from "../extension/core";
 
+const htmlspecialchars = require('htmlspecialchars');
+const secureFilters = require('secure-filters');
+const array_merge = require('locutus/php/array/array_merge');
+
 /**
  * Escapes a string.
  *
@@ -17,10 +21,6 @@ import {TwingExtensionCore} from "../extension/core";
  * @returns {string}
  */
 export function escape(env: TwingEnvironment, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false) {
-    const htmlspecialchars = require('htmlspecialchars');
-    const secureFilters = require('secure-filters');
-    const array_merge = require('locutus/php/array/array_merge');
-
     if (autoescape && string && (string.TwingIsSafe === true)) {
         return string;
     }
