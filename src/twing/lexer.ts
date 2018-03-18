@@ -469,7 +469,7 @@ export class TwingLexer {
         return new RegExp(patterns.join('|'));
     };
 
-    private pushTwingToken(type: string, value: any = null) {
+    private pushTwingToken(type: number, value: any = null) {
         if ((TwingToken.TEXT_TYPE === type) && (value.length < 1)) {
             return;
         }
