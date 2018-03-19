@@ -19,5 +19,6 @@ docs:
     url: internals.html
   recipes:
     title: Twing recipes
+    url: recipes.html
   coding_standards:
     title: Coding standards
