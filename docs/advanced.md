@@ -777,4 +777,7 @@ twing.addExtension(new MyCoreExtension());
 
 {% endraw %}
 
+[back][back-url]
+
+[back-url]: {{ site.baseurl }}{% link index.md %}
 [deprecation-warnings-url]: {{ site.baseurl }}{% link recipes.md %}#deprecation-warnings

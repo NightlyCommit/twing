@@ -1,8 +1,6 @@
 @import "variables";
 
 @mixin media-query($device) {
-  @debug $device / $base-font-size;
-
   @media screen and (min-width: ($device / $base-font-size) * 1em) {
     @content;
   }
