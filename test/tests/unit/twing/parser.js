@@ -9,6 +9,7 @@ const TwingNodeText = require('../../../../lib/twing/node/text').TwingNodeText;
 const TwingNodeSet = require('../../../../lib/twing/node/set').TwingNodeSet;
 const TwingLoaderArray = require('../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
+const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 
 const tap = require('tap');
 
@@ -204,6 +205,27 @@ tap.test('parser', function (test) {
         catch (err) {
             test.fail(err);
         }
+
+        test.end();
+    });
+
+    test.test('should throw an error on missing tag name', function (test) {
+        let twig = new TwingEnvironment(null, {
+            autoescape: false,
+            optimizations: 0
+        });
+
+        twig.addTokenParser(new TestTokenParser());
+
+        let parser = new TwingParser(twig);
+
+        test.throws(function () {
+            parser.parse(new TwingTokenStream([
+                new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
+                new TwingToken(TwingToken.VAR_START_TYPE, '', 1),
+                new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1)
+            ]));
+        }, new TwingErrorSyntax('A block must start with a tag name.', 1, new TwingSource('', '', '')));
 
         test.end();
     });
