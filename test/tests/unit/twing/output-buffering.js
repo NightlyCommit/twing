@@ -2,17 +2,19 @@ const TwingOutputBuffering = require('../../../../lib/twing/output-buffering').T
 
 const tap = require('tap');
 
-let reset = () => {
+let reset = (restart = true) => {
     while (TwingOutputBuffering.obGetLevel()) {
         TwingOutputBuffering.obEndClean();
     }
 
-    TwingOutputBuffering.obStart();
-    TwingOutputBuffering.echo('foo');
-    TwingOutputBuffering.obStart();
-    TwingOutputBuffering.echo('bar');
-    TwingOutputBuffering.obStart();
-    TwingOutputBuffering.echo('oof');
+    if (restart) {
+        TwingOutputBuffering.obStart();
+        TwingOutputBuffering.echo('foo');
+        TwingOutputBuffering.obStart();
+        TwingOutputBuffering.echo('bar');
+        TwingOutputBuffering.obStart();
+        TwingOutputBuffering.echo('oof');
+    }
 };
 
 tap.test('TwingOutputBuffering', function (test) {
@@ -112,6 +114,26 @@ tap.test('TwingOutputBuffering', function (test) {
 
         test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
         test.end();
+    });
+
+    test.test('support echoing a number when not started', function(test) {
+        let w = process.stdout.write;
+
+        return new Promise((resolve, reject) => {
+            reset(false);
+
+            process.stdout.write = function(chunk) {
+                resolve(chunk.toString());
+            };
+
+            TwingOutputBuffering.echo(1);
+        }).then(function(actual) {
+            process.stdout.write = w;
+
+            test.same(actual, '1');
+
+            test.end();
+        });
     });
 
     test.end();
