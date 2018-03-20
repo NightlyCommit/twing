@@ -102,6 +102,7 @@ const strtr = require('locutus/php/strings/strtr');
 const round = require('locutus/php/math/round');
 const ceil = require('locutus/php/math/ceil');
 const floor = require('locutus/php/math/floor');
+const isPlainObject = require('is-plain-object');
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -1363,11 +1364,7 @@ export function twingCapitalizeStringFilter(env: TwingEnvironment, string: strin
  * @internal
  */
 export function twingEnsureTraversable(seq: any): any {
-    if (isTraversable(seq)) {
-        // if (seq instanceof TwingMap) {
-        //     return seq.clone();
-        // }
-
+    if (isTraversable(seq) || isPlainObject(seq)) {
         return seq;
     }
 
