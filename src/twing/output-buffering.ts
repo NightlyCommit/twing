@@ -288,7 +288,7 @@ export class TwingOutputBuffering {
             active.append(string);
         }
         else {
-            process.stdout.write(string);
+            process.stdout.write('' + string);
         }
     }
 
