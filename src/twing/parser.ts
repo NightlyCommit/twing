@@ -198,7 +198,7 @@ export class TwingParser {
                     token = this.getCurrentToken();
 
                     if (token.getType() !== TwingToken.NAME_TYPE) {
-                        throw new TwingErrorSyntax('A block must start with a tag name', token.getLine(), this.stream.getSourceContext());
+                        throw new TwingErrorSyntax('A block must start with a tag name.', token.getLine(), this.stream.getSourceContext());
                     }
 
                     if (test !== null && test[1](token)) {
