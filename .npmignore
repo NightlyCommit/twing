@@ -5,6 +5,7 @@
 /.nyc_output
 /.nycrc
 /.travis.yml
+/benchmark
 /coverage
 /docs
 /package-lock.json
