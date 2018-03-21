@@ -5,10 +5,13 @@ sections:
     items:
       autoescape:
         title: autoescape
+        url: language-reference/tags/autoescape.html
       block:
         title: block
+        url: language-reference/tags/block.html
       do:
         title: do
+        url: language-reference/tags/do.html
       embed:
         title: embed
       extends:
