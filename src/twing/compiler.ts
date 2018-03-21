@@ -1,6 +1,7 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 import {TwingMap} from "./map";
+import {isNullOrUndefined} from "util";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
@@ -90,7 +91,7 @@ export class TwingCompiler {
      * @returns {TwingCompiler}
      */
     string(value: string): TwingCompiler {
-        if (value !== null) {
+        if (!isNullOrUndefined(value)) {
             if (typeof value === 'string') {
                 value = `"${addcslashes(value, "\0\t\"\\\n")}"`;
             }
