@@ -149,7 +149,7 @@ function getMockLoader(templateName, templateContent) {
 }
 
 tap.test('environment', function (test) {
-    test.test('autoescapeOption', async function (test) {
+    test.test('autoescapeOption', function (test) {
         let loader = new TwingLoaderArray({
             'html': '{{ foo }} {{ foo }}',
             'js': '{{ bar }} {{ bar }}',
@@ -161,13 +161,13 @@ tap.test('environment', function (test) {
             autoescape: escapingStrategyCallback
         });
 
-        test.same(await twing.render('html', {'foo': 'foo<br/ >'}), 'foo&lt;br/ &gt; foo&lt;br/ &gt;');
-        test.same(await twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\x3Cbr\\x2F\\x20\\x3E foo\\x3Cbr\\x2F\\x20\\x3E');
+        test.same(twing.render('html', {'foo': 'foo<br/ >'}), 'foo&lt;br/ &gt; foo&lt;br/ &gt;');
+        test.same(twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\x3Cbr\\x2F\\x20\\x3E foo\\x3Cbr\\x2F\\x20\\x3E');
 
         test.end();
     });
 
-    test.test('globals', async function (test) {
+    test.test('globals', function (test) {
         let loader = new TwingTestMockLoader();
         sinon.stub(loader, 'getSourceContext').returns(new TwingSource('', ''));
 
@@ -212,7 +212,7 @@ tap.test('environment', function (test) {
         twing.getGlobals();
         twing.addGlobal('foo', 'bar');
         let template = twing.loadTemplate('index');
-        test.same(await template.render({}), 'bar');
+        test.same(template.render({}), 'bar');
 
         // globals cannot be added after a template has been loaded
         twing = new TwingEnvironment(loader);
@@ -269,7 +269,7 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('testExtensionsAreNotInitializedWhenRenderingACompiledTemplate', async function (test) {
+    test.test('testExtensionsAreNotInitializedWhenRenderingACompiledTemplate', function (test) {
         let cache = new TwingCacheFilesystem(tmp.dirSync().name);
         let options = {cache: cache, auto_reload: false, debug: false};
 
@@ -288,7 +288,7 @@ tap.test('environment', function (test) {
         sinon.assert.notCalled(twing['initExtensions']);
 
         // render template
-        let output = await twing.render('index', {foo: 'bar'});
+        let output = twing.render('index', {foo: 'bar'});
         test.same(output, 'bar');
 
         test.end();
@@ -454,7 +454,7 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('addRuntimeLoader', async function (test) {
+    test.test('addRuntimeLoader', function (test) {
         let runtimeLoader = new TwingTestMockRuntimeLoader();
 
         sinon.stub(runtimeLoader, 'load').returns(new TwingTestsEnvironmentTestRuntime());
@@ -472,12 +472,12 @@ tap.test('environment', function (test) {
         twing.addExtension(new TwingTestsEnvironmentTestExtensionWithoutRuntime());
         twing.addRuntimeLoader(runtimeLoader);
 
-        test.same(await twing.render('func_array'), 'foo');
-        test.same(await twing.render('func_array_default'), 'bar');
-        test.same(await twing.render('func_array_named_args'), 'foo');
-        test.same(await twing.render('func_string'), 'foo');
-        test.same(await twing.render('func_string_default'), 'bar');
-        test.same(await twing.render('func_string_named_args'), 'foo');
+        test.same(twing.render('func_array'), 'foo');
+        test.same(twing.render('func_array_default'), 'bar');
+        test.same(twing.render('func_array_named_args'), 'foo');
+        test.same(twing.render('func_string'), 'foo');
+        test.same(twing.render('func_string_default'), 'bar');
+        test.same(twing.render('func_string_named_args'), 'foo');
 
         sinon.assert.called(runtimeLoader.load);
 

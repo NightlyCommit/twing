@@ -188,7 +188,7 @@ tap.test('loader filesystem', function (test) {
         test.end();
     });
 
-    test.test('load-template-and-render-block-with-cache', async function (test) {
+    test.test('load-template-and-render-block-with-cache', function (test) {
         let loader = new TwingLoaderFilesystem([]);
         loader.addPath(nodePath.join(fixturesPath, 'themes/theme2'));
         loader.addPath(nodePath.join(fixturesPath, 'themes/theme1'));
@@ -198,16 +198,16 @@ tap.test('loader filesystem', function (test) {
 
         let template = twing.loadTemplate('blocks.html.twig');
 
-        test.same(await template.renderBlock('b1', {}), 'block from theme 1');
+        test.same(template.renderBlock('b1', {}), 'block from theme 1');
 
         template = twing.loadTemplate('blocks.html.twig');
 
-        test.same(await template.renderBlock('b2', {}), 'block from theme 2');
+        test.same(template.renderBlock('b2', {}), 'block from theme 2');
 
         test.end();
     });
 
-    test.test('array-inheritance', async function (test) {
+    test.test('array-inheritance', function (test) {
         for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
             let templateName = arrayInheritanceTest[0];
             let loader = new TwingLoaderFilesystem([]);
@@ -216,7 +216,7 @@ tap.test('loader filesystem', function (test) {
             let twing = new TwingEnvironment(loader, {cache: 'tmp'});
             let template = twing.loadTemplate(templateName);
 
-            test.same(await template.renderBlock('body', {}), 'VALID Child', testMessage);
+            test.same(template.renderBlock('body', {}), 'VALID Child', testMessage);
         }
 
         test.end();

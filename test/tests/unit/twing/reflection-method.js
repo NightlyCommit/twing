@@ -14,7 +14,7 @@ function withInstrumentedParameters(arg1, arg2 = (c++, true), arg3 = (c++, 'foo'
 }
 
 tap.test('reflection-method', function (test) {
-    test.test('support parameters with default value', async function (test) {
+    test.test('support parameters with default value', function (test) {
         let reflectionMethod = new TwingReflectionMethod(withDefaultValues, 'foo');
 
         let parameters = reflectionMethod.getParameters();
@@ -35,7 +35,7 @@ tap.test('reflection-method', function (test) {
         test.end();
     });
 
-    test.test('support mixed kind of parameters', async function (test) {
+    test.test('support mixed kind of parameters', function (test) {
         let reflectionMethod = new TwingReflectionMethod(withMixedKindOfParameters, 'foo');
 
         let parameters = reflectionMethod.getParameters();
@@ -61,7 +61,7 @@ tap.test('reflection-method', function (test) {
         test.end();
     });
 
-    test.test('support instrumented parameters', async function (test) {
+    test.test('support instrumented parameters', function (test) {
         let reflectionMethod = new TwingReflectionMethod(withInstrumentedParameters, 'foo');
 
         let parameters = reflectionMethod.getParameters();
