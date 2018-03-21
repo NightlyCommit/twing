@@ -66,11 +66,11 @@
     "parse-function": "^5.2.3",
     "regex-parser": "^2.2.8",
     "runes": "^0.4.3",
-    "secure-filters": "^1.1.0",
     "sha.js": "^2.4.10",
     "snake-case": "^2.1.0",
     "stack-trace": "0.0.10",
     "tmp": "0.0.33",
+    "utf8-binary-cutter": "^0.9.1",
     "var-validator": "0.0.3"
   },
   "devDependencies": {

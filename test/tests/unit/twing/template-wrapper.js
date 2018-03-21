@@ -38,7 +38,7 @@ tap.test('template wrapper', function (test) {
         test.end();
     });
 
-    test.test('renderBlock', async function (test) {
+    test.test('renderBlock', function (test) {
         let twing = new TwingEnvironment(new TwingLoaderArray({
             'index': '{% block foo %}{{ foo }}{{ bar }}{% endblock %}'
         }));
@@ -46,12 +46,12 @@ tap.test('template wrapper', function (test) {
 
         let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
 
-        test.same(await wrapper.renderBlock('foo', {foo: 'FOO'}), 'FOOBAR');
+        test.same(wrapper.renderBlock('foo', {foo: 'FOO'}), 'FOOBAR');
 
         test.end();
     });
 
-    test.test('displayBlock', async function (test) {
+    test.test('displayBlock', function (test) {
         let twing = new TwingEnvironment(new TwingLoaderArray({
             'index': '{% block foo %}{{ foo }}{{ bar }}{% endblock %}'
         }));
@@ -60,7 +60,7 @@ tap.test('template wrapper', function (test) {
         let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
 
         TwingOutputBuffering.obStart();
-        await wrapper.displayBlock('foo', {foo: 'FOO'})
+        wrapper.displayBlock('foo', {foo: 'FOO'})
 
         test.same(TwingOutputBuffering.obGetClean(), 'FOOBAR');
 

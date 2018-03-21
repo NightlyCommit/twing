@@ -4,7 +4,7 @@ const TwingToken = require('../lib/twing/token').TwingToken;
 const TwingNodeExpressionConstant = require('../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingExtension = require('../lib/twing/extension').TwingExtension;
 const TwingExtensionDebug = require('../lib/twing/extension/debug').TwingExtensionDebug;
-const escape = require('../lib/twing/helper/escape').escape;
+const escape = require('../lib/twing/extension/core').twingEscapeFilter;
 
 const path = require('path');
 const TwingExtensionSandbox = require('../lib/twing/extension/sandbox').TwingExtensionSandbox;

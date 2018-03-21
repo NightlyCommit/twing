@@ -29,7 +29,7 @@ tap.test('TwingError', function (test) {
         test.end();
     });
 
-    test.test('twingExceptionGuessWithMissingVarAndArrayLoader', async function (test) {
+    test.test('twingExceptionGuessWithMissingVarAndArrayLoader', function (test) {
         let loader = new TwingLoaderArray({
             'base.html': '{% block content %}{% endblock %}',
             'index.html': `{% extends 'base.html' %}
@@ -50,7 +50,7 @@ tap.test('TwingError', function (test) {
         let template = twing.loadTemplate('index.html');
 
         try {
-            await template.render({});
+            template.render({});
 
             test.fail();
         }
@@ -64,7 +64,7 @@ tap.test('TwingError', function (test) {
         test.end();
     });
 
-    test.test('twingExceptionGuessWithExceptionAndArrayLoader', async function (test) {
+    test.test('twingExceptionGuessWithExceptionAndArrayLoader', function (test) {
         let loader = new TwingLoaderArray({
             'base.html': '{% block content %}{% endblock %}',
             'index.html': `{% extends 'base.html' %}
@@ -85,7 +85,7 @@ tap.test('TwingError', function (test) {
         let template = twing.loadTemplate('index.html');
 
         try {
-            await template.render({
+            template.render({
                 foo: new TwingTestsErrorTestFoo()
             });
 
@@ -101,7 +101,7 @@ tap.test('TwingError', function (test) {
         test.end();
     });
 
-    test.test('twingExceptionGuessWithMissingVarAndFilesystemLoader', async function (test) {
+    test.test('twingExceptionGuessWithMissingVarAndFilesystemLoader', function (test) {
         let loader = new TwingLoaderFilesystem(path.resolve('test/tests/integration/fixtures/errors'));
 
         let twing = new TwingEnvironment(loader, {
@@ -113,7 +113,7 @@ tap.test('TwingError', function (test) {
         let template = twing.loadTemplate('index.html');
 
         try {
-            await template.render({});
+            template.render({});
 
             test.fail();
         }
@@ -127,7 +127,7 @@ tap.test('TwingError', function (test) {
         test.end();
     });
 
-    test.test('twingExceptionAddsFileAndLine', async function (test) {
+    test.test('twingExceptionAddsFileAndLine', function (test) {
         let erroredTemplates = [
             {
                 templates: {
@@ -189,7 +189,7 @@ tap.test('TwingError', function (test) {
             let template = twing.loadTemplate('index');
 
             try {
-                await template.render({});
+                template.render({});
 
                 test.fail();
             }
@@ -201,7 +201,7 @@ tap.test('TwingError', function (test) {
             }
 
             try {
-                await template.render({
+                template.render({
                     foo: new TwingTestsErrorTestFoo()
                 });
 

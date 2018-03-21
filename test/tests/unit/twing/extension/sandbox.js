@@ -93,11 +93,11 @@ let getEnvironment = function (sandboxed, options, templates, tags = [], filters
 };
 
 tap.test('TwingExtensionSandbox', function (test) {
-    test.test('sandboxWithInheritance', async function (test) {
+    test.test('sandboxWithInheritance', function (test) {
         let twing = getEnvironment(true, {}, templates, ['block']);
 
         try {
-            await twing.loadTemplate('1_child').render({});
+            twing.loadTemplate('1_child').render({});
 
             test.fail();
         }
@@ -109,19 +109,19 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxGloballySet', async function (test) {
+    test.test('sandboxGloballySet', function (test) {
         let twing = getEnvironment(false, {}, templates);
 
-        test.same(await twing.loadTemplate('1_basic').render(params), 'FOO', 'Sandbox does nothing if it is disabled globally');
+        test.same(twing.loadTemplate('1_basic').render(params), 'FOO', 'Sandbox does nothing if it is disabled globally');
 
         test.end();
     });
 
-    test.test('sandboxUnallowedMethodAccessor', async function (test) {
+    test.test('sandboxUnallowedMethodAccessor', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic1').render(params);
+            twing.loadTemplate('1_basic1').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed method is called');
         }
@@ -134,11 +134,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedFilter', async function (test) {
+    test.test('sandboxUnallowedFilter', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic2').render(params);
+            twing.loadTemplate('1_basic2').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed filter is called');
         }
@@ -150,11 +150,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedTag', async function (test) {
+    test.test('sandboxUnallowedTag', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic3').render(params);
+            twing.loadTemplate('1_basic3').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed tag is used in the template');
         }
@@ -166,11 +166,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedProperty', async function (test) {
+    test.test('sandboxUnallowedProperty', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic4').render(params);
+            twing.loadTemplate('1_basic4').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed property is called in the template');
         }
@@ -183,11 +183,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedToString', async function (test) {
+    test.test('sandboxUnallowedToString', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic5').render(params);
+            twing.loadTemplate('1_basic5').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed method (toString()) is called in the template');
         }
@@ -200,11 +200,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedToStringArray', async function (test) {
+    test.test('sandboxUnallowedToStringArray', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic6').render(params);
+            twing.loadTemplate('1_basic6').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed method (toString()) is called in the template');
         }
@@ -217,11 +217,11 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxUnallowedFunction', async function (test) {
+    test.test('sandboxUnallowedFunction', function (test) {
         let twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('1_basic7').render(params);
+            twing.loadTemplate('1_basic7').render(params);
 
             test.fail('Sandbox throws a SecurityError exception if an unallowed function is called in the template');
         }
@@ -233,88 +233,88 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('sandboxAllowMethodFoo', async function (test) {
+    test.test('sandboxAllowMethodFoo', function (test) {
         let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, 'foo']]));
 
         FooObject.reset();
-        test.same(await twing.loadTemplate('1_basic1').render(params), 'foo', 'Sandbox allow some methods');
+        test.same(twing.loadTemplate('1_basic1').render(params), 'foo', 'Sandbox allow some methods');
         test.same(FooObject.called.get('foo'), 1, 'Sandbox only calls method once');
 
         test.end();
     });
 
-    test.test('sandboxAllowMethodToString', async function (test) {
+    test.test('sandboxAllowMethodToString', function (test) {
         let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, 'toString']]));
 
         FooObject.reset();
-        test.same(await twing.loadTemplate('1_basic5').render(params), 'foo', 'Sandbox allow some methods');
+        test.same(twing.loadTemplate('1_basic5').render(params), 'foo', 'Sandbox allow some methods');
         test.same(FooObject.called.get('toString'), 1, 'Sandbox only calls method once');
 
         test.end();
     });
 
-    test.test('sandboxAllowMethodToStringDisabled', async function (test) {
+    test.test('sandboxAllowMethodToStringDisabled', function (test) {
         let twing = getEnvironment(false, {}, templates);
 
         FooObject.reset();
-        test.same(await twing.loadTemplate('1_basic5').render(params), 'foo', 'Sandbox allow toString when sandbox disabled');
+        test.same(twing.loadTemplate('1_basic5').render(params), 'foo', 'Sandbox allow toString when sandbox disabled');
         test.same(FooObject.called.get('toString'), 1, 'Sandbox only calls method once');
 
         test.end();
     });
 
-    test.test('sandboxAllowFilter', async function (test) {
+    test.test('sandboxAllowFilter', function (test) {
         let twing = getEnvironment(true, {}, templates, [], ['upper']);
 
-        test.same(await twing.loadTemplate('1_basic2').render(params), 'FABIEN', 'Sandbox allow some filters');
+        test.same(twing.loadTemplate('1_basic2').render(params), 'FABIEN', 'Sandbox allow some filters');
 
         test.end();
     });
 
-    test.test('sandboxAllowTag', async function (test) {
+    test.test('sandboxAllowTag', function (test) {
         let twing = getEnvironment(true, {}, templates, ['if']);
 
-        test.same(await twing.loadTemplate('1_basic3').render(params), 'foo', 'Sandbox allow some tags');
+        test.same(twing.loadTemplate('1_basic3').render(params), 'foo', 'Sandbox allow some tags');
 
         test.end();
     });
 
-    test.test('sandboxAllowProperty', async function (test) {
+    test.test('sandboxAllowProperty', function (test) {
         let twing = getEnvironment(true, {}, templates, [], [], new TwingMap(), new TwingMap([[FooObject, 'bar']]));
 
-        test.same(await twing.loadTemplate('1_basic4').render(params), 'bar', 'Sandbox allow some properties');
+        test.same(twing.loadTemplate('1_basic4').render(params), 'bar', 'Sandbox allow some properties');
 
         test.end();
     });
 
-    test.test('sandboxAllowFunction', async function (test) {
+    test.test('sandboxAllowFunction', function (test) {
         let twing = getEnvironment(true, {}, templates, [], [], new TwingMap(), new TwingMap(), ['cycle']);
 
-        test.same(await twing.loadTemplate('1_basic7').render(params), 'bar', 'Sandbox allow some functions');
+        test.same(twing.loadTemplate('1_basic7').render(params), 'bar', 'Sandbox allow some functions');
 
         test.end();
     });
 
-    test.test('sandboxAllowFunctionsCaseInsensitive', async function (test) {
+    test.test('sandboxAllowFunctionsCaseInsensitive', function (test) {
         for (let name of ['getfoobar', 'getFoobar', 'getFooBar']) {
             let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, name]]));
             FooObject.reset();
-            test.same(await twing.loadTemplate('1_basic8').render(params), 'foobarfoobar', 'Sandbox allow methods in a case-insensitive way');
+            test.same(twing.loadTemplate('1_basic8').render(params), 'foobarfoobar', 'Sandbox allow methods in a case-insensitive way');
             test.same(FooObject.called.get('getFooBar'), 2, 'Sandbox only calls method once');
-            test.same(await twing.loadTemplate('1_basic9').render(params), 'foobarfoobar', 'Sandbox allow methods via shortcut names (ie. without get/set)');
+            test.same(twing.loadTemplate('1_basic9').render(params), 'foobarfoobar', 'Sandbox allow methods via shortcut names (ie. without get/set)');
         }
 
         test.end();
     });
 
-    test.test('sandboxLocallySetForAnInclude', async function (test) {
+    test.test('sandboxLocallySetForAnInclude', function (test) {
         let templates = new TwingMap([
             ['2_basic', '{{ obj.foo }}{% include "2_included" %}{{ obj.foo }}'],
             ['2_included', '{% if obj.foo %}{{ obj.foo|upper }}{% endif %}']
         ]);
 
         let twing = getEnvironment(false, {}, templates);
-        test.same(await twing.loadTemplate('2_basic').render(params), 'fooFOOfoo', 'Sandbox does nothing if disabled globally and sandboxed not used for the include');
+        test.same(twing.loadTemplate('2_basic').render(params), 'fooFOOfoo', 'Sandbox does nothing if disabled globally and sandboxed not used for the include');
 
         templates = new TwingMap([
             ['3_basic', '{{ obj.foo }}{% sandbox %}{% include "3_included" %}{% endsandbox %}{{ obj.foo }}'],
@@ -324,7 +324,7 @@ tap.test('TwingExtensionSandbox', function (test) {
         twing = getEnvironment(true, {}, templates);
 
         try {
-            await twing.loadTemplate('3_basic').render(params);
+            twing.loadTemplate('3_basic').render(params);
 
             test.fail('Sandbox throws a SecurityError exception when the included file is sandboxed');
         }
@@ -336,7 +336,7 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
-    test.test('macrosInASandbox', async function (test) {
+    test.test('macrosInASandbox', function (test) {
         let twing = getEnvironment(true, {autoescape: 'html', cache: 'tmp'}, {index: `
 {%- import _self as macros %}
 
@@ -344,16 +344,16 @@ tap.test('TwingExtensionSandbox', function (test) {
 
 {{- macros.test('username') }}`}, ['macro', 'import'], ['escape']);
 
-        test.same(await twing.loadTemplate('index').render(params), '<p>username</p>');
+        test.same(twing.loadTemplate('index').render(params), '<p>username</p>');
 
         test.end();
     });
 
-    test.test('sandboxDisabledAfterIncludeFunctionError', async function (test) {
+    test.test('sandboxDisabledAfterIncludeFunctionError', function (test) {
         let twing = getEnvironment(false, {}, templates);
 
         try {
-            await twing.loadTemplate('1_include').render(params);
+            twing.loadTemplate('1_include').render(params);
 
             test.fail('An exception should be thrown for this test to be valid.');
         }

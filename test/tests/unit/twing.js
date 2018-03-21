@@ -16,7 +16,6 @@ tap.test('Twing library', function (test) {
         count: './twing/helper/count',
         defined: './twing/helper/defined',
         each: './twing/helper/each',
-        escape: './twing/helper/escape',
         formatDuration: './twing/helper/format-duration',
         formatDateTime: './twing/helper/format-date-time',
         iconv: './twing/helper/iconv',

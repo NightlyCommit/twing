@@ -1,7 +1,6 @@
 const TwingProfilerProfile = require('../../../../../lib/twing/profiler/profile').TwingProfilerProfile;
 
 const tap = require('tap');
-const unserialize = require('locutus/php/var/unserialize');
 const serialize = require('locutus/php/var/serialize');
 
 function sleep(ms) {
@@ -73,10 +72,10 @@ tap.test('profiler profile', function (test) {
         test.end();
     });
 
-    test.test('getDuration', async function (test) {
+    test.test('getDuration', function (test) {
         let profile = new TwingProfilerProfile();
 
-        await sleep(100).then(
+        sleep(100).then(
             function () {
                 profile.leave();
 
@@ -114,10 +113,10 @@ tap.test('profiler profile', function (test) {
         test.end();
     });
 
-    test.test('reset', async function (test) {
+    test.test('reset', function (test) {
         let profile = new TwingProfilerProfile();
 
-        await sleep(100).then(
+        sleep(100).then(
             function () {
                 profile.leave();
                 profile.reset();

@@ -21,7 +21,7 @@ class TestIterator {
 }
 
 tap.test('each', function (test) {
-    test.test('supports arrays', async function (test) {
+    test.test('supports arrays', function (test) {
         let actual = {};
         let expected = {
             0: 'a',
@@ -29,7 +29,7 @@ tap.test('each', function (test) {
             2: 1
         };
 
-        await each(['a', 'b', 1], function (key, value) {
+        each(['a', 'b', 1], function (key, value) {
             actual[key] = value;
         });
 
@@ -38,14 +38,14 @@ tap.test('each', function (test) {
         test.end();
     });
 
-    test.test('supports iterators', async function (test) {
+    test.test('supports iterators', function (test) {
         let actual = {};
         let expected = {
             0: 10,
             1: 11
         };
 
-        await each(new TestIterator(), function (key, value) {
+        each(new TestIterator(), function (key, value) {
             actual[key] = value;
         });
 
@@ -54,7 +54,7 @@ tap.test('each', function (test) {
         test.end();
     });
 
-    test.test('supports hashes', async function (test) {
+    test.test('supports hashes', function (test) {
         let actual = {};
         let expected = {
             0: 'a',
@@ -62,7 +62,7 @@ tap.test('each', function (test) {
             'c': 'd'
         };
 
-        await each(expected, function (key, value) {
+        each(expected, function (key, value) {
             actual[key] = value;
         });
 
@@ -71,7 +71,7 @@ tap.test('each', function (test) {
         test.end();
     });
 
-    test.test('supports maps', async function (test) {
+    test.test('supports maps', function (test) {
         let actual = {};
         let expected = {
             0: 'a',
@@ -79,7 +79,7 @@ tap.test('each', function (test) {
             'd': 1
         };
 
-        await each(new Map([[0, 'a'], ['b', 'c'], ['d', 1]]), function (key, value) {
+        each(new Map([[0, 'a'], ['b', 'c'], ['d', 1]]), function (key, value) {
             actual[key] = value;
         });
 
