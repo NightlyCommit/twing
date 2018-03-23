@@ -1,16 +1,16 @@
 import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 import {TwingNodeExpressionConstant} from "./expression/constant";
 
 export class TwingNodeSet extends TwingNode {
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('names', names);
         nodes.set('values', values);
 
-        let attributes = new TwingMap();
+        let attributes = new Map();
 
         attributes.set('capture', capture);
         attributes.set('safe', false);

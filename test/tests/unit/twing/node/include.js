@@ -1,7 +1,7 @@
 const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeInclude = require('../../../../../lib/twing/node/include').TwingNodeInclude;
-const TwingMap = require('../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionArray = require('../../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
 const TwingNodeExpressionConditional = require('../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeExpressionHash = require('../../../../../lib/twing/node/expression/hash').TwingNodeExpressionHash;
@@ -18,10 +18,10 @@ tap.test('node/include', function (test) {
         test.same(node.getNode('expr'), expr);
         test.false(node.getAttribute('only'));
 
-        let arrayNodes = new TwingMap();
-
-        arrayNodes.push(new TwingNodeExpressionConstant('foo', 1));
-        arrayNodes.push(new TwingNodeExpressionConstant(true, 1));
+        let arrayNodes = new Map([
+            [0, new TwingNodeExpressionConstant('foo', 1)],
+            [1, new TwingNodeExpressionConstant(true, 1)]
+        ]);
 
         let vars = new TwingNodeExpressionArray(arrayNodes, 1);
         node = new TwingNodeInclude(expr, vars, true, false, 1);
@@ -64,16 +64,16 @@ this.loadTemplate(((true) ? ("foo") : ("foo")), null, 1).display(context);
         test.test('with variables', function (test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
-            let hashNodes = new TwingMap();
-
-            hashNodes.push(new TwingNodeExpressionConstant('foo', 1));
-            hashNodes.push(new TwingNodeExpressionConstant(true, 1));
+            let hashNodes = new Map([
+                [0, new TwingNodeExpressionConstant('foo', 1)],
+                [1, new TwingNodeExpressionConstant(true, 1)]
+            ]);
 
             let vars = new TwingNodeExpressionHash(hashNodes, 1);
             let node = new TwingNodeInclude(expr, vars, false, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(context, new Twing.TwingMap([["foo", true]])));
+this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(context, new Map([["foo", true]])));
 `);
             test.end();
         });
@@ -81,17 +81,17 @@ this.loadTemplate("foo.twig", null, 1).display(Twing.twingArrayMerge(context, ne
         test.test('with variables only', function (test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
-            let hashNodes = new TwingMap();
-
-            hashNodes.push(new TwingNodeExpressionConstant('foo', 1));
-            hashNodes.push(new TwingNodeExpressionConstant(true, 1));
+            let hashNodes = new Map([
+                [0, new TwingNodeExpressionConstant('foo', 1)],
+                [1, new TwingNodeExpressionConstant(true, 1)]
+            ]);
 
             let vars = new TwingNodeExpressionHash(hashNodes, 1);
 
             let node = new TwingNodeInclude(expr, vars, true, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
+this.loadTemplate("foo.twig", null, 1).display(new Map([["foo", true]]));
 `);
             test.end();
         });
@@ -101,7 +101,7 @@ this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]
             let node = new TwingNodeInclude(expr, null, true, false, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
+this.loadTemplate("foo.twig", null, 1).display(new Map());
 `);
             test.end();
         });
@@ -109,10 +109,10 @@ this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
         test.test('with ignore missing', function (test) {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1);
 
-            let hashNodes = new TwingMap();
-
-            hashNodes.push(new TwingNodeExpressionConstant('foo', 1));
-            hashNodes.push(new TwingNodeExpressionConstant(true, 1));
+            let hashNodes = new Map([
+                [0, new TwingNodeExpressionConstant('foo', 1)],
+                [1, new TwingNodeExpressionConstant(true, 1)]
+            ]);
 
             let vars = new TwingNodeExpressionHash(hashNodes, 1);
 
@@ -120,7 +120,7 @@ this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap());
 
             test.same(compiler.compile(node).getSource(), `// line 1
 try {
-    this.loadTemplate("foo.twig", null, 1).display(new Twing.TwingMap([["foo", true]]));
+    this.loadTemplate("foo.twig", null, 1).display(new Map([["foo", true]]));
 }
 catch (e) {
     if (e instanceof Twing.TwingErrorLoader) {

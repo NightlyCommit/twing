@@ -10,7 +10,7 @@ import {TwingTokenStream} from "./token-stream";
 import {TwingSource} from "./source";
 import {TwingLoaderInterface} from "./loader-interface";
 import {TwingErrorLoader} from "./error/loader";
-import {TwingMap} from "./map";
+
 import {TwingTest} from "./test";
 import {TwingFunction} from "./function";
 import {TwingErrorSyntax} from "./error/syntax";
@@ -31,7 +31,8 @@ import {TwingCacheFilesystem} from "./cache/filesystem";
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
 import {TwingReflectionObject} from "./reflection-object";
-import {TwingExtensionSandbox} from "./extension/sandbox";
+import {merge as twingMerge} from "./helper/merge";
+import {join} from "./helper/join";
 
 const merge = require('merge');
 const hash = require('sha.js');
@@ -91,15 +92,15 @@ export class TwingEnvironment {
     private baseTemplateClass: string;
     private globals: any = {};
     private resolvedGlobals: any;
-    private loadedTemplates: TwingMap<string, TwingTemplate> = new TwingMap();
+    private loadedTemplates: Map<string, TwingTemplate> = new Map();
     private strictVariables: boolean;
     private templateClassPrefix = '__TwingTemplate_';
     private originalCache: TwingCacheInterface | string | false;
     private extensionSet: TwingExtensionSet = null;
     private runtimeLoaders: Array<TwingRuntimeLoaderInterface> = [];
-    private runtimes: TwingMap<string, any> = new TwingMap();
+    private runtimes: Map<string, any> = new Map();
     private optionsHash: string;
-    private loading: TwingMap<string, TwingTemplate> = new TwingMap();
+    private loading: Map<string, string> = new Map();
 
     /**
      * Constructor.
@@ -392,7 +393,7 @@ export class TwingEnvironment {
             if (!templates) {
                 const _eval = require('eval');
 
-                fileName =  mainCls + ' : eval()\'d code';
+                fileName = mainCls + ' : eval()\'d code';
 
                 templates = _eval(content, fileName, {}, true);
 
@@ -412,7 +413,7 @@ export class TwingEnvironment {
         this.extensionSet.initRuntime(this);
 
         if (this.loading.has(cls)) {
-            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${this.loading.merge(new TwingMap([[0, name]])).join(' -> ')}.`);
+            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${join(twingMerge(this.loading, new Map([[0, name]])), ' -> ')}.`);
         }
 
         let mainTemplate: TwingTemplate;
@@ -820,7 +821,7 @@ export class TwingEnvironment {
     /**
      * Gets the registered Tests.
      *
-     * @returns {TwingMap<string, TwingTest>}
+     * @returns {Map<string, TwingTest>}
      */
     getTests() {
         return this.extensionSet.getTests();
@@ -919,10 +920,10 @@ export class TwingEnvironment {
     /**
      * Merges a context with the defined globals.
      *
-     * @param {TwingMap<*, *>} context
+     * @param {Map<*, *>} context
      * @returns {{}}
      */
-    mergeGlobals(context: TwingMap<any, any>) {
+    mergeGlobals(context: Map<any, any>) {
         let k: any;
         let globals: any = this.getGlobals();
 

@@ -1,5 +1,5 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingMap} from "../../map";
+
 import {TwingNode} from "../../node";
 import {TwingErrorSyntax} from "../../error/syntax";
 import {TwingNodeExpressionConstant} from "./constant";
@@ -125,7 +125,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let callType = this.getAttribute('type');
         let callName = this.getAttribute('name');
 
-        let parameters: TwingMap<string, TwingNode> = new TwingMap();
+        let parameters: Map<string | number, TwingNode> = new Map();
         let named = false;
 
         for (let [name, node] of argumentsNode.getNodes()) {
@@ -212,11 +212,11 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         }
 
         if (isVariadic) {
-            let arbitraryArguments = new TwingNodeExpressionArray(new TwingMap(), -1);
+            let arbitraryArguments = new TwingNodeExpressionArray(new Map(), -1);
             let resolvedKeys: Array<any> = [];
 
             for (let [key, value] of parameters) {
-                if (Number.isInteger(key)) {
+                if (Number.isInteger(key as number)) {
                     arbitraryArguments.addElement(value);
                 }
                 else {

@@ -1,5 +1,3 @@
-import {TwingMap} from "../map";
-
 const unserialize = require('locutus/php/var/unserialize');
 const serialize = require('locutus/php/var/serialize');
 
@@ -12,8 +10,8 @@ export class TwingProfilerProfile {
     private template: string;
     private name: string;
     private type: string;
-    private starts: TwingMap<string, any> = new TwingMap();
-    private ends: TwingMap<string, any> = new TwingMap();
+    private starts: Map<string, any> = new Map();
+    private ends: Map<string, any> = new Map();
     private profiles: Array<TwingProfilerProfile> = [];
 
     [Symbol.iterator] = this.profiles[Symbol.iterator];
@@ -27,6 +25,30 @@ export class TwingProfilerProfile {
         this.type = type;
         this.name = (name.indexOf('__internal_') === 0) ? 'INTERNAL' : name;
         this.enter();
+    }
+
+    static unserialize(data: string) {
+        let result = new TwingProfilerProfile();
+        let resultData: any = unserialize(data);
+
+        result.template = resultData.template;
+        result.name = resultData.name;
+        result.type = resultData.type;
+        result.starts = new Map(resultData.starts);
+        result.ends = new Map(resultData.ends);
+        result.profiles = [];
+
+        for (let profileData of resultData.profiles) {
+            let profile = new TwingProfilerProfile(
+                profileData.template,
+                profileData.type,
+                profileData.name
+            );
+
+            result.profiles.push(profile);
+        }
+
+        return result;
     }
 
     getTemplate() {
@@ -109,7 +131,7 @@ export class TwingProfilerProfile {
     enter() {
         let memoryUsage = process.memoryUsage();
 
-        this.starts = new TwingMap([
+        this.starts = new Map([
             ['wt', new Date().getTime()],
             ['mu', memoryUsage.rss],
             ['pmu', memoryUsage.rss],
@@ -122,7 +144,7 @@ export class TwingProfilerProfile {
     leave() {
         let memoryUsage = process.memoryUsage();
 
-        this.ends = new TwingMap([
+        this.ends = new Map([
             ['wt', new Date().getTime()],
             ['mu', memoryUsage.rss],
             ['pmu', memoryUsage.rss],
@@ -131,7 +153,7 @@ export class TwingProfilerProfile {
 
     reset() {
         this.profiles = [];
-        this.starts = this.ends = new TwingMap();
+        this.starts = this.ends = new Map();
         this.enter();
     }
 
@@ -141,29 +163,5 @@ export class TwingProfilerProfile {
 
     serialize(): string {
         return serialize([this.template, this.name, this.type, this.starts, this.ends, this.profiles]);
-    }
-
-    static unserialize(data: string) {
-        let result = new TwingProfilerProfile();
-        let resultData: any = unserialize(data);
-
-        result.template = resultData.template;
-        result.name = resultData.name;
-        result.type = resultData.type;
-        result.starts = new TwingMap(resultData.starts);
-        result.ends = new TwingMap(resultData.ends);
-        result.profiles = [];
-
-        for (let profileData of resultData.profiles) {
-            let profile = new TwingProfilerProfile(
-                profileData.template,
-                profileData.type,
-                profileData.name
-            );
-
-            result.profiles.push(profile);
-        }
-
-        return result;
     }
 }

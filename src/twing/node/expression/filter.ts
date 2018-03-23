@@ -1,18 +1,18 @@
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingNodeExpressionConstant} from "./constant";
-import {TwingMap} from "../../map";
+
 import {TwingNodeExpressionCall} from "./call";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('node', node);
         nodes.set('filter', filterName);
         nodes.set('arguments', methodArguments);
 
-        super(nodes, new TwingMap(), lineno, tag);
+        super(nodes, new Map(), lineno, tag);
 
         this.type = TwingNodeType.EXPRESSION_FILTER;
     }

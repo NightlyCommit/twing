@@ -1,6 +1,6 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 /**
@@ -14,7 +14,7 @@ import {TwingCompiler} from "../compiler";
  */
 export class TwingNodeDo extends TwingNode {
     constructor(expr: TwingNodeExpression, lineno: number, tag: string = null) {
-        super(new TwingMap([['expr', expr]]), new TwingMap(), lineno, tag);
+        super(new Map([['expr', expr]]), new Map(), lineno, tag);
 
         this.type = TwingNodeType.DO;
     }

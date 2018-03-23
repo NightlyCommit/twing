@@ -4,7 +4,7 @@
  * @author Fabien Potencier <fabien@symfony.com>
  */
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingCompiler} from "../compiler";
 
@@ -18,12 +18,12 @@ export class TwingNodeMacro extends TwingNode {
             }
         }
 
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('body', body);
         nodes.set('arguments', macroArguments);
 
-        super(nodes, new TwingMap([['name', name]]), lineno, tag);
+        super(nodes, new Map([['name', name]]), lineno, tag);
 
         this.type = TwingNodeType.MACRO;
     }
@@ -59,7 +59,7 @@ export class TwingNodeMacro extends TwingNode {
         ;
 
         compiler
-            .write("let context = this.env.mergeGlobals(new Twing.TwingMap([\n")
+            .write("let context = this.env.mergeGlobals(new Map([\n")
             .indent()
         ;
 
@@ -74,7 +74,7 @@ export class TwingNodeMacro extends TwingNode {
 
             compiler
                 .write('[')
-                .string(name)
+                .string(name as string)
                 .raw(', __' + name + '__]')
             ;
         }
@@ -93,7 +93,7 @@ export class TwingNodeMacro extends TwingNode {
             .raw("\__varargs__]\n")
             .outdent()
             .write("]));\n\n")
-            .write("let blocks = new Twing.TwingMap();\n")
+            .write("let blocks = new Map();\n")
             .write('let result;\n')
             .write('let error;\n\n')
             .write("Twing.obStart();\n")

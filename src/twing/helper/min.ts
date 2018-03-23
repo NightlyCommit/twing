@@ -1,4 +1,6 @@
 import {iteratorToMap} from './iterator-to-map';
+import {asort} from "./asort";
+import {first} from "./first";
 
 export function min(...things: Array<any>) {
     if (things.length === 1) {
@@ -6,9 +8,11 @@ export function min(...things: Array<any>) {
     }
 
     if (typeof things === 'object') {
-        let iterable = iteratorToMap(things).sort();
+        let iterable = iteratorToMap(things);
 
-        return iterable.first();
+        asort(iterable);
+
+        return first(iterable);
     }
 
     return Math.min(things);

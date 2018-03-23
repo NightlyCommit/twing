@@ -11,7 +11,7 @@ import {TwingToken} from "../token";
 import {TwingTokenParser} from "../token-parser";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeBody} from "../node/body";
-import {TwingMap} from "../map";
+
 import {TwingNodeMacro} from "../node/macro";
 import {TwingNode} from "../node";
 
@@ -48,9 +48,9 @@ export class TwingTokenParserMacro extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        let nodes = new TwingMap();
-
-        nodes.push(body);
+        let nodes = new Map([
+            [0, body]
+        ]);
 
         this.parser.setMacro(name, new TwingNodeMacro(safeName, new TwingNodeBody(nodes), macroArguments, lineno, this.getTag()));
 

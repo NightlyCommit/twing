@@ -32,53 +32,15 @@ import {TwingErrorRuntime} from "./twing/error/runtime";
 import {TwingErrorSyntax} from "./twing/error/syntax";
 import {TwingError} from "./twing/error";
 import {TwingExpressionParser} from "./twing/expression-parser";
-import {
-    twingArrayBatch,
-    twingArrayMerge,
-    twingCapitalizeStringFilter,
-    twingConstant,
-    twingConvertEncoding,
-    twingCycle,
-    twingDateConverter,
-    twingDateFormatFilter,
-    twingDateModifyFilter,
-    twingDefaultFilter,
-    twingEnsureTraversable,
-    twingEscapeFilter,
-    twingEscapeFilterIsSafe,
-    TwingExtensionCore,
-    twingFirst,
-    twingGetArrayKeysFilter,
-    twingGetAttribute,
-    twingInFilter,
-    twingJoinFilter,
-    twingLast,
-    twingLengthFilter,
-    twingLowerFilter,
-    twingNumberFormatFilter,
-    twingRandom,
-    twingReplaceFilter,
-    twingReverseFilter,
-    twingRound,
-    twingSlice,
-    twingSortFilter,
-    twingSource,
-    twingSplitFilter,
-    twingTestEmpty,
-    twingTestIterable,
-    twingTitleStringFilter,
-    twingTrimFilter,
-    twingUpperFilter,
-    twingUrlencodeFilter
-} from "./twing/extension/core";
-import {TwingExtensionDebug, twingVarDump} from "./twing/extension/debug";
-import {TwingExtensionEscaper, twingRawFilter} from "./twing/extension/escaper";
+import {TwingExtensionCore} from "./twing/extension/core";
+import {TwingExtensionDebug} from "./twing/extension/debug";
+import {TwingExtensionEscaper} from "./twing/extension/escaper";
 import {TwingExtensionOptimizer} from "./twing/extension/optimizer";
 import {TwingExtensionProfiler} from "./twing/extension/profiler";
 import {TwingExtensionSandbox} from "./twing/extension/sandbox";
 import {TwingExtensionSet} from "./twing/extension-set";
 import {TwingExtensionStaging} from "./twing/extension/staging";
-import {TwingExtensionStringLoader, twingTemplateFromString} from "./twing/extension/string-loader";
+import {TwingExtensionStringLoader} from "./twing/extension/string-loader";
 import {TwingExtension} from "./twing/extension";
 import {TwingFileExtensionEscapingStrategy} from "./twing/file-extension-escaping-strategy";
 import {TwingFilter} from "./twing/filter";
@@ -87,7 +49,6 @@ import {TwingLexer} from "./twing/lexer";
 import {TwingLoaderArray} from "./twing/loader/array";
 import {TwingLoaderChain} from "./twing/loader/chain";
 import {TwingLoaderFilesystem} from "./twing/loader/filesystem";
-import {TwingMap} from "./twing/map";
 import {TwingMarkup} from "./twing/markup";
 import {TwingNodeAutoEscape} from "./twing/node/auto-escape";
 import {TwingNodeBlockReference} from "./twing/node/block-reference";
@@ -215,9 +176,24 @@ import {TwingProfilerDumperBase} from "./twing/profiler/dumper/base";
 import {TwingProfilerDumperBlackfire} from "./twing/profiler/dumper/blackfire";
 import {TwingProfilerDumperHtml} from "./twing/profiler/dumper/html";
 import {TwingProfilerDumperText} from "./twing/profiler/dumper/text";
+import {asort} from "./twing/helper/asort";
+import {chunk} from "./twing/helper/chunk";
+import {clone} from "./twing/helper/clone";
+import {fill} from "./twing/helper/fill";
+import {first} from "./twing/helper/first";
+import {includes} from "./twing/helper/includes";
+import {join} from "./twing/helper/join";
+import {ksort} from "./twing/helper/ksort";
+import {merge} from "./twing/helper/merge";
+import {push} from "./twing/helper/push";
+import {reverse} from "./twing/helper/reverse";
+import {slice} from "./twing/helper/slice";
 
 let Twing = {
     abs: abs,
+    asort: asort,
+    chunk: chunk,
+    clone: clone,
     compare: compare,
     compareArray: compareArray,
     compareNumber: compareNumber,
@@ -228,42 +204,38 @@ let Twing = {
     count: count,
     defined: defined,
     each: each,
+    fill: fill,
+    first: first,
     formatDuration: formatDuration,
     formatDateTime: formatDateTime,
     iconv: iconv,
+    includes: includes,
     isCountable: isCountable,
     isTraversable: isTraversable,
     iteratorToArray: iteratorToArray,
     iteratorToHash: iteratorToHash,
     iteratorToMap: iteratorToMap,
+    join: join,
     jsonEncode: jsonEncode,
+    ksort: ksort,
     max: max,
+    merge: merge,
     min: min,
+    push: push,
     range: range,
+    reverse: reverse,
     regexParser: regexParser,
     relativeDate: relativeDate,
-    twingArrayBatch: twingArrayBatch,
-    twingArrayMerge: twingArrayMerge,
+    slice: slice,
     TwingBaseNodeVisitor: TwingBaseNodeVisitor,
     TwingCacheFilesystem: TwingCacheFilesystem,
     TwingCacheNull: TwingCacheNull,
-    twingCapitalizeStringFilter: twingCapitalizeStringFilter,
     TwingCompiler: TwingCompiler,
-    twingConstant: twingConstant,
-    twingConvertEncoding: twingConvertEncoding,
-    twingCycle: twingCycle,
-    twingDateConverter: twingDateConverter,
-    twingDateFormatFilter: twingDateFormatFilter,
-    twingDateModifyFilter: twingDateModifyFilter,
-    twingDefaultFilter: twingDefaultFilter,
-    twingEnsureTraversable: twingEnsureTraversable,
     TwingEnvironment: TwingEnvironment,
     TwingError: TwingError,
     TwingErrorLoader: TwingErrorLoader,
     TwingErrorRuntime: TwingErrorRuntime,
     TwingErrorSyntax: TwingErrorSyntax,
-    twingEscapeFilter: twingEscapeFilter,
-    twingEscapeFilterIsSafe: twingEscapeFilterIsSafe,
     TwingExpressionParser: TwingExpressionParser,
     TwingExtension: TwingExtension,
     TwingExtensionCore: TwingExtensionCore,
@@ -277,20 +249,11 @@ let Twing = {
     TwingExtensionStringLoader: TwingExtensionStringLoader,
     TwingFileExtensionEscapingStrategy: TwingFileExtensionEscapingStrategy,
     TwingFilter: TwingFilter,
-    twingFirst: twingFirst,
     TwingFunction: TwingFunction,
-    twingGetArrayKeysFilter: twingGetArrayKeysFilter,
-    twingGetAttribute: twingGetAttribute,
-    twingInFilter: twingInFilter,
-    twingJoinFilter: twingJoinFilter,
-    twingLast: twingLast,
-    twingLengthFilter: twingLengthFilter,
     TwingLexer: TwingLexer,
     TwingLoaderArray: TwingLoaderArray,
     TwingLoaderChain: TwingLoaderChain,
     TwingLoaderFilesystem: TwingLoaderFilesystem,
-    twingLowerFilter: twingLowerFilter,
-    TwingMap: TwingMap,
     TwingMarkup: TwingMarkup,
     TwingNode: TwingNode,
     TwingNodeAutoEscape: TwingNodeAutoEscape,
@@ -374,7 +337,6 @@ let Twing = {
     TwingNodeVisitorSafeAnalysis: TwingNodeVisitorSafeAnalysis,
     TwingNodeVisitorSandbox: TwingNodeVisitorSandbox,
     TwingNodeWith: TwingNodeWith,
-    twingNumberFormatFilter: twingNumberFormatFilter,
     TwingOutputBuffering: TwingOutputBuffering,
     TwingOutputHandler: TwingOutputHandler,
     TwingParser: TwingParser,
@@ -386,31 +348,18 @@ let Twing = {
     TwingProfilerNodeLeaveProfile: TwingProfilerNodeLeaveProfile,
     TwingProfilerNodeVisitorProfiler: TwingProfilerNodeVisitorProfiler,
     TwingProfilerProfile: TwingProfilerProfile,
-    twingRandom: twingRandom,
-    twingRawFilter: twingRawFilter,
     TwingReflectionMethod: TwingReflectionMethod,
     TwingReflectionParameter: TwingReflectionParameter,
-    twingReplaceFilter: twingReplaceFilter,
-    twingReverseFilter: twingReverseFilter,
-    twingRound: twingRound,
     TwingRuntimeLoaderInterface: TwingRuntimeLoaderInterface,
     TwingSandboxSecurityError: TwingSandboxSecurityError,
     TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
     TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
     TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
     TwingSandboxSecurityPolicy: TwingSandboxSecurityPolicy,
-    twingSlice: twingSlice,
-    twingSortFilter: twingSortFilter,
-    twingSource: twingSource,
     TwingSource: TwingSource,
-    twingSplitFilter: twingSplitFilter,
     TwingTemplate: TwingTemplate,
-    twingTemplateFromString: twingTemplateFromString,
     TwingTemplateWrapper: TwingTemplateWrapper,
     TwingTest: TwingTest,
-    twingTestEmpty: twingTestEmpty,
-    twingTestIterable: twingTestIterable,
-    twingTitleStringFilter: twingTitleStringFilter,
     TwingTokenParser: TwingTokenParser,
     TwingTokenParserAutoEscape: TwingTokenParserAutoEscape,
     TwingTokenParserBlock: TwingTokenParserBlock,
@@ -431,10 +380,6 @@ let Twing = {
     TwingTokenParserUse: TwingTokenParserUse,
     TwingTokenParserWith: TwingTokenParserWith,
     TwingTokenStream: TwingTokenStream,
-    twingTrimFilter: twingTrimFilter,
-    twingUpperFilter: twingUpperFilter,
-    twingUrlencodeFilter: twingUrlencodeFilter,
-    twingVarDump: twingVarDump,
     varDump: varDump
 };
 

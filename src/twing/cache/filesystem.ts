@@ -11,10 +11,9 @@ let tmp = require('tmp');
  * @author Andrew Tch <andrew@noop.lv>
  */
 export class TwingCacheFilesystem implements TwingCacheInterface {
+    public implementsTwingCacheInterface: boolean = true;
     private directory: string;
     private options: number;
-
-    public implementsTwingCacheInterface: boolean = true;
 
     /**
      * @param directory {string} The root cache directory

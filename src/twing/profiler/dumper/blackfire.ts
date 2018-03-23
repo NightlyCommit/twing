@@ -1,12 +1,11 @@
 import {TwingProfilerProfile} from "../profile";
-import {TwingMap} from "../../map";
 
 /**
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingProfilerDumperBlackfire {
     dump(profile: TwingProfilerProfile) {
-        let data: TwingMap<string, {}> = new TwingMap();
+        let data: Map<string, any> = new Map();
         this.dumpProfile('main()', profile, data);
         this.dumpChildren('main()', profile, data);
 
@@ -24,7 +23,7 @@ request-start: ${start}
         return str;
     }
 
-    private dumpChildren(parent: string, profile: TwingProfilerProfile, data: TwingMap<string, {}>) {
+    private dumpChildren(parent: string, profile: TwingProfilerProfile, data: Map<string, {}>) {
         let name: string;
         for (let p of profile.getProfiles()) {
 
@@ -39,9 +38,9 @@ request-start: ${start}
         }
     }
 
-    private dumpProfile(edge: string, profile: TwingProfilerProfile, data: TwingMap<string, {}>) {
+    private dumpProfile(edge: string, profile: TwingProfilerProfile, data: Map<string, {}>) {
         if (data.has(edge)) {
-            let edgeObject = data.get(edge);
+            let edgeObject: any = data.get(edge);
 
             edgeObject['ct'] += 1;
             edgeObject['wt'] += Math.floor(profile.getDuration() * 1000000);

@@ -1,22 +1,22 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingMap} from "../../map";
+
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionName extends TwingNodeExpression {
-    private specialVars: TwingMap<string, string>;
+    private specialVars: Map<string, string>;
 
     constructor(name: string, lineno: number) {
-        let attributes = new TwingMap();
+        let attributes = new Map();
 
         attributes.set('name', name);
         attributes.set('is_defined_test', false);
         attributes.set('ignore_strict_check', false);
         attributes.set('always_defined', false);
 
-        super(new TwingMap(), attributes, lineno);
+        super(new Map(), attributes, lineno);
 
-        this.specialVars = new TwingMap([
+        this.specialVars = new Map([
             ['_self', 'this.getTemplateName()'],
             ['_context', 'context'],
             ['_charset', 'this.env.getCharset()']

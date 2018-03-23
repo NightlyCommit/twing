@@ -1,11 +1,11 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression = null, only: boolean = false, ignoreMissing: boolean = false, lineno: number, tag: string = null) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('expr', expr);
 
@@ -13,7 +13,7 @@ export class TwingNodeInclude extends TwingNode {
             nodes.set('variables', variables);
         }
 
-        super(nodes, new TwingMap([['only', only], ['ignore_missing', ignoreMissing]]), lineno, tag);
+        super(nodes, new Map([['only', only], ['ignore_missing', ignoreMissing]]), lineno, tag);
 
         this.type = TwingNodeType.INCLUDE;
     }
@@ -72,7 +72,7 @@ export class TwingNodeInclude extends TwingNode {
 
     addTemplateArguments(compiler: TwingCompiler) {
         if (!this.hasNode('variables')) {
-            compiler.raw(this.getAttribute('only') === false ? 'context' : 'new Twing.TwingMap()');
+            compiler.raw(this.getAttribute('only') === false ? 'context' : 'new Map()');
         }
         else if (this.getAttribute('only') === false) {
             compiler

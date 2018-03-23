@@ -1,5 +1,5 @@
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 /**
@@ -15,7 +15,7 @@ import {TwingCompiler} from "../compiler";
  */
 export class TwingNodeAutoEscape extends TwingNode {
     constructor(value: {}, body: TwingNode, lineno: number, tag = 'autoescape') {
-        super(new TwingMap([['body', body]]), new TwingMap([['value', value]]), lineno, tag);
+        super(new Map([['body', body]]), new Map([['value', value]]), lineno, tag);
 
         this.type = TwingNodeType.AUTO_ESCAPE;
     }

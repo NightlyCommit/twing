@@ -1,6 +1,6 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingToken} from "../token";
-import {TwingMap} from "../map";
+
 import {TwingNodeImport} from "../node/import";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeExpression} from "../node/expression";
@@ -19,7 +19,7 @@ export class TwingTokenParserFrom extends TwingTokenParser {
 
         stream.expect(TwingToken.NAME_TYPE, 'import');
 
-        let targets = new TwingMap();
+        let targets = new Map();
 
         do {
             let name = stream.expect(TwingToken.NAME_TYPE).getValue();

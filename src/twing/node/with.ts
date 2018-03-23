@@ -1,10 +1,10 @@
 import {TwingNode} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeWith extends TwingNode {
     constructor(body: TwingNode, variables: TwingNode = null, only: boolean = false, lineno: number, tag: string = null) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('body', body);
 
@@ -12,7 +12,7 @@ export class TwingNodeWith extends TwingNode {
             nodes.set('variables', variables);
         }
 
-        super(nodes, new TwingMap([['only', only]]), lineno, tag);
+        super(nodes, new Map([['only', only]]), lineno, tag);
     }
 
     compile(compiler: TwingCompiler) {
@@ -33,16 +33,16 @@ export class TwingNodeWith extends TwingNode {
             ;
 
             if (this.getAttribute('only')) {
-                compiler.write("context = new Twing.TwingMap([['_parent', context]]);\n");
+                compiler.write("context = new Map([['_parent', context]]);\n");
             }
             else {
-                compiler.write("context.set('_parent', context.clone());\n");
+                compiler.write("context.set('_parent', Twing.clone(context));\n");
             }
 
-            compiler.write(`context = context.merge(Twing.iteratorToMap(${varsName}));\n`);
+            compiler.write(`context = Twing.merge(context, Twing.iteratorToMap(${varsName}));\n`);
         }
         else {
-            compiler.write("context.set('_parent', context.clone());\n");
+            compiler.write("context.set('_parent', Twing.clone(context));\n");
         }
 
         compiler

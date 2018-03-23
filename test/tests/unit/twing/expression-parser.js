@@ -3,7 +3,7 @@ const TwingParser = require('../../../../lib/twing/parser').TwingParser;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 const TwingNodeExpressionArray = require('../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
-const TwingMap = require('../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionConstant = require('../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionName = require('../../../../lib/twing/node/expression/name').TwingNodeExpressionName;
 const TwingNodeExpressionBinaryConcat = require('../../../../lib/twing/node/expression/binary/concat').TwingNodeExpressionBinaryConcat;
@@ -46,7 +46,7 @@ tap.test('expression-parser', function (test) {
     test.test('arrayExpression', function (test) {
         let templatesAndNodes = [
             // simple array
-            ['{{ [1, 2] }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ [1, 2] }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant(0, 1)],
                 [1, new TwingNodeExpressionConstant(1, 1)],
 
@@ -56,7 +56,7 @@ tap.test('expression-parser', function (test) {
             ],
 
             // array with trailing ,
-            ['{{ [1, 2, ] }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ [1, 2, ] }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant(0, 1)],
                 [1, new TwingNodeExpressionConstant(1, 1)],
 
@@ -66,7 +66,7 @@ tap.test('expression-parser', function (test) {
             ],
 
             // simple hash
-            ['{{ {"a": "b", "b": "c"} }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ {"a": "b", "b": "c"} }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant('a', 1)],
                 [1, new TwingNodeExpressionConstant('b', 1)],
 
@@ -76,7 +76,7 @@ tap.test('expression-parser', function (test) {
             ],
 
             // hash with trailing ,
-            ['{{ {"a": "b", "b": "c", } }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ {"a": "b", "b": "c", } }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant('a', 1)],
                 [1, new TwingNodeExpressionConstant('b', 1)],
 
@@ -86,12 +86,12 @@ tap.test('expression-parser', function (test) {
             ],
 
             // hash in an array
-            ['{{ [1, {"a": "b", "b": "c"}] }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ [1, {"a": "b", "b": "c"}] }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant(0, 1)],
                 [1, new TwingNodeExpressionConstant(1, 1)],
 
                 [2, new TwingNodeExpressionConstant(1, 1)],
-                [3, new TwingNodeExpressionArray(new TwingMap([
+                [3, new TwingNodeExpressionArray(new Map([
                     [0, new TwingNodeExpressionConstant('a', 1)],
                     [1, new TwingNodeExpressionConstant('b', 1)],
 
@@ -102,9 +102,9 @@ tap.test('expression-parser', function (test) {
             ],
 
             // array in a hash
-            ['{{ {"a": [1, 2], "b": "c"} }}', new TwingNodeExpressionArray(new TwingMap([
+            ['{{ {"a": [1, 2], "b": "c"} }}', new TwingNodeExpressionArray(new Map([
                 [0, new TwingNodeExpressionConstant('a', 1)],
-                [1, new TwingNodeExpressionArray(new TwingMap([
+                [1, new TwingNodeExpressionArray(new Map([
                     [0, new TwingNodeExpressionConstant(0, 1)],
                     [1, new TwingNodeExpressionConstant(1, 1)],
 

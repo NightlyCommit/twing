@@ -1,5 +1,5 @@
 import {TwingNode} from "../../node";
-import {TwingMap} from "../../map";
+
 import {TwingCompiler} from "../../compiler";
 
 /**
@@ -9,7 +9,7 @@ import {TwingCompiler} from "../../compiler";
  */
 export class TwingProfilerNodeEnterProfile extends TwingNode {
     constructor(extensionName: string, type: string, name: string, varName: string) {
-        super(new TwingMap(), new TwingMap([['extension_name', extensionName], ['name', name], ['type', type], ['var_name', varName]]));
+        super(new Map(), new Map([['extension_name', extensionName], ['name', name], ['type', type], ['var_name', varName]]));
     }
 
     compile(compiler: TwingCompiler) {

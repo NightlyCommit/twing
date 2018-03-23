@@ -1,5 +1,5 @@
 import {TwingNodeInterface} from "./node-interface";
-import {TwingMap} from "./map";
+
 import {TwingCompiler} from "./compiler";
 
 const var_export = require('locutus/php/var/var_export');
@@ -49,13 +49,12 @@ export enum TwingNodeOutputType {
 }
 
 export class TwingNode implements TwingNodeInterface {
-    protected nodes: TwingMap<string, TwingNode>;
-    protected attributes: TwingMap<string, any>;
+    protected nodes: Map<number | string, TwingNode>;
+    protected attributes: Map<string, any>;
     protected lineno: number;
     protected tag: string;
     protected type: TwingNodeType;
     protected outputType: TwingNodeOutputType = TwingNodeOutputType.NONE;
-
     private name: string = null;
 
     /**
@@ -69,7 +68,7 @@ export class TwingNode implements TwingNodeInterface {
      * @param lineno        number                  The line number
      * @param tag           string                  The tag name associated with the Nodel
      */
-    constructor(nodes: TwingMap<any, any> = new TwingMap(), attributes: TwingMap<string, any> = new TwingMap(), lineno: number = 0, tag: string = null) {
+    constructor(nodes: Map<any, any> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, tag: string = null) {
         this.nodes = nodes;
         this.attributes = attributes;
         this.lineno = lineno;
@@ -84,7 +83,7 @@ export class TwingNode implements TwingNodeInterface {
         let result: TwingNode = Reflect.construct(this.constructor, []);
 
         for (let [name, node] of this.getNodes()) {
-            result.setNode(name, node.clone());
+            result.setNode(name as string, node.clone());
         }
 
         for (let [name, node] of this.attributes) {
@@ -141,8 +140,6 @@ export class TwingNode implements TwingNodeInterface {
     getOutputType() {
         return this.outputType;
     }
-
-    static ind = 0;
 
     compile(compiler: TwingCompiler): any {
         for (let [k, node] of this.nodes) {
@@ -208,11 +205,11 @@ export class TwingNode implements TwingNodeInterface {
         return this.nodes.get(name);
     }
 
-    setNode(name: string, node: TwingNode) {
+    setNode(name: string | number, node: TwingNode) {
         this.nodes.set(name, node);
     }
 
-    removeNode(name: string) {
+    removeNode(name: string | number) {
         this.nodes.delete(name);
     }
 

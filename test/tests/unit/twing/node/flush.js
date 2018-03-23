@@ -1,4 +1,4 @@
-const TwingMap = require('../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeFlush = require('../../../../../lib/twing/node/flush').TwingNodeFlush;
 const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeType = require('../../../../../lib/twing/node').TwingNodeType;
@@ -9,7 +9,7 @@ tap.test('node/flush', function (test) {
     test.test('constructor', function (test) {
         let node = new TwingNodeFlush(1, 'foo');
 
-        test.same(node.getNodes(), new TwingMap());
+        test.same(node.getNodes(), new Map());
         test.same(node.getType(), TwingNodeType.FLUSH);
 
         test.end();

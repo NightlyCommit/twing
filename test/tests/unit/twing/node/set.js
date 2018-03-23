@@ -1,6 +1,6 @@
 const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingMap = require('../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionAssignName = require('../../../../../lib/twing/node/expression/assign-name').TwingNodeExpressionAssignName;
 const TwingNodeSet = require('../../../../../lib/twing/node/set').TwingNodeSet;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
@@ -12,17 +12,17 @@ const tap = require('tap');
 
 tap.test('node/set', function (test) {
     test.test('constructor', function (test) {
-        let namesNodes = new TwingMap();
+        let namesNodes = new Map([
+            [0, new TwingNodeExpressionAssignName('foo', 1)]
+        ]);
 
-        namesNodes.push(new TwingNodeExpressionAssignName('foo', 1));
+        let namesNode = new TwingNode(namesNodes, new Map(), 1);
 
-        let namesNode = new TwingNode(namesNodes, new TwingMap(), 1);
+        let valuesNodes = new Map([
+            [0, new TwingNodeExpressionConstant('foo', 1)]
+        ]);
 
-        let valuesNodes = new TwingMap();
-
-        valuesNodes.push(new TwingNodeExpressionConstant('foo', 1));
-
-        let valuesNode = new TwingNode(valuesNodes, new TwingMap(), 1);
+        let valuesNode = new TwingNode(valuesNodes, new Map(), 1);
 
         let node = new TwingNodeSet(false, namesNode, valuesNode, 1);
 
@@ -38,17 +38,17 @@ tap.test('node/set', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
-            let namesNodes = new TwingMap();
+            let namesNodes = new Map([
+                [0, new TwingNodeExpressionAssignName('foo', 1)]
+            ]);
 
-            namesNodes.push(new TwingNodeExpressionAssignName('foo', 1));
+            let namesNode = new TwingNode(namesNodes, new Map(), 1);
 
-            let namesNode = new TwingNode(namesNodes, new TwingMap(), 1);
+            let valuesNodes = new Map([
+                [0, new TwingNodeExpressionConstant('foo', 1)]
+            ]);
 
-            let valuesNodes = new TwingMap();
-
-            valuesNodes.push(new TwingNodeExpressionConstant('foo', 1));
-
-            let valuesNode = new TwingNode(valuesNodes, new TwingMap(), 1);
+            let valuesNode = new TwingNode(valuesNodes, new Map(), 1);
 
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1);
 
@@ -60,17 +60,17 @@ context.set("foo", "foo");
         });
 
         test.test('with capture', function (test) {
-            let namesNodes = new TwingMap();
+            let namesNodes = new Map([
+                [0, new TwingNodeExpressionAssignName('foo', 1)]
+            ]);
 
-            namesNodes.push(new TwingNodeExpressionAssignName('foo', 1));
+            let namesNode = new TwingNode(namesNodes, new Map(), 1);
 
-            let namesNode = new TwingNode(namesNodes, new TwingMap(), 1);
+            let valuesNodes = new Map([
+                [0, new TwingNodePrint(new TwingNodeExpressionConstant('foo', 1), 1)]
+            ]);
 
-            let valuesNodes = new TwingMap();
-
-            valuesNodes.push(new TwingNodePrint(new TwingNodeExpressionConstant('foo', 1), 1));
-
-            let valuesNode = new TwingNode(valuesNodes, new TwingMap(), 1);
+            let valuesNode = new TwingNode(valuesNodes, new Map(), 1);
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1);
 
@@ -85,11 +85,11 @@ context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMar
         });
 
         test.test('with capture and text', function (test) {
-            let namesNodes = new TwingMap();
+            let namesNodes = new Map([
+                [0, new TwingNodeExpressionAssignName('foo', 1)]
+            ]);
 
-            namesNodes.push(new TwingNodeExpressionAssignName('foo', 1));
-
-            let namesNode = new TwingNode(namesNodes, new TwingMap(), 1);
+            let namesNode = new TwingNode(namesNodes, new Map(), 1);
             let valuesNode = new TwingNodeText('foo', 1);
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1);
@@ -103,19 +103,19 @@ context.set("foo", ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this
         });
 
         test.test('with multiple names and values', function (test) {
-            let namesNodes = new TwingMap();
+            let namesNodes = new Map([
+                [0, new TwingNodeExpressionAssignName('foo', 1)],
+                [1, new TwingNodeExpressionAssignName('bar', 1)]
+            ]);
 
-            namesNodes.push(new TwingNodeExpressionAssignName('foo', 1));
-            namesNodes.push(new TwingNodeExpressionAssignName('bar', 1));
+            let namesNode = new TwingNode(namesNodes, new Map(), 1);
 
-            let namesNode = new TwingNode(namesNodes, new TwingMap(), 1);
+            let valuesNodes = new Map([
+                [0, new TwingNodeExpressionConstant('foo', 1)],
+                [1, new TwingNodeExpressionConstant('bar', 1)]
+            ]);
 
-            let valuesNodes = new TwingMap();
-
-            valuesNodes.push(new TwingNodeExpressionConstant('foo', 1));
-            valuesNodes.push(new TwingNodeExpressionConstant('bar', 1));
-
-            let valuesNode = new TwingNode(valuesNodes, new TwingMap(), 1);
+            let valuesNode = new TwingNode(valuesNodes, new Map(), 1);
 
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1);
 

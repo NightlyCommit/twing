@@ -1,6 +1,6 @@
 const TwingTestMockCompiler = require('../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingMap = require('../../../../../lib/twing/map').TwingMap;
+
 const TwingNodePrint = require('../../../../../lib/twing/node/print').TwingNodePrint;
 const TwingNodeExpressionName = require('../../../../../lib/twing/node/expression/name').TwingNodeExpressionName;
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
@@ -11,12 +11,12 @@ const tap = require('tap');
 
 tap.test('node/if', function (test) {
     test.test('constructor', function (test) {
-        let tNodes = new TwingMap();
+        let tNodes = new Map([
+            [0, new TwingNodeExpressionConstant(true, 1)],
+            [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+        ]);
 
-        tNodes.push(new TwingNodeExpressionConstant(true, 1));
-        tNodes.push(new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1));
-
-        let t = new TwingNode(tNodes, new TwingMap(), 1);
+        let t = new TwingNode(tNodes, new Map(), 1);
         let else_ = null;
         let node = new TwingNodeIf(t, else_, 1);
 
@@ -36,12 +36,12 @@ tap.test('node/if', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.test('without else', function (test) {
-            let tNodes = new TwingMap();
+            let tNodes = new Map([
+                [0, new TwingNodeExpressionConstant(true, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+            ]);
 
-            tNodes.push(new TwingNodeExpressionConstant(true, 1));
-            tNodes.push(new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1));
-
-            let t = new TwingNode(tNodes, new TwingMap(), 1);
+            let t = new TwingNode(tNodes, new Map(), 1);
             let else_ = null;
             let node = new TwingNodeIf(t, else_, 1);
 
@@ -54,14 +54,14 @@ if (true) {
         });
 
         test.test('with multiple tests', function (test) {
-            let tNodes = new TwingMap();
+            let tNodes = new Map([
+                [0, new TwingNodeExpressionConstant(true, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)],
+                [2, new TwingNodeExpressionConstant(false, 1)],
+                [3, new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1)]
+            ]);
 
-            tNodes.push(new TwingNodeExpressionConstant(true, 1));
-            tNodes.push(new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1));
-            tNodes.push(new TwingNodeExpressionConstant(false, 1));
-            tNodes.push(new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1));
-
-            let t = new TwingNode(tNodes, new TwingMap(), 1);
+            let t = new TwingNode(tNodes, new Map(), 1);
             let else_ = null;
 
             let node = new TwingNodeIf(t, else_, 1);
@@ -78,12 +78,12 @@ else if (false) {
         });
 
         test.test('with else', function (test) {
-            let tNodes = new TwingMap();
+            let tNodes = new Map([
+                [0, new TwingNodeExpressionConstant(true, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+            ]);
 
-            tNodes.push(new TwingNodeExpressionConstant(true, 1));
-            tNodes.push(new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1));
-
-            let t = new TwingNode(tNodes, new TwingMap(), 1);
+            let t = new TwingNode(tNodes, new Map(), 1);
             let else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1);
 
             let node = new TwingNodeIf(t, else_, 1);

@@ -1,11 +1,11 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingMap} from "../../map";
+
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     constructor(name: TwingNode, template: TwingNode = null, lineno: number, tag: string = null) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('name', name);
 
@@ -13,7 +13,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
             nodes.set('template', template);
         }
 
-        let attributes = new TwingMap([
+        let attributes = new Map([
             ['is_defined_test', false],
             ['output', false]
         ]);

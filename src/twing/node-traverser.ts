@@ -9,11 +9,13 @@
 import {TwingEnvironment} from "./environment";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingNode} from "./node";
-import {TwingMap} from "./map";
+
+import {ksort} from "./helper/ksort";
+import {push} from "./helper/push";
 
 export class TwingNodeTraverser {
     private env: TwingEnvironment;
-    private visitors: TwingMap<string, TwingMap<string, TwingNodeVisitorInterface>> = new TwingMap();
+    private visitors: Map<number, Map<string, TwingNodeVisitorInterface>> = new Map();
 
     /**
      *
@@ -32,10 +34,10 @@ export class TwingNodeTraverser {
 
     addVisitor(visitor: TwingNodeVisitorInterface) {
         if (!this.visitors.has(visitor.getPriority())) {
-            this.visitors.set(visitor.getPriority(), new TwingMap());
+            this.visitors.set(visitor.getPriority(), new Map());
         }
 
-        this.visitors.get(visitor.getPriority()).push(visitor);
+        push(this.visitors.get(visitor.getPriority()), visitor);
     }
 
     /**
@@ -47,7 +49,7 @@ export class TwingNodeTraverser {
         let self = this;
         let result: TwingNode | false = node;
 
-        this.visitors.sortByKeys();
+        ksort(this.visitors);
 
         for (let [index, visitors] of this.visitors) {
             for (let [index, visitor] of visitors) {

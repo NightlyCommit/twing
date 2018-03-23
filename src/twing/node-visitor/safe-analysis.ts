@@ -1,7 +1,7 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingEnvironment} from "../environment";
-import {TwingMap} from "../map";
+
 
 var objectHash = require('object-hash');
 
@@ -11,7 +11,7 @@ interface Bucket {
 }
 
 export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
-    private data: TwingMap<string, Array<Bucket>> = new TwingMap();
+    private data: Map<string, Array<Bucket>> = new Map();
     private safeVars: Array<any> = [];
 
     setSafeVars(safeVars: Array<any>) {
@@ -148,6 +148,10 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return node;
     }
 
+    getPriority() {
+        return 0;
+    }
+
     private intersectSafe(a: Array<any> = null, b: Array<any> = null) {
         if (a === null || b === null) {
             return [];
@@ -165,9 +169,5 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return a.filter(function (n) {
             return b.includes(n);
         });
-    }
-
-    getPriority() {
-        return 0;
     }
 }

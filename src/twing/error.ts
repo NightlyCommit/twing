@@ -7,15 +7,13 @@ import {TwingSource} from "./source";
 import {TwingTemplate} from "./template";
 import {TwingReflectionObject} from "./reflection-object";
 import {StackFrame} from "stack-trace";
-import {TwingMap} from "./map";
+
 
 const stackTrace = require('stack-trace');
 
 export class TwingError extends Error {
-    name_: string = null;
-
     protected static registry: Map<string, string> = new Map();
-
+    name_: string = null;
     private lineno: number | boolean;
     private rawMessage: string = null;
     private sourcePath: string = null;
@@ -33,32 +31,6 @@ export class TwingError extends Error {
         this.rawMessage = message;
 
         this.init(lineno, source)
-    }
-
-    protected init(lineno: number = -1, source: TwingSource | string | null = null) {
-        let name: string;
-
-        if (source === null) {
-            name = null;
-        }
-        else if (!(source instanceof TwingSource)) {
-            name = source as string;
-        }
-        else {
-            name = source.getName();
-
-            this.sourceCode = source.getCode();
-            this.sourcePath = source.getPath();
-        }
-
-        this.lineno = lineno;
-        this.name_ = name;
-
-        if (lineno === -1 || name === null || this.sourcePath === null) {
-            this.guessTemplateInfo();
-        }
-
-        this.updateRepr();
     }
 
     public static register(key: string, value: string) {
@@ -222,8 +194,8 @@ export class TwingError extends Error {
                             isTraitable: (): boolean => {
                                 return true;
                             },
-                            getBlocks: (): TwingMap<string, Array<any>> => {
-                                return new TwingMap();
+                            getBlocks: (): Map<string, Array<any>> => {
+                                return new Map();
                             },
                             loadTemplate: (): any => {
                                 return null;
@@ -278,7 +250,7 @@ export class TwingError extends Error {
             let templateToUse: TwingTemplate = template;
 
             while (templateToUse && (templateToUse.getTemplateName() !== this.getSourceContext().getName())) {
-                templateToUse = templateToUse.getParent();
+                templateToUse = templateToUse.getParent() as TwingTemplate;
             }
 
             if (templateToUse) {
@@ -298,5 +270,31 @@ export class TwingError extends Error {
                 }
             }
         }
+    }
+
+    protected init(lineno: number = -1, source: TwingSource | string | null = null) {
+        let name: string;
+
+        if (source === null) {
+            name = null;
+        }
+        else if (!(source instanceof TwingSource)) {
+            name = source as string;
+        }
+        else {
+            name = source.getName();
+
+            this.sourceCode = source.getCode();
+            this.sourcePath = source.getPath();
+        }
+
+        this.lineno = lineno;
+        this.name_ = name;
+
+        if (lineno === -1 || name === null || this.sourcePath === null) {
+            this.guessTemplateInfo();
+        }
+
+        this.updateRepr();
     }
 }

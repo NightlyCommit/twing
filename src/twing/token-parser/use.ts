@@ -3,7 +3,7 @@ import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 
 export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -14,7 +14,7 @@ export class TwingTokenParserUse extends TwingTokenParser {
             throw new TwingErrorSyntax('The template references in a "use" statement must be a string.', stream.getCurrent().getLine(), stream.getSourceContext());
         }
 
-        let targets = new TwingMap();
+        let targets = new Map();
 
         if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
             do {
@@ -35,7 +35,7 @@ export class TwingTokenParserUse extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        this.parser.addTrait(new TwingNode(new TwingMap([['template', template], ['targets', new TwingNode(targets)]])));
+        this.parser.addTrait(new TwingNode(new Map([['template', template], ['targets', new TwingNode(targets)]])));
 
         return new TwingNode();
     }

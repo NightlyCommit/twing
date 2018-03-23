@@ -5,7 +5,7 @@
  */
 import {TwingEnvironment} from "./environment";
 import {TwingTemplate} from "./template";
-import {TwingMap} from "./map";
+
 import {TwingSource} from "./source";
 import {iteratorToMap} from "./helper/iterator-to-map";
 import {TwingOutputBuffering} from "./output-buffering";
@@ -68,7 +68,7 @@ export class TwingTemplateWrapper {
      * @returns {string} The rendered block
      */
     renderBlock(name: string, context: any = {}): string {
-        if (!(context instanceof TwingMap)) {
+        if (!(context instanceof Map)) {
             context = iteratorToMap(context);
         }
 
@@ -99,7 +99,7 @@ export class TwingTemplateWrapper {
      * @param {*} context A hash of parameters to pass to the template
      */
     displayBlock(name: string, context: any = {}): void {
-        if (!(context instanceof TwingMap)) {
+        if (!(context instanceof Map)) {
             context = iteratorToMap(context);
         }
 

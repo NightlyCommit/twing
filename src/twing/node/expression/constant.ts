@@ -1,11 +1,11 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingMap} from "../../map";
+
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionConstant extends TwingNodeExpression {
     constructor(value: TwingNode | string | number | boolean, lineno: number) {
-        super(new TwingMap(), new TwingMap([['value', value]]), lineno);
+        super(new Map(), new Map([['value', value]]), lineno);
 
         this.type = TwingNodeType.EXPRESSION_CONSTANT;
     }

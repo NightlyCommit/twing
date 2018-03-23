@@ -1,5 +1,4 @@
 "use strict";
-const TwingMap = require("../../../../../lib/twing/map").TwingMap;
 const TwingLoaderArray = require("../../../../../lib/twing/loader/array").TwingLoaderArray;
 const TwingEnvironment = require("../../../../../lib/twing/environment").TwingEnvironment;
 const TwingSandboxSecurityPolicy = require("../../../../../lib/twing/sandbox/security-policy").TwingSandboxSecurityPolicy;
@@ -234,7 +233,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('sandboxAllowMethodFoo', function (test) {
-        let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, 'foo']]));
+        let twing = getEnvironment(true, {}, templates, [], [], new Map([[FooObject, 'foo']]));
 
         FooObject.reset();
         test.same(twing.loadTemplate('1_basic1').render(params), 'foo', 'Sandbox allow some methods');
@@ -244,7 +243,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('sandboxAllowMethodToString', function (test) {
-        let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, 'toString']]));
+        let twing = getEnvironment(true, {}, templates, [], [], new Map([[FooObject, 'toString']]));
 
         FooObject.reset();
         test.same(twing.loadTemplate('1_basic5').render(params), 'foo', 'Sandbox allow some methods');
@@ -280,7 +279,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('sandboxAllowProperty', function (test) {
-        let twing = getEnvironment(true, {}, templates, [], [], new TwingMap(), new TwingMap([[FooObject, 'bar']]));
+        let twing = getEnvironment(true, {}, templates, [], [], new Map(), new Map([[FooObject, 'bar']]));
 
         test.same(twing.loadTemplate('1_basic4').render(params), 'bar', 'Sandbox allow some properties');
 
@@ -288,7 +287,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('sandboxAllowFunction', function (test) {
-        let twing = getEnvironment(true, {}, templates, [], [], new TwingMap(), new TwingMap(), ['cycle']);
+        let twing = getEnvironment(true, {}, templates, [], [], new Map(), new Map(), ['cycle']);
 
         test.same(twing.loadTemplate('1_basic7').render(params), 'bar', 'Sandbox allow some functions');
 
@@ -297,7 +296,7 @@ tap.test('TwingExtensionSandbox', function (test) {
 
     test.test('sandboxAllowFunctionsCaseInsensitive', function (test) {
         for (let name of ['getfoobar', 'getFoobar', 'getFooBar']) {
-            let twing = getEnvironment(true, {}, templates, [], [], new TwingMap([[FooObject, name]]));
+            let twing = getEnvironment(true, {}, templates, [], [], new Map([[FooObject, name]]));
             FooObject.reset();
             test.same(twing.loadTemplate('1_basic8').render(params), 'foobarfoobar', 'Sandbox allow methods in a case-insensitive way');
             test.same(FooObject.called.get('getFooBar'), 2, 'Sandbox only calls method once');
@@ -308,7 +307,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('sandboxLocallySetForAnInclude', function (test) {
-        let templates = new TwingMap([
+        let templates = new Map([
             ['2_basic', '{{ obj.foo }}{% include "2_included" %}{{ obj.foo }}'],
             ['2_included', '{% if obj.foo %}{{ obj.foo|upper }}{% endif %}']
         ]);
@@ -316,7 +315,7 @@ tap.test('TwingExtensionSandbox', function (test) {
         let twing = getEnvironment(false, {}, templates);
         test.same(twing.loadTemplate('2_basic').render(params), 'fooFOOfoo', 'Sandbox does nothing if disabled globally and sandboxed not used for the include');
 
-        templates = new TwingMap([
+        templates = new Map([
             ['3_basic', '{{ obj.foo }}{% sandbox %}{% include "3_included" %}{% endsandbox %}{{ obj.foo }}'],
             ['3_included', '{% if obj.foo %}{{ obj.foo|upper }}{% endif %}']
         ]);
@@ -337,7 +336,7 @@ tap.test('TwingExtensionSandbox', function (test) {
     });
 
     test.test('macrosInASandbox', function (test) {
-        let twing = getEnvironment(true, {autoescape: 'html', cache: 'tmp'}, {index: `
+        let twing = getEnvironment(true, {autoescape: 'html'}, {index: `
 {%- import _self as macros %}
 
 {%- macro test(text) %}<p>{{ text }}</p>{% endmacro %}

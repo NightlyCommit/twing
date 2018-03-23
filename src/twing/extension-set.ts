@@ -4,7 +4,7 @@ import {TwingFunction} from "./function";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingExtensionStaging} from "./extension/staging";
-import {TwingMap} from "./map";
+
 import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingTest} from "./test";
 import {TwingEnvironment} from "./environment";
@@ -19,8 +19,8 @@ export class TwingExtensionSet {
     private parsers: TwingTokenParserInterface[];
     private visitors: TwingNodeVisitorInterface[];
     private filters: Map<string, TwingFilter>;
-    private tests: TwingMap<string, TwingTest>;
-    private functions: TwingMap<string, TwingFunction>;
+    private tests: Map<string, TwingTest>;
+    private functions: Map<string, TwingFunction>;
     private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
     private binaryOperators: Map<string, TwingOperatorDefinitionInterface>;
     private globals: {};
@@ -196,66 +196,6 @@ export class TwingExtensionSet {
         return this.binaryOperators;
     }
 
-    private initExtensions() {
-        let self = this;
-
-        this.parsers = [];
-        this.filters = new Map();
-        this.functions = new TwingMap();
-        this.tests = new TwingMap();
-        this.visitors = [];
-        this.unaryOperators = new Map();
-        this.binaryOperators = new Map();
-
-        this.extensions.forEach(function (extension) {
-            self.initExtension(extension);
-        });
-
-        this.initExtension(this.staging);
-
-        // Done at the end only, so that an exception during initialization does not mark the environment as initialized when catching the exception
-        this.initialized = true;
-    }
-
-    private initExtension(extension: TwingExtensionInterface) {
-        let self = this;
-
-        // filters
-        extension.getFilters().forEach(function (filter) {
-            self.filters.set(filter.getName(), filter);
-        });
-
-        // functions
-        extension.getFunctions().forEach(function (function_: TwingFunction) {
-            self.functions.set(function_.getName(), function_);
-        });
-
-        // tests
-        extension.getTests().forEach(function (test: TwingTest) {
-            self.tests.set(test.getName(), test);
-        });
-
-        // token parsers
-        extension.getTokenParsers().forEach(function (parser) {
-            // if (!parser instanceof Twig_TokenParserInterface) {
-            //     throw new Error('getTokenParsers() must return an array of Twig_TokenParserInterface.');
-            // }
-
-            self.parsers.push(parser);
-        });
-
-        // node visitors
-        extension.getNodeVisitors().forEach(function (visitor) {
-            self.visitors.push(visitor);
-        });
-
-        // operators
-        let operators = extension.getOperators();
-
-        this.unaryOperators = new Map([...this.unaryOperators, ...operators.unary]);
-        this.binaryOperators = new Map([...this.binaryOperators, ...operators.binary]);
-    }
-
     addFunction(twingFunction: TwingFunction) {
         if (this.initialized) {
             throw new Error(`Unable to add function "${twingFunction.getName()}" as extensions have already been initialized.`);
@@ -428,7 +368,7 @@ export class TwingExtensionSet {
 
     /**
      *
-     * @returns {TwingMap<string, TwingTest>}
+     * @returns {Map<string, TwingTest>}
      */
     getTests() {
         if (!this.initialized) {
@@ -454,5 +394,65 @@ export class TwingExtensionSet {
         }
 
         return null;
+    }
+
+    private initExtensions() {
+        let self = this;
+
+        this.parsers = [];
+        this.filters = new Map();
+        this.functions = new Map();
+        this.tests = new Map();
+        this.visitors = [];
+        this.unaryOperators = new Map();
+        this.binaryOperators = new Map();
+
+        this.extensions.forEach(function (extension) {
+            self.initExtension(extension);
+        });
+
+        this.initExtension(this.staging);
+
+        // Done at the end only, so that an exception during initialization does not mark the environment as initialized when catching the exception
+        this.initialized = true;
+    }
+
+    private initExtension(extension: TwingExtensionInterface) {
+        let self = this;
+
+        // filters
+        extension.getFilters().forEach(function (filter) {
+            self.filters.set(filter.getName(), filter);
+        });
+
+        // functions
+        extension.getFunctions().forEach(function (function_: TwingFunction) {
+            self.functions.set(function_.getName(), function_);
+        });
+
+        // tests
+        extension.getTests().forEach(function (test: TwingTest) {
+            self.tests.set(test.getName(), test);
+        });
+
+        // token parsers
+        extension.getTokenParsers().forEach(function (parser) {
+            // if (!parser instanceof Twig_TokenParserInterface) {
+            //     throw new Error('getTokenParsers() must return an array of Twig_TokenParserInterface.');
+            // }
+
+            self.parsers.push(parser);
+        });
+
+        // node visitors
+        extension.getNodeVisitors().forEach(function (visitor) {
+            self.visitors.push(visitor);
+        });
+
+        // operators
+        let operators = extension.getOperators();
+
+        this.unaryOperators = new Map([...this.unaryOperators, ...operators.unary]);
+        this.binaryOperators = new Map([...this.binaryOperators, ...operators.binary]);
     }
 }

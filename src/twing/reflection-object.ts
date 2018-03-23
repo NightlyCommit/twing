@@ -3,10 +3,9 @@ export type TwingReflectionObjectDefinition = {
 }
 
 export class TwingReflectionObject {
+    protected static container: Map<any, TwingReflectionObjectDefinition> = new Map();
     protected object: any;
     protected fileName: string;
-
-    protected static container: Map<any, TwingReflectionObjectDefinition> = new Map();
 
     constructor(object: any) {
         this.object = object;
@@ -16,11 +15,11 @@ export class TwingReflectionObject {
         }
     }
 
-    getFileName(): string {
-        return this.fileName;
-    }
-
     public static register(object: any, definition: TwingReflectionObjectDefinition) {
         TwingReflectionObject.container.set(object, definition);
+    }
+
+    getFileName(): string {
+        return this.fileName;
     }
 }

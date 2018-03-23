@@ -20,7 +20,6 @@ import {TwingNodeExpressionUnaryNeg} from "../node/expression/unary/neg";
 import {TwingNodeExpressionUnaryPos} from "../node/expression/unary/pos";
 import {TwingFunction} from "../function";
 import {TwingTokenParserSpaceless} from "../token-parser/spaceless";
-import {TwingMap} from "../map";
 import {TwingNodeExpressionBinaryConcat} from "../node/expression/binary/concat";
 import {TwingNodeExpressionBinaryMul} from "../node/expression/binary/mul";
 import {TwingNodeExpressionBinaryDiv} from "../node/expression/binary/div";
@@ -57,7 +56,6 @@ import {TwingNodeExpressionBinaryMatches} from "../node/expression/binary/matche
 import {TwingNodeExpressionBinaryStartsWith} from "../node/expression/binary/starts-with";
 import {TwingNodeExpressionBinaryEndsWith} from "../node/expression/binary/ends-with";
 import {TwingFilter} from "../filter";
-
 import {DateTime, Duration, Settings as DateTimeSettings} from 'luxon';
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNodeExpressionFilterDefault} from "../node/expression/filter/default";
@@ -87,6 +85,13 @@ import {TwingTemplate} from "../template";
 import {range} from "../helper/range";
 import {relativeDate} from "../helper/relative-date";
 import {examineObject} from "../helper/examine-object";
+import {chunk} from "../helper/chunk";
+import {fill as twingFill} from "../helper/fill";
+import {merge} from "../helper/merge";
+import {slice} from "../helper/slice";
+import {asort} from "../helper/asort";
+import {reverse} from "../helper/reverse";
+import {first} from "../helper/first";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -114,7 +119,7 @@ export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
     private numberFormat: Array<number | string> = [0, '.', ','];
     private timezone: string = null;
-    private escapers: TwingMap<string, Function> = new TwingMap();
+    private escapers: Map<string, Function> = new Map();
 
     /**
      * Defines a new escaper to be used via the escape filter.
@@ -129,7 +134,7 @@ export class TwingExtensionCore extends TwingExtension {
     /**
      * Gets all defined escapers.
      *
-     * @returns {TwingMap<string, Function>}
+     * @returns {Map<string, Function>}
      */
     getEscapers() {
         return this.escapers;
@@ -953,7 +958,7 @@ export function twingArrayMerge(arr1: any, arr2: any) {
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr2) ? typeof arr2 : arr2}" as second argument.`);
     }
 
-    return arr1.merge(arr2);
+    return merge(arr1, arr2);
 }
 
 /**
@@ -967,7 +972,7 @@ export function twingArrayMerge(arr1: any, arr2: any) {
  *
  * @returns The sliced variable
  */
-export function twingSlice(env: TwingEnvironment, item: any, start: number, length: number = null, preserveKeys: boolean = false): string | TwingMap<any, any> {
+export function twingSlice(env: TwingEnvironment, item: any, start: number, length: number = null, preserveKeys: boolean = false): string | Map<any, any> {
     if (isTraversable(item)) {
         let iterableItem = iteratorToMap(item);
 
@@ -975,7 +980,7 @@ export function twingSlice(env: TwingEnvironment, item: any, start: number, leng
             length = iterableItem.size - start;
         }
 
-        return iterableItem.slice(start, length, preserveKeys);
+        return slice(iterableItem, start, length, preserveKeys);
     }
 
     item = '' + (item ? item : '');
@@ -998,7 +1003,7 @@ export function twingSlice(env: TwingEnvironment, item: any, start: number, leng
 export function twingFirst(env: TwingEnvironment, item: any) {
     let elements = twingSlice(env, item, 0, 1, false);
 
-    return typeof elements === 'string' ? elements : elements.first();
+    return typeof elements === 'string' ? elements : first(elements);
 }
 
 /**
@@ -1012,7 +1017,7 @@ export function twingFirst(env: TwingEnvironment, item: any) {
 export function twingLast(env: TwingEnvironment, item: any) {
     let elements = twingSlice(env, item, -1, 1, false);
 
-    return typeof elements === 'string' ? elements : elements.first();
+    return typeof elements === 'string' ? elements : first(elements);
 }
 
 /**
@@ -1138,7 +1143,7 @@ export function twingGetArrayKeysFilter(array: Array<any>) {
     let traversable;
 
     if (isNullOrUndefined(array)) {
-        traversable = new TwingMap();
+        traversable = new Map();
     }
     else {
         traversable = iteratorToMap(array);
@@ -1151,19 +1156,19 @@ export function twingGetArrayKeysFilter(array: Array<any>) {
  * Reverses a variable.
  *
  * @param {TwingEnvironment} env
- * @param {*} item A traversable instance, or a string
+ * @param {string | Map<*, *>} item A traversable instance, or a string
  * @param {boolean} preserveKeys Whether to preserve key or not
  *
  * @returns The reversed input
  */
-export function twingReverseFilter(env: TwingEnvironment, item: any, preserveKeys: boolean = false): string | TwingMap<any, any> {
+export function twingReverseFilter(env: TwingEnvironment, item: any, preserveKeys: boolean = false): string | Map<any, any> {
     if (typeof item === 'string') {
         let esrever = require('esrever');
 
         return esrever.reverse(item);
     }
     else {
-        return iteratorToMap(item).reverse(preserveKeys);
+        return reverse(iteratorToMap(item as Map<any, any>), preserveKeys);
     }
 }
 
@@ -1172,14 +1177,18 @@ export function twingReverseFilter(env: TwingEnvironment, item: any, preserveKey
  *
  * @param {Array<*>} array
  *
- * @returns {TwingMap<*,*>}
+ * @returns {Map<*,*>}
  */
 export function twingSortFilter(array: Array<any>) {
     if (!isTraversable(array) && !Array.isArray(array)) {
         throw new TwingErrorRuntime(`The sort filter only works with iterables, got "${typeof array}".`);
     }
 
-    return iteratorToMap(array).sort();
+    let map = iteratorToMap(array);
+
+    asort(map);
+
+    return map;
 }
 
 /**
@@ -1420,7 +1429,7 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
             return rawurlencode(string);
         default:
             let coreExtension = env.getExtension('TwingExtensionCore') as TwingExtensionCore;
-            let escapers: TwingMap<string, Function> = coreExtension.getEscapers();
+            let escapers: Map<string, Function> = coreExtension.getEscapers();
 
             if (escapers.has(strategy)) {
                 return escapers.get(strategy)(env, string, charset);
@@ -1609,7 +1618,7 @@ export function twingTestIterable(value: any) {
  * Renders a template.
  *
  * @param {TwingEnvironment} env
- * @param {TwingMap<*,*>} context
+ * @param {Map<*,*>} context
  * @param {string|Array<string>} template The template to render or an array of templates to try consecutively
  * @param variables The variables to pass to the template
  * @param {boolean} withContext
@@ -1618,14 +1627,14 @@ export function twingTestIterable(value: any) {
  *
  * @returns {string} The rendered template
  */
-function twingInclude(env: TwingEnvironment, context: TwingMap<any, any>, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false) {
+function twingInclude(env: TwingEnvironment, context: Map<any, any>, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false) {
     let alreadySandboxed = false;
     let sandbox: TwingExtensionSandbox = null;
 
     variables = iteratorToMap(variables);
 
     if (withContext) {
-        variables = context.merge(variables);
+        variables = merge(context, variables);
     }
 
     let isSandboxed = sandboxed && env.hasExtension('TwingExtensionSandbox');
@@ -1750,16 +1759,15 @@ function twingConstantIsDefined(constant: string, object: any = null) {
  *
  * @returns Array<any>
  */
-export function twingArrayBatch(items: Array<any>, size: number, fill: any = null): Array<TwingMap<any, any>> {
-    let map = iteratorToMap(items);
-    let chunks: Array<TwingMap<any, any>> = map.chunk(size, true);
+export function twingArrayBatch(items: Array<any>, size: number, fill: any = null): Array<Map<any, any>> {
+    let chunks: Array<Map<any, any>> = chunk(items, size, true);
 
     if (fill !== null && chunks.length) {
         let last = chunks.length - 1;
         let fillCount = size - chunks[last].size;
 
         if (fillCount) {
-            chunks[last].fill(0, fillCount, fill);
+            twingFill(chunks[last], 0, fillCount, fill);
         }
     }
 
@@ -1809,7 +1817,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
 
                 return object[arrayItem];
             }
-            else if (object instanceof Map && object.has(arrayItem)) {
+            else if ((typeof object.has === 'function') && (typeof object.get === 'function') && object.has(arrayItem)) {
                 if (isDefinedTest) {
                     return true;
                 }
@@ -1919,12 +1927,12 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
     }
 
     if (typeof twingGetAttribute.cache == 'undefined') {
-        twingGetAttribute.cache = new TwingMap();
+        twingGetAttribute.cache = new Map();
     }
 
     let cache = twingGetAttribute.cache;
     let class_ = object.constructor.name;
-    let classCache: TwingMap<string, string> = cache.has(class_) ? cache.get(class_) : null;
+    let classCache: Map<string, string> = cache.has(class_) ? cache.get(class_) : null;
 
     // object method
     // precedence: getXxx() > isXxx() > hasXxx()
@@ -1945,7 +1953,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
             return method.toLowerCase();
         });
 
-        classCache = new TwingMap();
+        classCache = new Map();
 
         for (let i = 0; i < methods.length; i++) {
             let method: string = methods[i];
@@ -2012,6 +2020,8 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
             return;
         }
 
+        console.warn(object, object instanceof Map);
+
         throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()" or "get${item}()"/"is${item}()"/"has${item}()" exist and have public access in class "${object.constructor.name}".`, -1, source);
     }
 
@@ -2029,5 +2039,5 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
 }
 
 export namespace twingGetAttribute {
-    export let cache: TwingMap<string, TwingMap<string, string>>;
+    export let cache: Map<string, Map<string, string>>;
 }

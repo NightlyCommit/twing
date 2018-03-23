@@ -1,8 +1,10 @@
+import {clone} from "./twing/helper/clone";
 import {compare} from "./twing/helper/compare";
 import {count} from "./twing/helper/count";
 import {each} from "./twing/helper/each";
 import {isCountable} from "./twing/helper/is-countable";
 import {iteratorToMap} from "./twing/helper/iterator-to-map";
+import {merge} from "./twing/helper/merge";
 import {regexParser} from "./twing/helper/regex-parser";
 import {TwingErrorLoader} from "./twing/error/loader";
 import {TwingErrorRuntime} from "./twing/error/runtime";
@@ -13,7 +15,6 @@ import {
     twingGetAttribute,
     twingInFilter
 } from "./twing/extension/core";
-import {TwingMap} from "./twing/map";
 import {TwingMarkup} from "./twing/markup";
 import {echo, flush, obEndClean, obGetClean, obGetContents, obStart} from "./twing/output-buffering";
 import {range} from "./twing/helper/range";
@@ -25,6 +26,7 @@ import {TwingSource} from "./twing/source";
 import {TwingTemplate} from "./twing/template";
 
 let Twing = {
+    clone: clone,
     compare: compare,
     count: count,
     each: each,
@@ -32,6 +34,7 @@ let Twing = {
     flush: flush,
     isCountable: isCountable,
     iteratorToMap: iteratorToMap,
+    merge: merge,
     obEndClean: obEndClean,
     obGetClean: obGetClean,
     obGetContents: obGetContents,
@@ -45,7 +48,6 @@ let Twing = {
     TwingErrorRuntime: TwingErrorRuntime,
     twingGetAttribute: twingGetAttribute,
     twingInFilter: twingInFilter,
-    TwingMap: TwingMap,
     TwingMarkup: TwingMarkup,
     TwingSandboxSecurityError: TwingSandboxSecurityError,
     TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,

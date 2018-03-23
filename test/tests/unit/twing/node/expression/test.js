@@ -1,4 +1,4 @@
-const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNode = require('../../../../../../lib/twing/node').TwingNode;
@@ -14,7 +14,7 @@ const tap = require('tap');
 function twig_tests_test_barbar(string, arg1 = null, arg2 = null, args = []) {
 }
 
-function createTest(node, name, args = new TwingMap()) {
+function createTest(node, name, args = new Map()) {
     return new TwingNodeExpressionTest(node, name, new TwingNode(args), 1);
 }
 
@@ -45,7 +45,7 @@ tap.test('node/expression/test', function (test) {
 
         test.test('basic', function (test) {
             let expr = new TwingNodeExpressionConstant('foo', 1);
-            let node = new TwingNodeExpressionTestNull(expr, 'null', new TwingNode(new TwingMap()), 1);
+            let node = new TwingNodeExpressionTestNull(expr, 'null', new TwingNode(new Map()), 1);
 
             test.same(compiler.compile(node).getSource(), '("foo" === null)');
 
@@ -53,7 +53,7 @@ tap.test('node/expression/test', function (test) {
         });
 
         test.test('test as an anonymous function', function (test) {
-            let node = createTest(new TwingNodeExpressionConstant('foo', 1), 'anonymous', new TwingMap([
+            let node = createTest(new TwingNodeExpressionConstant('foo', 1), 'anonymous', new Map([
                 [0, new TwingNodeExpressionConstant('foo', 1)]
             ]));
 
@@ -69,13 +69,13 @@ tap.test('node/expression/test', function (test) {
 
             test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').getCallable()(...["abc"])');
 
-            node = createTest(string, 'barbar', new TwingMap([
+            node = createTest(string, 'barbar', new Map([
                 ['foo', new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
             test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').getCallable()(...["abc", null, null, ["bar"]])');
 
-            node = createTest(string, 'barbar', new TwingMap([
+            node = createTest(string, 'barbar', new Map([
                 [0, new TwingNodeExpressionConstant('1', 1)],
                 [1, new TwingNodeExpressionConstant('2', 1)],
                 [2, new TwingNodeExpressionConstant('3', 1)],

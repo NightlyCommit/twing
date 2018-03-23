@@ -9,14 +9,14 @@ import {TwingNode} from "./node";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export abstract class TwingTokenParser implements TwingTokenParserInterface {
-    abstract parse(token: TwingToken): TwingNode;
-
-    abstract getTag(): string;
-
     /**
      * @var TwingParser
      */
     protected parser: TwingParser;
+
+    abstract parse(token: TwingToken): TwingNode;
+
+    abstract getTag(): string;
 
     setParser(parser: TwingParser): void {
         this.parser = parser;

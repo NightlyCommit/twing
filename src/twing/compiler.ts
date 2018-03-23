@@ -1,7 +1,8 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
-import {TwingMap} from "./map";
+
 import {isNullOrUndefined} from "util";
+import {ksort} from "./helper/ksort";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
@@ -14,7 +15,7 @@ export class TwingCompiler {
     private source: string;
     private indentation: number;
     private env: TwingEnvironment;
-    private debugInfo: TwingMap<string, string>;
+    private debugInfo: Map<number, number>;
     private sourceOffset: number;
     private sourceLine: number;
 
@@ -38,7 +39,7 @@ export class TwingCompiler {
     compile(node: TwingNode, indentation: number = 0): TwingCompiler {
         this.lastLine = null;
         this.source = '';
-        this.debugInfo = new TwingMap();
+        this.debugInfo = new Map();
         this.sourceOffset = 0;
         // source code starts at 1 (as we then increment it when we encounter new lines)
         this.sourceLine = 1;
@@ -214,7 +215,7 @@ export class TwingCompiler {
     }
 
     getDebugInfo() {
-        this.debugInfo = this.debugInfo.sortByKeys();
+        ksort(this.debugInfo);
 
         return this.debugInfo;
     }

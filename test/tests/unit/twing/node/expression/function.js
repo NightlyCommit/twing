@@ -2,7 +2,7 @@ const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNode = require('../../../../../../lib/twing/node').TwingNode;
 const TwingTestEnvironmentStub = require('../../../../../mock/environment');
-const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionFunction = require('../../../../../../lib/twing/node/expression/function').TwingNodeExpressionFunction;
 const TwingFunction = require('../../../../../../lib/twing/function').TwingFunction;
 const TwingTestMockLoader = require('../../../../../mock/loader');
@@ -15,7 +15,7 @@ function twig_tests_function_dummy() {
 function twig_tests_function_barbar(arg1 = null, arg2 = null, args = []) {
 }
 
-function createFunction(name, args = new TwingMap()) {
+function createFunction(name, args = new Map()) {
     return new TwingNodeExpressionFunction(name, new TwingNode(args), 1);
 }
 
@@ -52,7 +52,7 @@ tap.test('node/expression/function', function (test) {
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foo\').getCallable()(...[])');
 
-            node = createFunction('foo', new TwingMap([
+            node = createFunction('foo', new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1)],
                 [1, new TwingNodeExpressionConstant('foobar', 1)]
             ]));
@@ -63,7 +63,7 @@ tap.test('node/expression/function', function (test) {
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'bar\').getCallable()(...[this.env])');
 
-            node = createFunction('bar', new TwingMap([
+            node = createFunction('bar', new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
@@ -73,7 +73,7 @@ tap.test('node/expression/function', function (test) {
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foofoo\').getCallable()(...[context])');
 
-            node = createFunction('foofoo', new TwingMap([
+            node = createFunction('foofoo', new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
@@ -83,14 +83,14 @@ tap.test('node/expression/function', function (test) {
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foobar\').getCallable()(...[this.env, context])');
 
-            node = createFunction('foobar', new TwingMap([
+            node = createFunction('foobar', new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foobar\').getCallable()(...[this.env, context, "bar"])');
 
             test.test('named arguments', function (test) {
-                let node = createFunction('date', new TwingMap([
+                let node = createFunction('date', new Map([
                     ['timezone', new TwingNodeExpressionConstant('America/Chicago', 1)],
                     ['date', new TwingNodeExpressionConstant(0, 1)]
                 ]));
@@ -105,19 +105,19 @@ tap.test('node/expression/function', function (test) {
 
                 test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[])');
 
-                node = createFunction('barbar', new TwingMap([
+                node = createFunction('barbar', new Map([
                     ['foo', new TwingNodeExpressionConstant('bar', 1)]
                 ]));
 
                 test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[null, null, ["bar"]])');
 
-                node = createFunction('barbar', new TwingMap([
+                node = createFunction('barbar', new Map([
                     ['arg2', new TwingNodeExpressionConstant('bar', 1)]
                 ]));
 
                 test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').getCallable()(...[null, "bar"])');
 
-                node = createFunction('barbar', new TwingMap([
+                node = createFunction('barbar', new Map([
                     [0, new TwingNodeExpressionConstant('1', 1)],
                     [1, new TwingNodeExpressionConstant('2', 1)],
                     [2, new TwingNodeExpressionConstant('3', 1)],
@@ -130,7 +130,7 @@ tap.test('node/expression/function', function (test) {
             });
 
             test.test('function as an anonymous function', function (test) {
-                let node = createFunction('anonymous', new TwingMap([
+                let node = createFunction('anonymous', new Map([
                     [0, new TwingNodeExpressionConstant('foo', 1)]
                 ]));
 
