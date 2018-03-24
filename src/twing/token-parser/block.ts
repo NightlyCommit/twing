@@ -2,7 +2,7 @@ import {TwingTokenParser} from "../token-parser";
 import {TwingToken} from "../token";
 import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
-import {TwingMap} from "../map";
+
 import {TwingNodeBlock} from "../node/block";
 import {TwingNodePrint} from "../node/print";
 import {TwingNodeBlockReference} from "../node/block-reference";
@@ -35,7 +35,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().getLine(), stream.getSourceContext());
         }
 
-        let block = new TwingNodeBlock(safeName, new TwingNode(new TwingMap()), lineno);
+        let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno);
 
         this.parser.setBlock(name, block);
         this.parser.pushLocalScope();
@@ -57,9 +57,9 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             }
         }
         else {
-            let nodes = new TwingMap();
+            let nodes = new Map();
 
-            nodes.push(new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno));
+            nodes.set(0, new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno));
 
             body = new TwingNode(nodes);
         }

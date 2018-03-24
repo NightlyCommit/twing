@@ -1,16 +1,16 @@
 import {TwingNode} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeForLoop extends TwingNode {
     constructor(lineno: number, tag: string = null) {
-        let attributes = new TwingMap();
+        let attributes = new Map();
 
         attributes.set('with_loop', false);
         attributes.set('ifexpr', false);
         attributes.set('else', false);
 
-        super(new TwingMap(), attributes, lineno, tag);
+        super(new Map(), attributes, lineno, tag);
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,6 +1,6 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingSource} from "../source";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
@@ -12,7 +12,7 @@ export class TwingNodeModule extends TwingNode {
     public source: TwingSource;
 
     constructor(body: TwingNode, parent: TwingNode = null, blocks: TwingNode, macros: TwingNode, traits: TwingNode, embeddedTemplates: Array<{}>, source: TwingSource) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('body', body);
         nodes.set('blocks', blocks);
@@ -29,7 +29,7 @@ export class TwingNodeModule extends TwingNode {
         }
 
         // embedded templates are set as attributes so that they are only visited once by the visitors
-        let attributes = new TwingMap();
+        let attributes = new Map();
 
         attributes.set('index', null);
         attributes.set('embedded_templates', embeddedTemplates);
@@ -196,21 +196,21 @@ export class TwingNodeModule extends TwingNode {
                     .raw('" cannot be used as a trait.\');\n')
                     .outdent()
                     .write('}\n')
-                    .write(`let _trait_${i}_blocks = _trait_${i}.getBlocks().clone();\n\n`)
+                    .write(`let _trait_${i}_blocks = Twing.clone(_trait_${i}.getBlocks());\n\n`)
                 ;
 
                 for (let [key, value] of trait.getNode('targets').getNodes()) {
                     compiler
                         .write(`if (!_trait_${i}_blocks.has(`)
-                        .string(key)
+                        .string(key as string)
                         .raw(")) {\n")
                         .indent()
                         .write('throw new Twing.TwingErrorRuntime(\'Block ')
-                        .string(key)
+                        .string(key as string)
                         .raw(' is not defined in trait ')
                         .subcompile(trait.getNode('template'))
                         .raw('.\', ')
-                        .repr(value.lineno)
+                        .repr(value.getTemplateLine())
                         .raw(', this.getSourceContext());\n')
                         .outdent()
                         .write('}\n\n')
@@ -228,24 +228,24 @@ export class TwingNodeModule extends TwingNode {
             if (countTraits > 1) {
                 for (let i = 0; i < countTraits; ++i) {
                     compiler
-                        .write(`this.traits = this.traits.merge(_trait_${i}_blocks);\n`)
+                        .write(`this.traits = Twing.merge(this.traits, _trait_${i}_blocks);\n`)
                     ;
                 }
             }
             else {
                 compiler
-                    .write("this.traits = _trait_0_blocks.clone();\n\n")
+                    .write("this.traits = Twing.clone(_trait_0_blocks);\n\n")
                 ;
             }
 
             compiler
-                .write("this.blocks = this.traits.merge(new Twing.TwingMap([\n")
+                .write("this.blocks = Twing.merge(this.traits, new Map([\n")
                 .indent()
             ;
         }
         else {
             compiler
-                .write("this.blocks = new Twing.TwingMap([\n")
+                .write("this.blocks = new Map([\n")
             ;
         }
 
@@ -264,7 +264,7 @@ export class TwingNodeModule extends TwingNode {
             const varValidator = require('var-validator');
 
             if (!varValidator.isValid(name)) {
-                safeName = Buffer.from(name).toString('hex');
+                safeName = Buffer.from(name as string).toString('hex');
             }
 
             compiler
@@ -306,7 +306,7 @@ export class TwingNodeModule extends TwingNode {
 
     compileDisplay(compiler: TwingCompiler) {
         compiler
-            .write("doDisplay(context, blocks = new Twing.TwingMap()) {\n")
+            .write("doDisplay(context, blocks = new Map()) {\n")
             .indent()
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))
@@ -324,7 +324,7 @@ export class TwingNodeModule extends TwingNode {
                 compiler.write('this.getParent(context)');
             }
 
-            compiler.raw(".display(context, this.blocks.merge(blocks));\n");
+            compiler.raw(".display(context, Twing.merge(this.blocks, blocks));\n");
         }
 
         compiler
@@ -367,9 +367,9 @@ export class TwingNodeModule extends TwingNode {
             }
 
             if (!nodes.getNodes().size) {
-                let n = new TwingMap();
+                let n = new Map();
 
-                n.push(nodes);
+                n.set(0, nodes);
 
                 nodes = new TwingNode(n);
             }

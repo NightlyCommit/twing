@@ -1,4 +1,4 @@
-const TwingMap = require('../../../../../../lib/twing/map').TwingMap;
+
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionArray = require('../../../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
@@ -10,10 +10,10 @@ tap.test('node/expression/array', function (test) {
     test.test('constructor', function (test) {
         let foo = new TwingNodeExpressionConstant('bar', 1);
 
-        let elements = new TwingMap();
-
-        elements.push(new TwingNodeExpressionConstant('foo', 1));
-        elements.push(foo);
+        let elements = new Map([
+            [0, new TwingNodeExpressionConstant('foo', 1)],
+            [1, foo]
+        ]);
 
         let node = new TwingNodeExpressionArray(elements, 1);
 
@@ -25,13 +25,12 @@ tap.test('node/expression/array', function (test) {
     test.test('compile', function (test) {
         let compiler = new TwingTestMockCompiler();
 
-        let elements = new TwingMap();
-
-        elements.push(new TwingNodeExpressionConstant('foo', 1));
-        elements.push(new TwingNodeExpressionConstant('bar', 1));
-
-        elements.push(new TwingNodeExpressionConstant('bar', 1));
-        elements.push(new TwingNodeExpressionConstant('foo', 1));
+        let elements = new Map([
+            [0, new TwingNodeExpressionConstant('foo', 1)],
+            [1, new TwingNodeExpressionConstant('bar', 1)],
+            [2, new TwingNodeExpressionConstant('bar', 1)],
+            [3, new TwingNodeExpressionConstant('foo', 1)]
+        ]);
 
         let node = new TwingNodeExpressionArray(elements, 1);
 

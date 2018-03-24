@@ -1,5 +1,5 @@
 const TwingNode = require('../../../../lib/twing/node').TwingNode;
-const TwingMap = require('../../../../lib/twing/map').TwingMap;
+
 const TwingCompiler = require('../../../../lib/twing/compiler').TwingCompiler;
 const MockEnvironement = require('../../../mock/environment');
 const MockLoader = require('../../../mock/loader');
@@ -9,9 +9,9 @@ const tap = require('tap');
 
 tap.test('compiler', function (test) {
     test.test('subcompile method', function (test) {
-        let node = new TwingNode(new TwingMap([
+        let node = new TwingNode(new Map([
             [0, new TwingNodeExpressionConstant(1, 1)]
-        ]), new TwingMap(), 1, 'foo');
+        ]), new Map(), 1, 'foo');
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
         test.same(compiler.compile(node).indent().subcompile(node).getSource(), '11', 'doesn\'t add indentation when raw is not set');
@@ -22,7 +22,7 @@ tap.test('compiler', function (test) {
     });
 
     test.test('string method', function (test) {
-        let node = new TwingNode(new TwingMap(), new TwingMap(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
@@ -34,7 +34,7 @@ tap.test('compiler', function (test) {
     });
 
     test.test('repr method', function (test) {
-        let node = new TwingNode(new TwingMap(), new TwingMap(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
@@ -46,7 +46,7 @@ tap.test('compiler', function (test) {
     });
 
     test.test('outdent method', function(test) {
-        let node = new TwingNode(new TwingMap(), new TwingMap(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 

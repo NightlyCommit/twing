@@ -4,7 +4,7 @@ const TwingNode = require('../../../../lib/twing/node').TwingNode;
 const TwingTokenStream = require('../../../../lib/twing/token-stream').TwingTokenStream;
 const TwingTokenParser = require('../../../../lib/twing/token-parser').TwingTokenParser;
 const TwingToken = require('../../../../lib/twing/token').TwingToken;
-const TwingMap = require('../../../../lib/twing/map').TwingMap;
+
 const TwingNodeText = require('../../../../lib/twing/node/text').TwingNodeText;
 const TwingNodeSet = require('../../../../lib/twing/node/set').TwingNodeSet;
 const TwingLoaderArray = require('../../../../lib/twing/loader/array').TwingLoaderArray;
@@ -55,20 +55,20 @@ let getFilterBodyNodesData = function () {
 
     return [
         {
-            input: new TwingNode(new TwingMap([[0, new TwingNodeText('   ', 1)]])),
+            input: new TwingNode(new Map([[0, new TwingNodeText('   ', 1)]])),
             expected: new TwingNode(),
         },
         {
-            input: input = new TwingNode(new TwingMap([[0, new TwingNodeSet(false, new TwingNode(), new TwingNode(), 1)]])),
+            input: input = new TwingNode(new Map([[0, new TwingNodeSet(false, new TwingNode(), new TwingNode(), 1)]])),
             expected: input
         },
         {
-            input: input = new TwingNode(new TwingMap([
+            input: input = new TwingNode(new Map([
                     ['0', new TwingNodeSet(
                         true,
                         new TwingNode(),
-                        new TwingNode(new TwingMap([[
-                            0, new TwingNode(new TwingMap([[
+                        new TwingNode(new Map([[
+                            0, new TwingNode(new Map([[
                                 0, new TwingNodeText('foo', 1)
                             ]]))
                         ]])),
@@ -132,8 +132,8 @@ tap.test('parser', function (test) {
         let fixtures = [
             new TwingNodeText('foo', 1),
             new TwingNode(
-                new TwingMap([[0, new TwingNode(
-                    new TwingMap([[0, new TwingNodeText('foo', 1)]])
+                new Map([[0, new TwingNode(
+                    new Map([[0, new TwingNodeText('foo', 1)]])
                 )]])
             )
         ];

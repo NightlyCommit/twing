@@ -16,7 +16,7 @@ import {TwingNode} from "../node";
 import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeIf} from "../node/if";
-import {TwingMap} from "../map";
+
 
 export class TwingTokenParserIf extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -27,12 +27,10 @@ export class TwingTokenParserIf extends TwingTokenParser {
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
         let body = this.parser.subparse([this, this.decideIfFork]);
-        let tests = new TwingMap();
-
-        tests
-            .push(expr)
-            .push(body)
-        ;
+        let tests = new Map([
+            [0, expr],
+            [1, body]
+        ]);
 
         let elseNode = null;
 
@@ -49,8 +47,8 @@ export class TwingTokenParserIf extends TwingTokenParser {
                     expr = this.parser.getExpressionParser().parseExpression();
                     stream.expect(TwingToken.BLOCK_END_TYPE);
                     body = this.parser.subparse([this, this.decideIfFork]);
-                    tests.push(expr);
-                    tests.push(body);
+                    tests.set(2, expr);
+                    tests.set(3, body);
                     break;
 
                 case 'endif':

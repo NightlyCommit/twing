@@ -213,7 +213,7 @@ tap.test('loader filesystem', function (test) {
             let loader = new TwingLoaderFilesystem([]);
             loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
 
-            let twing = new TwingEnvironment(loader, {cache: 'tmp'});
+            let twing = new TwingEnvironment(loader);
             let template = twing.loadTemplate(templateName);
 
             test.same(template.renderBlock('body', {}), 'VALID Child', testMessage);

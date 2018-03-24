@@ -4,7 +4,7 @@ import {TwingCompiler} from "../../compiler";
 export class TwingNodeExpressionHash extends TwingNodeExpressionArray {
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('new Twing.TwingMap([')
+            .raw('new Map([')
         ;
 
         let first = true;

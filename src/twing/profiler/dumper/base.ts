@@ -10,12 +10,6 @@ export abstract class TwingProfilerDumperBase {
         return this.dumpProfile(profile);
     }
 
-    protected abstract formatTemplate(profile: TwingProfilerProfile, prefix: string): string;
-
-    protected abstract formatNonTemplate(profile: TwingProfilerProfile, prefix: string): string;
-
-    protected abstract formatTime(profile: TwingProfilerProfile, prefix: number): string;
-
     dumpProfile(profile: TwingProfilerProfile, prefix: string = '', sibling: boolean = false) {
         let start: string;
 
@@ -55,4 +49,10 @@ export abstract class TwingProfilerDumperBase {
 
         return str;
     }
+
+    protected abstract formatTemplate(profile: TwingProfilerProfile, prefix: string): string;
+
+    protected abstract formatNonTemplate(profile: TwingProfilerProfile, prefix: string): string;
+
+    protected abstract formatTime(profile: TwingProfilerProfile, prefix: number): string;
 }

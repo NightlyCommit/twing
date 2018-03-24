@@ -6,10 +6,9 @@ import {iconv} from "./helper/iconv";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingMarkup {
+    TwingIsSafe: boolean = true;
     private content: Buffer;
     private charset: string;
-
-    TwingIsSafe: boolean = true;
 
     constructor(content: string, charset: string) {
         this.content = new Buffer(content);

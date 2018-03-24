@@ -1,18 +1,18 @@
 import {TwingNode, TwingNodeType} from "../../node";
-import {TwingMap} from "../../map";
+
 import {TwingNodeExpressionCall} from "./call";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
     constructor(name: string, functionArguments: TwingNode, lineno: number) {
-        let nodes = new TwingMap([
+        let nodes = new Map([
             ['arguments', functionArguments]
         ]);
 
-        let attributes = new TwingMap([
-            ['name', name],
-            ['is_defined_test', false]
-        ]);
+        let attributes = new Map();
+
+        attributes.set('name', name);
+        attributes.set('is_defined_test', false);
 
         super(nodes, attributes, lineno);
 

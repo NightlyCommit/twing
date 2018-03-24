@@ -1,7 +1,6 @@
 import {TwingLoaderInterface} from "../loader-interface";
 import {TwingSource} from "../source";
 import {TwingErrorLoader} from "../error/loader";
-import {TwingMap} from "../map";
 
 /**
  * Loads template from the filesystem.
@@ -10,14 +9,16 @@ import {TwingMap} from "../map";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderArray implements TwingLoaderInterface {
-    private templates: TwingMap<string, string>;
+    private templates: Map<string, string>;
 
     constructor(templates: any) {
-        let map = new TwingMap();
+        let map = new Map();
 
         if (Array.isArray(templates)) {
+            let i: number = 0;
+
             for (let template of templates) {
-                map.push(template);
+                map.set(i++, template);
             }
         }
         else if (typeof templates[Symbol.iterator] === 'function') {
@@ -46,7 +47,7 @@ export class TwingLoaderArray implements TwingLoaderInterface {
         return new TwingSource(this.templates.get(name), name);
     }
 
-    exists(name: string | number) {
+    exists(name: string) {
         return this.templates.has(name);
     }
 

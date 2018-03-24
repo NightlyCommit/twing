@@ -1,21 +1,23 @@
 /**
- * Converts input to TwingMap.
+ * Converts input to Map.
  *
  * @param seq
- * @returns {TwingMap<any, any>}
+ * @returns {Map<any, any>}
  */
-import {TwingMap} from "../map";
 
-export function iteratorToMap(thing: any): TwingMap<any, any> {
+
+export function iteratorToMap(thing: any): Map<any, any> {
     if (thing.entries) {
-        return new TwingMap(thing.entries());
+        return new Map(thing.entries());
     }
     else {
-        let result: TwingMap<any, any> = new TwingMap();
+        let result: Map<any, any> = new Map();
 
         if (typeof thing[Symbol.iterator] === 'function') {
+            let i: number = 0;
+
             for (let value of thing) {
-                result.push(value);
+                result.set(i++, value);
             }
         }
         else if (typeof thing['next'] === 'function') {

@@ -1,6 +1,6 @@
 import {TwingLoaderInterface} from "../loader-interface";
 import {TwingTemplate} from "../template";
-import {TwingMap} from "../map";
+
 import {TwingErrorLoader} from "../error/loader";
 import {TwingSource} from "../source";
 
@@ -10,7 +10,7 @@ import {TwingSource} from "../source";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderChain implements TwingLoaderInterface {
-    private hasSourceCache: TwingMap<string, TwingTemplate> = new TwingMap();
+    private hasSourceCache: Map<string, boolean> = new Map();
     private loaders: Array<TwingLoaderInterface> = [];
 
     /**
@@ -24,7 +24,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
     addLoader(loader: TwingLoaderInterface) {
         this.loaders.push(loader);
-        this.hasSourceCache = new TwingMap();
+        this.hasSourceCache = new Map();
     }
 
     getSourceContext(name: string): TwingSource {

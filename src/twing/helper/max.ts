@@ -1,4 +1,6 @@
 import {iteratorToMap} from './iterator-to-map';
+import {asort} from "./asort";
+import {first} from "./first";
 
 export function max(...things: Array<any>) {
     if (things.length === 1) {
@@ -6,11 +8,13 @@ export function max(...things: Array<any>) {
     }
 
     if (typeof things === 'object') {
-        let iterable = iteratorToMap(things).sort(function (a: any, b: any) {
+        let iterable = iteratorToMap(things);
+
+        asort(iterable, (a: any, b: any) => {
             return a < b ? 1 : 0;
         });
 
-        return iterable.first();
+        return first(iterable);
     }
 
     return Math.max(things);

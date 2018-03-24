@@ -79,7 +79,7 @@ tap.test('TwingError', function (test) {
         let twing = new TwingEnvironment(loader, {
             strict_variables: true,
             debug: true,
-            cache: 'tmp'
+            cache: false
         });
 
         let template = twing.loadTemplate('index.html');

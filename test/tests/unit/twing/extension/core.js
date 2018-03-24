@@ -1,6 +1,6 @@
 const TwingExtensionCore = require('../../../../../lib/twing/extension/core').TwingExtensionCore;
 const twingGetAttribute = require('../../../../../lib/twing/extension/core').twingGetAttribute;
-const TwingMap = require('../../../../../lib/twing/map').TwingMap;
+
 const TwingTestMockEnvironment = require('../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../mock/loader');
 const TwingSource = require('../../../../../lib/twing/source').TwingSource;
@@ -236,7 +236,7 @@ tap.test('TwingExtensionCore', function (test) {
                 callable([], 'a');
             }, new Error('The merge filter only works with arrays or "Traversable", got "string" as second argument.'));
 
-            test.same(callable(['a'], ['b']), new TwingMap([[0, 'a'], [1, 'b']]));
+            test.same(callable(['a'], ['b']), new Map([[0, 'a'], [1, 'b']]));
 
             test.end();
         });

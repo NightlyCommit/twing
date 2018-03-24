@@ -10,12 +10,14 @@ import {TwingToken} from "./token";
 import {TwingNodeText} from "./node/text";
 import {TwingNodePrint} from "./node/print";
 import {TwingNodeExpression} from "./node/expression";
-import {TwingMap} from "./map";
+
 import {TwingNodeBody} from "./node/body";
 import {TwingNodeModule} from "./node/module";
 import {TwingNodeTraverser} from "./node-traverser";
 import {TwingNodeMacro} from "./node/macro";
 import {TwingTokenParser} from "./token-parser";
+import {first} from "./helper/first";
+import {push} from "./helper/push";
 
 let ctype_space = require('locutus/php/ctype/ctype_space');
 let md5 = require('locutus/php/strings/md5');
@@ -25,14 +27,14 @@ let mt_rand = require('locutus/php/math/mt_rand');
 class TwingParserStackEntry {
     stream: TwingTokenStream;
     parent: TwingNode;
-    blocks: TwingMap<string, TwingNodeBlock>;
+    blocks: Map<string, TwingNodeBlock>;
     blockStack: Array<string>;
-    macros: TwingMap<string, string>;
+    macros: Map<string, TwingNode>;
     importedSymbols: Array<Map<string, Map<string, { node: TwingNodeExpression, name: string }>>>;
-    traits: TwingMap<string, TwingNode>;
+    traits: Map<string, TwingNode>;
     embeddedTemplates: Array<TwingNodeModule>;
 
-    constructor(stream: TwingTokenStream, parent: TwingNode = null, blocks: TwingMap<string, TwingNodeBlock>, blockStack: Array<string>, macros: TwingMap<string, string>, importedSymbols: Array<Map<string, Map<string, { name: string, node: TwingNodeExpression }>>>, traits: TwingMap<string, TwingNode>, embeddedTemplates: Array<TwingNodeModule>) {
+    constructor(stream: TwingTokenStream, parent: TwingNode = null, blocks: Map<string, TwingNodeBlock>, blockStack: Array<string>, macros: Map<string, TwingNode>, importedSymbols: Array<Map<string, Map<string, { name: string, node: TwingNodeExpression }>>>, traits: Map<string, TwingNode>, embeddedTemplates: Array<TwingNodeModule>) {
         this.stream = stream;
         this.parent = parent;
         this.blocks = blocks;
@@ -51,12 +53,12 @@ export class TwingParser {
     private handlers: Map<string, TwingTokenParserInterface> = null;
     private visitors: Array<TwingNodeVisitorInterface>;
     private expressionParser: TwingExpressionParser = null;
-    private blocks: TwingMap<string, TwingNodeBody>;
+    private blocks: Map<string, TwingNodeBody>;
     private blockStack: Array<string>;
-    private macros: TwingMap<string, string>;
+    private macros: Map<string, TwingNode>;
     private env: TwingEnvironment;
     private importedSymbols: Array<Map<string, Map<string, { name: string, node: TwingNodeExpression }>>>;
-    private traits: TwingMap<string, TwingNode>;
+    private traits: Map<string, TwingNode>;
     private embeddedTemplates: Array<TwingNodeModule> = [];
 
     constructor(env: TwingEnvironment) {
@@ -105,9 +107,9 @@ export class TwingParser {
 
         this.stream = stream;
         this.parent = null;
-        this.blocks = new TwingMap();
-        this.macros = new TwingMap();
-        this.traits = new TwingMap();
+        this.blocks = new Map();
+        this.macros = new Map();
+        this.traits = new Map();
         this.blockStack = [];
         this.importedSymbols = [new Map()];
         this.embeddedTemplates = [];
@@ -135,9 +137,9 @@ export class TwingParser {
             throw e;
         }
 
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
-        nodes.push(body);
+        nodes.set(0, body);
 
         let node = new TwingNodeModule(new TwingNodeBody(nodes), this.parent, new TwingNode(this.blocks), new TwingNode(this.macros), new TwingNode(this.traits), this.embeddedTemplates, stream.getSourceContext());
 
@@ -175,14 +177,15 @@ export class TwingParser {
 
     subparse(test: Array<any>, dropNeedle: boolean = false): TwingNode {
         let lineno = this.getCurrentToken().getLine();
-        let rv = new TwingMap();
+        let rv = new Map();
+        let i: number = 0;
         let token;
 
         while (!this.stream.isEOF()) {
             switch (this.getCurrentToken().getType()) {
                 case TwingToken.TEXT_TYPE:
                     token = this.stream.next();
-                    rv.push(new TwingNodeText(token.getValue(), token.getLine()));
+                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine()));
 
                     break;
                 case TwingToken.VAR_START_TYPE:
@@ -190,7 +193,7 @@ export class TwingParser {
                     let expression = this.expressionParser.parseExpression();
 
                     this.stream.expect(TwingToken.VAR_END_TYPE);
-                    rv.push(new TwingNodePrint(expression, token.getLine()));
+                    rv.set(i++, new TwingNodePrint(expression, token.getLine()));
 
                     break;
                 case TwingToken.BLOCK_START_TYPE:
@@ -207,10 +210,10 @@ export class TwingParser {
                         }
 
                         if (rv.size === 1) {
-                            return rv.first();
+                            return first(rv);
                         }
 
-                        return new TwingNode(rv, new TwingMap(), lineno);
+                        return new TwingNode(rv, new Map(), lineno);
                     }
 
                     if (!this.handlers.has(token.getValue())) {
@@ -247,7 +250,7 @@ export class TwingParser {
                     let node = subparser.parse(token);
 
                     if (node !== null) {
-                        rv.push(node);
+                        rv.set(i++, node);
                     }
 
                     break;
@@ -261,10 +264,10 @@ export class TwingParser {
         }
 
         if (rv.size === 1) {
-            return rv.first();
+            return first(rv);
         }
 
-        return new TwingNode(rv, new TwingMap(), lineno);
+        return new TwingNode(rv, new Map(), lineno);
     }
 
     getBlockStack() {
@@ -292,15 +295,15 @@ export class TwingParser {
     }
 
     setBlock(name: string, value: TwingNodeBlock) {
-        let bodyNodes = new TwingMap();
+        let bodyNodes = new Map();
 
-        bodyNodes.push(value);
+        bodyNodes.set(0, value);
 
-        this.blocks.set(name, new TwingNodeBody(bodyNodes, new TwingMap(), value.getTemplateLine()));
+        this.blocks.set(name, new TwingNodeBody(bodyNodes, new Map(), value.getTemplateLine()));
     }
 
     addTrait(trait: TwingNode) {
-        this.traits.push(trait);
+        push(this.traits, trait);
     }
 
     hasTraits() {

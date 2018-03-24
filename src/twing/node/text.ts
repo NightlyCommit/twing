@@ -1,10 +1,10 @@
 import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeText extends TwingNode {
     constructor(data: string, line: number) {
-        super(new TwingMap(), new TwingMap([['data', data]]), line);
+        super(new Map(), new Map([['data', data]]), line);
 
         this.type = TwingNodeType.TEXT;
         this.outputType = TwingNodeOutputType.OUTPUT;

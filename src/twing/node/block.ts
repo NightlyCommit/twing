@@ -1,10 +1,10 @@
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeBlock extends TwingNode {
     constructor(name: string, body: TwingNode, lineno: number, tag: string = null) {
-        super(new TwingMap([['body', body]]), new TwingMap([['name', name]]), lineno, tag);
+        super(new Map([['body', body]]), new Map([['name', name]]), lineno, tag);
 
         this.type = TwingNodeType.BLOCK;
     }
@@ -12,7 +12,7 @@ export class TwingNodeBlock extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write(`block_${this.getAttribute('name')}(context, blocks = new Twing.TwingMap()) {\n`)
+            .write(`block_${this.getAttribute('name')}(context, blocks = new Map()) {\n`)
             .indent()
         ;
 

@@ -1,13 +1,13 @@
 import {TwingNode} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeCheckSecurity extends TwingNode {
-    private usedFilters: TwingMap<string, TwingNode>;
-    private usedTags: TwingMap<string, TwingNode>;
-    private usedFunctions: TwingMap<string, TwingNode>;
+    private usedFilters: Map<string, TwingNode>;
+    private usedTags: Map<string, TwingNode>;
+    private usedFunctions: Map<string, TwingNode>;
 
-    constructor(usedFilters: TwingMap<string, TwingNode>, usedTags: TwingMap<string, TwingNode>, usedFunctions: TwingMap<string, TwingNode>) {
+    constructor(usedFilters: Map<string, TwingNode>, usedTags: Map<string, TwingNode>, usedFunctions: Map<string, TwingNode>) {
         super();
 
         this.usedFilters = usedFilters;
@@ -16,7 +16,7 @@ export class TwingNodeCheckSecurity extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        let tags = new TwingMap();
+        let tags = new Map();
 
         for (let [name, node] of this.usedTags) {
             if (typeof node === 'string') {
@@ -27,7 +27,7 @@ export class TwingNodeCheckSecurity extends TwingNode {
             }
         }
 
-        let filters = new TwingMap();
+        let filters = new Map();
 
         for (let [name, node] of this.usedFilters) {
             if (typeof node === 'string') {
@@ -38,7 +38,7 @@ export class TwingNodeCheckSecurity extends TwingNode {
             }
         }
 
-        let functions = new TwingMap();
+        let functions = new Map();
 
         for (let [name, node] of this.usedFunctions) {
             if (typeof node === 'string') {

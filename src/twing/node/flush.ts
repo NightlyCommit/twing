@@ -1,10 +1,10 @@
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeFlush extends TwingNode {
     constructor(lineno: number, tag: string) {
-        super(new TwingMap(), new TwingMap(), lineno, tag);
+        super(new Map(), new Map(), lineno, tag);
 
         this.type = TwingNodeType.FLUSH;
     }

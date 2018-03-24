@@ -1,6 +1,6 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
-import {TwingMap} from "../map";
+
 import {TwingNodeExpressionAssignName} from "./expression/assign-name";
 import {TwingNodeForLoop} from "./for-loop";
 import {TwingNodeIf} from "./if";
@@ -12,23 +12,25 @@ export class TwingNodeFor extends TwingNode {
     constructor(keyTarget: TwingNodeExpressionAssignName, valueTarget: TwingNodeExpressionAssignName, seq: TwingNodeExpression, ifexpr: TwingNodeExpression = null, body: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {
         let loop = new TwingNodeForLoop(lineno, tag);
 
-        let bodyNodes = new TwingMap();
+        let bodyNodes = new Map();
+        let i: number = 0;
 
-        bodyNodes.push(body);
-        bodyNodes.push(loop);
+        bodyNodes.set(i++, body);
+        bodyNodes.set(i++, loop);
 
         body = new TwingNode(bodyNodes);
 
         if (ifexpr) {
-            let ifNodes = new TwingMap();
+            let ifNodes = new Map();
+            let i: number = 0;
 
-            ifNodes.push(ifexpr);
-            ifNodes.push(body);
+            ifNodes.set(i++, ifexpr);
+            ifNodes.set(i++, body);
 
             body = new TwingNodeIf(new TwingNode(ifNodes), null, lineno, tag);
         }
 
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('key_target', keyTarget);
         nodes.set('value_target', valueTarget);
@@ -39,7 +41,7 @@ export class TwingNodeFor extends TwingNode {
             nodes.set('else', elseNode);
         }
 
-        let attributes = new TwingMap();
+        let attributes = new Map();
 
         attributes.set('with_loop', true);
         attributes.set('ifexpr', ifexpr !== null);
@@ -53,7 +55,7 @@ export class TwingNodeFor extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("context.set('_parent', context.clone());\n\n")
+            .write("context.set('_parent', Twing.clone(context));\n\n")
             .write('(() => {\n')
             .indent()
             .write('let c = Twing.twingEnsureTraversable(')
@@ -61,7 +63,7 @@ export class TwingNodeFor extends TwingNode {
             .raw(");\n\n")
             .write('if (c === context) {\n')
             .indent()
-            .write("context.set('_seq', context.clone());\n")
+            .write("context.set('_seq', Twing.clone(context));\n")
             .outdent()
             .write("}\n")
             .write("else {\n")
@@ -79,7 +81,7 @@ export class TwingNodeFor extends TwingNode {
 
         if (this.getAttribute('with_loop')) {
             compiler
-                .write("context.set('loop', new Twing.TwingMap([\n")
+                .write("context.set('loop', new Map([\n")
                 .write("  ['parent', context.get('_parent')],\n")
                 .write("  ['index0', 0],\n")
                 .write("  ['index', 1],\n")

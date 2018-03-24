@@ -5,6 +5,7 @@ const path = require('path');
 
 tap.test('Twing runtime', function (test) {
     let exports = {
+        clone: './twing/helper/clone',
         compare: './twing/helper/compare',
         count: './twing/helper/count',
         each: './twing/helper/each',
@@ -12,6 +13,7 @@ tap.test('Twing runtime', function (test) {
         flush: './twing/output-buffering',
         isCountable: './twing/helper/is-countable',
         iteratorToMap: './twing/helper/iterator-to-map',
+        merge: './twing/helper/merge',
         obEndClean: './twing/output-buffering',
         obGetClean: './twing/output-buffering',
         obGetContents: './twing/output-buffering',
@@ -25,7 +27,6 @@ tap.test('Twing runtime', function (test) {
         TwingErrorRuntime: './twing/error/runtime',
         twingGetAttribute: './twing/extension/core',
         twingInFilter: './twing/extension/core',
-        TwingMap: './twing/map/',
         TwingMarkup: './twing/markup',
         TwingSandboxSecurityError: './twing/sandbox/security-error',
         TwingSandboxSecurityNotAllowedFilterError: './twing/sandbox/security-not-allowed-filter-error',

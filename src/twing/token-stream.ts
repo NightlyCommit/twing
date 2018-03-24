@@ -15,7 +15,7 @@ export class TwingTokenStream {
     }
 
     toString() {
-        return this.tokens.map(function(token) {
+        return this.tokens.map(function (token) {
             return token.toString();
         }).join('\n');
     }

@@ -1,5 +1,5 @@
 import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingCompiler} from "../compiler";
 
 /**
@@ -9,7 +9,7 @@ import {TwingCompiler} from "../compiler";
  */
 export class TwingNodeBlockReference extends TwingNode {
     constructor(name: string, lineno: number, tag: string = null) {
-        super(new TwingMap(), new TwingMap([['name', name]]), lineno, tag);
+        super(new Map(), new Map([['name', name]]), lineno, tag);
 
         this.type = TwingNodeType.BLOCK_REFERENCE;
         this.outputType = TwingNodeOutputType.OUTPUT;

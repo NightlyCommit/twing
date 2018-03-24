@@ -4,7 +4,7 @@ import {TwingEnvironment} from "../environment";
 import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
 import {TwingNodeTraverser} from "../node-traverser";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
-import {TwingMap} from "../map";
+
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
 
@@ -68,6 +68,23 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         return node;
     }
 
+    /**
+     *
+     * @param {TwingEnvironment} env
+     * @returns string | Function | false
+     */
+    needEscaping(env: TwingEnvironment) {
+        if (this.statusStack.length) {
+            return this.statusStack[this.statusStack.length - 1];
+        }
+
+        return this.defaultStrategy ? this.defaultStrategy : false;
+    }
+
+    getPriority() {
+        return 0;
+    }
+
     private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: any) {
         if (!type) {
             return node;
@@ -120,36 +137,20 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         return (safe.includes(type)) || (safe.includes('all'));
     }
 
-    /**
-     *
-     * @param {TwingEnvironment} env
-     * @returns string | Function | false
-     */
-    needEscaping(env: TwingEnvironment) {
-        if (this.statusStack.length) {
-            return this.statusStack[this.statusStack.length - 1];
-        }
-
-        return this.defaultStrategy ? this.defaultStrategy : false;
-    }
-
     private getEscaperFilter(type: any, node: TwingNode) {
         let line = node.getTemplateLine();
 
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         let name = new TwingNodeExpressionConstant('escape', line);
+        let i: number = 0;
 
-        nodes.push(new TwingNodeExpressionConstant(type, line));
-        nodes.push(new TwingNodeExpressionConstant(null, line));
-        nodes.push(new TwingNodeExpressionConstant(true, line));
+        nodes.set(i++, new TwingNodeExpressionConstant(type, line));
+        nodes.set(i++, new TwingNodeExpressionConstant(null, line));
+        nodes.set(i++, new TwingNodeExpressionConstant(true, line));
 
         let nodeArgs = new TwingNode(nodes);
 
         return new TwingNodeExpressionFilter(node, name, nodeArgs, line);
-    }
-
-    getPriority() {
-        return 0;
     }
 }

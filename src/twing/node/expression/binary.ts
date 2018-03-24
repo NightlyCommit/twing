@@ -1,16 +1,16 @@
 import {TwingNodeExpression} from "../expression";
 import {TwingNode, TwingNodeType} from "../../node";
-import {TwingMap} from "../../map";
+
 import {TwingCompiler} from "../../compiler";
 
 export abstract class TwingNodeExpressionBinary extends TwingNodeExpression {
     constructor(left: TwingNode, right: TwingNode, lineno: number) {
-        let nodes = new TwingMap();
+        let nodes = new Map();
 
         nodes.set('left', left);
         nodes.set('right', right);
 
-        super(nodes, new TwingMap(), lineno);
+        super(nodes, new Map(), lineno);
 
         this.type = TwingNodeType.EXPRESSION_BINARY;
     }

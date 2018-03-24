@@ -272,8 +272,6 @@ tap.test('escaping', function (test) {
                     test.same(twingEscapeFilter(getEnvironment(), literal, 'js'), literal);
                 }
                 else {
-                    console.warn(literal);
-
                     test.notSame(twingEscapeFilter(getEnvironment(), literal, 'js'), literal);
                 }
             }
@@ -300,8 +298,6 @@ tap.test('escaping', function (test) {
                     test.same(twingEscapeFilter(getEnvironment(), literal, 'html_attr'), literal);
                 }
                 else {
-                    console.warn(literal);
-
                     test.notSame(twingEscapeFilter(getEnvironment(), literal, 'html_attr'), literal);
                 }
             }

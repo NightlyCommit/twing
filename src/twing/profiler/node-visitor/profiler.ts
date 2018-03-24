@@ -1,7 +1,7 @@
 import {TwingBaseNodeVisitor} from "../../base-node-visitor";
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingEnvironment} from "../../environment";
-import {TwingMap} from "../../map";
+
 import {TwingProfilerProfile} from "../profile";
 import {TwingNodeBody} from "../../node/body";
 import {TwingProfilerNodeEnterProfile} from "../node/enter-profile";
@@ -28,39 +28,44 @@ export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
         if (node.getType() === TwingNodeType.MODULE) {
             let varName = this.getVarName();
 
-            let displayStartNodes = new TwingMap();
+            let displayStartNodes = new Map();
+            let i: number = 0;
 
-            displayStartNodes.push(new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.TEMPLATE, node.getTemplateName(), varName));
-            displayStartNodes.push(node.getNode('display_start'));
+            displayStartNodes.set(i++, new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.TEMPLATE, node.getTemplateName(), varName));
+            displayStartNodes.set(i++, node.getNode('display_start'));
 
             node.setNode('display_start', new TwingNode(displayStartNodes));
 
-            let displayEndNodes = new TwingMap();
+            let displayEndNodes = new Map();
 
-            displayEndNodes.push(new TwingProfilerNodeLeaveProfile(varName));
-            displayEndNodes.push(node.getNode('display_end'));
+            i = 0;
+
+            displayEndNodes.set(i++, new TwingProfilerNodeLeaveProfile(varName));
+            displayEndNodes.set(i++, node.getNode('display_end'));
 
             node.setNode('display_end', new TwingNode(displayEndNodes));
         }
         else if (node.getType() === TwingNodeType.BLOCK) {
             let varName = this.getVarName();
 
-            let bodyNodes = new TwingMap();
+            let bodyNodes = new Map();
+            let i: number = 0;
 
-            bodyNodes.push(new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.BLOCK, node.getAttribute('name'), varName));
-            bodyNodes.push(node.getNode('body'));
-            bodyNodes.push(new TwingProfilerNodeLeaveProfile(varName));
+            bodyNodes.set(i++, new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.BLOCK, node.getAttribute('name'), varName));
+            bodyNodes.set(i++, node.getNode('body'));
+            bodyNodes.set(i++, new TwingProfilerNodeLeaveProfile(varName));
 
             node.setNode('body', new TwingNodeBody(bodyNodes));
         }
         else if (node.getType() === TwingNodeType.MACRO) {
             let varName = this.getVarName();
 
-            let bodyNodes = new TwingMap();
+            let bodyNodes = new Map();
+            let i: number = 0;
 
-            bodyNodes.push(new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.MACRO, node.getAttribute('name'), varName));
-            bodyNodes.push(node.getNode('body'));
-            bodyNodes.push(new TwingProfilerNodeLeaveProfile(varName));
+            bodyNodes.set(i++, new TwingProfilerNodeEnterProfile(this.extensionName, TwingProfilerProfile.MACRO, node.getAttribute('name'), varName));
+            bodyNodes.set(i++, node.getNode('body'));
+            bodyNodes.set(i++, new TwingProfilerNodeLeaveProfile(varName));
 
             node.setNode('body', new TwingNodeBody(bodyNodes));
         }

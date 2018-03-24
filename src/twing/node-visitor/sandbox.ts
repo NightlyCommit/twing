@@ -1,23 +1,23 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingEnvironment} from "../environment";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingMap} from "../map";
+
 import {TwingNodeSandboxedPrint} from "../node/sandboxed-print";
 import {TwingNodeExpression} from "../node/expression";
 import {TwingNodeCheckSecurity} from "../node/check-security";
 
 export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private inAModule: boolean = false;
-    private tags: TwingMap<string, TwingNode>;
-    private filters: TwingMap<string, TwingNode>;
-    private functions: TwingMap<string, TwingNode>;
+    private tags: Map<string, TwingNode>;
+    private filters: Map<string, TwingNode>;
+    private functions: Map<string, TwingNode>;
 
     doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = true;
-            this.tags = new TwingMap();
-            this.filters = new TwingMap();
-            this.functions = new TwingMap();
+            this.tags = new Map();
+            this.filters = new Map();
+            this.functions = new Map();
 
             return node;
         }
@@ -50,10 +50,11 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = false;
 
-            let nodes = new TwingMap();
+            let nodes = new Map();
+            let i: number = 0;
 
-            nodes.push(new TwingNodeCheckSecurity(this.filters, this.tags, this.functions));
-            nodes.push(node.getNode('display_start'));
+            nodes.set(i++, new TwingNodeCheckSecurity(this.filters, this.tags, this.functions));
+            nodes.set(i++, node.getNode('display_start'));
 
             node.setNode('display_start', new TwingNode(nodes));
         }
