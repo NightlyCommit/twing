@@ -31,11 +31,8 @@ export class TwingExtension implements TwingExtensionInterface {
         return [];
     }
 
-    getOperators(): { unary: Map<string, TwingOperatorDefinitionInterface>, binary: Map<string, TwingOperatorDefinitionInterface> } {
-        return {
-            unary: new Map(),
-            binary: new Map()
-        };
+    getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] {
+        return [new Map(), new Map()];
     }
 
 }
