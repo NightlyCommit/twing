@@ -360,9 +360,9 @@ export class TwingExtensionCore extends TwingExtension {
         ];
     }
 
-    getOperators(): { unary: Map<string, TwingOperatorDefinitionInterface>, binary: Map<string, TwingOperatorDefinitionInterface> } {
-        return {
-            unary: new Map([
+    getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] {
+        return [
+            new Map([
                 ['not', {
                     precedence: 50,
                     factory: function (expr: TwingNode, lineno: number) {
@@ -382,7 +382,7 @@ export class TwingExtensionCore extends TwingExtension {
                     }
                 }]
             ]),
-            binary: new Map([
+            new Map([
                 ['or', {
                     precedence: 10,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
@@ -576,7 +576,7 @@ export class TwingExtensionCore extends TwingExtension {
                     }
                 }]
             ])
-        };
+        ];
     }
 }
 

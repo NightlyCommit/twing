@@ -49,9 +49,9 @@ export interface TwingExtensionInterface {
     /**
      * Returns a list of operators to add to the existing list.
      *
-     * @return array<Map<string, TwingOperatorDefinitionInterface>> First array of unary operators, second array of binary operators
+     * @return [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] First array of unary operators, second array of binary operators
      */
-    getOperators(): { unary: Map<string, TwingOperatorDefinitionInterface>, binary: Map<string, TwingOperatorDefinitionInterface> };
+    getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>];
 
     /**
      * Gets the default strategy to use when not defined by the user.

@@ -10,6 +10,7 @@ import {TwingTest} from "./test";
 import {TwingEnvironment} from "./environment";
 
 const merge = require('merge');
+const isObject = require('isobject');
 
 export class TwingExtensionSet {
     private extensions: Map<string, TwingExtensionInterface>;
@@ -452,7 +453,17 @@ export class TwingExtensionSet {
         // operators
         let operators = extension.getOperators();
 
-        this.unaryOperators = new Map([...this.unaryOperators, ...operators.unary]);
-        this.binaryOperators = new Map([...this.binaryOperators, ...operators.binary]);
+        if (operators) {
+            if (!Array.isArray(operators as any)) {
+                throw new Error(`"${extension.constructor.name}.getOperators()" must return an array with operators, got "${isObject(operators) ? operators.constructor.name : typeof operators}".`);
+            }
+
+            if (operators.length !== 2) {
+                throw new Error(`"${extension.constructor.name}.getOperators()" must return an array of 2 elements, got ${operators.length}.`);
+            }
+
+            this.unaryOperators = new Map([...this.unaryOperators, ...operators[0]]);
+            this.binaryOperators = new Map([...this.binaryOperators, ...operators[1]]);
+        }
     }
 }

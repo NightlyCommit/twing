@@ -87,14 +87,14 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getOperators() {
-        return {
-            unary: new Map([
+        return [
+            new Map([
                 ['foo_unary', {}]
             ]),
-            binary: new Map([
+            new Map([
                 ['foo_binary', {}]
             ])
-        };
+        ];
     }
 
     getGlobals() {
