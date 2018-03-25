@@ -19,16 +19,16 @@ export class TwingExtension implements TwingExtensionInterface {
         return [];
     }
 
-    getFilters(): Array<TwingFilter> {
-        return [];
+    getFilters(): Map<string | number, TwingFilter> {
+        return new Map();
     }
 
     getTests(): Array<TwingTest> {
         return [];
     }
 
-    getFunctions(): Array<TwingFunction> {
-        return [];
+    getFunctions(): Map<string | number, TwingFunction> {
+        return new Map();
     }
 
     getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] {

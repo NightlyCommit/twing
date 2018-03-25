@@ -1,4 +1,4 @@
-const TwingTestEnvironmentStub = require('../../../mock/environment');
+const TwingTestMockEnvironment = require('../../../mock/environment');
 const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvironment;
 const TwingLoaderArray = require('../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
@@ -12,6 +12,12 @@ const TwingTestMockRuntimeLoader = require('../../../mock/runtime-loader');
 const TwingErrorRuntime = require('../../../../lib/twing/error/runtime').TwingErrorRuntime;
 const TwingTestMockLoader = require('../../../mock/loader');
 const TwingTestMockCache = require('../../../mock/cache');
+const TwingTemplateWrapper = require('../../../../lib/twing/template-wrapper').TwingTemplateWrapper;
+const TwingTestMockTemplate = require('../../../mock/template');
+const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
+const TwingParser = require('../../../../lib/twing/parser').TwingParser;
+const TwingLexer = require('../../../../lib/twing/lexer').TwingLexer;
+const TwingError = require('../../../../lib/twing/error').TwingError;
 
 const path = require('path');
 const tap = require('tap');
@@ -136,6 +142,30 @@ class TwingTestsEnvironmentTestExtensionWithoutRuntime extends TwingExtension {
 class TwingTestsEnvironmentTestRuntime {
     fromRuntime(name = 'bar') {
         return name;
+    }
+}
+
+class TwingTestsEnvironmentParserBar extends TwingParser {
+    parse(stream, test, dropNeedle) {
+        return 'bar';
+    }
+}
+
+class TwingTestsEnvironmentLexerBar extends TwingLexer {
+    tokenize(source) {
+        return 'bar';
+    }
+}
+
+class TwingTestsEnvironmentParserError extends TwingParser {
+    parse(stream, test, dropNeedle) {
+        throw new Error('Parser error "foo".');
+    }
+}
+
+class TwingTestEnvironmentRuntimeLoaderNull {
+    load(class_) {
+        return null;
     }
 }
 
@@ -281,7 +311,7 @@ tap.test('environment', function (test) {
         cache.write(key, twing.compileSource(new TwingSource('{{ foo }}', 'index')));
 
         // check that extensions won't be initialized when rendering a template that is already in the cache
-        twing = new TwingTestEnvironmentStub(loader, options);
+        twing = new TwingTestMockEnvironment(loader, options);
         twing['initExtensions'] = () => {
         };
         sinon.stub(twing, 'initExtensions');
@@ -300,7 +330,7 @@ tap.test('environment', function (test) {
 
         let cache = new TwingTestMockCache();
         let loader = getMockLoader(templateName, templateContent);
-        let twing = new TwingTestEnvironmentStub(loader, {cache: cache, auto_reload: true, debug: false});
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
         sinon.stub(cache, 'generateKey').returns('key');
         sinon.stub(cache, 'getTimestamp').returns(0);
@@ -325,7 +355,7 @@ tap.test('environment', function (test) {
 
         let cache = new TwingTestMockCache();
         let loader = getMockLoader(templateName, templateContent);
-        let twing = new TwingTestEnvironmentStub(loader, {cache: cache, auto_reload: true, debug: false});
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
         sinon.stub(cache, 'generateKey').returns('key');
         sinon.stub(cache, 'getTimestamp').returns(0);
@@ -350,7 +380,7 @@ tap.test('environment', function (test) {
 
         let cache = new TwingTestMockCache();
         let loader = getMockLoader(templateName, templateContent);
-        let twing = new TwingTestEnvironmentStub(loader, {cache: cache, auto_reload: true, debug: false});
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
         let now = new Date();
 
@@ -518,6 +548,312 @@ tap.test('environment', function (test) {
         test.throws(function () {
             twing.loadTemplate('base1.html.twig');
         }, new TwingErrorRuntime('Circular reference detected for Twig template "base1.html.twig", path: base1.html.twig -> base2.html.twig -> base1.html.twig.', 1, new TwingSource('', 'base1.html.twig', '')));
+
+        test.end();
+    });
+
+    test.test('baseTemplateClass', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader(), {
+            base_template_class: 'Foo'
+        });
+
+        let templateClass = env.getTemplateClass('foo');
+
+        env.setBaseTemplateClass('Bar');
+
+        test.same(env.getBaseTemplateClass(), 'Bar');
+        test.notSame(env.getTemplateClass('foo'), templateClass);
+
+        test.end();
+    });
+
+    test.test('debug', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader(), {
+            debug: false
+        });
+
+        let templateClass = env.getTemplateClass('foo');
+
+        test.test('enable', function (test) {
+            env.enableDebug();
+
+            test.true(env.isDebug());
+            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.end();
+        });
+
+        test.test('disable', function (test) {
+            env.disableDebug();
+
+            test.false(env.isDebug());
+            test.same(env.getTemplateClass('foo'), templateClass);
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('autoreload', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader(), {
+            auto_reload: false
+        });
+
+        test.test('enable', function (test) {
+            env.enableAutoReload();
+
+            test.true(env.isAutoReload());
+            test.end();
+        });
+
+        test.test('disable', function (test) {
+            env.disableAutoReload();
+
+            test.false(env.isAutoReload());
+            test.end();
+        });
+
+
+        test.end();
+    });
+
+    test.test('strict_variables', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader(), {
+            strict_variables: false
+        });
+
+        let templateClass = env.getTemplateClass('foo');
+
+        test.test('enable', function (test) {
+            env.enableStrictVariables();
+
+            test.true(env.isStrictVariables());
+            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.end();
+        });
+
+        test.test('disable', function (test) {
+            env.disableStrictVariables();
+
+            test.false(env.isStrictVariables());
+            test.same(env.getTemplateClass('foo'), templateClass);
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('cache', function (test) {
+        test.test('set', function (test) {
+            let env = new TwingEnvironment(new TwingTestMockLoader(), {
+                cache: false
+            });
+
+            env.setCache('bar');
+
+            test.same(env.getCache(), 'bar');
+            test.true(env.getCache(false) instanceof TwingCacheFilesystem);
+
+            env.setCache(new TwingTestMockCache());
+
+            test.true(env.getCache(false) instanceof TwingTestMockCache);
+
+            test.throws(function () {
+                env.setCache({});
+            }, new Error('Cache can only be a string, false, or a TwingCacheInterface implementation.'));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('display', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'bar'
+        }));
+
+        let data;
+        let originalWrite = process.stdout.write;
+
+        process.stdout.write = function (chunk) {
+            data = chunk;
+
+            process.stdout.write = originalWrite;
+
+            test.same(data, 'bar');
+            test.end();
+        };
+
+        env.display('index');
+    });
+
+    test.test('load', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'bar'
+        }));
+
+        let template = new TwingTestMockTemplate();
+        let templateWrapper = new TwingTemplateWrapper(env, template);
+
+        test.true(env.load(template) instanceof TwingTemplateWrapper);
+        test.same(env.load(templateWrapper), templateWrapper);
+        test.true(env.load('index') instanceof TwingTemplateWrapper);
+
+        test.end();
+    });
+
+    test.test('loadTemplate', function (test) {
+        let env = new TwingTestMockEnvironment(new TwingLoaderArray({index: 'foo'}), {
+            cache: new TwingTestMockCache()
+        });
+
+        let template = env.loadTemplate('index');
+
+        test.true(template instanceof TwingTestMockTemplate);
+
+        test.end();
+    });
+
+    test.test('resolveTemplate', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: '{{ foo'
+        }));
+
+        let template = new TwingTestMockTemplate();
+        let templateWrapper = new TwingTemplateWrapper(env, template);
+
+        test.same(env.resolveTemplate(templateWrapper), templateWrapper);
+
+        test.throws(function () {
+            env.resolveTemplate('index');
+        }, new TwingErrorSyntax('Unexpected token "end of template" of value "null" ("end of print statement" expected).', 1, new TwingSource('{{ foo', 'index', '')));
+
+        test.throws(function () {
+            env.resolveTemplate('missing');
+        }, new Error('Template "missing" is not defined.'));
+
+        test.end();
+    });
+
+    test.test('parser', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        env.setParser(new TwingTestsEnvironmentParserBar(env));
+
+        test.same(env.parse(env.tokenize(new TwingSource('foo', 'index', ''))), 'bar');
+
+        test.end();
+    });
+
+    test.test('lexer', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        env.setLexer(new TwingTestsEnvironmentLexerBar(env));
+
+        test.same(env.tokenize(new TwingSource('foo', 'index', '')), 'bar');
+
+        test.end();
+    });
+
+    test.test('compileSource', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        let source = new TwingSource('{{ foo', 'index', '');
+
+        test.throws(function () {
+            env.compileSource(source);
+        }, new TwingErrorSyntax('Unexpected token "end of template" of value "null" ("end of print statement" expected).', 1, source));
+
+        env.setParser(new TwingTestsEnvironmentParserError(env));
+        source = new TwingSource('{{ foo.bar }}', 'index', '');
+
+        test.throws(function () {
+            env.compileSource(source);
+        }, new TwingErrorSyntax('An exception has been thrown during the compilation of a template ("Parser error "foo".").', -1, source, new Error('Parser error "foo"')));
+
+        test.end();
+    });
+
+    test.test('getRuntime', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        env.addRuntimeLoader(new TwingTestEnvironmentRuntimeLoaderNull());
+
+        test.throws(function () {
+            env.getRuntime('Foo');
+        }, new TwingErrorRuntime('Unable to load the "Foo" runtime.'));
+
+        test.end();
+    });
+
+    test.test('extensions', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        let extension = new TwingTestsEnvironmentTestExtension();
+
+        env.setExtensions([extension]);
+
+        test.true(env.getExtensions().has('TwingTestsEnvironmentTestExtension'));
+
+        test.end();
+    });
+
+    test.test('nodeVisitors', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        let nodeVisitor = new TwingTestsEnvironmentTestNodeVisitor();
+
+        env.addNodeVisitor(nodeVisitor);
+
+        test.true(env.getNodeVisitors().includes(nodeVisitor));
+
+        test.end();
+    });
+
+    test.test('undefinedFilterCallbacks', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        let fakeFilter = {};
+
+        let cb = (name) => {
+            return fakeFilter;
+        };
+
+        env.registerUndefinedFilterCallback(cb);
+
+        test.same(env.getFilter('fake'), fakeFilter);
+
+        test.end();
+    });
+
+    test.test('undefinedFunctionCallbacks', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            index: 'foo'
+        }));
+
+        let fakeFunction = {};
+
+        let cb = (name) => {
+            return fakeFunction;
+        };
+
+        env.registerUndefinedFunctionCallback(cb);
+
+        test.same(env.getFunction('fake'), fakeFunction);
 
         test.end();
     });

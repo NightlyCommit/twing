@@ -6,7 +6,7 @@ import {TwingCacheInterface} from "../cache-interface";
  * @author Fabien Potencier <fabien@symfony.com>
  */
 export class TwingCacheNull implements TwingCacheInterface {
-    public implementsTwingCacheInterface: boolean = true;
+    public TwingIsCache: boolean = true;
 
     generateKey(name: string, className: string): string {
         return '';

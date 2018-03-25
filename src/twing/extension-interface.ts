@@ -28,9 +28,9 @@ export interface TwingExtensionInterface {
     /**
      * Returns a list of filters to add to the existing list.
      *
-     * @return Array<TwingFilter>
+     * @return Map<string | number, TwingFilter>
      */
-    getFilters(): Array<TwingFilter>;
+    getFilters(): Map<string | number, TwingFilter>;
 
     /**
      * Returns a list of tests to add to the existing list.
@@ -42,9 +42,9 @@ export interface TwingExtensionInterface {
     /**
      * Returns a list of functions to add to the existing list.
      *
-     * @return Array<TwingFunction>
+     * @return Map<string | number, TwingFunction>
      */
-    getFunctions(): Array<TwingFunction>;
+    getFunctions(): Map<string | number, TwingFunction>;
 
     /**
      * Returns a list of operators to add to the existing list.

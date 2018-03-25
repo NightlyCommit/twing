@@ -264,7 +264,7 @@ export class TwingEnvironment {
             this.originalCache = cache;
             this.cache = new TwingCacheNull();
         }
-        else if (cache.implementsTwingCacheInterface) {
+        else if (cache.TwingIsCache) {
             this.originalCache = this.cache = cache;
         }
         else {

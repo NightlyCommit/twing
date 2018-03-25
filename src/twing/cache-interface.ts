@@ -1,5 +1,5 @@
 export interface TwingCacheInterface {
-    implementsTwingCacheInterface: boolean,
+    TwingIsCache: boolean,
 
     /**
      * Generates a cache key for the given template class name.

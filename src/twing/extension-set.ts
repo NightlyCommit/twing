@@ -257,13 +257,13 @@ export class TwingExtensionSet {
             }
         }
 
-        this.functionCallbacks.forEach(function (callback) {
+        for (let callback of this.functionCallbacks) {
             let function_ = callback(name);
 
             if (function_ !== false) {
                 return function_;
             }
-        });
+        }
 
         return null;
     }
@@ -336,13 +336,13 @@ export class TwingExtensionSet {
             }
         }
 
-        this.filterCallbacks.forEach(function (callback: Function) {
-            let filter = callback.call(this, name);
+        for (let callback of this.filterCallbacks) {
+            let filter = callback.call(name);
 
             if (filter !== false) {
                 return filter;
             }
-        });
+        }
 
         return null;
     }
