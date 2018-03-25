@@ -7,6 +7,7 @@ import {TwingNodeExpressionConstant} from "../node/expression/constant";
 
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
+import {TwingExtensionEscaper} from "../extension/escaper";
 
 export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
@@ -19,13 +20,15 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     constructor() {
         super();
 
+        this.TwingNodeVisitorInterfaceImpl = this;
+
         this.safeAnalysis = new TwingNodeVisitorSafeAnalysis();
     }
 
     doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
             if (env.hasExtension('TwingExtensionEscaper')) {
-                this.defaultStrategy = env.getExtension('TwingExtensionEscaper').getDefaultStrategy(node.getTemplateName());
+                this.defaultStrategy = (env.getExtension('TwingExtensionEscaper') as TwingExtensionEscaper).getDefaultStrategy(node.getTemplateName());
             }
 
             this.safeVars = [];
@@ -55,7 +58,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
             return this.preEscapeFilterNode(node as TwingNodeExpressionFilter, env);
         }
         else if (node.getType() === TwingNodeType.PRINT) {
-            return this.escapePrintNode(node, env, this.needEscaping(env));
+            return this.escapePrintNode(node as any, env, this.needEscaping(env));
         }
 
         if (node.getType() === TwingNodeType.AUTO_ESCAPE || node.getType() === TwingNodeType.BLOCK) {

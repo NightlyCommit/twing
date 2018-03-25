@@ -4,12 +4,11 @@ import {TwingFunction} from "./function";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingExtensionStaging} from "./extension/staging";
-
-import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingTest} from "./test";
 import {TwingEnvironment} from "./environment";
+import {merge} from "./helper/merge";
+import {TwingOperator} from "./extension";
 
-const merge = require('merge');
 const isObject = require('isobject');
 
 export class TwingExtensionSet {
@@ -22,12 +21,11 @@ export class TwingExtensionSet {
     private filters: Map<string, TwingFilter>;
     private tests: Map<string, TwingTest>;
     private functions: Map<string, TwingFunction>;
-    private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
-    private binaryOperators: Map<string, TwingOperatorDefinitionInterface>;
-    private globals: {};
+    private unaryOperators: Map<string, TwingOperator>;
+    private binaryOperators: Map<string, TwingOperator>;
+    private globals: Map<any, any>;
     private functionCallbacks: Array<Function> = [];
     private filterCallbacks: Array<Function> = [];
-    private lastModified: number = 0;
 
     constructor() {
         this.staging = new TwingExtensionStaging();
@@ -48,8 +46,8 @@ export class TwingExtensionSet {
         for (let [name, extension] of this.extensions) {
             let candidate: any = extension;
 
-            if (candidate.implementsTwingExtensionInitRuntimeInterface) {
-                candidate.initRuntime(env);
+            if (candidate.TwingExtensionInitRuntimeInterfaceImpl) {
+                candidate.TwingExtensionInitRuntimeInterfaceImpl.initRuntime(env);
             }
         }
     }
@@ -90,14 +88,6 @@ export class TwingExtensionSet {
         return this.initialized || this.runtimeInitialized;
     }
 
-    getLastModified() {
-        if (this.lastModified !== 0) {
-            return this.lastModified;
-        }
-
-        return this.lastModified;
-    }
-
     getNodeVisitors(): TwingNodeVisitorInterface[] {
         if (!this.initialized) {
             this.initExtensions();
@@ -114,27 +104,27 @@ export class TwingExtensionSet {
         return this.parsers;
     }
 
-    getGlobals(): {} {
+    getGlobals(): Map<any, any> {
         if (this.globals !== undefined) {
             return this.globals;
         }
 
-        let globals = {};
+        let globals = new Map();
 
         for (let [name, extension] of this.getExtensions()) {
             let candidate: any = extension;
 
-            if (!candidate.implementsTwingExtensionGlobalsInterface) {
+            if (!candidate.TwingExtensionGlobalsInterfaceImpl) {
                 continue;
             }
 
-            let extGlobals = candidate.getGlobals();
+            let extGlobals = candidate.TwingExtensionGlobalsInterfaceImpl.getGlobals();
 
-            if (typeof extGlobals !== 'object') {
-                throw new Error(`"${extension.constructor.name}::getGlobals()" must return a hash of globals.`);
+            if (!(extGlobals instanceof Map)) {
+                throw new Error(`"${extension.constructor.name}[TwingExtensionGlobalsInterface].getGlobals()" must return a Map of globals.`);
             }
 
-            globals = merge.recursive(globals, extGlobals);
+            globals = merge(globals, extGlobals);
         }
 
         if (this.initialized) {
@@ -174,9 +164,9 @@ export class TwingExtensionSet {
     /**
      * Gets the registered unary Operators.
      *
-     * @return Map<string, TwingOperatorDefinitionInterface> A map of unary operator definitions
+     * @return Map<string, TwingOperator> A map of unary operator definitions
      */
-    getUnaryOperators(): Map<string, TwingOperatorDefinitionInterface> {
+    getUnaryOperators(): Map<string, TwingOperator> {
         if (!this.initialized) {
             this.initExtensions();
         }
@@ -187,9 +177,9 @@ export class TwingExtensionSet {
     /**
      * Gets the registered binary Operators.
      *
-     * @return Map<string, TwingOperatorDefinitionInterface> A map of binary operators
+     * @return Map<string, TwingOperator> A map of binary operators
      */
-    getBinaryOperators(): Map<string, TwingOperatorDefinitionInterface> {
+    getBinaryOperators(): Map<string, TwingOperator> {
         if (!this.initialized) {
             this.initExtensions();
         }
@@ -257,13 +247,13 @@ export class TwingExtensionSet {
             }
         }
 
-        this.functionCallbacks.forEach(function (callback) {
+        for (let callback of this.functionCallbacks) {
             let function_ = callback(name);
 
             if (function_ !== false) {
                 return function_;
             }
-        });
+        }
 
         return null;
     }
@@ -336,13 +326,13 @@ export class TwingExtensionSet {
             }
         }
 
-        this.filterCallbacks.forEach(function (callback: Function) {
-            let filter = callback.call(this, name);
+        for (let callback of this.filterCallbacks) {
+            let filter = callback.call(name);
 
             if (filter !== false) {
                 return filter;
             }
-        });
+        }
 
         return null;
     }

@@ -1,9 +1,13 @@
+/* istanbul ignore next */
+
 /**
- * Creates runtime implementations for Twig elements (filters/functions/tests).
+ * Creates runtime implementations for Twing elements (filters/functions/tests).
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 export abstract class TwingRuntimeLoaderInterface {
+    TwingRuntimeLoaderInterfaceImpl: TwingRuntimeLoaderInterface;
+
     /**
      * Creates the runtime implementation of a Twing element (filter/function/test).
      *

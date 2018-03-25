@@ -10,11 +10,9 @@ import {TwingTokenStream} from "./token-stream";
 import {TwingSource} from "./source";
 import {TwingLoaderInterface} from "./loader-interface";
 import {TwingErrorLoader} from "./error/loader";
-
 import {TwingTest} from "./test";
 import {TwingFunction} from "./function";
 import {TwingErrorSyntax} from "./error/syntax";
-import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingExtensionEscaper} from "./extension/escaper";
 import {TwingTemplate} from "./template";
 import {TwingError} from "./error";
@@ -33,6 +31,7 @@ import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
 import {TwingReflectionObject} from "./reflection-object";
 import {merge as twingMerge} from "./helper/merge";
 import {join} from "./helper/join";
+import {TwingOperator} from "./extension";
 
 const merge = require('merge');
 const hash = require('sha.js');
@@ -81,6 +80,11 @@ export type TwingEnvironmentOptions = {
     optimizations?: number;
 }
 
+/**
+ * Stores the Twing configuration.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ */
 export class TwingEnvironment {
     private charset: string;
     private loader: TwingLoaderInterface = null;
@@ -90,7 +94,7 @@ export class TwingEnvironment {
     private lexer: TwingLexer;
     private parser: TwingParser;
     private baseTemplateClass: string;
-    private globals: any = {};
+    private globals: Map<any, any> = new Map();
     private resolvedGlobals: any;
     private loadedTemplates: Map<string, TwingTemplate> = new Map();
     private strictVariables: boolean;
@@ -264,7 +268,7 @@ export class TwingEnvironment {
             this.originalCache = cache;
             this.cache = new TwingCacheNull();
         }
-        else if (cache.implementsTwingCacheInterface) {
+        else if (cache.TwingCacheInterfaceImpl) {
             this.originalCache = this.cache = cache;
         }
         else {
@@ -883,18 +887,18 @@ export class TwingEnvironment {
      * but after, you can only update existing globals.
      *
      * @param {string} name The global name
-     * @param value         The global value
+     * @param {*} value The global value
      */
     addGlobal(name: string, value: any) {
-        if (this.extensionSet.isInitialized() && !Reflect.has(this.getGlobals(), name)) {
+        if (this.extensionSet.isInitialized() && !this.getGlobals().has(name)) {
             throw new Error(`Unable to add global "${name}" as the runtime or the extensions have already been initialized.`);
         }
 
         if (this.resolvedGlobals) {
-            this.resolvedGlobals[name] = value;
+            this.resolvedGlobals.set(name,  value);
         }
         else {
-            this.globals[name] = value;
+            this.globals.set(name, value);
         }
     }
 
@@ -905,31 +909,30 @@ export class TwingEnvironment {
      *
      * @internal
      */
-    getGlobals(): {} {
+    getGlobals(): Map<any, any> {
         if (this.extensionSet.isInitialized()) {
             if (!this.resolvedGlobals) {
-                this.resolvedGlobals = merge.recursive({}, this.extensionSet.getGlobals(), this.globals);
+                this.resolvedGlobals = twingMerge(this.extensionSet.getGlobals(), this.globals);
             }
 
             return this.resolvedGlobals;
         }
 
-        return merge.recursive({}, this.extensionSet.getGlobals(), this.globals);
+        return twingMerge(this.extensionSet.getGlobals(), this.globals);
     }
 
     /**
      * Merges a context with the defined globals.
      *
      * @param {Map<*, *>} context
-     * @returns {{}}
+     * @returns {Map<*, *>}
      */
     mergeGlobals(context: Map<any, any>) {
-        let k: any;
-        let globals: any = this.getGlobals();
-
-        for (k in globals) {
-            if (!context.has(k)) {
-                context.set(k, globals[k]);
+        // we don't use Twing merge as the context being generally
+        // bigger than globals, this code is faster.
+        for (let [key, value] of this.getGlobals()) {
+            if (!context.has(key)) {
+                context.set(key, value);
             }
         }
 
@@ -943,7 +946,7 @@ export class TwingEnvironment {
      *
      * @internal
      */
-    getUnaryOperators(): Map<string, TwingOperatorDefinitionInterface> {
+    getUnaryOperators(): Map<string, TwingOperator> {
         return this.extensionSet.getUnaryOperators();
     }
 
@@ -954,7 +957,7 @@ export class TwingEnvironment {
      *
      * @internal
      */
-    getBinaryOperators(): Map<string, TwingOperatorDefinitionInterface> {
+    getBinaryOperators(): Map<string, TwingOperator> {
         return this.extensionSet.getBinaryOperators();
     }
 

@@ -61,6 +61,20 @@ tap.test('TwingOutputBuffering', function (test) {
         test.equal(TwingOutputBuffering.obGetLevel(), 2, 'obGetLevel() should return 2');
         test.same(TwingOutputBuffering.obGetContents(), 'baroof', `obGetContents() should return 'baroof'`);
 
+        reset(false);
+
+        let originalWrite = process.stdout.write;
+
+        process.stdout.write = function (chunk) {
+            console.warn(chunk);
+
+            process.stdout.write = originalWrite;
+
+            test.same(chunk, 'Failed to delete and flush buffer: no buffer to delete or flush.');
+        };
+
+        test.false(TwingOutputBuffering.obEndFlush());
+
         test.end();
     });
 
@@ -69,6 +83,19 @@ tap.test('TwingOutputBuffering', function (test) {
         TwingOutputBuffering.obFlush();
 
         test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+
+        reset(false);
+
+        let originalWrite = process.stdout.write;
+
+        process.stdout.write = function (chunk) {
+            process.stdout.write = originalWrite;
+
+            test.same(chunk, 'Failed to flush buffer: no buffer to flush.');
+        };
+
+        test.false(TwingOutputBuffering.obFlush());
+
         test.end();
     });
 
@@ -87,6 +114,19 @@ tap.test('TwingOutputBuffering', function (test) {
 
         test.equal(TwingOutputBuffering.obGetLevel(), 3, 'obGetLevel() should return 3');
         test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+
+        reset(false);
+
+        let originalWrite = process.stdout.write;
+
+        process.stdout.write = function (chunk) {
+            process.stdout.write = originalWrite;
+
+            test.same(chunk, 'Failed to clean buffer: no buffer to clean.');
+        };
+
+        test.false(TwingOutputBuffering.obClean());
+
         test.end();
     });
 
@@ -105,6 +145,16 @@ tap.test('TwingOutputBuffering', function (test) {
         test.equal(TwingOutputBuffering.obGetLevel(), 2, 'obGetLevel() should return 2');
         test.same(TwingOutputBuffering.obGetContents(), 'bar', `obGetContents() should return 'bar'`);
 
+        reset(false);
+
+        let originalWrite = process.stdout.write;
+
+        process.stdout.write = function (chunk) {
+            process.stdout.write = originalWrite;
+        };
+
+        test.false(TwingOutputBuffering.obEndClean());
+
         test.end();
     });
 
@@ -113,21 +163,22 @@ tap.test('TwingOutputBuffering', function (test) {
         TwingOutputBuffering.flush();
 
         test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+
         test.end();
     });
 
-    test.test('support echoing a number when not started', function(test) {
+    test.test('support echoing a number when not started', function (test) {
         let w = process.stdout.write;
 
         return new Promise((resolve, reject) => {
             reset(false);
 
-            process.stdout.write = function(chunk) {
+            process.stdout.write = function (chunk) {
                 resolve(chunk.toString());
             };
 
             TwingOutputBuffering.echo(1);
-        }).then(function(actual) {
+        }).then(function (actual) {
             process.stdout.write = w;
 
             test.same(actual, '1');
@@ -135,6 +186,23 @@ tap.test('TwingOutputBuffering', function (test) {
             test.end();
         });
     });
+
+    test.test('obGetLevel', function (test) {
+        reset(false);
+
+        test.equals(TwingOutputBuffering.obGetLevel(), 0);
+
+        test.end();
+    });
+
+    test.test('obGetContents', function (test) {
+        reset(false);
+
+        test.equals(TwingOutputBuffering.obGetContents(), false);
+
+        test.end();
+    });
+
 
     test.end();
 });

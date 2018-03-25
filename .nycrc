@@ -7,9 +7,6 @@
       ".js"
     ],
     "include": "lib",
-    "exclude": [
-      "**/*-interface.js"
-    ],
     "reporter": [
       "text-summary",
       "html"

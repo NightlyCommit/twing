@@ -1,5 +1,4 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 

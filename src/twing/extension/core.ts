@@ -1,4 +1,4 @@
-import {TwingExtension} from "../extension";
+import {TwingExtension, TwingOperator} from "../extension";
 import {TwingTokenParserFor} from "../token-parser/for";
 import {TwingExpressionParser} from "../expression-parser";
 import {TwingNodeExpressionBinaryAnd} from "../node/expression/binary/and";
@@ -7,7 +7,6 @@ import {TwingTokenParserFrom} from "../token-parser/from";
 import {TwingTokenParserMacro} from "../token-parser/macro";
 import {TwingNode} from "../node";
 import {TwingNodeExpressionBinaryIn} from "../node/expression/binary/in";
-import {TwingOperatorDefinitionInterface} from "../operator-definition-interface";
 import {TwingTokenParserIf} from "../token-parser/if";
 import {TwingTokenParserSet} from "../token-parser/set";
 import {TwingTokenParserBlock} from "../token-parser/block";
@@ -92,6 +91,7 @@ import {slice} from "../helper/slice";
 import {asort} from "../helper/asort";
 import {reverse} from "../helper/reverse";
 import {first} from "../helper/first";
+import {TwingMarkup} from "../markup";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -229,88 +229,92 @@ export class TwingExtensionCore extends TwingExtension {
     }
 
     getFilters() {
-        return [
+        let i = 0;
+
+        return new Map([
             // formatting filters
-            new TwingFilter('date', twingDateFormatFilter, {needs_environment: true}),
-            new TwingFilter('date_modify', twingDateModifyFilter, {needs_environment: true}),
-            new TwingFilter('format', sprintf),
-            new TwingFilter('replace', twingReplaceFilter),
-            new TwingFilter('number_format', twingNumberFormatFilter, {
+            [i++, new TwingFilter('date', twingDateFormatFilter, {needs_environment: true})],
+            [i++, new TwingFilter('date_modify', twingDateModifyFilter, {needs_environment: true})],
+            [i++, new TwingFilter('format', sprintf)],
+            [i++, new TwingFilter('replace', twingReplaceFilter)],
+            [i++, new TwingFilter('number_format', twingNumberFormatFilter, {
                 needs_environment: true
-            }),
-            new TwingFilter('abs', twingAbs), // we can'u use Math.abs here since native functions are not reflectable
-            new TwingFilter('round', twingRound),
+            })],
+            [i++, new TwingFilter('abs', twingAbs)], // we can'u use Math.abs here since native functions are not reflectable
+            [i++, new TwingFilter('round', twingRound)],
 
             // encoding
-            new TwingFilter('url_encode', twingUrlencodeFilter),
-            new TwingFilter('json_encode', twingJsonEncode), // we can'u use JSON.stringify here since native functions are not reflectable
-            new TwingFilter('convert_encoding', twingConvertEncoding, {
+            [i++, new TwingFilter('url_encode', twingUrlencodeFilter)],
+            [i++, new TwingFilter('json_encode', twingJsonEncode)], // we can'u use JSON.stringify here since native functions are not reflectable
+            [i++, new TwingFilter('convert_encoding', twingConvertEncoding, {
                 pre_escape: 'html',
                 is_safe: ['html']
-            }),
+            })],
 
             // string filters
-            new TwingFilter('title', twingTitleStringFilter, {needs_environment: true}),
-            new TwingFilter('capitalize', twingCapitalizeStringFilter, {needs_environment: true}),
-            new TwingFilter('upper', twingUpperFilter, {needs_environment: true}),
-            new TwingFilter('lower', twingLowerFilter, {needs_environment: true}),
-            new TwingFilter('striptags', strip_tags),
-            new TwingFilter('trim', twingTrimFilter),
-            new TwingFilter('nl2br', nl2br, {
+            [i++, new TwingFilter('title', twingTitleStringFilter, {needs_environment: true})],
+            [i++, new TwingFilter('capitalize', twingCapitalizeStringFilter, {needs_environment: true})],
+            [i++, new TwingFilter('upper', twingUpperFilter, {needs_environment: true})],
+            [i++, new TwingFilter('lower', twingLowerFilter, {needs_environment: true})],
+            [i++, new TwingFilter('striptags', strip_tags)],
+            [i++, new TwingFilter('trim', twingTrimFilter)],
+            [i++, new TwingFilter('nl2br', nl2br, {
                 pre_escape: 'html',
                 is_safe: ['html']
-            }),
+            })],
 
             // array helpers
-            new TwingFilter('join', twingJoinFilter),
-            new TwingFilter('split', twingSplitFilter, {needs_environment: true}),
-            new TwingFilter('sort', twingSortFilter),
-            new TwingFilter('merge', twingArrayMerge),
-            new TwingFilter('batch', twingArrayBatch),
+            [i++, new TwingFilter('join', twingJoinFilter)],
+            [i++, new TwingFilter('split', twingSplitFilter, {needs_environment: true})],
+            [i++, new TwingFilter('sort', twingSortFilter)],
+            [i++, new TwingFilter('merge', twingArrayMerge)],
+            [i++, new TwingFilter('batch', twingArrayBatch)],
 
             // string/array filters
-            new TwingFilter('reverse', twingReverseFilter, {needs_environment: true}),
-            new TwingFilter('length', twingLengthFilter, {needs_environment: true}),
-            new TwingFilter('slice', twingSlice, {needs_environment: true}),
-            new TwingFilter('first', twingFirst, {needs_environment: true}),
-            new TwingFilter('last', twingLast, {needs_environment: true}),
+            [i++, new TwingFilter('reverse', twingReverseFilter, {needs_environment: true})],
+            [i++, new TwingFilter('length', twingLengthFilter, {needs_environment: true})],
+            [i++, new TwingFilter('slice', twingSlice, {needs_environment: true})],
+            [i++, new TwingFilter('first', twingFirst, {needs_environment: true})],
+            [i++, new TwingFilter('last', twingLast, {needs_environment: true})],
 
             // iteration and runtime
-            new TwingFilter('default', twingDefaultFilter, {
+            [i++, new TwingFilter('default', twingDefaultFilter, {
                 expression_factory: function (node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
                     return new TwingNodeExpressionFilterDefault(node, filterName, methodArguments, lineno, tag);
                 }
-            }),
-            new TwingFilter('keys', twingGetArrayKeysFilter),
+            })],
+            [i++, new TwingFilter('keys', twingGetArrayKeysFilter)],
 
             // escaping
-            new TwingFilter('escape', twingEscapeFilter, {
+            [i++, new TwingFilter('escape', twingEscapeFilter, {
                 needs_environment: true,
                 is_safe_callback: twingEscapeFilterIsSafe
-            }),
-            new TwingFilter('e', twingEscapeFilter, {
+            })],
+            [i++, new TwingFilter('e', twingEscapeFilter, {
                 needs_environment: true,
                 is_safe_callback: twingEscapeFilterIsSafe
-            })
-        ];
+            })]
+        ]);
     }
 
-    getFunctions(): Array<TwingFunction> {
-        return [
-            new TwingFunction('max', twingMax),
-            new TwingFunction('min', twingMin),
-            new TwingFunction('range', range),
-            new TwingFunction('constant', twingConstant, {needs_environment: true}),
-            new TwingFunction('cycle', twingCycle),
-            new TwingFunction('random', twingRandom, {needs_environment: true}),
-            new TwingFunction('date', twingDateConverter, {needs_environment: true}),
-            new TwingFunction('include', twingInclude, {
+    getFunctions() {
+        let i = 0;
+
+        return new Map([
+            [i++, new TwingFunction('max', twingMax)],
+            [i++, new TwingFunction('min', twingMin)],
+            [i++, new TwingFunction('range', range)],
+            [i++, new TwingFunction('constant', twingConstant, {needs_environment: true})],
+            [i++, new TwingFunction('cycle', twingCycle)],
+            [i++, new TwingFunction('random', twingRandom, {needs_environment: true})],
+            [i++, new TwingFunction('date', twingDateConverter, {needs_environment: true})],
+            [i++, new TwingFunction('include', twingInclude, {
                 needs_context: true,
                 needs_environment: true,
                 is_safe: ['all']
-            }),
-            new TwingFunction('source', twingSource, {needs_environment: true, is_safe: ['all']}),
-        ];
+            })],
+            [i++, new TwingFunction('source', twingSource, {needs_environment: true, is_safe: ['all']})],
+        ]);
     }
 
     getTests(): Array<TwingTest> {
@@ -360,7 +364,7 @@ export class TwingExtensionCore extends TwingExtension {
         ];
     }
 
-    getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] {
+    getOperators(): [Map<string, TwingOperator>, Map<string, TwingOperator>] {
         return [
             new Map([
                 ['not', {
@@ -1268,7 +1272,7 @@ export function twingTrimFilter(string: string, characterMask: string = null, si
  * @returns {string}
  */
 export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false) {
-    if (autoescape && string && (string.TwingIsSafe === true)) {
+    if (autoescape && string && string instanceof TwingMarkup) {
         return string;
     }
 
@@ -1705,8 +1709,8 @@ export function twingSource(env: TwingEnvironment, name: string, ignoreMissing: 
 /**
  * Provides the ability to get constants from instances as well as class/global constants.
  *
- * Global or class constants make no sense in JavaScript. To emulate the expected behavior, it is assumed that
- * so-called constants are keys of the TwingEnvironment::globals property.
+ * Constant function makes no sense in JavaScript. To emulate the expected behavior, it is assumed that
+ * so-called constants are keys of the TwingEnvironment.globals property.
  *
  * @param {TwingEnvironment} env The environment
  * @param {string} constant The name of the constant
@@ -1721,14 +1725,14 @@ export function twingConstant(env: TwingEnvironment, constant: string, object: a
     if (object && typeof object === 'object') {
         let className = object.constructor.name;
 
-        bucket = globals[className];
+        bucket = globals.get(className);
     }
     else {
         bucket = globals;
     }
 
     if (bucket) {
-        return bucket[constant];
+        return bucket.get(constant);
     }
 
     return null;

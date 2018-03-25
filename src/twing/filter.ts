@@ -126,8 +126,4 @@ export class TwingFilter {
     getAlternative() {
         return this.options.alternative;
     }
-
-    filter(env: TwingEnvironment, value: string) {
-        return value;
-    }
 }

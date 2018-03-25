@@ -1,6 +1,8 @@
+const TwingTestMockTemplate = require('./template');
+
 module.exports = class {
     constructor() {
-        this.implementsTwingCacheInterface = true;
+        this.TwingCacheInterfaceImpl = this;
     }
 
     generateKey(name, className) {
@@ -12,10 +14,14 @@ module.exports = class {
     }
 
     load(key) {
-        return null;
+        let templates = {};
+
+        templates['__TwingTemplate_foo'] = TwingTestMockTemplate;
+
+        return templates;
     }
 
     getTimestamp(key) {
         return 0;
     }
-}
+};

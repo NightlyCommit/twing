@@ -1,5 +1,5 @@
-
-{{ date().format('r') == date('now').format('r') ? 'OK' : 'KO' }}
+{# see https://github.com/twigphp/Twig/issues/2667 #}
+{#{{ date().format('r') == date('now').format('r') ? 'OK' : 'KO' }}#}
 {{ date(date1) == date('2010-10-04 13:45') ? 'OK' : 'KO' }}
 {{ date(date2) == date('2010-10-04 13:45') ? 'OK' : 'KO' }}
 {{ date(date3) == date('2010-10-04 13:45') ? 'OK' : 'KO' }}

@@ -203,7 +203,7 @@ tap.test('Twing library', function (test) {
 
         let exportedSymbol = require(path.resolve('lib', fileName))[key];
 
-        test.same(exportedSymbol, Twing[key], `${key} is exported`);
+        test.same(exportedSymbol.toString(), Twing[key].toString(), `${key} is exported`);
     }
 
     for (let key in Twing) {

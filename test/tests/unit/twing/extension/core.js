@@ -24,9 +24,11 @@ const iconv = require('../../../../../lib/twing/helper/iconv').iconv;
 let getFilter = function (name) {
     let extension = new TwingExtensionCore();
 
-    return extension.getFilters().find(function (filter) {
-        return filter.getName() === name;
-    });
+    for (let [index, filter] of extension.getFilters()) {
+        if (filter.getName() === name) {
+            return filter;
+        }
+    }
 };
 
 class Foo {

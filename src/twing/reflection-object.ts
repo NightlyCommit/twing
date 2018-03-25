@@ -10,9 +10,7 @@ export class TwingReflectionObject {
     constructor(object: any) {
         this.object = object;
 
-        if (TwingReflectionObject.container.has(this.object)) {
-            this.fileName = TwingReflectionObject.container.get(this.object).fileName;
-        }
+        this.fileName = TwingReflectionObject.container.get(this.object).fileName;
     }
 
     public static register(object: any, definition: TwingReflectionObjectDefinition) {

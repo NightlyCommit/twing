@@ -6,9 +6,12 @@ import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingFactoryRuntimeLoader implements TwingRuntimeLoaderInterface {
+    TwingRuntimeLoaderInterfaceImpl: TwingRuntimeLoaderInterface;
+
     private map: Map<string, Function>;
 
     constructor(map: Map<string, Function> = new Map()) {
+        this.TwingRuntimeLoaderInterfaceImpl = this;
         this.map = map;
     }
 

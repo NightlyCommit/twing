@@ -20,9 +20,9 @@ export class TwingTest {
     /**
      * Creates a template test.
      *
-     * @param string        $name     Name of this test
-     * @param callable|null $callable A callable implementing the test. If null, you need to overwrite the "node_class" option to customize compilation.
-     * @param array         $options  Options array
+     * @param {string} name Name of this test
+     * @param {Function} callable A callable implementing the test. If null, you need to overwrite the "node_class" option to customize compilation.
+     * @param {TwingTestOptions} options Options
      */
     constructor(name: string, callable: Function = null, options: TwingTestOptions = {}) {
         this.name = name;
@@ -44,7 +44,7 @@ export class TwingTest {
     /**
      * Returns the callable to execute for this test.
      *
-     * @return callable|null
+     * @return {Function}
      */
     getCallable() {
         return this.callable;

@@ -3,6 +3,7 @@ const TwingLoaderArray = require('../../../../lib/twing/loader/array').TwingLoad
 const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvironment;
 const TwingErrorRuntime = require('../../../../lib/twing/error/runtime').TwingErrorRuntime;
 const TwingLoaderFilesystem = require('../../../../lib/twing/loader/filesystem').TwingLoaderFilesystem;
+const TwingSource = require('../../../../lib/twing/source').TwingSource;
 
 const tap = require('tap');
 const path = require('path');
@@ -26,8 +27,14 @@ tap.test('TwingError', function (test) {
         test.same(error.getTemplateLine(), -1, 'template line should be set');
         test.same(error.getMessage(), 'foo in "bar"', 'message should be set');
 
+        error = new TwingError('foo');
+
+        test.same(error.getSourceContext(), null);
+
         test.end();
     });
+
+
 
     test.test('twingExceptionGuessWithMissingVarAndArrayLoader', function (test) {
         let loader = new TwingLoaderArray({
@@ -214,6 +221,38 @@ tap.test('TwingError', function (test) {
                 test.same(e.getSourceContext().getName(), erroredTemplate.name);
             }
         }
+
+        test.end();
+    });
+
+    test.test('setSourceContext', function (test) {
+        let error = new TwingError('foo', -1, 'bar');
+
+        error.setSourceContext(null);
+
+        test.equal(error.getSourceContext(), null);
+
+        error.setSourceContext();
+
+        test.equal(error.getSourceContext(), null);
+
+        test.end();
+    });
+
+    test.test('updateRepr', function(test) {
+        let error = new TwingError('foo', -1, 'bar');
+
+        error.setSourceContext(new TwingSource('', 'bar', ''));
+
+        test.same(error.getMessage(), 'foo in "bar"');
+
+        error = new TwingError('foo', -1, {toString: function() {return 'bar';}});
+
+        test.same(error.getMessage(), 'foo in "bar"');
+
+        error = new TwingError('foo', -1, 1);
+
+        test.same(error.getMessage(), 'foo in 1');
 
         test.end();
     });

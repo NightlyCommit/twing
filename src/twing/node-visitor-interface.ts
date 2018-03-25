@@ -1,3 +1,5 @@
+/* istanbul ignore next */
+
 /**
  * Twig_NodeVisitorInterface is the interface the all node visitor classes must implement.
  *
@@ -8,6 +10,8 @@ import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 
 export interface TwingNodeVisitorInterface {
+    TwingNodeVisitorInterfaceImpl: TwingNodeVisitorInterface;
+
     /**
      * Called before child nodes are visited.
      *

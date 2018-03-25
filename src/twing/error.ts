@@ -1,26 +1,42 @@
-/**
- * Twing base error.
- *
- * @author Eric MORAND <eric.morand@gmail.com>
- */
 import {TwingSource} from "./source";
 import {TwingTemplate} from "./template";
 import {TwingReflectionObject} from "./reflection-object";
 import {StackFrame} from "stack-trace";
 
-
 const stackTrace = require('stack-trace');
 
+/**
+ * Twing base error.
+ *
+ * This error class and its children must only be used when
+ * an error occurs during the loading of a template, when a syntax error
+ * is detected in a template, or when rendering a template. Other
+ * errors must use regular JavaScript error classes (like when the template
+ * cache directory is not writable for instance).
+ *
+ * To help debugging template issues, this class tracks the original template
+ * name and line where the error occurred.
+ *
+ * Whenever possible, you must set these information (original template name
+ * and line number) yourself by passing them to the constructor. If some or all
+ * these information are not available from where you throw the exception, then
+ * this class will guess them automatically (when the line number is set to -1
+ * and/or the name is set to null). As this is a costly operation, this
+ * can be disabled by passing false for both the name and the line number
+ * when creating a new instance of this class.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ */
 export class TwingError extends Error {
     protected static registry: Map<string, string> = new Map();
-    name_: string = null;
+    name_: string | Object = null;
     private lineno: number | boolean;
     private rawMessage: string = null;
     private sourcePath: string = null;
     private sourceCode: string = null;
     private previous: Error = null;
 
-    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
+    constructor(message: string, lineno: number = -1, source: TwingSource | Object | null = null, previous: Error = null) {
         super(message);
 
         this.name = this.constructor.name;
@@ -110,7 +126,7 @@ export class TwingError extends Error {
         this.updateRepr();
     }
 
-    updateRepr() {
+    private updateRepr() {
         this.message = this.rawMessage;
 
         if (this.sourcePath && (this.lineno > 0)) {
@@ -134,7 +150,7 @@ export class TwingError extends Error {
         if (this.name_) {
             let sourceName;
 
-            if (typeof this.name_ === 'string' || typeof this.name_ === 'object' && Reflect.has(this.name_, 'toString')) {
+            if (typeof this.name_ === 'string' || (typeof this.name_ === 'object' && Reflect.has(this.name_, 'toString'))) {
                 sourceName = `"${this.name_}"`;
             }
             else {
@@ -191,13 +207,13 @@ export class TwingError extends Error {
                 let safeEnvironment = {
                     loadTemplate: () => {
                         return {
-                            isTraitable: (): boolean => {
+                            isTraitable: /* istanbul ignore next */ (): boolean => {
                                 return true;
                             },
-                            getBlocks: (): Map<string, Array<any>> => {
+                            getBlocks: /* istanbul ignore next */ (): Map<string, Array<any>> => {
                                 return new Map();
                             },
-                            loadTemplate: (): any => {
+                            loadTemplate: /* istanbul ignore next */ (): any => {
                                 return null;
                             }
                         };
@@ -206,13 +222,11 @@ export class TwingError extends Error {
 
                 object = new objectConstructor(safeEnvironment);
 
-                if (object && (object instanceof TwingTemplate) && (object.constructor.name !== 'TwingTemplate')) {
-                    let isEmbedContainer: boolean = (!!templateClass && templateClass.indexOf(currentClass) === 0);
+                let isEmbedContainer: boolean = (!!templateClass && templateClass.indexOf(currentClass) === 0);
 
-                    if (this.name_ === null || (this.name_ == object.getTemplateName() && !isEmbedContainer)) {
-                        template = object;
-                        templateClass = trace.getTypeName();
-                    }
+                if (this.name_ === null || (this.name_ == object.getTemplateName() && !isEmbedContainer)) {
+                    template = object;
+                    templateClass = trace.getTypeName();
                 }
             }
         }
@@ -249,37 +263,31 @@ export class TwingError extends Error {
 
             let templateToUse: TwingTemplate = template;
 
-            while (templateToUse && (templateToUse.getTemplateName() !== this.getSourceContext().getName())) {
-                templateToUse = templateToUse.getParent() as TwingTemplate;
-            }
+            for (let trace of traces) {
+                if (!trace.getFileName() || !trace.getLineNumber() || file != trace.getFileName()) {
+                    continue;
+                }
 
-            if (templateToUse) {
-                for (let trace of traces) {
-                    if (!trace.getFileName() || !trace.getLineNumber() || file != trace.getFileName()) {
-                        continue;
-                    }
+                for (let [codeLine, templateLine] of templateToUse.getDebugInfo()) {
+                    if (codeLine <= trace.getLineNumber()) {
+                        // update template line
+                        this.lineno = templateLine;
 
-                    for (let [codeLine, templateLine] of templateToUse.getDebugInfo()) {
-                        if (codeLine <= trace.getLineNumber()) {
-                            // update template line
-                            this.lineno = templateLine;
-
-                            return;
-                        }
+                        return;
                     }
                 }
             }
         }
     }
 
-    protected init(lineno: number = -1, source: TwingSource | string | null = null) {
-        let name: string;
+    protected init(lineno: number, source: TwingSource | Object | null) {
+        let name: string | Object;
 
         if (source === null) {
             name = null;
         }
         else if (!(source instanceof TwingSource)) {
-            name = source as string;
+            name = source;
         }
         else {
             name = source.getName();

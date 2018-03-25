@@ -10,18 +10,17 @@ import {TwingNodeExpressionBinaryConcat} from "./node/expression/binary/concat";
 import {TwingNodeExpressionGetAttr} from "./node/expression/get-attr";
 import {TwingNodeExpressionMethodCall} from "./node/expression/method-call";
 import {TwingNodeExpressionArray} from "./node/expression/array";
-
 import {TwingNodeExpressionConditional} from "./node/expression/conditional";
 import {TwingEnvironment} from "./environment";
 import {TwingTemplate} from "./template";
 import {TwingNodeExpressionAssignName} from "./node/expression/assign-name";
-import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingTest} from "./test";
 import {TwingNodeExpressionParent} from "./node/expression/parent";
 import {TwingNodeExpressionBlockReference} from "./node/expression/block-reference";
 import {TwingNodeExpressionHash} from "./node/expression/hash";
 import {TwingNodeExpressionUnaryNot} from "./node/expression/unary/not";
 import {push} from "./helper/push";
+import {TwingOperator} from "./extension";
 
 export class TwingExpressionParser {
     // @todo: should be a separate enum
@@ -29,8 +28,8 @@ export class TwingExpressionParser {
     static OPERATOR_RIGHT = 'OPERATOR_RIGHT';
     private parser: TwingParser;
     private env: TwingEnvironment;
-    private unaryOperators: Map<string, TwingOperatorDefinitionInterface>;
-    private binaryOperators: Map<string, TwingOperatorDefinitionInterface>;
+    private unaryOperators: Map<string, TwingOperator>;
+    private binaryOperators: Map<string, TwingOperator>;
 
     constructor(parser: TwingParser, env: TwingEnvironment) {
         this.parser = parser;
@@ -45,6 +44,7 @@ export class TwingExpressionParser {
 
         while (this.isBinary(token) && this.binaryOperators.get(token.getValue()).precedence >= precedence) {
             let op = this.binaryOperators.get(token.getValue());
+
             this.parser.getStream().next();
 
             if (token.getValue() === 'is not') {
@@ -54,7 +54,7 @@ export class TwingExpressionParser {
                 expr = this.parseTestExpression(expr);
             }
             else if (op.callable) {
-                expr = op.callable.call(this, this.parser, expr);
+                expr = op.callable.call(this.parser, expr);
             }
             else {
                 let expr1 = this.parseExpression(op.associativity === TwingExpressionParser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence);
@@ -360,12 +360,12 @@ export class TwingExpressionParser {
 
         let type = TwingTemplate.ANY_CALL;
 
-        if (token.getValue() == '.') {
+        if (token.getValue() === '.') {
             token = stream.next();
 
             let match = TwingLexer.REGEX_NAME.exec(token.getValue());
 
-            if ((token.getType() == TwingToken.NAME_TYPE) || (token.getType() == TwingToken.NUMBER_TYPE) || (token.getType() == TwingToken.OPERATOR_TYPE && (match !== null))) {
+            if ((token.getType() === TwingToken.NAME_TYPE) || (token.getType() === TwingToken.NUMBER_TYPE) || (token.getType() === TwingToken.OPERATOR_TYPE && (match !== null))) {
                 arg = new TwingNodeExpressionConstant(token.getValue(), lineno);
 
                 if (stream.test(TwingToken.PUNCTUATION_TYPE, '(')) {
@@ -383,10 +383,6 @@ export class TwingExpressionParser {
             }
 
             if ((node.getType() === TwingNodeType.EXPRESSION_NAME) && this.parser.getImportedSymbol('template', node.getAttribute('name'))) {
-                if (arg.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
-                    throw new TwingErrorSyntax(`Dynamic macro names are not supported (called on "${node.getAttribute('name')}").`, token.getLine(), stream.getSourceContext());
-                }
-
                 const varValidator = require('var-validator');
 
                 let name = arg.getAttribute('value');
@@ -449,7 +445,7 @@ export class TwingExpressionParser {
         while (true) {
             let token = this.parser.getCurrentToken();
 
-            if (token.getType() == TwingToken.PUNCTUATION_TYPE) {
+            if (token.getType() === TwingToken.PUNCTUATION_TYPE) {
                 if ('.' == token.getValue() || '[' == token.getValue()) {
                     node = this.parseSubscriptExpression(node);
                 }
@@ -459,7 +455,8 @@ export class TwingExpressionParser {
                 else {
                     break;
                 }
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -523,6 +520,7 @@ export class TwingExpressionParser {
     parseFilterExpressionRaw(node: TwingNodeExpression, tag: string = null): TwingNodeExpression {
         while (true) {
             let token = this.parser.getStream().expect(TwingToken.NAME_TYPE);
+
             let name = new TwingNodeExpressionConstant(token.getValue(), token.getLine());
             let methodArguments;
 
@@ -583,7 +581,7 @@ export class TwingExpressionParser {
 
             if (namedArguments && (token = stream.nextIf(TwingToken.OPERATOR_TYPE, '='))) {
                 if (value.getType() !== TwingNodeType.EXPRESSION_NAME) {
-                    throw new TwingErrorSyntax(`A parameter name must be a string, "${typeof value}" given.`, token.getLine(), stream.getSourceContext());
+                    throw new TwingErrorSyntax(`A parameter name must be a string, "${value.constructor.name}" given.`, token.getLine(), stream.getSourceContext());
                 }
                 name = value.getAttribute('name');
 
@@ -737,9 +735,9 @@ export class TwingExpressionParser {
 
             let src = this.parser.getStream().getSourceContext();
 
-            message += ` in ${src.getPath() ? '' : src.getName()} at line ${line}.`;
+            message += ` in ${src.getPath() ? src.getPath() : src.getName()} at line ${line}.`;
 
-            console.warn(message);
+            process.stdout.write(message);
         }
 
         return function_.getExpressionFactory();
@@ -757,7 +755,7 @@ export class TwingExpressionParser {
         }
 
         if (filter.isDeprecated()) {
-            let message = `Twig Filter "${filter.getName()}" is deprecated`;
+            let message = `Twing Filter "${filter.getName()}" is deprecated`;
 
             if (typeof filter.getDeprecatedVersion() !== 'boolean') {
                 message += ` since version ${filter.getDeprecatedVersion()}`;
@@ -769,9 +767,9 @@ export class TwingExpressionParser {
 
             let src = this.parser.getStream().getSourceContext();
 
-            message += ` in ${src.getPath() ? '' : src.getName()} at line ${line}.`;
+            message += ` in ${src.getPath() ? src.getPath() : src.getName()} at line ${line}.`;
 
-            console.warn(message);
+            process.stdout.write(message);
         }
 
         return filter.getExpressionFactory();
