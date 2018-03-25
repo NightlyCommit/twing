@@ -5,12 +5,11 @@ const dateformatConverter = require('dateformat-converter');
 
 /**
  *
- * @param {TwingEnvironment} env
  * @param {"luxon".luxon.DateTime} date
  * @param {string} format
  * @returns {string}
  */
-export function formatDateTime(date: DateTime, format: string = null) {
+export function formatDateTime(date: DateTime, format: string) {
     if (format === 'r') {
         return date.toRFC2822();
     }

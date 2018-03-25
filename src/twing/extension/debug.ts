@@ -5,15 +5,13 @@ import {varDump} from "../helper/var-dump";
 
 export class TwingExtensionDebug extends TwingExtension {
     getFunctions() {
-        let isDumpOutputHtmlSafe = true;
-
-        return [
-            new TwingFunction('dump', twingVarDump, {
-                is_safe: isDumpOutputHtmlSafe ? ['html'] : [],
+        return new Map([
+            [0, new TwingFunction('dump', twingVarDump, {
+                is_safe: ['html'],
                 needs_context: true,
                 needs_environment: true
-            }),
-        ];
+            })],
+        ]);
     }
 }
 

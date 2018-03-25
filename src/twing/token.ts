@@ -133,11 +133,7 @@ export class TwingToken {
      * @returns {boolean}
      */
     public test(type: number, values: Array<string> | string | number = null) {
-        return (this.type === type) && (
-            values === null ||
-            (Array.isArray(values) && values.includes(this.value)) ||
-            this.value == values
-        );
+        return (this.type === type) && (values === null || (Array.isArray(values) && values.includes(this.value)) || this.value == values);
     }
 
     /**

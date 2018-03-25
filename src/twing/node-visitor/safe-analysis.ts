@@ -14,6 +14,12 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
     private data: Map<string, Array<Bucket>> = new Map();
     private safeVars: Array<any> = [];
 
+    constructor() {
+        super();
+
+        this.TwingNodeVisitorInterfaceImpl = this;
+    }
+
     setSafeVars(safeVars: Array<any>) {
         this.safeVars = safeVars;
     }

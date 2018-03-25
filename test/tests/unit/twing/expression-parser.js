@@ -1,15 +1,82 @@
-const TwingTestEnvironmentStub = require('../../../mock/environment');
+const TwingTestMockEnvironment = require('../../../mock/environment');
 const TwingParser = require('../../../../lib/twing/parser').TwingParser;
 const TwingSource = require('../../../../lib/twing/source').TwingSource;
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 const TwingNodeExpressionArray = require('../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
-
 const TwingNodeExpressionConstant = require('../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionName = require('../../../../lib/twing/node/expression/name').TwingNodeExpressionName;
 const TwingNodeExpressionBinaryConcat = require('../../../../lib/twing/node/expression/binary/concat').TwingNodeExpressionBinaryConcat;
 const TwingTestMockLoader = require('../../../mock/loader');
+const TwingExtension = require('../../../../lib/twing/extension').TwingExtension;
+const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvironment;
+const TwingExpressionParser = require('../../../../lib/twing/expression-parser').TwingExpressionParser;
+const TwingToken = require('../../../../lib/twing/token').TwingToken;
+const TwingTokenStream = require('../../../../lib/twing/token-stream').TwingTokenStream;
+const TwingNodeExpressionHash = require('../../../../lib/twing/node/expression/hash').TwingNodeExpressionHash;
+const TwingFunction = require('../../../../lib/twing/function').TwingFunction;
+const TwingTest = require('../../../../lib/twing/test').TwingTest;
+const TwingFilter = require('../../../../lib/twing/filter').TwingFilter;
 
 const tap = require('tap');
+const sinon = require('sinon');
+
+class TwingTestExpressionParserExtension extends TwingExtension {
+    getOperators() {
+        return [
+            new Map([]),
+            new Map([
+                ['with-callable', {
+                    callable: (parser, expr) => {
+                        return new TwingNodeExpressionConstant('3');
+                    },
+                    precedence: 1
+                }]
+            ])
+        ];
+    }
+
+    getFunctions() {
+        return [
+            new TwingFunction('deprecated', () => {
+            }, {
+                deprecated: true
+            }),
+            new TwingFunction('deprecated_with_version', () => {
+            }, {
+                deprecated: 1
+            }),
+            new TwingFunction('deprecated_with_alternative', () => {
+            }, {
+                deprecated: true,
+                alternative: 'alternative'
+            })
+        ]
+    }
+
+    getTests() {
+        return [
+            new TwingTest('foo bar')
+        ]
+    }
+
+    getFilters() {
+        return [
+            new TwingFilter('deprecated', () => {
+            }, {
+                deprecated: true
+            }),
+            new TwingFilter('deprecated_with_version', () => {
+            }, {
+                deprecated: 1
+            }),
+            new TwingFilter('deprecated_with_alternative', () => {
+            }, {
+                deprecated: true,
+                alternative: 'alternative'
+            })
+        ]
+    }
+}
 
 tap.test('expression-parser', function (test) {
     test.test('canOnlyAssignToNames', function (test) {
@@ -29,7 +96,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndMessage of templatesAndMessages) {
@@ -118,7 +185,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
@@ -146,7 +213,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false});
         let parser = new TwingParser(env);
 
         for (let templateAndMessage of templatesAndMessages) {
@@ -162,7 +229,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('stringExpressionDoesNotConcatenateTwoConsecutiveStrings', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ "a" "b" }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -214,7 +281,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
@@ -236,7 +303,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('attributeCallDoesNotSupportNamedArguments', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foo.bar(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -250,7 +317,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% from _self import foo %}{% macro foo() %}{% endmacro %}{{ foo(name="Foo") }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -264,7 +331,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('macroCallDoesNotSupportNamedArguments', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% macro foo("a") %}{% endmacro %}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -283,7 +350,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let template of templates) {
@@ -310,7 +377,7 @@ tap.test('expression-parser', function (test) {
         ];
 
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let parser = new TwingParser(env);
 
         for (let template of templates) {
@@ -325,7 +392,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownFunction', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ cycl() }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -339,7 +406,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownFunctionWithoutSuggestions', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foobar() }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -353,7 +420,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownFilter', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1|lowe }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -367,7 +434,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownFilterWithoutSuggestions', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1|foobar }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -381,7 +448,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownTest', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1 is nul }}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -395,7 +462,7 @@ tap.test('expression-parser', function (test) {
 
     test.test('unknownTestWithoutSuggestions', function (test) {
         let loader = new TwingTestMockLoader();
-        let env = new TwingTestEnvironmentStub(loader, {cache: false, autoescape: false, optimizations: 0});
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1 is foobar}}', 'index');
         let stream = env.tokenize(source);
         let parser = new TwingParser(env);
@@ -403,6 +470,296 @@ tap.test('expression-parser', function (test) {
         test.throws(function () {
             parser.parse(stream);
         }, new TwingErrorSyntax('Unknown "foobar" test.', 1, source), 'should throw a TwingErrorSyntax');
+
+        test.end();
+    });
+
+    test.test('parseExpression', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        env.addExtension(new TwingTestExpressionParserExtension());
+
+        let stream = new TwingTokenStream([
+            new TwingToken(TwingToken.NUMBER_TYPE, '1', 1),
+            new TwingToken(TwingToken.OPERATOR_TYPE, 'with-callable', 1),
+            new TwingToken(TwingToken.NUMBER_TYPE, '2', 1),
+            new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+        ]);
+
+        let parser = new TwingParser(env);
+
+        Reflect.set(parser, 'stream', stream);
+
+        let expressionParser = new TwingExpressionParser(parser, env);
+        let expression = expressionParser.parseExpression();
+
+        console.log(expression.getAttribute('value'));
+
+        test.true(expression instanceof TwingNodeExpressionConstant);
+        test.same(expression.getAttribute('value'), 3);
+
+        test.end();
+    });
+
+    test.test('getFunctionNode', function (test) {
+        let env = new TwingTestMockEnvironment(new TwingTestMockLoader());
+        let parser = new TwingParser(env);
+
+        let stream = new TwingTokenStream([
+            new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
+            new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
+            new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+        ]);
+
+        Reflect.set(parser, 'stream', stream);
+
+        let expressionParser = new TwingExpressionParser(parser, env);
+
+        test.test('attribute', function (test) {
+            test.throws(function () {
+                expressionParser.getFunctionNode('attribute', 1);
+            }, new TwingErrorSyntax('The "attribute" function takes at least two arguments (the variable and the attributes).', 1, new TwingSource('', '')), 'should throw a TwingErrorSyntax');
+
+            test.end();
+        });
+
+        test.test('parent', function (test) {
+            let parser = new TwingParser(env);
+
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
+                new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+            ]);
+
+            Reflect.set(parser, 'stream', stream);
+
+            sinon.stub(parser, 'getBlockStack').returns([]);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            test.throws(function () {
+                expressionParser.getFunctionNode('parent', 1);
+            }, new TwingErrorSyntax('Calling "parent" outside a block is forbidden.', 1, new TwingSource('', '')), 'should throw a TwingErrorSyntax');
+
+            test.end();
+        });
+
+        test.test('deprecated function', function (test) {
+            let env = new TwingEnvironment(new TwingTestMockLoader());
+            let parser = new TwingParser(env);
+
+            sinon.stub(parser, 'getImportedSymbol').returns(null);
+
+            env.addExtension(new TwingTestExpressionParserExtension());
+
+            let testCases = [
+                ['deprecated', false, 'Twing Function "deprecated" is deprecated in index at line 1.'],
+                ['deprecated_with_version', false, 'Twing Function "deprecated_with_version" is deprecated since version 1 in index at line 1.'],
+                ['deprecated_with_alternative', false, 'Twing Function "deprecated_with_alternative" is deprecated. Use "alternative" instead in index at line 1.'],
+                ['deprecated', true, 'Twing Function "deprecated" is deprecated in index.html.twig at line 1.']
+            ];
+
+            for (let testCase of testCases) {
+                let stream = new TwingTokenStream([
+                    new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
+                    new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
+                    new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+                ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
+
+                Reflect.set(parser, 'stream', stream);
+
+                let expressionParser = new TwingExpressionParser(parser, env);
+
+                let originalWrite = process.stdout.write;
+
+                process.stdout.write = (chunk) => {
+                    process.stdout.write = originalWrite;
+
+                    test.same(chunk, testCase[2]);
+                };
+
+                expressionParser.getFunctionNode(testCase[0], 1);
+            }
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('parseHashExpression', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        test.test('with key as an expression', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
+                new TwingToken(TwingToken.STRING_TYPE, '1', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ':', 1),
+                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '}', 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+            let expression = expressionParser.parseHashExpression();
+
+            test.true(expression instanceof TwingNodeExpressionHash);
+
+            test.end();
+        });
+
+        test.test('with key as an expression', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1),
+                new TwingToken(TwingToken.OPERATOR_TYPE, 'foo', 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            test.throws(function () {
+                expressionParser.parseHashExpression();
+            }, new TwingErrorSyntax('A hash key must be a quoted string, a number, a name, or an expression enclosed in parentheses (unexpected token "operator" of value "foo".', 1, new TwingSource('', '')));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('parseSubscriptExpression', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        test.test('with dot syntax and non-name/number token', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '.', 1),
+                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            test.throws(function () {
+                expressionParser.parseSubscriptExpression(new TwingNodeExpressionConstant('foo'));
+            }, new TwingErrorSyntax('Expected name or number.', 1, new TwingSource('', '')));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('parseTestExpression', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        env.addExtension(new TwingTestExpressionParserExtension());
+
+        test.test('with not existing 2-words test', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1),
+                new TwingToken(TwingToken.NAME_TYPE, 'bar2', 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            test.throws(function () {
+                expressionParser.parseTestExpression(new TwingNodeExpressionConstant(1, 1));
+            }, new TwingErrorSyntax('Unknown "foo bar2" test. Did you mean "foo bar"?', 1, new TwingSource('', '')));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('parseArguments', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        test.test('with non-name named argument', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
+                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1),
+                new TwingToken(TwingToken.OPERATOR_TYPE, '=', 1),
+                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            test.throws(function () {
+                expressionParser.parseArguments(true);
+            }, new TwingErrorSyntax('A parameter name must be a string, "TwingNodeExpressionConstant" given.', 1, new TwingSource('', '')));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('parseFilterExpressionRaw', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        env.addExtension(new TwingTestExpressionParserExtension());
+
+        test.test('deprecated filter', function (test) {
+            let env = new TwingEnvironment(new TwingTestMockLoader());
+            let parser = new TwingParser(env);
+
+            env.addExtension(new TwingTestExpressionParserExtension());
+
+            let testCases = [
+                ['deprecated', false, 'Twing Filter "deprecated" is deprecated in index at line 1.'],
+                ['deprecated_with_version', false, 'Twing Filter "deprecated_with_version" is deprecated since version 1 in index at line 1.'],
+                ['deprecated_with_alternative', false, 'Twing Filter "deprecated_with_alternative" is deprecated. Use "alternative" instead in index at line 1.'],
+                ['deprecated', true, 'Twing Filter "deprecated" is deprecated in index.html.twig at line 1.']
+            ];
+
+            for (let testCase of testCases) {
+                let stream = new TwingTokenStream([
+                    new TwingToken(TwingToken.NAME_TYPE, testCase[0], 1),
+                    new TwingToken(TwingToken.EOF_TYPE, null, 1)
+                ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
+
+                Reflect.set(parser, 'stream', stream);
+
+                let expressionParser = new TwingExpressionParser(parser, env);
+
+                let originalWrite = process.stdout.write;
+
+                process.stdout.write = (chunk) => {
+                    process.stdout.write = originalWrite;
+
+                    test.same(chunk, testCase[2]);
+                };
+
+                expressionParser.parseFilterExpressionRaw(new TwingNodeExpressionConstant(1, 1), testCase[0]);
+            }
+
+            test.end();
+        });
 
         test.end();
     });

@@ -32,6 +32,8 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     constructor(optimizers: number = -1) {
         super();
 
+        this.TwingNodeVisitorInterfaceImpl = this;
+
         if (!isInteger(optimizers) || optimizers > (TwingNodeVisitorOptimizer.OPTIMIZE_FOR | TwingNodeVisitorOptimizer.OPTIMIZE_RAW_FILTER | TwingNodeVisitorOptimizer.OPTIMIZE_VAR_ACCESS)) {
             throw new Error(`Optimizer mode "${optimizers}" is not valid.`);
         }

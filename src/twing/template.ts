@@ -339,9 +339,9 @@ export abstract class TwingTemplate {
                 else {
                     e.setTemplateLine(line);
                 }
-
-                throw e;
             }
+
+            throw e;
         }
     }
 

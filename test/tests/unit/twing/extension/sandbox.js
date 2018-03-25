@@ -363,5 +363,24 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
+    test.test('isSandboxedGlobally', function(test) {
+        let extension = new TwingExtensionSandbox(null, true);
+
+        test.same(extension.isSandboxedGlobally(), true);
+
+        test.end();
+    });
+
+    test.test('setSecurityPolicy', function(test) {
+        let extension = new TwingExtensionSandbox(null, true);
+        let policy = new TwingSandboxSecurityPolicy();
+
+        extension.setSecurityPolicy(policy);
+
+        test.same(extension.getSecurityPolicy(), policy);
+
+        test.end();
+    });
+
     test.end();
 });

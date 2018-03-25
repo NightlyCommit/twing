@@ -34,7 +34,7 @@
     "test": "npm run fastest:all",
     "fastest:all": "tape 'test/tests/**/*.js' | tap-mocha-reporter spec",
     "fastest:integration": "tape 'test/tests/integration/*.js' | tap-mocha-reporter spec",
-    "fastest:unit": "tape 'test/tests/unit/**/*.js' | tap-mocha-reporter spec",
+    "fastest:unit": "tape 'test/tests/unit/**/chain.js' | tap-mocha-reporter spec",
     "benchmark": "node benchmark/index.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -58,7 +58,7 @@
     "isobject": "^3.0.1",
     "levenshtein": "^1.0.5",
     "locutus": "^2.0.9",
-    "luxon": "^0.5.0",
+    "luxon": "^1.0.0",
     "merge": "^1.2.0",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.14",
@@ -91,6 +91,6 @@
     "tap-mocha-reporter": "^3.0.6",
     "tape": "^4.9.0",
     "twig": "^1.10.5",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.1"
   }
 }

@@ -1,5 +1,3 @@
-import {TwingNodeInterface} from "./node-interface";
-
 import {TwingCompiler} from "./compiler";
 
 const var_export = require('locutus/php/var/var_export');
@@ -41,20 +39,12 @@ export enum TwingNodeType {
     TEXT = 'text'
 }
 
-export enum TwingNodeOutputType {
-    NONE = 'none',
-
-    CAPTURE = 'capture',
-    OUTPUT = 'output'
-}
-
-export class TwingNode implements TwingNodeInterface {
+export class TwingNode {
     protected nodes: Map<number | string, TwingNode>;
     protected attributes: Map<string, any>;
     protected lineno: number;
     protected tag: string;
     protected type: TwingNodeType;
-    protected outputType: TwingNodeOutputType = TwingNodeOutputType.NONE;
     private name: string = null;
 
     /**
@@ -137,10 +127,6 @@ export class TwingNode implements TwingNodeInterface {
         return this.type;
     }
 
-    getOutputType() {
-        return this.outputType;
-    }
-
     compile(compiler: TwingCompiler): any {
         for (let [k, node] of this.nodes) {
             node.compile(compiler);
@@ -221,14 +207,8 @@ export class TwingNode implements TwingNodeInterface {
         this.name = name;
 
         for (let [k, node] of this.nodes) {
-            try {
-                node.setTemplateName(name);
-            }
-            catch (e) {
-                throw e;
-            }
+            node.setTemplateName(name);
         }
-        ;
     }
 
     getTemplateName() {

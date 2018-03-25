@@ -8,6 +8,8 @@ import {TwingTemplate} from "../template";
 import {TwingMarkup} from "../markup";
 
 export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInterface {
+    TwingSandboxSecurityPolicyInterfaceImpl: TwingSandboxSecurityPolicyInterface;
+
     private allowedTags: Array<string>;
     private allowedFilters: Array<string>;
     private allowedMethods: Map<any, Array<string>>;
@@ -15,6 +17,7 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
     private allowedFunctions: Array<string>;
 
     constructor(allowedTags: Array<string> = [], allowedFilters: Array<string> = [], allowedMethods: Map<any, string> = new Map(), allowedProperties: Map<any, string> = new Map(), allowedFunctions: Array<string> = []) {
+        this.TwingSandboxSecurityPolicyInterfaceImpl = this;
         this.allowedTags = allowedTags;
         this.allowedFilters = allowedFilters;
         this.setAllowedMethods(allowedMethods);

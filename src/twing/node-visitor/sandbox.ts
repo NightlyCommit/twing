@@ -12,6 +12,12 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private filters: Map<string, TwingNode>;
     private functions: Map<string, TwingNode>;
 
+    constructor() {
+        super();
+
+        this.TwingNodeVisitorInterfaceImpl = this;
+    }
+
     doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = true;

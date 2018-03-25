@@ -22,9 +22,9 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
         result.set('E_NOTICE', 8);
         result.set('TwigTestFoo::BAR_NAME', 'bar');
-        result.set('Array', {
-            ARRAY_AS_PROPS: 2
-        });
+        result.set('Array', new Map([
+            ['ARRAY_AS_PROPS', 2]
+        ]));
 
         return result
     }

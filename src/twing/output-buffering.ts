@@ -1,9 +1,6 @@
 import {isNullOrUndefined} from "util";
 
 export class TwingOutputHandler {
-    static readonly OUTPUT_HANDLER_CLEANABLE = 0x0010;
-    static readonly OUTPUT_HANDLER_FLUSHABLE = 0x0020;
-    static readonly OUTPUT_HANDLER_REMOVABLE = 0x0040;
     static readonly OUTPUT_HANDLER_STDFLAGS = 0x0070;
 
     private content: string;
@@ -20,18 +17,6 @@ export class TwingOutputHandler {
 
     getContent() {
         return this.content;
-    }
-
-    getName(): string {
-        return this.name;
-    }
-
-    getLevel(): number {
-        return this.level;
-    }
-
-    getFlags(): number {
-        return this.flags;
     }
 
     write(value: string) {
@@ -88,23 +73,13 @@ export class TwingOutputBuffering {
         let active = TwingOutputBuffering.getActive();
 
         if (!active) {
-            console.warn('failed to flush buffer. No buffer to flush');
+            process.stdout.write('Failed to flush buffer: no buffer to flush.');
 
             return false;
         }
 
-        if (!(active.getFlags() & TwingOutputHandler.OUTPUT_HANDLER_FLUSHABLE)) {
-            console.warn(`failed to flush buffer of ${TwingOutputBuffering.getActive().getName()} (${TwingOutputBuffering.getActive().getLevel()})`);
-
-            return false;
-        }
-
-        let orphan = TwingOutputBuffering.getActive();
-
-        if (orphan) {
-            TwingOutputBuffering.handlers.pop();
-            TwingOutputBuffering.outputWrite(orphan.getContent());
-        }
+        TwingOutputBuffering.handlers.pop();
+        TwingOutputBuffering.outputWrite(active.getContent());
 
         active.write('');
 
@@ -139,16 +114,15 @@ export class TwingOutputBuffering {
      */
     static obEndFlush(): boolean {
         if (!TwingOutputBuffering.getActive()) {
-            console.warn('failed to delete and flush buffer. No buffer to delete or flush');
+            process.stdout.write('Failed to delete and flush buffer: no buffer to delete or flush.');
+
+            return false;
         }
 
-        if (TwingOutputBuffering.obFlush()) {
-            TwingOutputBuffering.handlers.pop();
+        TwingOutputBuffering.obFlush();
+        TwingOutputBuffering.handlers.pop();
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -192,13 +166,7 @@ export class TwingOutputBuffering {
         let active = TwingOutputBuffering.getActive();
 
         if (!active) {
-            console.warn('failed to clean buffer. No buffer to clean');
-
-            return false;
-        }
-
-        if (!(active.getFlags() & TwingOutputHandler.OUTPUT_HANDLER_CLEANABLE)) {
-            console.warn(`failed to clean buffer of ${active.getName()} (${active.getLevel()})`);
+            process.stdout.write('Failed to clean buffer: no buffer to clean.');
 
             return false;
         }
@@ -225,11 +193,9 @@ export class TwingOutputBuffering {
      */
     static obEndClean(): boolean {
         if (TwingOutputBuffering.obClean()) {
-            if (TwingOutputBuffering.getActive()) {
-                TwingOutputBuffering.handlers.pop();
+            TwingOutputBuffering.handlers.pop();
 
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -264,7 +230,7 @@ export class TwingOutputBuffering {
      * @returns {number}
      */
     static obGetLevel(): number {
-        return TwingOutputBuffering.handlers ? TwingOutputBuffering.handlers.length : 0;
+        return TwingOutputBuffering.handlers.length;
     }
 
     /**

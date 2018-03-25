@@ -13,6 +13,8 @@ const rtrim = require('locutus/php/strings/rtrim');
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderFilesystem implements TwingLoaderInterface {
+    TwingLoaderInterfaceImpl: TwingLoaderInterface;
+
     /** Identifier of the main namespace. */
     static MAIN_NAMESPACE = '__main__';
 
@@ -27,6 +29,8 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
      * @param {string} rootPath The root path common to all relative paths (null for process.cwd())
      */
     constructor(paths: string | Array<string> = [], rootPath: string = null) {
+        this.TwingLoaderInterfaceImpl = this;
+
         rootPath = (rootPath === null ? process.cwd() : rootPath);
 
         this.rootPath = nodePath.resolve(rootPath);

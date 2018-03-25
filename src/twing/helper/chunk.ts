@@ -12,7 +12,7 @@ export function chunk(thing: any, size: number, preserveKeys: boolean = false): 
             result.push(currentMap);
         }
 
-        currentMap.set(key, value);
+        currentMap.set(preserveKeys ? key : count, value);
 
         count++;
 

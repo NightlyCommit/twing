@@ -2,6 +2,8 @@ const TwingCacheFilesystem = require('../../../../../lib/twing/cache/filesystem'
 
 const tap = require('tap');
 const nodePath = require('path');
+const fs = require('fs-extra');
+const sinon = require('sinon');
 
 let fixturesPath = nodePath.resolve('test/tests/unit/twing/cache/fixtures');
 
@@ -20,6 +22,42 @@ tap.test('cache filesystem', function (test) {
 
             test.end();
         });
+
+        test.end();
+    });
+
+    test.test('write', function(test) {
+        let stub = sinon.stub(fs, 'writeFileSync');
+
+        stub.throws();
+
+        test.throws(function() {
+            cache.write('foo', null);
+        }, new Error('Failed to write cache file "foo".'));
+
+        stub.restore();
+
+        test.end();
+    });
+
+    test.test('getTimestamp', function(test) {
+        let stub = sinon.stub(fs, 'statSync');
+
+        stub.returns({
+            mtimeMs: 1
+        });
+
+        test.equals(cache.getTimestamp(__filename), 1);
+
+        stub.restore();
+
+        stub = sinon.stub(fs, 'pathExistsSync');
+
+        stub.returns(false);
+
+        test.false(cache.getTimestamp(__filename));
+
+        stub.restore();
 
         test.end();
     });

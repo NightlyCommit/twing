@@ -5,12 +5,11 @@ import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExpressionParser} from "./expression-parser";
 import {TwingErrorSyntax} from "./error/syntax";
-import {TwingNode, TwingNodeOutputType, TwingNodeType} from "./node";
+import {TwingNode, TwingNodeType} from "./node";
 import {TwingToken} from "./token";
 import {TwingNodeText} from "./node/text";
 import {TwingNodePrint} from "./node/print";
 import {TwingNodeExpression} from "./node/expression";
-
 import {TwingNodeBody} from "./node/body";
 import {TwingNodeModule} from "./node/module";
 import {TwingNodeTraverser} from "./node-traverser";
@@ -127,10 +126,6 @@ export class TwingParser {
             if (e instanceof TwingErrorSyntax) {
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.stream.getSourceContext());
-                }
-
-                if (!e.getTemplateLine()) {
-                    e.setTemplateLine(this.stream.getCurrent().getLine());
                 }
             }
 
@@ -388,7 +383,7 @@ export class TwingParser {
         let self = this;
 
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && (node.getOutputType() === TwingNodeOutputType.OUTPUT))) {
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl))) {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingErrorSyntax(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
@@ -403,11 +398,11 @@ export class TwingParser {
         }
 
         // bypass nodes that will "capture" the output
-        if (node.getOutputType() == TwingNodeOutputType.CAPTURE) {
+        if ((node as any).TwingNodeCaptureInterfaceImpl) {
             return node;
         }
 
-        if (node.getOutputType() == TwingNodeOutputType.OUTPUT) {
+        if ((node as any).TwingNodeOutputInterfaceImpl) {
             return null;
         }
 

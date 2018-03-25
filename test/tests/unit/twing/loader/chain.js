@@ -40,6 +40,33 @@ tap.test('loader chain', function (test) {
         test.equals(nodePath.resolve(loader.getSourceContext('errors/base.html').getPath()), nodePath.join(fixturesPath, 'errors/base.html'));
         test.notEquals(loader.getSourceContext('errors/base.html').getCode(), 'baz');
 
+        loader = new TwingLoaderArray({'foo': 'bar'});
+
+        let stub = sinon.stub(loader, 'getSourceContext').throws(new TwingErrorLoader('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.getSourceContext('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined (foo).'));
+
+        stub.restore();
+
+        loader = new TwingLoaderArray({'foo': 'bar'});
+        stub = sinon.stub(loader, 'getSourceContext').throws(new Error('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.getSourceContext('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined.'));
+
+        stub.restore();
+
         test.end();
     });
 
@@ -61,6 +88,31 @@ tap.test('loader chain', function (test) {
 
         test.equals(loader.getCacheKey('foo'), 'foo:bar');
         test.equals(loader.getCacheKey('bar'), 'bar:foo');
+
+        let stub = sinon.stub(loader, 'getCacheKey').throws(new TwingErrorLoader('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.getCacheKey('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined (TwingLoaderChain: foo).'));
+
+        stub.restore();
+
+        loader = new TwingLoaderArray({'foo': 'bar'});
+        stub = sinon.stub(loader, 'getCacheKey').throws(new Error('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.getCacheKey('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined.'));
+
+        stub.restore();
 
         test.end();
     });
@@ -104,6 +156,58 @@ tap.test('loader chain', function (test) {
 
         sinon.assert.calledOnce(loader2['exists']);
         sinon.assert.notCalled(loader2['getSourceContext']);
+
+        loader1 = new TwingLoaderArray({});
+        let loader1ExistsStub = sinon.stub(loader1, 'exists');
+
+        loader2 = new TwingLoaderArray({});
+        let loader2ExistsStub = sinon.stub(loader2, 'exists');
+
+        loader = new TwingLoaderChain([]);
+        loader.addLoader(loader1);
+        loader.addLoader(loader2);
+
+        test.false(loader.exists('missing'));
+        test.false(loader.exists('missing'));
+        test.equals(loader1ExistsStub.callCount, 1);
+        test.equals(loader2ExistsStub.callCount, 1);
+
+        test.end();
+    });
+
+    test.test('isFresh', function (test) {
+        let loader = new TwingLoaderChain([
+            new TwingLoaderArray({'foo': 'bar'}),
+            new TwingLoaderArray({'foo': 'foobar', 'bar': 'foo'}),
+        ]);
+
+        test.equals(loader.isFresh('foo', 0), true);
+        test.equals(loader.isFresh('bar', 0), true);
+
+        let stub = sinon.stub(loader, 'isFresh').throws(new TwingErrorLoader('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.isFresh('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined (TwingLoaderChain: foo).'));
+
+        stub.restore();
+
+        loader = new TwingLoaderArray({'foo': 'bar'});
+        stub = sinon.stub(loader, 'isFresh').throws(new Error('foo'));
+
+        loader = new TwingLoaderChain([
+            loader
+        ]);
+
+        test.throws(function() {
+            loader.isFresh('foo');
+        }, new TwingErrorLoader('Template "foo" is not defined.'));
+
+        stub.restore();
 
         test.end();
     });

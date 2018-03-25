@@ -3,12 +3,20 @@ import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
-import {TwingOperatorDefinitionInterface} from "./operator-definition-interface";
 import {TwingTest} from "./test";
 
+export type TwingOperator = {
+    precedence: number,
+    associativity?: string,
+    factory: Function,
+    callable?: Function;
+}
+
 export class TwingExtension implements TwingExtensionInterface {
-    getDefaultStrategy(name: string): string | Function {
-        return 'html';
+    TwingExtensionInterfaceImpl: TwingExtensionInterface;
+
+    constructor() {
+        this.TwingExtensionInterfaceImpl = this;
     }
 
     getTokenParsers(): Array<TwingTokenParserInterface> {
@@ -19,20 +27,19 @@ export class TwingExtension implements TwingExtensionInterface {
         return [];
     }
 
-    getFilters(): Array<TwingFilter> {
-        return [];
+    getFilters(): Map<string | number, TwingFilter> {
+        return new Map();
     }
 
     getTests(): Array<TwingTest> {
         return [];
     }
 
-    getFunctions(): Array<TwingFunction> {
-        return [];
+    getFunctions(): Map<string | number, TwingFunction> {
+        return new Map();
     }
 
-    getOperators(): [Map<string, TwingOperatorDefinitionInterface>, Map<string, TwingOperatorDefinitionInterface>] {
+    getOperators(): [Map<string, TwingOperator>, Map<string, TwingOperator>] {
         return [new Map(), new Map()];
     }
-
 }

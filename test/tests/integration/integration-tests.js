@@ -21,7 +21,7 @@ nh.hook('.html', function (source, filename) {
 });
 
 // gather fixtures
-let directory = path.resolve('test/tests/integration/fixtures');
+let directory = path.resolve('test/tests/integration/fixtures/');
 
 let files = finder.from(directory).findFiles('test.js');
 

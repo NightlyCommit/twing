@@ -12,6 +12,7 @@ const TwingSource = require('../../../../lib/twing/source').TwingSource;
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 
 const tap = require('tap');
+const sinon = require('sinon');
 
 let testEnv = new TwingEnvironment(null);
 
@@ -164,14 +165,14 @@ tap.test('parser', function (test) {
     });
 
     test.test('testParseIsReentrant', function (test) {
-        let twig = new TwingEnvironment(null, {
+        let twing = new TwingEnvironment(null, {
             autoescape: false,
             optimizations: 0
         });
 
-        twig.addTokenParser(new TestTokenParser());
+        twing.addTokenParser(new TestTokenParser());
 
-        let parser = new TwingParser(twig);
+        let parser = new TwingParser(twing);
 
         parser.parse(new TwingTokenStream([
             new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1),
@@ -189,7 +190,7 @@ tap.test('parser', function (test) {
     });
 
     test.test('testGetVarName', function (test) {
-        let twig = new TwingEnvironment(new TwingLoaderArray(new Map()), {
+        let twing = new TwingEnvironment(new TwingLoaderArray(new Map()), {
             autoescape: false,
             optimizations: 0
         });
@@ -198,7 +199,7 @@ tap.test('parser', function (test) {
         // If this test does not throw any exception, that's good.
         // see https://github.com/symfony/symfony/issues/4218
         try {
-            let ast = twig.parse(twig.tokenize(new TwingSource('{% from _self import foo %}\n\n{% macro foo() %}\n{{ foo }}\n{% endmacro %}', 'index')));
+            let ast = twing.parse(twing.tokenize(new TwingSource('{% from _self import foo %}\n\n{% macro foo() %}\n{{ foo }}\n{% endmacro %}', 'index')));
 
             test.ok(ast);
         }
@@ -210,14 +211,14 @@ tap.test('parser', function (test) {
     });
 
     test.test('should throw an error on missing tag name', function (test) {
-        let twig = new TwingEnvironment(null, {
+        let twing = new TwingEnvironment(null, {
             autoescape: false,
             optimizations: 0
         });
 
-        twig.addTokenParser(new TestTokenParser());
+        twing.addTokenParser(new TestTokenParser());
 
-        let parser = new TwingParser(twig);
+        let parser = new TwingParser(twing);
 
         test.throws(function () {
             parser.parse(new TwingTokenStream([
@@ -226,6 +227,83 @@ tap.test('parser', function (test) {
                 new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1)
             ]));
         }, new TwingErrorSyntax('A block must start with a tag name.', 1, new TwingSource('', '', '')));
+
+        test.end();
+    });
+
+    test.test('parse', function (test) {
+        let twing = new TwingEnvironment(null, {
+            autoescape: false,
+            optimizations: 0
+        });
+
+        let parser = new TwingParser(twing);
+
+        let stub = sinon.stub(parser, 'subparse');
+
+        stub.throws(new Error('foo'));
+
+        test.throws(function () {
+            parser.parse(new TwingTokenStream([]));
+        }, new Error('foo'));
+
+        stub.throws(new TwingErrorSyntax('foo.'));
+
+        test.throws(function () {
+            parser.parse(new TwingTokenStream([]));
+        }, new TwingErrorSyntax('foo.', -1, new TwingSource('', '')));
+
+        test.end();
+    });
+
+    test.test('subparse', function (test) {
+        let twing = new TwingEnvironment(null, {
+            autoescape: false,
+            optimizations: 0
+        });
+
+        let parser = new TwingParser(twing);
+
+        test.throws(function () {
+            parser.parse(new TwingTokenStream([
+                new TwingToken(TwingToken.BLOCK_START_TYPE, '{%', 1),
+                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1),
+                new TwingToken(TwingToken.BLOCK_END_TYPE, '{', 1)
+            ]), [false, () => {
+                return false;
+            }]);
+        }, new TwingErrorSyntax('Unexpected "foo" tag', 1, new TwingSource('', '')));
+
+        test.throws(function () {
+            parser.parse(new TwingTokenStream([
+                new TwingToken(-999, null, 1)
+            ]), ['foo', () => {
+                return false;
+            }]);
+        }, new TwingErrorSyntax('Lexer or parser ended up in unsupported state.', 1, new TwingSource('', '')));
+
+        test.end();
+    });
+
+    test.test('getImportedSymbol', function (test) {
+        let twing = new TwingEnvironment(null);
+        let parser = new TwingParser(twing);
+
+        Reflect.set(parser, 'importedSymbols', [new Map()]);
+        parser.addImportedSymbol('foo', null);
+
+        test.equals(parser.getImportedSymbol('foo', 'bar'), null);
+
+        test.end();
+    });
+
+    test.test('hasMacro', function (test) {
+        let twing = new TwingEnvironment(null);
+        let parser = new TwingParser(twing);
+
+        Reflect.set(parser, 'macros', new Map([['foo', 'bar']]));
+
+        test.true(parser.hasMacro('foo'));
 
         test.end();
     });
