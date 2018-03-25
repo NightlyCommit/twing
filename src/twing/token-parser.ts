@@ -9,6 +9,12 @@ import {TwingNode} from "./node";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export abstract class TwingTokenParser implements TwingTokenParserInterface {
+    TwingTokenParserInterfaceImpl: TwingTokenParserInterface;
+
+    constructor() {
+        this.TwingTokenParserInterfaceImpl = this;
+    }
+
     /**
      * @var TwingParser
      */

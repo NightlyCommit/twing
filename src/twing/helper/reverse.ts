@@ -9,11 +9,14 @@
 export function reverse(map: Map<any, any>, preserveKeys: boolean = false) {
     let result = new Map();
     let keys = [...map.keys()];
+    let index = 0;
 
     for (let i = (keys.length - 1); i >= 0; i--) {
         let key = keys[i];
 
-        result.set(key, map.get(key));
+        result.set(preserveKeys ? key : index, map.get(key));
+
+        index++;
     }
 
     return result;

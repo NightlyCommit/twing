@@ -26,4 +26,6 @@ export function compareToNull(value: any) {
     if (Array.isArray(value)) {
         return value.length < 1;
     }
+
+    return false;
 }

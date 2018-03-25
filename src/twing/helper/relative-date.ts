@@ -2,7 +2,7 @@ import {DateTime} from "luxon";
 
 export function relativeDate(date: string): DateTime {
     let result = null;
-    let regExp = /^([-|\+])([0-9]+?)(.*)/g;
+    let regExp = /^([-|\+])([0-9]+?)(\s*)([a-z]*)/g;
 
     let matches: RegExpExecArray = regExp.exec(date);
 
@@ -11,7 +11,7 @@ export function relativeDate(date: string): DateTime {
 
         let sign = matches[1];
         let count: number = parseInt(matches[2]);
-        let unit = matches[3];
+        let unit = matches[4];
 
         switch (unit) {
             case 'year':
@@ -31,10 +31,6 @@ export function relativeDate(date: string): DateTime {
                 break;
             case 'second':
                 unit = 'seconds';
-                break;
-            case 'microsecond':
-                unit = 'milliseconds';
-                count = count * 1000;
                 break;
         }
 

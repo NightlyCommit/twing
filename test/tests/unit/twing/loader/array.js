@@ -27,6 +27,11 @@ tap.test('loader array', function (test) {
         test.true(loader.exists('foo'));
         test.true(loader.exists('bar'));
 
+        loader = new TwingLoaderArray(1);
+
+        test.false(loader.exists('foo'));
+        test.false(loader.exists('bar'));
+
         test.end();
     });
 

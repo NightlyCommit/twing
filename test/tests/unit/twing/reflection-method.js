@@ -87,5 +87,21 @@ tap.test('reflection-method', function (test) {
         test.end();
     });
 
+    test.test('supports global function', function(test) {
+        let reflectionMethod = new TwingReflectionMethod('clearInterval', 'foo');
+
+        test.same(reflectionMethod.getParameters()[0].name, 'timer');
+
+        test.end();
+    });
+
+    test.test('handle unparsable method', function(test) {
+        test.throws(function() {
+            new TwingReflectionMethod(Math.abs, 'foo');
+        }, new Error('Method "function abs() { [native code] }" is not parsable (SyntaxError: Unexpected token, expected "," (1:25)).'));
+
+        test.end();
+    });
+
     test.end();
 });

@@ -8,7 +8,7 @@
  * │ -1      │ TRUE  │ FALSE │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE   │ FALSE │ FALSE │
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export function compareNumber(firstOperand: number, secondOperand: any): boolean {
+export function compareToNumber(firstOperand: number, secondOperand: any): boolean {
     if (typeof secondOperand === 'number') {
         return firstOperand === secondOperand;
     }

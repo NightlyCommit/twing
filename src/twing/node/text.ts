@@ -1,13 +1,16 @@
-import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
-
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeOutputInterface} from "../node-output-interface";
 
-export class TwingNodeText extends TwingNode {
+export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface {
+    TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
+
     constructor(data: string, line: number) {
         super(new Map(), new Map([['data', data]]), line);
 
         this.type = TwingNodeType.TEXT;
-        this.outputType = TwingNodeOutputType.OUTPUT;
+
+        this.TwingNodeOutputInterfaceImpl = this;
     }
 
     compile(compiler: TwingCompiler) {

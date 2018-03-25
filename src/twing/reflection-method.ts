@@ -7,7 +7,7 @@ export class TwingReflectionMethod {
     private parameters: Array<TwingReflectionParameter>;
     private callable: Function;
 
-    constructor(callable: Function, name: string) {
+    constructor(callable: Function | string, name: string) {
         this.name = name;
 
         let parser = parseFunction();
@@ -16,7 +16,7 @@ export class TwingReflectionMethod {
             callable = Reflect.get(global, callable as string);
         }
 
-        this.callable = callable;
+        this.callable = callable as Function;
 
         try {
             let functionDefinition = parser.parse(this.callable);
@@ -49,7 +49,7 @@ export class TwingReflectionMethod {
             }
         }
         catch (e) {
-            throw new Error(`Method "${callable}" is not parsable ${e}.`);
+            throw new Error(`Method "${callable}" is not parsable (${e}).`);
         }
     }
 
@@ -63,9 +63,5 @@ export class TwingReflectionMethod {
 
     isStatic() {
         return false;
-    }
-
-    invokeArgs(scope: any, ...args: Array<any>): any {
-        return this.callable.apply(scope, args);
     }
 }

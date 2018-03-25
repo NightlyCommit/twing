@@ -1,21 +1,15 @@
-import {iteratorToMap} from './iterator-to-map';
-import {asort} from "./asort";
-import {first} from "./first";
+import {iteratorToArray} from "./iterator-to-array";
 
-export function max(...things: Array<any>) {
+export function max(...things: any[]) {
     if (things.length === 1) {
         things = things[0];
     }
 
-    if (typeof things === 'object') {
-        let iterable = iteratorToMap(things);
+    let array = iteratorToArray(things);
 
-        asort(iterable, (a: any, b: any) => {
-            return a < b ? 1 : 0;
-        });
+    array.sort((a: any, b: any) => {
+        return a < b ? 1 : 0;
+    });
 
-        return first(iterable);
-    }
-
-    return Math.max(things);
+    return array[0];
 }

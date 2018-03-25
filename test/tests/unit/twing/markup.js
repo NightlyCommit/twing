@@ -7,7 +7,6 @@ tap.test('TwingMarkup', function (test) {
         let markup = new TwingMarkup('foo', 'bar');
 
         test.same(markup.toString(), 'foo');
-        test.same(markup.TwingIsSafe, true);
 
         test.end();
     });

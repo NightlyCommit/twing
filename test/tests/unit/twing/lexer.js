@@ -342,5 +342,73 @@ tap.test('lexer', function (test) {
         test.end();
     });
 
+    test.test('lexExpression', function (test) {
+        test.test('punctuation', function (test) {
+            let lexer = createLexer();
+            let data = '{{ foo) }}';
+            let source = new TwingSource(data, 'index');
+
+            test.throws(function () {
+                lexer.tokenize(source);
+            }, new TwingErrorSyntax('Unexpected ")".', 1, source));
+
+
+            data = '{{ foo( }}';
+            source = new TwingSource(data, 'index');
+
+            test.throws(function () {
+                lexer.tokenize(source);
+            }, new TwingErrorSyntax('Unclosed ")".', 1, source));
+
+            test.end();
+        });
+
+        test.test('unlexable', function (test) {
+            let lexer = createLexer();
+            let data = '{{ ^ }}';
+            let source = new TwingSource(data, 'index');
+
+            test.throws(function () {
+                lexer.tokenize(source);
+            }, new TwingErrorSyntax('Unexpected character "^ }}" in "{{ ^ }}".', 1, source));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('lexRawData', function (test) {
+        test.test('unclosed verbatim', function (test) {
+            let lexer = createLexer();
+            let data = '{% verbatim %}';
+            let source = new TwingSource(data, 'index');
+
+            test.throws(function () {
+                lexer.tokenize(source);
+            }, new TwingErrorSyntax('Unexpected end of file: Unclosed "verbatim" block.', 1, source));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('lexComment', function (test) {
+        test.test('unclosed comment', function (test) {
+            let lexer = createLexer();
+            let data = '{#';
+            let source = new TwingSource(data, 'index');
+
+            test.throws(function () {
+                lexer.tokenize(source);
+            }, new TwingErrorSyntax('Unclosed comment.', 1, source));
+
+            test.end();
+        });
+
+        test.end();
+    });
+
     test.end();
 });

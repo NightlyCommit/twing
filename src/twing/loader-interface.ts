@@ -1,6 +1,10 @@
+/* istanbul ignore next */
+
 import {TwingSource} from "./source";
 
 export interface TwingLoaderInterface {
+    TwingLoaderInterfaceImpl: TwingLoaderInterface;
+
     /**
      * Returns the source context for a given template logical name.
      *

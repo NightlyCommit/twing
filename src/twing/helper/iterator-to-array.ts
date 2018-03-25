@@ -23,7 +23,7 @@ export function iteratorToArray(value: any, useKeys: boolean = false): Array<any
                 result.push(next.value);
             }
         }
-        else if (typeof value === 'object') {
+        else {
             for (let k in value) {
                 result.push(value[k]);
             }

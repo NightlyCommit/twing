@@ -11,7 +11,8 @@ let tmp = require('tmp');
  * @author Andrew Tch <andrew@noop.lv>
  */
 export class TwingCacheFilesystem implements TwingCacheInterface {
-    public implementsTwingCacheInterface: boolean = true;
+    TwingCacheInterfaceImpl: TwingCacheInterface;
+
     private directory: string;
     private options: number;
 
@@ -22,6 +23,7 @@ export class TwingCacheFilesystem implements TwingCacheInterface {
     constructor(directory: string, options: number = 0) {
         this.directory = directory;
         this.options = options;
+        this.TwingCacheInterfaceImpl = this;
     }
 
     generateKey(name: string, className: string) {

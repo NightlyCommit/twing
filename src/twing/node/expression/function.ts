@@ -31,10 +31,6 @@ export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
 
         let callable = function_.getCallable();
 
-        if (name === 'constant' && this.getAttribute('is_defined_test')) {
-            //callable = 'twig_constant_is_defined';
-        }
-
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', function_.isVariadic());
 

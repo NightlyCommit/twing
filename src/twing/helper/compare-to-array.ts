@@ -9,7 +9,7 @@ import {compare} from './compare';
  * │ ["php"] │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ TRUE    │ FALSE │ FALSE |
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export function compareArray(firstOperand: Array<any>, secondOperand: any): boolean {
+export function compareToArray(firstOperand: Array<any>, secondOperand: any): boolean {
     if (firstOperand.length < 1) {
         return (secondOperand === false || secondOperand === null || (Array.isArray(secondOperand) && secondOperand.length < 1));
     }

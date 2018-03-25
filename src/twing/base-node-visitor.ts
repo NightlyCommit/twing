@@ -3,6 +3,8 @@ import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 
 export abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
+    TwingNodeVisitorInterfaceImpl: TwingNodeVisitorInterface;
+
     abstract getPriority(): number;
 
     /**

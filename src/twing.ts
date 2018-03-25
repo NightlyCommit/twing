@@ -1,6 +1,5 @@
 import {abs} from "./twing/helper/abs";
 import {count} from "./twing/helper/count";
-import {defined} from "./twing/helper/defined";
 import {each} from "./twing/helper/each";
 import {formatDuration} from "./twing/helper/format-duration";
 import {formatDateTime} from "./twing/helper/format-date-time";
@@ -18,9 +17,9 @@ import {relativeDate} from "./twing/helper/relative-date";
 import {TwingBaseNodeVisitor} from "./twing/base-node-visitor";
 import {TwingCacheFilesystem} from "./twing/cache/filesystem";
 import {TwingCacheNull} from "./twing/cache/null";
-import {compareArray} from "./twing/helper/compare-to-array";
-import {compareNumber} from "./twing/helper/compare-to-number";
-import {compareString} from "./twing/helper/compare-to-string";
+import {compareToArray} from "./twing/helper/compare-to-array";
+import {compareToNumber} from "./twing/helper/compare-to-number";
+import {compareToString} from "./twing/helper/compare-to-string";
 import {compareToBoolean} from "./twing/helper/compare-to-boolean";
 import {compareToDateTime} from "./twing/helper/compare-to-date-time";
 import {compareToNull} from "./twing/helper/compare-to-null";
@@ -195,14 +194,13 @@ let Twing = {
     chunk: chunk,
     clone: clone,
     compare: compare,
-    compareArray: compareArray,
-    compareNumber: compareNumber,
-    compareString: compareString,
+    compareToArray: compareToArray,
+    compareToNumber: compareToNumber,
+    compareToString: compareToString,
     compareToBoolean: compareToBoolean,
     compareToDateTime: compareToDateTime,
     compareToNull: compareToNull,
     count: count,
-    defined: defined,
     each: each,
     fill: fill,
     first: first,

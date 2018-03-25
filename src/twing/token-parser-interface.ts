@@ -1,3 +1,5 @@
+/* istanbul ignore next */
+
 import {TwingParser} from "./parser";
 import {TwingToken} from "./token";
 import {TwingNode} from "./node";
@@ -8,6 +10,8 @@ import {TwingNode} from "./node";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export interface TwingTokenParserInterface {
+    TwingTokenParserInterfaceImpl: TwingTokenParserInterface;
+
     /**
      * Sets the parser associated with this token parser.
      */

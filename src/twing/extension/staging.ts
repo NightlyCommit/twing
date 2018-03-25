@@ -6,19 +6,42 @@ import {TwingTest} from "../test";
 import {TwingNodeVisitorInterface} from "../node-visitor-interface";
 
 export class TwingExtensionStaging extends TwingExtension {
-    private functions: Array<TwingFunction> = [];
-    private filters: Array<TwingFilter> = [];
+    private functions: Map<string, TwingFunction> = new Map();
+    private filters: Map<string, TwingFilter> = new Map();
     private visitors: Array<TwingNodeVisitorInterface> = [];
     private tokenParsers: Map<string, TwingTokenParserInterface> = new Map();
     private tests: Array<TwingTest> = [];
 
-    // todo: staging extension is conceptually wrong in TwigPHP: it considers this.functions as a hash while other extensions consider it as an array
     addFunction(twingFunction: TwingFunction) {
-        this.functions.push(twingFunction);
+        if (this.functions.has(twingFunction.getName())) {
+            throw new Error(`Function "${twingFunction.getName()}" is already registered.`);
+        }
+
+        this.functions.set(twingFunction.getName(), twingFunction);
     }
 
     getFunctions() {
         return this.functions;
+    }
+
+    addFilter(filter: TwingFilter) {
+       if (this.filters.has(filter.getName())) {
+           throw new Error(`Filter "${filter.getName()}" is already registered.`);
+       }
+
+       this.filters.set(filter.getName(), filter);
+    }
+
+    getFilters() {
+        return this.filters;
+    }
+
+    addNodeVisitor(visitor: TwingNodeVisitorInterface) {
+        this.visitors.push(visitor);
+    }
+
+    getNodeVisitors() {
+        return this.visitors;
     }
 
     addTokenParser(parser: TwingTokenParserInterface) {
@@ -31,18 +54,6 @@ export class TwingExtensionStaging extends TwingExtension {
 
     getTokenParsers(): Array<TwingTokenParserInterface> {
         return Array.from(this.tokenParsers.values());
-    }
-
-    addFilter(filter: TwingFilter) {
-        this.filters.push(filter);
-    }
-
-    getFilters() {
-        return this.filters;
-    }
-
-    addNodeVisitor(visitor: TwingNodeVisitorInterface) {
-        this.visitors.push(visitor);
     }
 
     addTest(test: TwingTest) {

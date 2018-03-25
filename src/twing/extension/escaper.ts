@@ -29,11 +29,11 @@ export class TwingExtensionEscaper extends TwingExtension {
     }
 
     getFilters() {
-        return [
-            new TwingFilter('raw', twingRawFilter, {
+        return new Map([
+            [0, new TwingFilter('raw', twingRawFilter, {
                 is_safe: ['all']
-            }),
-        ];
+            })],
+        ]);
     }
 
     /**
