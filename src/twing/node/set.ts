@@ -65,6 +65,8 @@ export class TwingNodeSet extends TwingNode {
         else {
             if (this.getAttribute('capture')) {
                 compiler
+                    .write('(() => {\n')
+                    .indent()
                     .write('let tmp;\n')
                     .write("Twing.obStart();\n")
                     .subcompile(this.getNode('values'))
@@ -72,7 +74,11 @@ export class TwingNodeSet extends TwingNode {
             }
             else {
                 if (this.getAttribute('safe')) {
-                    compiler.write('let tmp;\n');
+                    compiler
+                        .write('(() => {\n')
+                        .indent()
+                        .write('let tmp;\n')
+                    ;
                 }
             }
 
@@ -83,16 +89,22 @@ export class TwingNodeSet extends TwingNode {
             ;
 
             if (this.getAttribute('capture')) {
-                compiler.raw("((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));");
+                compiler
+                    .raw("((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));\n")
+                    .outdent()
+                    .write('})();')
+                ;
             }
         }
 
         if (!this.getAttribute('capture')) {
             if (this.getAttribute('safe')) {
                 compiler
-                    .write("((tmp = ")
+                    .raw("((tmp = ")
                     .subcompile(this.getNode('values'))
-                    .raw(") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));")
+                    .raw(") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));\n")
+                    .outdent()
+                    .write('})();')
                 ;
             }
             else if (this.getNode('names').getNodes().size === 1) {

@@ -75,10 +75,12 @@ context.set("foo", "foo");
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-let tmp;
-Twing.obStart();
-Twing.echo("foo");
-context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+(() => {
+    let tmp;
+    Twing.obStart();
+    Twing.echo("foo");
+    context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+})();
 `);
 
             test.end();
@@ -95,8 +97,10 @@ context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMar
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1
-let tmp;
-context.set("foo", ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+(() => {
+    let tmp;
+    context.set("foo", ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+})();
 `);
 
             test.end();
