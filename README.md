@@ -1,5 +1,5 @@
 # Twing
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage percentage][coveralls-image]][coveralls-url]
 
 First-class Twig engine for Node.js
 
@@ -64,7 +64,5 @@ Copyright © 2018 [Eric MORAND](https://github.com/ericmorand). Released under t
 [npm-url]: https://npmjs.org/package/twing
 [travis-image]: https://travis-ci.org/ericmorand/twing.svg?branch=master&v=0.10.3
 [travis-url]: https://travis-ci.org/ericmorand/twing
-[daviddm-image]: https://david-dm.org/ericmorand/twing.svg?theme=shields.io&v=0.10.3
-[daviddm-url]: https://david-dm.org/ericmorand/twing
 [coveralls-image]: https://coveralls.io/repos/github/ericmorand/twing/badge.svg?v=0.10.3
 [coveralls-url]: https://coveralls.io/github/ericmorand/twing
