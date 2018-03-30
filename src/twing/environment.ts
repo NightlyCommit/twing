@@ -34,8 +34,8 @@ import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
 
 const merge = require('merge');
-const hash = require('sha.js');
 const path = require('path');
+const crypto = require('crypto');
 
 /**
  *  * Available options:
@@ -296,7 +296,7 @@ export class TwingEnvironment {
     getTemplateClass(name: string, index: number = null) {
         let key = this.getLoader().getCacheKey(name) + this.optionsHash;
 
-        return this.templateClassPrefix + hash('sha256').update(key).digest('hex') + (index === null ? '' : '_' + index);
+        return this.templateClassPrefix + crypto.createHash('sha256').update(key).digest('hex') + (index === null ? '' : '_' + index);
     }
 
     /**
@@ -462,7 +462,7 @@ export class TwingEnvironment {
      */
     createTemplate(template: string) {
         let result: TwingTemplate;
-        let name = `__string_template__${hash('sha256').update(template).digest('hex')}`;
+        let name = `__string_template__${crypto.createHash('sha256').update(template).digest('hex')}`;
         let current = this.getLoader();
 
         let loader = new TwingLoaderChain([
