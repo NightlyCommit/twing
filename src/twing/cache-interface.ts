@@ -1,5 +1,7 @@
+/* istanbul ignore next */
+
 export interface TwingCacheInterface {
-    implementsTwingCacheInterface: boolean,
+    TwingCacheInterfaceImpl: TwingCacheInterface,
 
     /**
      * Generates a cache key for the given template class name.

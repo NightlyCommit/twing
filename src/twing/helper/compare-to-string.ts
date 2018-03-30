@@ -10,7 +10,7 @@
  * │ "php"   │ TRUE  │ FALSE │ FALSE │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE   │ TRUE  │ FALSE │
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-export function compareString(firstOperand: string, secondOperand: any): boolean {
+export function compareToString(firstOperand: string, secondOperand: any): boolean {
     if (typeof secondOperand === 'string') {
         return firstOperand === secondOperand;
     }
@@ -19,9 +19,8 @@ export function compareString(firstOperand: string, secondOperand: any): boolean
         if (firstOperand.length < 1 || firstOperand === '0') {
             return !secondOperand;
         }
-        else if (firstOperand.length > 0) {
-            return secondOperand;
-        }
+
+        return secondOperand;
     }
 
     if (secondOperand === null) {

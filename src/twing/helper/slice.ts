@@ -18,14 +18,14 @@ export function slice(map: Map<any, any>, start: number, length: number, preserv
             // see http://php.net/manual/en/function.array-slice.php
             if (isNumber(key)) {
                 newKey = preserveKeys ? key : keyIndex;
+
+                keyIndex++;
             }
             else {
                 newKey = key;
             }
 
             result.set(newKey, value);
-
-            keyIndex++;
         }
 
         if (index >= start + length) {

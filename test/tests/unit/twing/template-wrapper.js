@@ -2,6 +2,8 @@ const TwingEnvironment = require('../../../../lib/twing/environment').TwingEnvir
 const TwingLoaderArray = require('../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingTemplateWrapper = require('../../../../lib/twing/template-wrapper').TwingTemplateWrapper;
 const TwingOutputBuffering = require('../../../../lib/twing/output-buffering').TwingOutputBuffering;
+const TwingErrorRuntime = require('../../../../lib/twing/error/runtime').TwingErrorRuntime;
+const TwingSource = require('../../../../lib/twing/source').TwingSource;
 
 const tap = require('tap');
 const path = require('path');
@@ -40,13 +42,32 @@ tap.test('template wrapper', function (test) {
 
     test.test('renderBlock', function (test) {
         let twing = new TwingEnvironment(new TwingLoaderArray({
-            'index': '{% block foo %}{{ foo }}{{ bar }}{% endblock %}'
+            'index': '{% block foo %}{{ foo }}{{ bar }}{% endblock %}',
+            'invalid': '{% block foo %}{{ foo.bar }}{% endblock %}'
         }));
         twing.addGlobal('bar', 'BAR');
 
         let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
 
         test.same(wrapper.renderBlock('foo', {foo: 'FOO'}), 'FOOBAR');
+        test.same(wrapper.renderBlock('foo'), 'BAR');
+        test.same(wrapper.renderBlock('foo', new Map([['foo', 'FOO']])), 'FOOBAR');
+
+        try {
+            let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('invalid'));
+
+            wrapper.renderBlock('foo', {
+                foo: {
+                    bar: () => {
+                        throw new Error('foo.bar')
+                    }
+                }
+            });
+        }
+        catch (e) {
+            test.same(TwingOutputBuffering.obGetLevel(), 0);
+            test.same(e, new TwingErrorRuntime('An exception has been thrown during the rendering of a template ("foo.bar").', 1, new TwingSource('', 'invalid', ''), new Error('foo.bar')));
+        }
 
         test.end();
     });
@@ -60,9 +81,35 @@ tap.test('template wrapper', function (test) {
         let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
 
         TwingOutputBuffering.obStart();
-        wrapper.displayBlock('foo', {foo: 'FOO'})
+        wrapper.displayBlock('foo', {foo: 'FOO'});
+        wrapper.displayBlock('foo');
 
-        test.same(TwingOutputBuffering.obGetClean(), 'FOOBAR');
+        test.same(TwingOutputBuffering.obGetClean(), 'FOOBARBAR');
+
+        test.end();
+    });
+
+    test.test('render', function (test) {
+        let twing = new TwingEnvironment(new TwingLoaderArray({
+            'index': '{{ foo }}BAR'
+        }));
+
+        let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
+
+        test.same(wrapper.render({foo: 'FOO'}), 'FOOBAR');
+        test.same(wrapper.render(), 'BAR');
+
+        test.end();
+    });
+
+    test.test('getSourceContext', function (test) {
+        let twing = new TwingEnvironment(new TwingLoaderArray({
+            'index': '{{ foo }}BAR'
+        }));
+
+        let wrapper = new TwingTemplateWrapper(twing, twing.loadTemplate('index'));
+
+        test.same(wrapper.getSourceContext(), new TwingSource('', 'index'));
 
         test.end();
     });

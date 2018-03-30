@@ -10,14 +10,13 @@ tap.test('Twing library', function (test) {
         chunk: './twing/helper/chunk',
         clone: './twing/helper/clone',
         compare: './twing/helper/compare',
-        compareArray: './twing/helper/compare-to-array',
-        compareNumber: './twing/helper/compare-to-number',
-        compareString: './twing/helper/compare-to-string',
+        compareToArray: './twing/helper/compare-to-array',
+        compareToNumber: './twing/helper/compare-to-number',
+        compareToString: './twing/helper/compare-to-string',
         compareToBoolean: './twing/helper/compare-to-boolean',
         compareToDateTime: './twing/helper/compare-to-date-time',
         compareToNull: './twing/helper/compare-to-null',
         count: './twing/helper/count',
-        defined: './twing/helper/defined',
         each: './twing/helper/each',
         fill: './twing/helper/fill',
         first: './twing/helper/first',
@@ -203,7 +202,12 @@ tap.test('Twing library', function (test) {
 
         let exportedSymbol = require(path.resolve('lib', fileName))[key];
 
-        test.same(exportedSymbol, Twing[key], `${key} is exported`);
+        try {
+            test.same(exportedSymbol.toString(), Twing[key].toString(), `${key} is exported`);
+        }
+        catch (e) {
+            console.warn(key);
+        }
     }
 
     for (let key in Twing) {

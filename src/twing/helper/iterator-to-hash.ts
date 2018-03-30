@@ -10,7 +10,7 @@ export function iteratorToHash(value: any) {
 
         return result;
     }
-    else if (typeof value === 'object') {
+    else {
         result = value;
     }
 

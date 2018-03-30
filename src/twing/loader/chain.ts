@@ -10,6 +10,8 @@ import {TwingSource} from "../source";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderChain implements TwingLoaderInterface {
+    TwingLoaderInterfaceImpl: TwingLoaderInterface;
+
     private hasSourceCache: Map<string, boolean> = new Map();
     private loaders: Array<TwingLoaderInterface> = [];
 
@@ -17,6 +19,8 @@ export class TwingLoaderChain implements TwingLoaderInterface {
      * @param {Array<TwingLoaderInterface>} loaders
      */
     constructor(loaders: Array<TwingLoaderInterface> = []) {
+        this.TwingLoaderInterfaceImpl = this;
+
         for (let loader of loaders) {
             this.addLoader(loader);
         }

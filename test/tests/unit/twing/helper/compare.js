@@ -1,6 +1,7 @@
 const twingCompare = require('../../../../../lib/twing/helper/compare').compare;
 
 const tap = require('tap');
+const luxon = require('luxon');
 
 let booleanTrue = ['true', true];
 let booleanFalse = ['false', false];
@@ -164,7 +165,7 @@ tap.test('compare', function (test) {
             [[stringEmpty, primitiveNull], true],
             [[stringEmpty, arrayEmpty], false],
             [[stringEmpty, stringFilled], false],
-            [[stringEmpty, stringEmpty], true]
+            [[stringEmpty, stringEmpty], true],
         ]);
 
         for (let [operands, result] of rules) {

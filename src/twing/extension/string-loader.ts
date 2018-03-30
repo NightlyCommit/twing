@@ -5,9 +5,9 @@ import {TwingTemplate} from "../template";
 
 export class TwingExtensionStringLoader extends TwingExtension {
     getFunctions() {
-        return [
-            new TwingFunction('template_from_string', twingTemplateFromString, {needs_environment: true}),
-        ];
+        return new Map([
+            [0, new TwingFunction('template_from_string', twingTemplateFromString, {needs_environment: true})],
+        ]);
     }
 }
 

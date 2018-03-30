@@ -5,14 +5,11 @@ const locutusVarDump = require('locutus/php/var/var_dump');
 
 export function varDump(thing: any): string {
     let result: string;
-    let consoleLog = console ? console.log : null;
+    let consoleLog = console.log;
 
-    if (consoleLog) {
-        console.log = function () {
-            // no-op to prevent varDump to log to the console
-            // todo: find a cleaner way
-        };
-    }
+    console.log = () => {
+        // no-op to prevent varDump to log to the console
+    };
 
     let thingToDump: any;
 
@@ -25,9 +22,7 @@ export function varDump(thing: any): string {
 
     result = locutusVarDump(thingToDump);
 
-    if (consoleLog) {
-        console.log = consoleLog;
-    }
+    console.log = consoleLog;
 
     return result;
 }

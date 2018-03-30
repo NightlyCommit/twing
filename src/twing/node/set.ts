@@ -1,9 +1,11 @@
-import {TwingNode, TwingNodeOutputType, TwingNodeType} from "../node";
-
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
 import {TwingNodeExpressionConstant} from "./expression/constant";
+import {TwingNodeCaptureInterface} from "../node-capture-interface";
 
-export class TwingNodeSet extends TwingNode {
+export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface {
+    TwingNodeCaptureInterfaceImpl: TwingNodeCaptureInterface;
+
     constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
         let nodes = new Map();
 
@@ -18,7 +20,8 @@ export class TwingNodeSet extends TwingNode {
         super(nodes, attributes, lineno, tag);
 
         this.type = TwingNodeType.SET;
-        this.outputType = TwingNodeOutputType.CAPTURE;
+
+        this.TwingNodeCaptureInterfaceImpl = this;
 
         /*
          * Optimizes the node when capture is used for a large block of text.

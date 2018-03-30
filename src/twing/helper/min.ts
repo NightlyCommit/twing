@@ -1,19 +1,13 @@
-import {iteratorToMap} from './iterator-to-map';
-import {asort} from "./asort";
-import {first} from "./first";
+import {iteratorToArray} from "./iterator-to-array";
 
 export function min(...things: Array<any>) {
     if (things.length === 1) {
         things = things[0];
     }
 
-    if (typeof things === 'object') {
-        let iterable = iteratorToMap(things);
+    let array = iteratorToArray(things);
 
-        asort(iterable);
+    array.sort();
 
-        return first(iterable);
-    }
-
-    return Math.min(things);
+    return array[0];
 }

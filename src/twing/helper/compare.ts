@@ -10,9 +10,9 @@
  * @see https://stackoverflow.com/questions/47969711/php-algorithm-loose-equality-comparison
  */
 import {DateTime} from "luxon";
-import {compareArray as compareToArray} from './compare-to-array';
-import {compareString as compareToString} from './compare-to-string';
-import {compareNumber as compareToNumber} from './compare-to-number';
+import {compareToArray as compareToArray} from './compare-to-array';
+import {compareToString as compareToString} from './compare-to-string';
+import {compareToNumber as compareToNumber} from './compare-to-number';
 import {compareToBoolean as compareToBoolean} from './compare-to-boolean';
 import {compareToDateTime as compareToDateTime} from './compare-to-date-time';
 import {compareToNull as compareToNull} from './compare-to-null';
@@ -39,14 +39,8 @@ export function compare(firstOperand: any, secondOperand: any): boolean {
     }
 
     // date
-    // todo: implement date support on other type comparators
-    if (firstOperand instanceof DateTime || secondOperand instanceof DateTime) {
-        if (firstOperand instanceof DateTime) {
-            return compareToDateTime(firstOperand, secondOperand);
-        }
-        else {
-            return compareToDateTime(secondOperand, firstOperand);
-        }
+    if (firstOperand instanceof DateTime) {
+        return compareToDateTime(firstOperand, secondOperand);
     }
 
     // null

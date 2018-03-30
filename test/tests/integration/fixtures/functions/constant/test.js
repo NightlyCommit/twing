@@ -23,9 +23,9 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         let result = new Map();
 
         result.set(DATE_W3C, DATE_W3C);
-        result.set('Map', {
-            ARRAY_AS_PROPS: 2
-        });
+        result.set('Map', new Map([
+            ['ARRAY_AS_PROPS', 2]
+        ]));
 
         return result;
     }

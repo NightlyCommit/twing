@@ -1,9 +1,8 @@
 /**
- * Twig_NodeTraverser is a node traverser.
+ * TwingNodeTraverser is a node traverser.
  *
  * It visits all nodes and their children and calls the given visitor for each.
  *
- * @author Fabien Potencier <fabien@symfony.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingEnvironment} from "./environment";
@@ -63,7 +62,7 @@ export class TwingNodeTraverser {
     traverseForVisitor(visitor: TwingNodeVisitorInterface, node: TwingNode): TwingNode {
         let self = this;
 
-        node = visitor.enterNode(node, this.env);
+        node = visitor.TwingNodeVisitorInterfaceImpl.enterNode(node, this.env);
 
         for (let [k, n] of node.getNodes()) {
             if (n = self.traverseForVisitor(visitor, n)) {
@@ -74,6 +73,6 @@ export class TwingNodeTraverser {
             }
         }
 
-        return visitor.leaveNode(node, this.env);
+        return visitor.TwingNodeVisitorInterfaceImpl.leaveNode(node, this.env);
     }
 }

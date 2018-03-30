@@ -9,9 +9,13 @@ import {TwingErrorLoader} from "../error/loader";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderArray implements TwingLoaderInterface {
+    TwingLoaderInterfaceImpl: TwingLoaderInterface;
+
     private templates: Map<string, string>;
 
     constructor(templates: any) {
+        this.TwingLoaderInterfaceImpl = this;
+
         let map = new Map();
 
         if (Array.isArray(templates)) {
