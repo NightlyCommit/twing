@@ -67,7 +67,6 @@
     "parse-function": "^5.2.3",
     "regex-parser": "^2.2.8",
     "runes": "^0.4.3",
-    "sha.js": "^2.4.10",
     "snake-case": "^2.1.0",
     "stack-trace": "0.0.10",
     "tmp": "0.0.33",
