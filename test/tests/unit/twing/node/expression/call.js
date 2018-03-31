@@ -1,9 +1,13 @@
 const TwingNodeExpressionCall = require('../../../../../../lib/twing/node/expression/call').TwingNodeExpressionCall;
 const TwingNode = require('../../../../../../lib/twing/node').TwingNode;
-
+const TwingCompiler = require('../../../../../../lib/twing/compiler').TwingCompiler;
+const TwingEnvironment = require('../../../../../../lib/twing/environment').TwingEnvironment;
+const TwingLoaderArray = require('../../../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingErrorSyntax = require('../../../../../../lib/twing/error/syntax').TwingErrorSyntax;
+const TwingExtension = require('../../../../../../lib/twing/extension').TwingExtension;
 
 const tap = require('tap');
+const sinon = require('sinon');
 
 class TwingTestsNodeExpressionCall extends TwingNodeExpressionCall {
     getArguments(callable = null, argumentsNode) {
@@ -41,6 +45,14 @@ class CallableTestClass {
     }
 }
 
+class Callable extends TwingNodeExpressionCall {
+    compile(compiler) {
+        this.setAttribute('type', 'function');
+
+        this.compileCallable(compiler);
+    }
+}
+
 tap.test('node/expression/call', function (test) {
     test.test('getArguments', function (test) {
         let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
@@ -52,6 +64,24 @@ tap.test('node/expression/call', function (test) {
             getArguments(node, [date, new Map([['format', 'Y-m-d'], ['timestamp', null]])]),
             ['Y-m-d', null]
         );
+
+        test.test('with null callable', function (test) {
+            node = new TwingTestsNodeExpressionCall(new Map(), new Map([
+                ['type', 'function'],
+                ['name', 'date'],
+                ['is_variadic', true]
+            ]));
+
+            test.throws(function () {
+                getArguments(node, [null, new Map([[0, 'bar']])]);
+            }, new Error('Arbitrary positional arguments are not supported for function "date".'));
+
+            test.throws(function () {
+                getArguments(node, [null, new Map([['foo', 'bar']])]);
+            }, new Error('Named arguments are not supported for function "date".'));
+
+            test.end();
+        });
 
         test.end();
     });
@@ -195,6 +225,68 @@ tap.test('node/expression/call', function (test) {
                 getArguments(node, [new CallableTestClass(), new Map()])
             }, new Error('The last parameter of "CallableTestClass::__invoke" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
         );
+
+        test.end();
+    });
+
+    test.test('compile', function (test) {
+        let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
+
+        let node = new Callable(new Map(), new Map([
+            ['callable', 'foo']
+        ]));
+
+        compiler.compile(node);
+
+        test.same(compiler.getSource(), 'foo(...[])');
+
+        test.end();
+    });
+
+    test.test('getCallableParameters', function (test) {
+        test.test('with unregistered runtime', function (test) {
+            let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
+                ['type', 'function'],
+                ['name', 'date']
+            ]));
+
+            node.setAttribute('arguments', ['foo']);
+
+            let getCallableParameters = Reflect.get(node, 'getCallableParameters').bind(node);
+            let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+            sinon.stub(env, 'getRuntime').returns({
+                bar: 1
+            });
+
+            test.same(getCallableParameters(['foo', 'bar'], false, env), []);
+            test.same(getCallableParameters('foo::bar', false, env), []);
+
+            test.end();
+        });
+
+        test.test('with included arguments', function (test) {
+            let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
+                ['type', 'function'],
+                ['name', 'date']
+            ]));
+
+            node.setAttribute('arguments', ['foo']);
+
+            let getCallableParameters = Reflect.get(node, 'getCallableParameters').bind(node);
+            let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+            test.same(getCallableParameters((foo, bar) => {
+            }, false, env), [
+                {
+                    defaultValue: null,
+                    name: "bar",
+                    optional: false
+                }
+            ]);
+
+            test.end();
+        });
 
         test.end();
     });

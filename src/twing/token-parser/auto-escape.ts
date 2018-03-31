@@ -1,13 +1,5 @@
 /**
- * Loops over each item of a sequence.
- *
- * <pre>
- * <ul>
- *  {% for user in users %}
- *    <li>{{ user.username|e }}</li>
- *  {% endfor %}
- * </ul>
- * </pre>
+ * Marks a section of a template to be escaped or not.
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode, TwingNodeType} from "../node";

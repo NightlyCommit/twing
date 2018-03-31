@@ -23,7 +23,6 @@ let generateProfile = function (name, duration, isTemplate, type, templateName, 
     sinon.stub(profile, 'getType').returns(type);
     sinon.stub(profile, 'getTemplate').returns(templateName);
     sinon.stub(profile, 'getProfiles').returns(subProfiles);
-    sinon.stub(profile, 'getIterator').returns(subProfiles[Symbol.iterator]);
 
     return profile;
 };
@@ -71,7 +70,6 @@ module.exports.getProfile = function () {
     ];
 
     sinon.stub(profile, 'getProfiles').returns(subProfiles);
-    sinon.stub(profile, 'getIterator').returns(subProfiles[Symbol.iterator]);
 
     return profile;
 };

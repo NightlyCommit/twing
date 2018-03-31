@@ -54,9 +54,6 @@ export class TwingTokenParserIf extends TwingTokenParser {
                 case 'endif':
                     end = true;
                     break;
-
-                default:
-                    throw new TwingErrorSyntax(`Unexpected end of template. Twig was looking for the following tags "else", "elseif", or "endif" to close the "if" block started at line ${lineno}).`, stream.getCurrent().getLine(), stream.getSourceContext());
             }
         }
 

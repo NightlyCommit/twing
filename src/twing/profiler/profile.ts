@@ -17,10 +17,6 @@ export class TwingProfilerProfile {
     [Symbol.iterator] = this.profiles[Symbol.iterator];
 
     constructor(template: string = 'main', type: string = TwingProfilerProfile.ROOT, name: string = 'main') {
-        // if (__CLASS__ !== get_class($this)) {
-        //     @trigger_error('Overriding '.__CLASS__.' is deprecated since version 2.4.0 and the class will be final in 3.0.', E_USER_DEPRECATED);
-        // }
-
         this.template = template;
         this.type = type;
         this.name = (name.indexOf('__internal_') === 0) ? 'INTERNAL' : name;
@@ -155,13 +151,5 @@ export class TwingProfilerProfile {
         this.profiles = [];
         this.starts = this.ends = new Map();
         this.enter();
-    }
-
-    getIterator() {
-        return this.profiles[Symbol.iterator];
-    }
-
-    serialize(): string {
-        return serialize([this.template, this.name, this.type, this.starts, this.ends, this.profiles]);
     }
 }

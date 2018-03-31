@@ -9,7 +9,7 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
 
-    constructor(keyTarget: TwingNodeExpressionAssignName, valueTarget: TwingNodeExpressionAssignName, seq: TwingNodeExpression, ifexpr: TwingNodeExpression = null, body: TwingNode, elseNode: TwingNode = null, lineno: number, tag: string = null) {
+    constructor(keyTarget: TwingNodeExpressionAssignName, valueTarget: TwingNodeExpressionAssignName, seq: TwingNodeExpression, ifexpr: TwingNodeExpression, body: TwingNode, elseNode: TwingNode, lineno: number, tag: string = null) {
         let loop = new TwingNodeForLoop(lineno, tag);
 
         let bodyNodes = new Map();

@@ -1,11 +1,9 @@
 /**
  * Converts input to Map.
  *
- * @param seq
+ * @param {*} thing
  * @returns {Map<any, any>}
  */
-
-
 export function iteratorToMap(thing: any): Map<any, any> {
     if (thing.entries) {
         return new Map(thing.entries());

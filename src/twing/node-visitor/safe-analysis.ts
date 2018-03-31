@@ -2,8 +2,7 @@ import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingEnvironment} from "../environment";
 
-
-var objectHash = require('object-hash');
+const objectHash = require('object-hash');
 
 interface Bucket {
     key: any,
@@ -49,7 +48,7 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return bucket ? bucket.value : null;
     }
 
-    setSafe(node: TwingNode, safe: Array<string>) {
+    private setSafe(node: TwingNode, safe: Array<string>) {
         let hash = objectHash(node);
         let bucket = null;
 
@@ -75,11 +74,11 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         }
     }
 
-    doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+    protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         return node;
     }
 
-    doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+    protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             // constants are marked safe for all
             this.setSafe(node, ['all']);
@@ -140,7 +139,7 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR && node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME) {
             let name = node.getNode('node').getAttribute('name');
 
-            if (this.safeVars.indexOf(name) > -1) {
+            if (this.safeVars.includes(name)) {
                 this.setSafe(node, ['all']);
             }
             else {
@@ -154,11 +153,7 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return node;
     }
 
-    getPriority() {
-        return 0;
-    }
-
-    private intersectSafe(a: Array<any> = null, b: Array<any> = null) {
+    private intersectSafe(a: Array<any>, b: Array<any>) {
         if (a === null || b === null) {
             return [];
         }
@@ -175,5 +170,9 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
         return a.filter(function (n) {
             return b.includes(n);
         });
+    }
+
+    getPriority() {
+        return 0;
     }
 }

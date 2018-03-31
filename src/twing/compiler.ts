@@ -156,7 +156,7 @@ export class TwingCompiler {
                 this
                     .raw('[')
                     .repr(k)
-                    .raw(',')
+                    .raw(', ')
                     .repr(v)
                     .raw(']')
                 ;

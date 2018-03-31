@@ -90,7 +90,8 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
      */
     addPath(path: string, namespace: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
         // invalidate the cache
-        this.cache = this.errorCache = new Map();
+        this.cache = new Map();
+        this.errorCache = new Map();
 
         let checkPath = this.isAbsolutePath(path) ? path : nodePath.join(this.rootPath, path);
 
@@ -266,12 +267,12 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         let parts = name.split(nodePath.sep);
         let level = 0;
 
-        for (let part in parts) {
+        for (let part of parts) {
             if (part === '..') {
-                --level;
+                level--;
             }
             else if (part !== '.') {
-                ++level;
+                level++;
             }
         }
 

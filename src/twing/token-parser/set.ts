@@ -32,7 +32,8 @@ export class TwingTokenParserSet extends TwingTokenParser {
             if (names.getNodes().size !== values.getNodes().size) {
                 throw new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', stream.getCurrent().getLine(), stream.getSourceContext());
             }
-        } else {
+        }
+        else {
             capture = true;
 
             if (names.getNodes().size > 1) {

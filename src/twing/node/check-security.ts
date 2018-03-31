@@ -3,11 +3,11 @@ import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeCheckSecurity extends TwingNode {
-    private usedFilters: Map<string, TwingNode>;
-    private usedTags: Map<string, TwingNode>;
-    private usedFunctions: Map<string, TwingNode>;
+    private usedFilters: Map<string, TwingNode | string>;
+    private usedTags: Map<string, TwingNode | string>;
+    private usedFunctions: Map<string, TwingNode | string>;
 
-    constructor(usedFilters: Map<string, TwingNode>, usedTags: Map<string, TwingNode>, usedFunctions: Map<string, TwingNode>) {
+    constructor(usedFilters: Map<string, TwingNode | string>, usedTags: Map<string, TwingNode | string>, usedFunctions: Map<string, TwingNode | string>) {
         super();
 
         this.usedFilters = usedFilters;

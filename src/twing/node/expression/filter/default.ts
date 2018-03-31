@@ -7,7 +7,7 @@ import {TwingNodeExpression} from "../../expression";
 import {TwingCompiler} from "../../../compiler";
 
 export class TwingNodeExpressionFilterDefault extends TwingNodeExpressionFilter {
-    constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
+    constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string) {
         let defaultNode = new TwingNodeExpressionFilter(node, new TwingNodeExpressionConstant('default', node.getTemplateLine()), methodArguments, node.getTemplateLine());
 
         if (filterName.getAttribute('value') === 'default' && (node.getType() === TwingNodeType.EXPRESSION_NAME || node.getType() === TwingNodeType.EXPRESSION_GET_ATTR)) {

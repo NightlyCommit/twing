@@ -6,6 +6,8 @@ const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeTex
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
 const TwingSource = require('../../../../../lib/twing/source').TwingSource;
 const TwingNodeModule = require('../../../../../lib/twing/node/module').TwingNodeModule;
+const TwingNodeBlock = require('../../../../../lib/twing/node/block').TwingNodeBlock;
+const TwingNodeBlockReference = require('../../../../../lib/twing/node/block-reference').TwingNodeBlockReference;
 
 const TwingNodeExpressionConditional = require('../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeSet = require('../../../../../lib/twing/node/set').TwingNodeSet;
@@ -73,7 +75,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[19,1]]);
+        return new Map([[19, 1]]);
     }
 
     getSourceContext() {
@@ -139,7 +141,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[25,1], [23,2], [12,1]]);
+        return new Map([[25, 1], [23, 2], [12, 1]]);
     }
 
     getSourceContext() {
@@ -214,7 +216,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[17,2], [15,4], [10,2]]);
+        return new Map([[17, 2], [15, 4], [10, 2]]);
     }
 
     getSourceContext() {

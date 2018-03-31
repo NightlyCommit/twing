@@ -4,7 +4,7 @@ import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionTest extends TwingNodeExpressionCall {
-    constructor(node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode = null, lineno: number) {
+    constructor(node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number) {
         let nodes = new Map();
 
         nodes.set('node', node);

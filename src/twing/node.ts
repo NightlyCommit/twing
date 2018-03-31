@@ -33,10 +33,13 @@ export enum TwingNodeType {
     MACRO = 'macro',
     MODULE = 'module',
     PRINT = 'print',
+    PROFILER_ENTER_PROFILE = 'profiler_enter_profile',
+    PROFILER_LEAVE_PROFILE = 'profiler_leave_profile',
     SANDBOX = 'sandbox',
     SET = 'set',
     SPACELESS = 'spaceless',
-    TEXT = 'text'
+    TEXT = 'text',
+    WITH = 'with'
 }
 
 export class TwingNode {
@@ -162,8 +165,8 @@ export class TwingNode {
     }
 
     /**
-     * @param string name
-     * @param mixed  value
+     * @param {string} name
+     * @param {*} value
      */
     setAttribute(name: string, value: any) {
         this.attributes.set(name, value);

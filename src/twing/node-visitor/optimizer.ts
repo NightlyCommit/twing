@@ -41,7 +41,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
         this.optimizers = optimizers;
     }
 
-    doEnterNode(node: TwingNode, env: TwingEnvironment) {
+    protected doEnterNode(node: TwingNode, env: TwingEnvironment) {
         if (TwingNodeVisitorOptimizer.OPTIMIZE_FOR === (TwingNodeVisitorOptimizer.OPTIMIZE_FOR & this.optimizers)) {
             this.enterOptimizeFor(node, env);
         }
@@ -49,7 +49,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
         return node;
     }
 
-    doLeaveNode(node: TwingNode, env: TwingEnvironment) {
+    protected doLeaveNode(node: TwingNode, env: TwingEnvironment) {
         if (TwingNodeVisitorOptimizer.OPTIMIZE_FOR === (TwingNodeVisitorOptimizer.OPTIMIZE_FOR & this.optimizers)) {
             this.leaveOptimizeFor(node, env);
         }
@@ -72,7 +72,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      *
      * @returns {TwingNode}
      */
-    optimizePrintNode(node: TwingNode, env: TwingEnvironment) {
+    private optimizePrintNode(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() !== TwingNodeType.PRINT) {
             return node;
         }
@@ -94,7 +94,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
      *
      * @returns {TwingNode}
      */
-    optimizeRawFilter(node: TwingNode, env: TwingEnvironment) {
+    private optimizeRawFilter(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() === TwingNodeType.EXPRESSION_FILTER && node.getNode('filter').getAttribute('value') === 'raw') {
             return node.getNode('node');
         }
@@ -105,7 +105,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     /**
      * Optimizes "for" tag by removing the "loop" variable creation whenever possible.
      */
-    enterOptimizeFor(node: TwingNode, env: TwingEnvironment) {
+    private enterOptimizeFor(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() === TwingNodeType.FOR) {
             // disable the loop variable by default
             node.setAttribute('with_loop', false);
@@ -155,7 +155,7 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
     /**
      * Optimizes "for" tag by removing the "loop" variable creation whenever possible.
      */
-    leaveOptimizeFor(node: TwingNode, env: TwingEnvironment) {
+    private leaveOptimizeFor(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() === TwingNodeType.FOR) {
             this.loops.shift();
             this.loopsTargets.shift();
@@ -163,11 +163,11 @@ export class TwingNodeVisitorOptimizer extends TwingBaseNodeVisitor {
         }
     }
 
-    addLoopToCurrent() {
+    private addLoopToCurrent() {
         this.loops[0].setAttribute('with_loop', true);
     }
 
-    addLoopToAll() {
+    private addLoopToAll() {
         for (let loop of this.loops) {
             loop.setAttribute('with_loop', true);
         }

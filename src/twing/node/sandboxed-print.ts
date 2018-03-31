@@ -12,18 +12,19 @@ export class TwingNodeSandboxedPrint extends TwingNodePrint {
         ;
     }
 
-    /**
-     * Removes node filters.
-     *
-     * This is mostly needed when another visitor adds filters (like the escaper one).
-     *
-     * @returns {TwingNode}
-     */
-    private removeNodeFilter(node: TwingNode): TwingNode {
-        if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
-            return this.removeNodeFilter(node.getNode('node'));
-        }
-
-        return node;
-    }
+    // unit: not coverable, it's private and never used there
+    // /**
+    //  * Removes node filters.
+    //  *
+    //  * This is mostly needed when another visitor adds filters (like the escaper one).
+    //  *
+    //  * @returns {TwingNode}
+    //  */
+    // private removeNodeFilter(node: TwingNode): TwingNode {
+    //     if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+    //         return this.removeNodeFilter(node.getNode('node'));
+    //     }
+    //
+    //     return node;
+    // }
 }

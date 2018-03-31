@@ -5,7 +5,7 @@ import {TwingCompiler} from "../compiler";
 
 export class TwingNodeEmbed extends TwingNodeInclude {
     // we don't inject the module to avoid node visitors to traverse it twice (as it will be already visited in the main module)
-    constructor(name: string, index: string, variables: TwingNodeExpression = null, only: boolean = false, ignoreMissing: boolean = false, lineno: number, tag: string = null) {
+    constructor(name: string, index: string, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, tag: string) {
         super(new TwingNodeExpressionConstant('not_used', lineno), variables, only, ignoreMissing, lineno, tag);
 
         this.setAttribute('name', name);

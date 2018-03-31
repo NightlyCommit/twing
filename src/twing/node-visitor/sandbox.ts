@@ -18,7 +18,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         this.TwingNodeVisitorInterfaceImpl = this;
     }
 
-    doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+    protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = true;
             this.tags = new Map();
@@ -52,7 +52,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         return node;
     }
 
-    doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+    protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = false;
 

@@ -30,12 +30,12 @@ export abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface 
      *
      * @returns {TwingNode} The modified node
      */
-    abstract doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode;
+    protected abstract doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode;
 
     /**
      * Called after child nodes are visited.
      *
      * @returns {TwingNode|false} The modified node or null if the node must be removed
      */
-    abstract doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode;
+    protected abstract doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode;
 }

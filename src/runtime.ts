@@ -24,6 +24,7 @@ import {TwingSandboxSecurityNotAllowedFunctionError} from "./twing/sandbox/secur
 import {TwingSandboxSecurityNotAllowedTagError} from "./twing/sandbox/security-not-allowed-tag-error";
 import {TwingSource} from "./twing/source";
 import {TwingTemplate} from "./twing/template";
+import {TwingProfilerProfile} from "./twing/profiler/profile";
 
 let Twing = {
     clone: clone,
@@ -49,6 +50,7 @@ let Twing = {
     twingGetAttribute: twingGetAttribute,
     twingInFilter: twingInFilter,
     TwingMarkup: TwingMarkup,
+    TwingProfilerProfile: TwingProfilerProfile,
     TwingSandboxSecurityError: TwingSandboxSecurityError,
     TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
     TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
