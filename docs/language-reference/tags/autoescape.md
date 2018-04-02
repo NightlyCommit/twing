@@ -23,5 +23,3 @@ Force the escaping strategy of a section of a template.
 
 [back]({{ site.baseurl }}{% link language-reference/tags/index.md %})
 
-[filter-raw-url]: {{ site.baseurl }}{% link language-reference/filters/raw.md %}
-
