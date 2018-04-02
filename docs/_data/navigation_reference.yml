@@ -14,37 +14,52 @@ sections:
         url: language-reference/tags/do.html
       embed:
         title: embed
+        url: language-reference/tags/embed.html
       extends:
         title: extends
+        url: language-reference/tags/extends.html
       filter:
         title: filter
+        url: language-reference/tags/filter.html
       flush:
         title: flush
+        url: language-reference/tags/flush.html
       for:
         title: for
+        url: language-reference/tags/for.html
       from:
         title: from
+        url: language-reference/tags/from.html
       if:
         title: if
+        url: language-reference/tags/if.html
       import:
         title: import
+        url: language-reference/tags/import.html
       include:
         title: include
+        url: language-reference/tags/include.html
       macro:
         title: macro
+        url: language-reference/tags/macro.html
       sandbox:
         title: sandbox
+        url: language-reference/tags/sandbox.html
       set:
         title: set
         url: language-reference/tags/set.html
       spaceless:
         title: spaceless
+        url: language-reference/tags/spaceless.html
       use:
         title: use
+        url: language-reference/tags/use.html
       verbatim:
         title: verbatim
+        url: language-reference/tags/verbatim.html
       with:
         title: with
+        url: language-reference/tags/with.html
   filters:
     title: filters
     url: filters/index.html
