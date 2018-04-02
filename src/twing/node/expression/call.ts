@@ -24,39 +24,27 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
     protected compileCallable(compiler: TwingCompiler) {
         let callable = this.getAttribute('callable');
-        let closingParenthesis = false;
 
         if (typeof callable === 'string' && callable.indexOf('::') < 0) {
-            compiler.raw(callable);
+            compiler
+                .raw(callable)
+                .raw('(...')
+            ;
         }
         else {
             let [r, callable_] = this.reflectCallable(callable, compiler.getEnvironment());
 
             if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
-                if (r.isStatic()) {
-                    compiler.raw(`${callable_[0]}.${callable_[1]}`);
-                }
-                else {
-                    closingParenthesis = true;
-
-                    compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
-                }
-            }
-            else if (r instanceof TwingReflectionMethod && callable_[0] instanceof TwingExtension) {
-                compiler.raw(`this.env.getExtension('${callable_[0].constructor.name}').${callable[1]}`);
+                compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
             }
             else {
-                closingParenthesis = true;
-
                 compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').getCallable()(...`);
             }
         }
 
         this.compileArguments(compiler);
 
-        if (closingParenthesis) {
-            compiler.raw(')');
-        }
+        compiler.raw(')');
     }
 
     protected compileArguments(compiler: TwingCompiler) {
@@ -120,7 +108,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         compiler.raw(']');
     }
 
-    protected getArguments(callable: Function = null, argumentsNode: TwingNode, env: TwingEnvironment): Array<TwingNode> {
+    protected getArguments(callable: Function, argumentsNode: TwingNode, env: TwingEnvironment): Array<TwingNode> {
         let self = this;
         let callType = this.getAttribute('type');
         let callName = this.getAttribute('name');
@@ -143,8 +131,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let isVariadic = this.hasAttribute('is_variadic') && this.getAttribute('is_variadic');
 
         if (!named && !isVariadic) {
-            // console.warn('arguments_', ...parameters.values());
-
             return [...parameters.values()];
         }
 
@@ -165,7 +151,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let arguments_: Array<TwingNode> = [];
 
         let names: Array<string> = [];
-        let missingArguments: Array<string> = [];
         let optionalArguments: Array<string | TwingNodeExpressionConstant> = [];
         let pos = 0;
 
@@ -177,10 +162,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             if (parameters.has(name)) {
                 if (parameters.has(pos)) {
                     throw new TwingErrorSyntax(`Argument "${name}" is defined twice for ${callType} "${callName}".`);
-                }
-
-                if (missingArguments.length) {
-                    throw new TwingErrorSyntax(`Argument "${name}" could not be assigned for ${callType} "${callName}(${names.join(', ')})" because it is mapped to an internal PHP function which cannot determine default value for optional argument${missingArguments.length > 1 ? 's' : ''} "${missingArguments.join(', ')}".`);
                 }
 
                 arguments_ = array_merge(arguments_, optionalArguments);
@@ -197,14 +178,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             }
             else if (callableParameter.isDefaultValueAvailable()) {
                 optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1));
-            }
-            else if (callableParameter.isOptional()) {
-                if (parameters.size < 1) {
-                    break;
-                }
-                else {
-                    missingArguments.push(name);
-                }
             }
             else {
                 throw new TwingErrorSyntax(`Value for argument "${name}" is required for ${callType} "${callName}".`);
@@ -274,9 +247,9 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         }
 
         if (this.hasAttribute('arguments') && this.getAttribute('arguments')) {
-            this.getAttribute('arguments').forEach(function () {
+            for (let v of this.getAttribute('arguments')) {
                 parameters.shift();
-            });
+            }
         }
 
         if (isVariadic) {

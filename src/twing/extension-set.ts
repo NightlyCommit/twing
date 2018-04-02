@@ -218,10 +218,7 @@ export class TwingExtensionSet {
             return this.functions.get(name);
         }
 
-        let twingFunction: TwingFunction;
-        let pattern: string;
-
-        for ([pattern, twingFunction] of this.functions) {
+        for (let [pattern, twingFunction] of this.functions) {
             let count: number = 0;
 
             pattern = pattern.replace(/\*/g, function (match: string, value: string) {

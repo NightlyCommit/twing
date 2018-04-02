@@ -28,6 +28,7 @@ tap.test('Twing runtime', function (test) {
         twingGetAttribute: './twing/extension/core',
         twingInFilter: './twing/extension/core',
         TwingMarkup: './twing/markup',
+        TwingProfilerProfile: './twing/profiler/profile',
         TwingSandboxSecurityError: './twing/sandbox/security-error',
         TwingSandboxSecurityNotAllowedFilterError: './twing/sandbox/security-not-allowed-filter-error',
         TwingSandboxSecurityNotAllowedFunctionError: './twing/sandbox/security-not-allowed-function-error',

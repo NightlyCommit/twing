@@ -1,4 +1,3 @@
-
 const TwingNodeExpressionConstant = require('../../../../../../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
 const TwingNodeExpressionArray = require('../../../../../../lib/twing/node/expression/array').TwingNodeExpressionArray;
 const TwingTestMockCompiler = require('../../../../../mock/compiler');

@@ -12,8 +12,8 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
 
     private allowedTags: Array<string>;
     private allowedFilters: Array<string>;
-    private allowedMethods: Map<any, Array<string>>;
-    private allowedProperties: Map<any, string>;
+    private allowedMethods: Map<ObjectConstructor, Array<string>>;
+    private allowedProperties: Map<ObjectConstructor, string>;
     private allowedFunctions: Array<string>;
 
     constructor(allowedTags: Array<string> = [], allowedFilters: Array<string> = [], allowedMethods: Map<any, string> = new Map(), allowedProperties: Map<any, string> = new Map(), allowedFunctions: Array<string> = []) {

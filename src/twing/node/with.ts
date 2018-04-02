@@ -1,9 +1,9 @@
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeWith extends TwingNode {
-    constructor(body: TwingNode, variables: TwingNode = null, only: boolean = false, lineno: number, tag: string = null) {
+    constructor(body: TwingNode, variables: TwingNode, only: boolean, lineno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('body', body);
@@ -13,6 +13,8 @@ export class TwingNodeWith extends TwingNode {
         }
 
         super(nodes, new Map([['only', only]]), lineno, tag);
+
+        this.type = TwingNodeType.WITH;
     }
 
     compile(compiler: TwingCompiler) {

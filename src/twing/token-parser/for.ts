@@ -10,9 +10,8 @@
  * </pre>
  */
 import {TwingTokenParser} from "../token-parser";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingToken} from "../token";
-import {TwingNodeExpressionName} from "../node/expression/name";
 import {TwingNodeExpressionGetAttr} from "../node/expression/get-attr";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenStream} from "../token-stream";
@@ -90,9 +89,7 @@ export class TwingTokenParserFor extends TwingTokenParser {
         }
 
         node.getNodes().forEach(function (n) {
-            if (n) {
-                self.checkLoopUsageCondition(stream, n);
-            }
+            self.checkLoopUsageCondition(stream, n);
         });
     }
 
@@ -104,8 +101,6 @@ export class TwingTokenParserFor extends TwingTokenParser {
 
     // it does not catch all problems (for instance when a for is included into another or when the variable is used in an include)
     private checkLoopUsageBody(stream: TwingTokenStream, node: TwingNode) {
-        let self = this;
-
         if ((node.constructor.name === 'TwingNodeExpressionGetAttr') && (node.getNode('node').constructor.name === 'TwingNodeExpressionName') && (node.getNode('node').getAttribute('name') === 'loop')) {
             let attribute = node.getNode('attribute');
 
@@ -115,14 +110,12 @@ export class TwingTokenParserFor extends TwingTokenParser {
         }
 
         // should check for parent.loop.XXX usage
-        if (node.constructor.name === 'TwingNodeFor') {
+        if (node.getType() === TwingNodeType.FOR) {
             return;
         }
 
-        node.getNodes().forEach(function (n) {
-            if (n) {
-                self.checkLoopUsageBody(stream, n);
-            }
-        });
+        for (let [k, n] of node.getNodes()) {
+            this.checkLoopUsageBody(stream, n);
+        }
     }
 }

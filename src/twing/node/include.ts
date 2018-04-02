@@ -4,7 +4,7 @@ import {TwingNodeExpression} from "./expression";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeInclude extends TwingNode {
-    constructor(expr: TwingNodeExpression, variables: TwingNodeExpression = null, only: boolean = false, ignoreMissing: boolean = false, lineno: number, tag: string = null) {
+    constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('expr', expr);

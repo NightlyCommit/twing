@@ -10,7 +10,13 @@ export abstract class TwingProfilerDumperBase {
         return this.dumpProfile(profile);
     }
 
-    dumpProfile(profile: TwingProfilerProfile, prefix: string = '', sibling: boolean = false) {
+    protected abstract formatTemplate(profile: TwingProfilerProfile, prefix: string): string;
+
+    protected abstract formatNonTemplate(profile: TwingProfilerProfile, prefix: string): string;
+
+    protected abstract formatTime(profile: TwingProfilerProfile, prefix: number): string;
+
+    private dumpProfile(profile: TwingProfilerProfile, prefix: string = '', sibling: boolean = false) {
         let start: string;
 
         if (profile.isRoot()) {
@@ -49,10 +55,4 @@ export abstract class TwingProfilerDumperBase {
 
         return str;
     }
-
-    protected abstract formatTemplate(profile: TwingProfilerProfile, prefix: string): string;
-
-    protected abstract formatNonTemplate(profile: TwingProfilerProfile, prefix: string): string;
-
-    protected abstract formatTime(profile: TwingProfilerProfile, prefix: number): string;
 }

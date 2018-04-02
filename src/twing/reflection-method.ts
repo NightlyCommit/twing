@@ -60,8 +60,4 @@ export class TwingReflectionMethod {
     getParameters(): Array<TwingReflectionParameter> {
         return this.parameters;
     }
-
-    isStatic() {
-        return false;
-    }
 }

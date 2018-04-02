@@ -1,5 +1,4 @@
-import {TwingNode} from "../../node";
-
+import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 /**
@@ -10,18 +9,21 @@ import {TwingCompiler} from "../../compiler";
 export class TwingProfilerNodeEnterProfile extends TwingNode {
     constructor(extensionName: string, type: string, name: string, varName: string) {
         super(new Map(), new Map([['extension_name', extensionName], ['name', name], ['type', type], ['var_name', varName]]));
+
+        this.type = TwingNodeType.PROFILER_ENTER_PROFILE;
     }
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write(`${this.getAttribute('var_name')}} = this.env.getExtension(`)
+            .write(`let ${this.getAttribute('var_name')} = this.extensions[`,)
             .repr(this.getAttribute('extension_name'))
-            .raw(");\n")
-            .write(`${this.getAttribute('var_name')}.enter(${this.getAttribute('var_name')} = new Twing.TwingProfilerProfile(this.getTemplateName()` + '_prof')
+            .raw("];\n")
+            .write(`let ${this.getAttribute('var_name') + 'Prof'} = new Twing.TwingProfilerProfile(this.getTemplateName(), `)
             .repr(this.getAttribute('type'))
             .raw(', ')
             .repr(this.getAttribute('name'))
-            .raw("));\n\n")
+            .raw(');\n')
+            .write(`${this.getAttribute('var_name')}.enter(${this.getAttribute('var_name') + 'Prof'});\n\n`)
         ;
     }
 }

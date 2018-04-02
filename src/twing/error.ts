@@ -204,19 +204,10 @@ export class TwingError extends Error {
 
                 let objectConstructor = templates[trace.getTypeName()];
                 let object: any;
+
                 let safeEnvironment = {
                     loadTemplate: () => {
-                        return {
-                            isTraitable: /* istanbul ignore next */ (): boolean => {
-                                return true;
-                            },
-                            getBlocks: /* istanbul ignore next */ (): Map<string, Array<any>> => {
-                                return new Map();
-                            },
-                            loadTemplate: /* istanbul ignore next */ (): any => {
-                                return null;
-                            }
-                        };
+                        return {};
                     }
                 };
 

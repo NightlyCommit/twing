@@ -16,7 +16,7 @@ import {TwingCompiler} from "../../../compiler";
  * </pre>
  */
 export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
-    constructor(node: TwingNodeExpression, name: string, nodeArguments: TwingNode = null, lineno: number) {
+    constructor(node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
         let changeIgnoreStrictCheck = false;
         let error = null;
 

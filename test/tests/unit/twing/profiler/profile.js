@@ -1,6 +1,7 @@
 const TwingProfilerProfile = require('../../../../../lib/twing/profiler/profile').TwingProfilerProfile;
 
 const tap = require('tap');
+const sinon = require('sinon');
 const serialize = require('locutus/php/var/serialize');
 
 function sleep(ms) {
@@ -14,6 +15,14 @@ tap.test('profiler profile', function (test) {
         test.same(profile.getTemplate(), 'template');
         test.same(profile.getType(), 'type');
         test.same(profile.getName(), 'name');
+
+        test.test('with __internal_ name', function (test) {
+            let profile = new TwingProfilerProfile('template', 'type', '__internal_');
+
+            test.same(profile.getName(), 'INTERNAL');
+
+            test.end();
+        });
 
         test.end();
     });
@@ -84,9 +93,31 @@ tap.test('profiler profile', function (test) {
                 test.end();
             }
         );
+
+        test.test('when root', function (test) {
+            let profile = new TwingProfilerProfile('template', TwingProfilerProfile.ROOT, 'name');
+            let profile1 = new TwingProfilerProfile('template1', 'type1', 'name1');
+            let profile2 = new TwingProfilerProfile('template2', 'type2', 'name2');
+
+            profile.addProfile(profile1);
+            profile.addProfile(profile2);
+
+            sinon.stub(profile1, 'getDuration').returns(50);
+            sinon.stub(profile2, 'getDuration').returns(100);
+
+            sleep(100).then(
+                function () {
+                    profile.leave();
+
+                    test.equals(profile.getDuration(), 150, 'returns the sum of all child durations');
+
+                    test.end();
+                }
+            );
+        });
     });
 
-    test.test('serialize', function(test) {
+    test.test('serialize', function (test) {
         let profile = new TwingProfilerProfile('template', 'type', 'name');
         let profile1 = new TwingProfilerProfile('template1', 'type1', 'name1');
         profile.addProfile(profile1);
@@ -126,6 +157,52 @@ tap.test('profiler profile', function (test) {
                 test.end();
             }
         );
+    });
+
+    test.test('getMemoryUsage', function (test) {
+        test.test('when usage has not been set', function (test) {
+            let profile = new TwingProfilerProfile();
+
+            test.same(profile.getMemoryUsage(), 0);
+
+            test.end();
+        });
+
+        test.test('when usage has been set', function (test) {
+            let profile = new TwingProfilerProfile();
+
+            Reflect.set(profile, 'starts', new Map([['mu', 0]]));
+            Reflect.set(profile, 'ends', new Map([['mu', 100]]));
+
+            test.same(profile.getMemoryUsage(), 100);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('getPeakMemoryUsage', function (test) {
+        test.test('when usage has not been set', function (test) {
+            let profile = new TwingProfilerProfile();
+
+            test.same(profile.getPeakMemoryUsage(), 0);
+
+            test.end();
+        });
+
+        test.test('when usage has been set', function (test) {
+            let profile = new TwingProfilerProfile();
+
+            Reflect.set(profile, 'starts', new Map([['pmu', 0]]));
+            Reflect.set(profile, 'ends', new Map([['pmu', 100]]));
+
+            test.same(profile.getPeakMemoryUsage(), 100);
+
+            test.end();
+        });
+
+        test.end();
     });
 
     test.end();
