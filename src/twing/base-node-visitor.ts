@@ -5,6 +5,10 @@ import {TwingEnvironment} from "./environment";
 export abstract class TwingBaseNodeVisitor implements TwingNodeVisitorInterface {
     TwingNodeVisitorInterfaceImpl: TwingNodeVisitorInterface;
 
+    constructor() {
+        this.TwingNodeVisitorInterfaceImpl = this;
+    }
+
     abstract getPriority(): number;
 
     /**
