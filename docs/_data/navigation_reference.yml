@@ -164,22 +164,34 @@ sections:
     items:
       constant:
         title: constant
+        url: language-reference/tests/constant.html
       defined:
         title: defined
+        url: language-reference/tests/defined.html
       divisibleby:
         title: divisibleby
+        url: language-reference/tests/divisibleby.html
       empty:
         title: empty
+        url: language-reference/tests/empty.html
       even:
         title: even
+        url: language-reference/tests/even.html
       iterable:
         title: iterable
-      null:
-        title: null
+        url: language-reference/tests/iterable.html
+      none:
+        title: none
+        url: language-reference/tests/none.html
+      "null":
+        title: "null"
+        url: language-reference/tests/null.html
       odd:
         title: odd
+        url: language-reference/tests/odd.html
       sameas:
         title: sameas
+        url: language-reference/tests/sameas.html
   operators:
     title: operators
     url: operators/index.html
