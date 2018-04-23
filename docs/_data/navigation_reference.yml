@@ -132,32 +132,46 @@ sections:
     items:
       attribute:
         title: attribute
+        url: language-reference/functions/attribute.html
       block:
         title: block
+        url: language-reference/functions/block.html
       constant:
         title: constant
+        url: language-reference/functions/constant.html
       cycle:
         title: cycle
+        url: language-reference/functions/cycle.html
       date:
         title: date
+        url: language-reference/functions/date.html
       dump:
         title: dump
+        url: language-reference/functions/dump.html
       include:
         title: include
+        url: language-reference/functions/include.html
       max:
         title: max
+        url: language-reference/functions/max.html
       min:
         title: min
+        url: language-reference/functions/min.html
       parent:
         title: parent
+        url: language-reference/functions/parent.html
       random:
         title: random
+        url: language-reference/functions/random.html
       range:
         title: range
+        url: language-reference/functions/range.html
       source:
         title: source
+        url: language-reference/functions/source.html
       template_from_string:
         title: template_from_string
+        url: language-reference/functions/template_from_string.html
   tests:
     title: tests
     url: tests/index.html
