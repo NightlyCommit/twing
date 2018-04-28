@@ -30,7 +30,6 @@
     "prelib": "npm run clean",
     "pretest": "npm run lib",
     "prepublish": "npm run lib -- --sourceMap false",
-    "preversion": "node tasks/preversion.js",
     "test": "npm run fastest:all",
     "fastest:all": "tape 'test/tests/**/*.js' | tap-mocha-reporter spec",
     "fastest:integration": "tape 'test/tests/integration/*.js' | tap-mocha-reporter spec",
@@ -39,7 +38,6 @@
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lib": "tsc --project .",
-    "version": "node tasks/version.js && git add .",
     "docs": "cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
