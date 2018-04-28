@@ -66,66 +66,97 @@ sections:
     items:
       abs:
         title: abs
+        url: language-reference/filters/abs.html
       batch:
         title: batch
+        url: language-reference/filters/batch.html
       capitalize:
         title: capitalize
+        url: language-reference/filters/capitalize.html
       convert_encoding:
         title: convert_encoding
+        url: language-reference/filters/convert_encoding.html
       date:
         title: date
+        url: language-reference/filters/date.html
       date_modify:
         title: date_modify
+        url: language-reference/filters/date_modify.html
       default:
         title: default
+        url: language-reference/filters/default.html
       escape:
         title: escape
+        url: language-reference/filters/escape.html
       first:
         title: first
+        url: language-reference/filters/first.html
       format:
         title: format
+        url: language-reference/filters/format.html
       join:
         title: join
+        url: language-reference/filters/join.html
       json_encode:
         title: json_encode
+        url: language-reference/filters/json_encode.html
       keys:
         title: keys
+        url: language-reference/filters/key.html
       last:
         title: last
+        url: language-reference/filters/last.html
       length:
         title: length
+        url: language-reference/filters/length.html
       lower:
         title: lower
+        url: language-reference/filters/lower.html
       merge:
         title: merge
+        url: language-reference/filters/merge.html
       nl2br:
         title: nl2br
+        url: language-reference/filters/nl2br.html
       number_format:
         title: number_format
+        url: language-reference/filters/number_format.html
       raw:
         title: raw
+        url: language-reference/filters/raw.html
       replace:
         title: replace
+        url: language-reference/filters/replace.html
       reverse:
         title: reverse
+        url: language-reference/filters/reverse.html
       round:
         title: round
+        url: language-reference/filters/round.html
       slice:
         title: slice
+        url: language-reference/filters/slice.html
       sort:
         title: sort
+        url: language-reference/filters/sort.html
       split:
         title: split
+        url: language-reference/filters/split.html
       striptags:
         title: striptags
+        url: language-reference/filters/striptags.html
       title:
         title: title
+        url: language-reference/filters/title.html
       trim:
         title: trim
+        url: language-reference/filters/trim.html
       upper:
         title: upper
+        url: language-reference/filters/upper.html
       url_encode:
         title: url_encode
+        url: language-reference/filters/url_encode.html
   functions:
     title: functions
     url: functions/index.html
