@@ -522,7 +522,7 @@ You can combine multiple expressions with the following operators:
 ### Comparisons
 
 The following comparison operators are supported in any expression: `==`,
-`!=`, `<`, `>`, `>=`, and `<=`.
+`!=`, `<`, `>`, `>=`, `<=` and [`===`][test-sameas].
 
 You can also check if a string `starts with` or `ends with` another
 string:
@@ -704,6 +704,7 @@ The above sample shows the default whitespace control modifier, and how you can 
 [function-attribute]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.functions.items.attribute.url }}
 [function-parent]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.functions.items.parent.url }}
 [function-range]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.functions.items.range.url }}
+[test-sameas]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.tests.items.sameas.url }}
 [twigfiddle]: https://twigfiddle.com
 
 
