@@ -239,17 +239,22 @@ sections:
         url: language-reference/tests/sameas.html
   operators:
     title: operators
-    url: operators/index.html
     items:
       in:
         title: in
+        url: templates.html#containment-operator
       is:
         title: is
+        url: templates.html#test-operator
       math:
         title: Math (+, -, /, %, //, *, **)
+        url: templates.html#math
       logic:
         title: Logic (and, or, not, (), b-and, b-xor, b-or)
+        url: templates.html#logic
       comparisons:
         title: Comparisons (==, !=, <, >, >=, <=, ===, starts with, ends with, matches)
+        url: templates.html#comparisons
       others:
         title: Others (.., &#124;, ~, ., [], ?:)
+        url: templates.html#other-operators
