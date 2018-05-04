@@ -52,6 +52,7 @@ export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
     }
 
     changeIgnoreStrictCheck(node: TwingNodeExpression) {
+        node.setAttribute('optimizable', false);
         node.setAttribute('ignore_strict_check', true);
 
         let exprNode = <TwingNodeExpression>node.getNode('node');

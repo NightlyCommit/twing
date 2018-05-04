@@ -153,15 +153,21 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         this.twing = twing;
     }
 
-    getExtensions() {
-        let policy = new TwingSandboxSecurityPolicy([], [], [], [], []);
-
-        return [
-            new TwingExtensionDebug(),
-            new TwingExtensionSandbox(policy, false),
-            new TwingExtensionStringLoader(),
-            new TwingTestExtension()
+    getExtensions(includeSandbox = true) {
+        let extensions = [
+            new TwingExtensionDebug()
         ];
+
+        if (includeSandbox) {
+            let policy = new TwingSandboxSecurityPolicy([], [], new Map(), new Map(), []);
+
+            extensions.push(new TwingExtensionSandbox(policy, false));
+        }
+
+        extensions.push(new TwingExtensionStringLoader());
+        extensions.push(new TwingTestExtension());
+
+        return extensions;
     }
 
     getName() {

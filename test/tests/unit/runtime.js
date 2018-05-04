@@ -12,6 +12,7 @@ tap.test('Twing runtime', function (test) {
         echo: './twing/output-buffering',
         flush: './twing/output-buffering',
         isCountable: './twing/helper/is-countable',
+        isPlainObject: './twing/helper/is-plain-object',
         iteratorToMap: './twing/helper/iterator-to-map',
         merge: './twing/helper/merge',
         obEndClean: './twing/output-buffering',

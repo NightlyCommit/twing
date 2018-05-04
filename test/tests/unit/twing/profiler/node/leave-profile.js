@@ -6,7 +6,7 @@ const TwingNodeType = require('../../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 
-tap.test('node/block', function (test) {
+tap.test('profiler/node/leave-profile', function (test) {
     test.test('constructor', function(test) {
         test.equals(new TwingProfilerNodeLeaveProfile('varName').getType(), TwingNodeType.PROFILER_LEAVE_PROFILE);
 

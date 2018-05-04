@@ -113,6 +113,7 @@ const rawurlencode = require('locutus/php/url/rawurlencode');
 const htmlspecialchars = require('htmlspecialchars');
 const array_merge = require('locutus/php/array/array_merge');
 const locutusOrd = require('locutus/php/strings/ord');
+const isObject = require('isobject');
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -1778,6 +1779,7 @@ export function twingArrayBatch(items: Array<any>, size: number, fill: any = nul
  * @param {string} type The type of attribute (@see Twig_Template constants)
  * @param {boolean} isDefinedTest Whether this is only a defined check
  * @param {boolean} ignoreStrictCheck Whether to ignore the strict attribute check or not
+ * @param {boolean} sandboxed
  *
  * @returns mixed The attribute value, or a Boolean when $isDefinedTest is true, or null when the attribute is not set and $ignoreStrictCheck is true
  *
@@ -1785,7 +1787,7 @@ export function twingArrayBatch(items: Array<any>, size: number, fill: any = nul
  *
  * @internal
  */
-export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, object: any, item: any, _arguments: Array<any> = [], type: string = TwingTemplate.ANY_CALL, isDefinedTest: boolean = false, ignoreStrictCheck: boolean = false) {
+export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, object: any, item: any, _arguments: Array<any> = [], type: string = TwingTemplate.ANY_CALL, isDefinedTest: boolean = false, ignoreStrictCheck: boolean = false, sandboxed: boolean = false) {
     let message: string;
 
     let isMap = function(candidate: any): boolean {
@@ -1876,7 +1878,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
     }
 
     // ANY_CALL or METHOD_CALL
-    if ((object === null) || (typeof object !== 'object')) {
+    if ((object === null) || (!isObject(object))) {
         // object is a primitive
         if (isDefinedTest) {
             return false;
@@ -1888,6 +1890,9 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
 
         if (object === null) {
             message = `Impossible to invoke a method ("${item}") on a null variable.`;
+        }
+        else if (Array.isArray(object)) {
+            message = `Impossible to invoke a method ("${item}") on an array.`;
         }
         else {
             message = `Impossible to invoke a method ("${item}") on a ${typeof object} variable ("${object}").`;
@@ -1908,7 +1913,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
                 return true;
             }
 
-            if (env.hasExtension('TwingExtensionSandbox')) {
+            if (sandboxed) {
                 let extension = env.getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
 
                 extension.checkPropertyAllowed(object, item);
@@ -2019,7 +2024,7 @@ export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, ob
         return true;
     }
 
-    if (env.hasExtension('TwingExtensionSandbox')) {
+    if (sandboxed) {
         let extension = env.getExtension('TwingExtensionSandbox') as TwingExtensionSandbox;
 
         extension.checkMethodAllowed(object, method);

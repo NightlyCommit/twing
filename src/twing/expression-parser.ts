@@ -176,6 +176,9 @@ export class TwingExpressionParser {
                 else if (token.test(TwingToken.PUNCTUATION_TYPE, '{')) {
                     node = this.parseHashExpression();
                 }
+                else if (token.test(TwingToken.OPERATOR_TYPE, '=') && (this.parser.getStream().look(-1).getValue() === '==' || this.parser.getStream().look(-1).getValue() === '!=')) {
+                    throw new TwingErrorSyntax(`Unexpected operator of value "${token.getValue()}". Did you try to use "===" or "!==" for strict comparison? Use "is same as(value)" instead.`, token.getLine(), this.parser.getStream().getSourceContext());
+                }
                 else {
                     throw new TwingErrorSyntax(`Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getValue()}".`, token.getLine(), this.parser.getStream().getSourceContext());
                 }

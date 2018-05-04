@@ -83,7 +83,7 @@ export type TwingEnvironmentOptions = {
 /**
  * Stores the Twing configuration.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingEnvironment {
     private charset: string;
@@ -399,7 +399,7 @@ export class TwingEnvironment {
 
                 fileName = mainCls + ' : eval()\'d code';
 
-                templates = _eval(content, fileName, {}, true);
+                templates = _eval(content, fileName, {Map: Map}, true);
 
                 TwingReflectionObject.register(cls, {
                     fileName: fileName
@@ -497,10 +497,10 @@ export class TwingEnvironment {
     /**
      * Tries to load a template consecutively from an array.
      *
-     * Similar to loadTemplate() but it also accepts TwingTemplate instances and an array
-     * of templates where each is tried to be loaded.
+     * Similar to loadTemplate() but it also accepts instances of TwingTemplate and
+     * TwingTemplateWrapper, and an array of templates where each is tried to be loaded.
      *
-     * @param {string|TwingTemplate|Array<string|TwingTemplate>} names A template or an array of templates to try consecutively
+     * @param {string|TwingTemplate|TwingTemplateWrapper|Array<string|TwingTemplate>} names A template or an array of templates to try consecutively
      *
      * @returns {TwingTemplate|TwingTemplateWrapper}
      *
@@ -716,12 +716,13 @@ export class TwingEnvironment {
      */
     setExtensions(extensions: Array<TwingExtensionInterface>) {
         this.extensionSet.setExtensions(extensions);
+        this.updateOptionsHash();
     }
 
     /**
      * Returns all registered extensions.
      *
-     * @returns Array<TwingExtensionInterface> An array of extensions (keys are for internal usage only and should not be relied on)
+     * @returns Map<string, TwingExtensionInterface> A hash of extensions (keys are for internal usage only and should not be relied on)
      */
     getExtensions() {
         return this.extensionSet.getExtensions();

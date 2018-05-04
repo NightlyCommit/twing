@@ -73,7 +73,8 @@ let templates = new Map([
     ['1_basic', '{% if obj.foo %}{{ obj.foo|upper }}{% endif %}'],
     ['1_layout', '{% block content %}{% endblock %}'],
     ['1_child', "{% extends \"1_layout\" %}\n{% block content %}\n{{ \"a\"|json_encode }}\n{% endblock %}"],
-    ['1_include', '{{ include("1_basic1", sandboxed=true) }}']
+    ['1_include', '{{ include("1_basic1", sandboxed=true) }}'],
+    ['1_range_operator', '{{ (1..2)[0] }}']
 ]);
 
 let getEnvironment = function (sandboxed, options, templates, tags = [], filters = [], methods = new Map(), properties = new Map(), functions = []) {
@@ -232,12 +233,37 @@ tap.test('TwingExtensionSandbox', function (test) {
         test.end();
     });
 
+    test.test('sandboxUnallowedRangeOperator', function (test) {
+        let twing = getEnvironment(true, {}, templates, [], [], new Map([[FooObject, 'foo']]));
+
+        try {
+            twing.loadTemplate('1_range_operator').render(params);
+
+            test.fail('Sandbox throws a SecurityError exception if the unallowed range operator is called');
+        }
+        catch (e) {
+            test.true(e instanceof TwingSandboxSecurityNotAllowedFunctionError, 'Exception should be an instance of TwingSandboxSecurityNotAllowedFunctionError');
+            test.same(e.getFunctionName(), 'range', 'Exception should be raised on the "range" function');
+        }
+
+        test.end();
+    });
+
+
     test.test('sandboxAllowMethodFoo', function (test) {
         let twing = getEnvironment(true, {}, templates, [], [], new Map([[FooObject, 'foo']]));
 
         FooObject.reset();
         test.same(twing.loadTemplate('1_basic1').render(params), 'foo', 'Sandbox allow some methods');
         test.same(FooObject.called.get('foo'), 1, 'Sandbox only calls method once');
+
+        test.end();
+    });
+
+    test.test('sandboxAllowRangeOperator', function (test) {
+        let twing = getEnvironment(true, {}, templates, [], [], new Map(), new Map(), ['range']);
+
+        test.same(twing.loadTemplate('1_range_operator').render(params), '1', 'Sandbox allow the range operator');
 
         test.end();
     });

@@ -8,8 +8,6 @@ import {TwingProfilerNodeEnterProfile} from "../node/enter-profile";
 import {TwingProfilerNodeLeaveProfile} from "../node/leave-profile";
 
 const crypto = require('crypto');
-const uniqid = require('locutus/php/misc/uniqid');
-const mt_rand = require('locutus/php/math/mt_rand');
 
 export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     private extensionName: string;
@@ -74,7 +72,7 @@ export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     }
 
     private getVarName(): string {
-        return `__internal_${crypto.createHash('md5').update(uniqid(mt_rand(), true)).digest('hex')}`;
+        return `__internal_${crypto.createHash('sha256').update(this.extensionName).digest('hex')}`;
     }
 
     getPriority() {

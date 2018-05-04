@@ -18,10 +18,9 @@ import {TwingTokenParser} from "./token-parser";
 import {first} from "./helper/first";
 import {push} from "./helper/push";
 
-let ctype_space = require('locutus/php/ctype/ctype_space');
-let md5 = require('locutus/php/strings/md5');
-let uniqid = require('locutus/php/misc/uniqid');
-let mt_rand = require('locutus/php/math/mt_rand');
+const ctype_space = require('locutus/php/ctype/ctype_space');
+const mt_rand = require('locutus/php/math/mt_rand');
+const crypto = require('crypto');
 
 class TwingParserStackEntry {
     stream: TwingTokenStream;
@@ -59,13 +58,14 @@ export class TwingParser {
     private importedSymbols: Array<Map<string, Map<string, { name: string, node: TwingNodeExpression }>>>;
     private traits: Map<string, TwingNode>;
     private embeddedTemplates: Array<TwingNodeModule> = [];
+    private varNameSalt: number = 0;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${md5(uniqid(mt_rand(), true))}`;
+        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
@@ -112,6 +112,7 @@ export class TwingParser {
         this.blockStack = [];
         this.importedSymbols = [new Map()];
         this.embeddedTemplates = [];
+        this.varNameSalt = 0;
 
         let body: TwingNode;
 
@@ -392,7 +393,7 @@ export class TwingParser {
             }
 
             throw new TwingErrorSyntax(
-                `A template that extends another one cannot include contents outside Twig blocks. Did you forget to put the contents inside a {% block %} tag?`,
+                `A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag?`,
                 node.getTemplateLine(),
                 this.stream.getSourceContext());
         }

@@ -32,7 +32,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
                 definedArray: [0],
             },
             object: new TwingTestFoo(),
-        }
+        };
     }
 
     getConfig() {

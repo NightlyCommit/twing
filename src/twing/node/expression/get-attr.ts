@@ -20,6 +20,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         nodeAttributes.set('type', type);
         nodeAttributes.set('is_defined_test', false);
         nodeAttributes.set('ignore_strict_check', false);
+        nodeAttributes.set('optimizable', true);
 
         super(nodes, nodeAttributes, lineno);
 
@@ -27,7 +28,41 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.raw('Twing.twingGetAttribute(this.env, this.getSourceContext(), ');
+        let env = compiler.getEnvironment();
+
+        // optimize array, hash and Map calls
+        if (this.getAttribute('optimizable')
+            && (!env.isStrictVariables() || this.getAttribute('ignore_strict_check'))
+            && !this.getAttribute('is_defined_test')
+            && TwingTemplate.ARRAY_CALL === this.getAttribute('type')) {
+            let var_ = compiler.getVarName();
+
+            compiler
+                .raw('(() => {let ' + var_ + ' = ')
+                .subcompile(this.getNode('node'))
+                .raw('; return ')
+                .raw(var_)
+                .raw(' instanceof Map ? (')
+                .raw(var_)
+                .raw('.has(')
+                .subcompile(this.getNode('attribute'))
+                .raw(') ? ' + var_ + '.get(')
+                .subcompile(this.getNode('attribute'))
+                .raw(') : null) : (Array.isArray(')
+                .raw(var_)
+                .raw(') || Twing.isPlainObject(')
+                .raw(var_)
+                .raw(') ? ')
+                .raw(var_)
+                .raw('[')
+                .subcompile(this.getNode('attribute'))
+                .raw('] : null);})()')
+            ;
+
+            return;
+        }
+
+        compiler.raw('Twing.twingGetAttribute(this.env, this.source, ');
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);
@@ -38,7 +73,8 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         compiler.raw(', ').subcompile(this.getNode('attribute'));
 
         // only generate optional arguments when needed (to make generated code more readable)
-        let needFourth = this.getAttribute('ignore_strict_check');
+        let needFifth = env.hasExtension('TwingExtensionSandbox');
+        let needFourth = needFifth || this.getAttribute('ignore_strict_check');
         let needThird = needFourth || this.getAttribute('is_defined_test');
         let needSecond = needThird || this.getAttribute('type') !== TwingTemplate.ANY_CALL;
         let needFirst = needSecond || this.hasNode('arguments');
@@ -62,6 +98,10 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
 
         if (needFourth) {
             compiler.raw(', ').repr(this.getAttribute('ignore_strict_check'));
+        }
+
+        if (needFifth) {
+            compiler.raw(', ').repr(env.hasExtension('TwingExtensionSandbox'));
         }
 
         compiler.raw(')');

@@ -74,7 +74,7 @@ export class TwingExtensionSet {
     /**
      * Returns all registered extensions.
      *
-     * @return array An array of extensions
+     * @return Map<string, TwingExtensionInterface> A hash of extensions
      */
     getExtensions() {
         return this.extensions;

@@ -687,7 +687,7 @@ class ProjectTwingExtension extends Twing.Twing_Extension {
     }
 
     rot13($value) {
-        return rot13Provider.rot13($value);
+        return this.rot13Provider.rot13($value);
     }
 }
 ```
@@ -723,7 +723,7 @@ class ProjectTwingRuntimeExtension
     }
 
     rot13($value) {
-        return rot13Provider.rot13($value);
+        return this.rot13Provider.rot13($value);
     }
 }
 

@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'Exception for child templates defining contents outside blocks defined by parent';
+        return 'Exception for child templates defining content outside blocks defined by parent';
     }
 
     getTemplates() {
@@ -15,6 +15,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingErrorSyntax: A template that extends another one cannot include contents outside Twig blocks. Did you forget to put the contents inside a {% block %} tag in "index.twig" at line 3?';
+        return 'TwingErrorSyntax: A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag in "index.twig" at line 3?';
     }
 };

@@ -23,7 +23,7 @@ tap.test('node/sandboxed', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1
 (() => {
-    let sandbox = this.env.getExtension('TwingExtensionSandbox');
+    let sandbox = this.extensions.get('TwingExtensionSandbox');
     let alreadySandboxed = sandbox.isSandboxed();
     if (!alreadySandboxed) {
         sandbox.enableSandbox();

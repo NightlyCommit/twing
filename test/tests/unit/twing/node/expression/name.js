@@ -26,7 +26,7 @@ tap.test('node/expression/name', function (test) {
         let compiler1 = new TwingTestMockCompiler(new TwingTestEnvironmentStub(loader, {strict_variables: false}));
 
         test.same(compiler.compile(node).getSource(), `// line 1
-(context.has("foo") ? context.get("foo") : (() => { throw new Twing.TwingErrorRuntime('Variable "foo" does not exist.', 1, this.getSourceContext()); })())`);
+(context.has("foo") ? context.get("foo") : (() => { throw new Twing.TwingErrorRuntime('Variable "foo" does not exist.', 1, this.source); })())`);
         test.same(compiler1.compile(node).getSource(), `// line 1
 (context.has("foo") ? context.get("foo") : null)`);
         test.same(compiler.compile(self).getSource(), `// line 1

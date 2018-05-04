@@ -59,6 +59,8 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     constructor(env) {
         super(env);
 
+        this.source = this.getSourceContext();
+
         this.parent = false;
 
         this.blocks = new Map([
@@ -75,7 +77,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[19, 1]]);
+        return new Map([[21, 1]]);
     }
 
     getSourceContext() {
@@ -115,6 +117,8 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     constructor(env) {
         super(env);
 
+        this.source = this.getSourceContext();
+
         // line 1
         this.parent = this.loadTemplate("layout.twig", "foo.twig", 1);
         this.blocks = new Map([
@@ -141,7 +145,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[25, 1], [23, 2], [12, 1]]);
+        return new Map([[27, 1], [25, 2], [14, 1]]);
     }
 
     getSourceContext() {
@@ -195,6 +199,15 @@ module.exports = {};
 
 /* foo.twig */
 module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.TwingTemplate {
+    constructor(env) {
+        super(env);
+
+        this.source = this.getSourceContext();
+
+        this.blocks = new Map([
+        ]);
+    }
+
     doGetParent(context) {
         // line 2
         return this.loadTemplate(((true) ? ("foo") : ("foo")), "foo.twig", 2);
@@ -216,7 +229,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[17, 2], [15, 4], [10, 2]]);
+        return new Map([[26, 2], [24, 4], [19, 2]]);
     }
 
     getSourceContext() {

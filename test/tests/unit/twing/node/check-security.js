@@ -15,7 +15,7 @@ let filters = new Map([["bar", null]]);
 let functions = new Map([["bar", null]]);
 
 try {
-    this.env.getExtension('TwingExtensionSandbox').checkSecurity(
+    this.extensions.get('TwingExtensionSandbox').checkSecurity(
         ['bar'],
         ['bar'],
         ['bar']
@@ -23,7 +23,7 @@ try {
 }
 catch (e) {
     if (e instanceof Twing.TwingSandboxSecurityError) {
-        e.setSourceContext(this.getSourceContext());
+        e.setSourceContext(this.source);
 
         if (e instanceof Twing.TwingSandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
             e.setTemplateLine(tags.get(e.getTagName()));

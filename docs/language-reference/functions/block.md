@@ -13,7 +13,7 @@ When a template uses inheritance and if you want to print a block multiple times
 {% block body %}{% endblock %}
 ````
 
-The `block` function can also be used to display one block of another template:
+The `block` function can also be used to display one block from another template:
 
 ````twig
 {{ block("title", "common_blocks.twig") }}

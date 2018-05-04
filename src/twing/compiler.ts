@@ -6,9 +6,7 @@ import {ksort} from "./helper/ksort";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
-const md5 = require('locutus/php/strings/md5');
-const uniqid = require('locutus/php/misc/uniqid');
-const mt_rand = require('locutus/php/math/mt_rand');
+const crypto = require('crypto');
 
 export class TwingCompiler {
     private lastLine: number;
@@ -18,6 +16,7 @@ export class TwingCompiler {
     private debugInfo: Map<number, number>;
     private sourceOffset: number;
     private sourceLine: number;
+    private varNameSalt = 0;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
@@ -44,6 +43,7 @@ export class TwingCompiler {
         // source code starts at 1 (as we then increment it when we encounter new lines)
         this.sourceLine = 1;
         this.indentation = indentation;
+        this.varNameSalt = 0;
 
         this.subcompile(node);
 
@@ -254,6 +254,6 @@ export class TwingCompiler {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${md5(uniqid(mt_rand(), true))}`;
+        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.varNameSalt++).digest('hex')}`;
     }
 }

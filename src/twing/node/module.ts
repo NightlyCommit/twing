@@ -65,14 +65,7 @@ export class TwingNodeModule extends TwingNode {
 
         this.compileClassHeader(compiler);
 
-        if (this.getNode('blocks').getNodes().size ||
-            this.getNode('traits').getNodes().size ||
-            !this.hasNode('parent') ||
-            this.getNode('parent').getType() === TwingNodeType.EXPRESSION_CONSTANT ||
-            this.getNode('constructor_start').getNodes().size ||
-            this.getNode('constructor_end').getNodes().size) {
-            this.compileConstructor(compiler)
-        }
+        this.compileConstructor(compiler);
 
         this.compileGetParent(compiler);
 
@@ -138,7 +131,7 @@ export class TwingNodeModule extends TwingNode {
             .write('module.exports.')
             .raw(`${templateClass} = class ${templateClass} extends ${compiler.getEnvironment().getBaseTemplateClass()} `)
             .write('{\n')
-            .indent()
+            .indent();
     }
 
     protected compileConstructor(compiler: TwingCompiler) {
@@ -147,6 +140,7 @@ export class TwingNodeModule extends TwingNode {
             .indent()
             .subcompile(this.getNode('constructor_start'))
             .write('super(env);\n\n')
+            .write("this.source = this.getSourceContext();\n\n")
         ;
 
         // parent
