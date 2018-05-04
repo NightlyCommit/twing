@@ -1,7 +1,6 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingEnvironment} from "../environment";
 import {TwingNode, TwingNodeType} from "../node";
-
 import {TwingNodeSandboxedPrint} from "../node/sandboxed-print";
 import {TwingNodeExpression} from "../node/expression";
 import {TwingNodeCheckSecurity} from "../node/check-security";
@@ -41,6 +40,11 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             // look for functions
             if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && !this.functions.has(node.getAttribute('name'))) {
                 this.functions.set(node.getAttribute('name'), node);
+            }
+
+            // the .. operator is equivalent to the range() function
+            if (node.getType() === TwingNodeType.EXPRESSION_BINARY_RANGE && !(this.functions.has('range'))) {
+                this.functions.set('range', node);
             }
 
             // wrap print to check toString() calls

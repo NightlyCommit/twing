@@ -143,7 +143,7 @@ tap.test('parser', function (test) {
             fixtures.forEach(function (fixture) {
                 parser.filterBodyNodes(fixture);
             });
-        }, /A template that extends another one cannot include contents outside Twig blocks\. Did you forget to put the contents inside a {% block %} tag at line 1\?/);
+        }, /A template that extends another one cannot include content outside Twig blocks\. Did you forget to put the content inside a {% block %} tag at line 1\?/);
 
         test.end();
     });

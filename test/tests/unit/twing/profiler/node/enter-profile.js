@@ -6,7 +6,7 @@ const TwingNodeType = require('../../../../../../lib/twing/node').TwingNodeType;
 
 const tap = require('tap');
 
-tap.test('node/block', function (test) {
+tap.test('profiler/node/enter-profile', function (test) {
     test.test('constructor', function(test) {
         test.equals(new TwingProfilerNodeEnterProfile('extensionName', 'type', 'name', 'varName').getType(), TwingNodeType.PROFILER_ENTER_PROFILE);
 
@@ -17,7 +17,7 @@ tap.test('node/block', function (test) {
         let node = new TwingProfilerNodeEnterProfile('extensionName', 'type', 'name', 'varName');
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
-        test.same(compiler.compile(node).getSource(), `let varName = this.extensions["extensionName"];
+        test.same(compiler.compile(node).getSource(), `let varName = this.extensions.get("extensionName");
 let varNameProf = new Twing.TwingProfilerProfile(this.getTemplateName(), "type", "name");
 varName.enter(varNameProf);
 

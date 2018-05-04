@@ -357,6 +357,10 @@ tap.test('TwingExtensionCore', function (test) {
             }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a number variable ("5").', -1, source));
 
             test.throws(function () {
+                twingGetAttribute(env, source, [], 'foo', [], TwingTemplate.METHOD_CALL);
+            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on an array.', -1, source));
+
+            test.throws(function () {
                 twingGetAttribute(env, source, new TwingTestExtensionCoreTemplate(env), 'foo');
             }, new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.', -1));
 

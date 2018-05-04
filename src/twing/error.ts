@@ -208,6 +208,9 @@ export class TwingError extends Error {
                 let safeEnvironment = {
                     loadTemplate: () => {
                         return {};
+                    },
+                    getExtensions: () => {
+                        return new Map();
                     }
                 };
 

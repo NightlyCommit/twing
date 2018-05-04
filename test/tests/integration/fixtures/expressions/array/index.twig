@@ -35,3 +35,11 @@
 {% set ary = { (a): 'a', (b): 'b', 'c': 'c', (a ~ b): 'd' } %}
 {{ ary|keys|join(',') }}
 {{ ary|join(',') }}
+
+{# ArrayAccess #}
+{{ array_access['a'] }}
+
+{# array that does not exist #}
+{{ does_not_exist[0]|default('ok') }}
+{{ does_not_exist[0].does_not_exist_either|default('ok') }}
+{{ does_not_exist[0]['does_not_exist_either']|default('ok') }}

@@ -3,6 +3,7 @@ import {compare} from "./twing/helper/compare";
 import {count} from "./twing/helper/count";
 import {each} from "./twing/helper/each";
 import {isCountable} from "./twing/helper/is-countable";
+import {isPlainObject} from "./twing/helper/is-plain-object";
 import {iteratorToMap} from "./twing/helper/iterator-to-map";
 import {merge} from "./twing/helper/merge";
 import {regexParser} from "./twing/helper/regex-parser";
@@ -34,6 +35,7 @@ let Twing = {
     echo: echo,
     flush: flush,
     isCountable: isCountable,
+    isPlainObject: isPlainObject,
     iteratorToMap: iteratorToMap,
     merge: merge,
     obEndClean: obEndClean,

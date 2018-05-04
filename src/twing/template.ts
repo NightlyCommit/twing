@@ -19,6 +19,7 @@ import {TwingTemplateWrapper} from "./template-wrapper";
 import {TwingOutputBuffering} from './output-buffering';
 import {iteratorToMap} from "./helper/iterator-to-map";
 import {merge as twingMerge} from "./helper/merge";
+import {TwingExtensionInterface} from "./extension-interface";
 
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
@@ -31,8 +32,14 @@ export abstract class TwingTemplate {
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
 
+    /**
+     * @internal
+     */
+    protected extensions: Map<string, TwingExtensionInterface> = new Map();
+
     constructor(env: TwingEnvironment) {
         this.env = env;
+        this.extensions = env.getExtensions();
     }
 
     /**

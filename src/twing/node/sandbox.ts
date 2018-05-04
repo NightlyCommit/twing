@@ -15,7 +15,7 @@ export class TwingNodeSandbox extends TwingNode {
             .write("(")
             .raw("() => {\n")
             .indent()
-            .write("let sandbox = this.env.getExtension('TwingExtensionSandbox');\n")
+            .write("let sandbox = this.extensions.get('TwingExtensionSandbox');\n")
             .write('let alreadySandboxed = sandbox.isSandboxed();\n')
             .write("if (!alreadySandboxed) {\n")
             .indent()

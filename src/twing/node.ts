@@ -11,6 +11,7 @@ export enum TwingNodeType {
     EXPRESSION_ARRAY = 'expression_array',
     EXPRESSION_ASSIGN_NAME = 'expression_assign_name',
     EXPRESSION_BINARY = 'expression_binary',
+    EXPRESSION_BINARY_RANGE = 'expression_binary_range',
     EXPRESSION_BLOCK_REFERENCE = 'expression_block_reference',
     EXPRESSION_CONDITIONAL = 'expression_conditional',
     EXPRESSION_CONSTANT = 'expression_constant',

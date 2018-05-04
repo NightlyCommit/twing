@@ -2,26 +2,19 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'Twing supports array notation';
+        return 'Block names are unique per template';
     }
 
     getTemplates() {
         let templates = super.getTemplates();
 
         templates.set('index.twig', require('./index.twig'));
+        templates.set('layout', require('./layout.twig'));
 
         return templates;
     }
 
     getExpected() {
         return require('./expected.html');
-    }
-
-    getData() {
-        return {
-            bar: 'bar',
-            foo: new Map([['bar', 'bar']]),
-            array_access: new Map([['a', 'b']])
-        };
     }
 };
