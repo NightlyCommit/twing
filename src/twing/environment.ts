@@ -399,7 +399,7 @@ export class TwingEnvironment {
 
                 fileName = mainCls + ' : eval()\'d code';
 
-                templates = _eval(content, fileName, {Map: Map}, true);
+                templates = _eval(content, fileName, {}, true);
 
                 TwingReflectionObject.register(cls, {
                     fileName: fileName
