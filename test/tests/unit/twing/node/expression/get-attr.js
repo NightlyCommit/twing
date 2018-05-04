@@ -38,7 +38,7 @@ tap.test('node/expression/get-attr', function (test) {
         node = new TwingNodeExpressionGetAttr(expr, attr, args, TwingTemplate.ARRAY_CALL, 1);
 
         test.same(compiler.compile(node).getSource(), `(() => {let __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239 = // line 1
-(context.has("foo") ? context.get("foo") : null); return __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239 instanceof Map ? (__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239.has("bar") ? __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239.get("bar") : null) : (Array.isArray(__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239) || Twing.isPlainObject(__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239) ? __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239["bar"] : null);})()`);
+(context.has("foo") ? context.get("foo") : null); return Twing.isMap(__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239) ? (__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239.has("bar") ? __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239.get("bar") : null) : (Array.isArray(__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239) || Twing.isPlainObject(__internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239) ? __internal_db3e1c01682349779479a9f3dcd1cf998f827b204c72ea9c5de4bf8e120c6239["bar"] : null);})()`);
 
         args = new TwingNodeExpressionArray(new Map(), 1);
         args.addElement(new TwingNodeExpressionName('foo', 1));

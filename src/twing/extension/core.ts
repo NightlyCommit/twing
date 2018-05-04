@@ -91,6 +91,7 @@ import {asort} from "../helper/asort";
 import {reverse} from "../helper/reverse";
 import {first} from "../helper/first";
 import {TwingMarkup} from "../markup";
+import {isMap} from "../helper/is-map";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -1789,10 +1790,6 @@ export function twingArrayBatch(items: Array<any>, size: number, fill: any = nul
  */
 export function twingGetAttribute(env: TwingEnvironment, source: TwingSource, object: any, item: any, _arguments: Array<any> = [], type: string = TwingTemplate.ANY_CALL, isDefinedTest: boolean = false, ignoreStrictCheck: boolean = false, sandboxed: boolean = false) {
     let message: string;
-
-    let isMap = function(candidate: any): boolean {
-        return (candidate && (typeof candidate.has === 'function') && (typeof candidate.get === 'function'));
-    };
 
     // ANY_CALL or ARRAY_CALL
     if (type !== TwingTemplate.METHOD_CALL) {
