@@ -1,3 +1,8 @@
+1.0.1
+
+ * Catch-up with TwigPHP 2.4.8
+ * Add a changelog
+
 1.0.0
 
  * Initial release based on TwigPHP 2.4.4
