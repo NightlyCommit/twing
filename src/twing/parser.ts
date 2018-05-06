@@ -71,7 +71,7 @@ export class TwingParser {
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
         let self = this;
 
-        // console.warn(stream);
+        console.warn(stream);
 
         this.stack.push(new TwingParserStackEntry(
             this.stream,
@@ -181,7 +181,7 @@ export class TwingParser {
             switch (this.getCurrentToken().getType()) {
                 case TwingToken.TEXT_TYPE:
                     token = this.stream.next();
-                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine()));
+                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine(), token.getColumn()));
 
                     break;
                 case TwingToken.VAR_START_TYPE:

@@ -15,11 +15,13 @@ export class TwingToken {
     private value: string;
     private type: number;
     private lineno: number;
+    private columnno: number;
 
-    constructor(type: number, value: string, lineno: number) {
+    constructor(type: number, value: string, lineno: number, columnno: number) {
         this.type = type;
         this.value = value;
         this.lineno = lineno;
+        this.columnno = columnno;
     }
 
     /**
@@ -141,6 +143,13 @@ export class TwingToken {
      */
     public getLine() {
         return this.lineno;
+    }
+
+    /**
+     * @return int
+     */
+    public getColumn() {
+        return this.columnno;
     }
 
     public getType() {

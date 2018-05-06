@@ -19,21 +19,21 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
         let parentToken;
         let fakeParentToken;
 
-        parentToken = fakeParentToken = new TwingToken(TwingToken.STRING_TYPE, '__parent__', token.getLine());
+        parentToken = fakeParentToken = new TwingToken(TwingToken.STRING_TYPE, '__parent__', token.getLine(), token.getColumn());
 
         if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
-            parentToken = new TwingToken(TwingToken.STRING_TYPE, parent.getAttribute('value'), token.getLine());
+            parentToken = new TwingToken(TwingToken.STRING_TYPE, parent.getAttribute('value'), token.getLine(), token.getColumn());
         }
         else if (parent.getType() === TwingNodeType.EXPRESSION_NAME) {
-            parentToken = new TwingToken(TwingToken.NAME_TYPE, parent.getAttribute('name'), token.getLine());
+            parentToken = new TwingToken(TwingToken.NAME_TYPE, parent.getAttribute('name'), token.getLine(), token.getColumn());
         }
 
         // inject a fake parent to make the parent() function work
         stream.injectTokens([
-            new TwingToken(TwingToken.BLOCK_START_TYPE, '', token.getLine()),
-            new TwingToken(TwingToken.NAME_TYPE, 'extends', token.getLine()),
+            new TwingToken(TwingToken.BLOCK_START_TYPE, '', token.getLine(), token.getColumn()),
+            new TwingToken(TwingToken.NAME_TYPE, 'extends', token.getLine(), token.getColumn()),
             parentToken,
-            new TwingToken(TwingToken.BLOCK_END_TYPE, '', token.getLine()),
+            new TwingToken(TwingToken.BLOCK_END_TYPE, '', token.getLine(), token.getColumn()),
         ]);
 
         let module = this.parser.parse(stream, [this, this.decideBlockEnd], true);

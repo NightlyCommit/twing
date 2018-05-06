@@ -47,6 +47,7 @@ export class TwingLexer {
     private end: number;
     private env: TwingEnvironment;
     private lineno: number;
+    private columnno: number;
     private options: {
         interpolation: Array<string>,
         tag_block: Array<string>,
@@ -125,6 +126,7 @@ export class TwingLexer {
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;
+        this.columnno = 1;
         this.tokens = [];
         this.state = TwingLexer.STATE_DATA;
         this.states = [];
@@ -435,7 +437,14 @@ export class TwingLexer {
     private moveCursor(text: string) {
         this.cursor += text.length;
 
-        this.lineno += (text.split('\n').length - 1);
+        let lineCount = text.split('\n').length - 1;
+
+        if (lineCount > 0) {
+            this.lineno += lineCount;
+            this.columnno = 1;
+        }
+
+        this.columnno += (text.length - lineCount);
     }
 
     private getOperatorRegEx() {
@@ -478,7 +487,7 @@ export class TwingLexer {
             return;
         }
 
-        this.tokens.push(new TwingToken(type, value, this.lineno));
+        this.tokens.push(new TwingToken(type, value, this.lineno, this.columnno));
     }
 
     private pushState(state: number) {

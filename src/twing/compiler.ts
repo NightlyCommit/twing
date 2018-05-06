@@ -253,6 +253,14 @@ export class TwingCompiler {
         return this;
     }
 
+    getSourceLine() {
+        return this.sourceLine;
+    }
+
+    getSourceOffset() {
+        return this.sourceOffset;
+    }
+
     getVarName(prefix: string = '__internal_'): string {
         return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.varNameSalt++).digest('hex')}`;
     }
