@@ -126,7 +126,7 @@ export class TwingLexer {
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;
-        this.columnno = 1;
+        this.columnno = 0;
         this.tokens = [];
         this.state = TwingLexer.STATE_DATA;
         this.states = [];
@@ -209,7 +209,9 @@ export class TwingLexer {
         }
 
         this.pushTwingToken(TwingToken.TEXT_TYPE, text);
-        this.moveCursor(textContent + position[0]);
+        this.moveCursor(textContent);
+
+        console.warn(this.cursor);
 
         switch (position[1]) {
             case this.options.tag_comment[0]:
@@ -222,8 +224,8 @@ export class TwingLexer {
                 if ((match = this.regexes.lex_block_raw.exec(this.code.substring(this.cursor))) !== null) {
                     this.moveCursor(match[0]);
                     this.lexRawData();
-                    // {% line \d+ %}
                 }
+                // {% line \d+ %}
                 else if ((match = this.regexes.lex_block_line.exec(this.code.substring(this.cursor))) !== null) {
                     this.moveCursor(match[0]);
                     this.lineno = parseInt(match[1]);
@@ -240,6 +242,8 @@ export class TwingLexer {
                 this.currentVarBlockLine = this.lineno;
                 break;
         }
+
+        this.moveCursor(textContent + position[0]);
     }
 
     private lexBlock() {
@@ -248,6 +252,7 @@ export class TwingLexer {
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_block.exec(string)) !== null)) {
             this.pushTwingToken(TwingToken.BLOCK_END_TYPE);
+
             this.moveCursor(match[0]);
             this.popState();
         }
@@ -334,7 +339,8 @@ export class TwingLexer {
 
             this.pushTwingToken(TwingToken.PUNCTUATION_TYPE, punctuationCandidate);
 
-            this.cursor++;
+            // this.cursor++;
+            this.moveCursor(' ');
         }
         // strings
         else if ((match = TwingLexer.REGEX_STRING.exec(candidate)) !== null) {
@@ -370,13 +376,12 @@ export class TwingLexer {
 
         let text = this.code.substr(this.cursor, match.index);
 
-        this.moveCursor(text + match[0]);
-
         if (match[1].indexOf(this.options.whitespace_trim) > -1) {
             text = text.trimRight();
         }
 
         this.pushTwingToken(TwingToken.TEXT_TYPE, text);
+        this.moveCursor(text + match[0]);
     }
 
     private lexComment() {
@@ -416,7 +421,8 @@ export class TwingLexer {
             // }
 
             this.popState();
-            this.cursor++;
+            // this.cursor++;
+            this.moveCursor(' ');
         }
     }
 
@@ -435,7 +441,12 @@ export class TwingLexer {
     }
 
     private moveCursor(text: string) {
+        console.warn('moveCursor "' +  text + '"');
+
         this.cursor += text.length;
+        this.columnno = this.cursor; // 0-based
+        console.warn('> this.cursor', this.cursor);
+        console.warn('> this.columnno', this.columnno);
 
         let lineCount = text.split('\n').length - 1;
 
@@ -444,7 +455,7 @@ export class TwingLexer {
             this.columnno = 1;
         }
 
-        this.columnno += (text.length - lineCount);
+        // this.columnno += (text.length - lineCount);
     }
 
     private getOperatorRegEx() {
