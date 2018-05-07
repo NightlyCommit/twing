@@ -211,7 +211,8 @@ export class TwingLexer {
         this.pushTwingToken(TwingToken.TEXT_TYPE, text);
         this.moveCursor(textContent);
 
-        console.warn(this.cursor);
+        console.warn(this.positions);
+        console.warn(textContent);
 
         switch (position[1]) {
             case this.options.tag_comment[0]:
@@ -243,7 +244,7 @@ export class TwingLexer {
                 break;
         }
 
-        this.moveCursor(textContent + position[0]);
+        this.moveCursor(position[0]);
     }
 
     private lexBlock() {
@@ -441,12 +442,12 @@ export class TwingLexer {
     }
 
     private moveCursor(text: string) {
-        console.warn('moveCursor "' +  text + '"');
+        // console.warn('moveCursor "' +  text + '"');
 
         this.cursor += text.length;
         this.columnno = this.cursor; // 0-based
-        console.warn('> this.cursor', this.cursor);
-        console.warn('> this.columnno', this.columnno);
+        // console.warn('> this.cursor', this.cursor);
+        // console.warn('> this.columnno', this.columnno);
 
         let lineCount = text.split('\n').length - 1;
 

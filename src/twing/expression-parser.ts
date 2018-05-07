@@ -278,8 +278,6 @@ export class TwingExpressionParser {
 
         stream.expect(TwingToken.PUNCTUATION_TYPE, '[', 'An array element was expected');
 
-        console.warn(stream);
-
         let node = new TwingNodeExpressionArray(new Map(), stream.getCurrent().getLine(), stream.getCurrent().getColumn());
         let first = true;
 

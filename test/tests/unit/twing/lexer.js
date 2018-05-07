@@ -29,42 +29,151 @@ let countToken = function (template, type, value = null) {
 };
 
 tap.test('lexer', function (test) {
-    // test.test('testNameLabelForTag', function (test) {
-    //     let lexer = createLexer();
-    //     let data = '{% § %}';
-    //
-    //     let stream = lexer.tokenize(new TwingSource(data, 'index'));
-    //
-    //     stream.expect(TwingToken.BLOCK_START_TYPE);
-    //
-    //     test.same(stream.expect(TwingToken.NAME_TYPE).getValue(), '§');
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testNameLabelForFunction', function (test) {
-    //     let lexer = createLexer();
-    //     let data = '{{ §() }}';
-    //
-    //     test.doesNotThrow(function () {
-    //         let stream = lexer.tokenize(new TwingSource(data, 'index'));
-    //
-    //         stream.expect(TwingToken.VAR_START_TYPE);
-    //
-    //         test.same(stream.expect(TwingToken.NAME_TYPE).getValue(), '§');
-    //     });
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testBracketsNesting', function (test) {
-    //     let template = '{{ {"a":{"b":"c"}} }}';
-    //
-    //     test.equal(countToken(template, TwingToken.PUNCTUATION_TYPE, '{'), 2);
-    //     test.equal(countToken(template, TwingToken.PUNCTUATION_TYPE, '}'), 2);
-    //
-    //     test.end();
-    // });
+    test.test('testNameLabelForTag', function (test) {
+        let lexer = createLexer();
+        let data = '{% § %}';
+
+        let token;
+        let stream = lexer.tokenize(new TwingSource(data, 'index'));
+
+        token = stream.expect(TwingToken.BLOCK_START_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 0);
+
+        token = stream.expect(TwingToken.NAME_TYPE);
+
+        test.same(token.getValue(), '§');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 3);
+
+        token = stream.expect(TwingToken.BLOCK_END_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 4);
+
+        test.end();
+    });
+
+    test.test('testNameLabelForFunction', function (test) {
+        let lexer = createLexer();
+        let data = '{{ §() }}';
+
+        let token;
+        let stream = lexer.tokenize(new TwingSource(data, 'index'));
+
+        token = stream.expect(TwingToken.VAR_START_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 0);
+
+        token = stream.expect(TwingToken.NAME_TYPE);
+
+        test.same(token.getValue(), '§');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 3);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), '(');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 4);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), ')');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 5);
+
+        token = stream.expect(TwingToken.VAR_END_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 6);
+
+        test.end();
+    });
+
+    test.test('testBracketsNesting', function (test) {
+        let lexer = createLexer();
+        let data = '{{ {"a":{"b":"c"}} }}';
+
+        let token;
+        let stream = lexer.tokenize(new TwingSource(data, 'index'));
+
+        console.warn(stream);
+
+        token = stream.expect(TwingToken.VAR_START_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 0);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), '{');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 3);
+
+        token = stream.expect(TwingToken.STRING_TYPE);
+
+        test.same(token.getValue(), 'a');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 4);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), ':');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 7);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), '{');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 8);
+
+        token = stream.expect(TwingToken.STRING_TYPE);
+
+        test.same(token.getValue(), 'b');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 9);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), ':');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 12);
+
+        token = stream.expect(TwingToken.STRING_TYPE);
+
+        test.same(token.getValue(), 'c');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 13);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), '}');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 16);
+
+        token = stream.expect(TwingToken.PUNCTUATION_TYPE);
+
+        test.same(token.getValue(), '}');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 17);
+
+        token = stream.expect(TwingToken.VAR_END_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 18);
+
+        test.end();
+    });
     //
     // test.test('testLineDirective', function (test) {
     //     let template = 'foo\nbar\n{% line 10 %}\n{{\nbaz\n}}\n';
@@ -410,21 +519,27 @@ tap.test('lexer', function (test) {
     //     test.end();
     // });
 
-    test.test('token column', function(test) {
-        test.test('block', function(test) {
+    test.test('token column', function (test) {
+        test.test('basic', function (test) {
             let lexer = createLexer();
-            let data = '{% foo %}';
+            let data = '{% block foo %}bar{% endblock %}';
 
             let token;
             let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-            token = stream.expect(TwingToken.BLOCK_START_TYPE);
-
-            test.same(token.getColumn(), 0);
-
-            token = stream.expect(TwingToken.BLOCK_END_TYPE);
-
-            test.same(token.getColumn(), 6);
+            console.warn(stream);
+            //
+            // token = stream.expect(TwingToken.BLOCK_START_TYPE);
+            //
+            // test.same(token.getColumn(), 0);
+            //
+            // token = stream.expect(TwingToken.NAME_TYPE);
+            //
+            // test.same(token.getColumn(), 3);
+            //
+            // token = stream.expect(TwingToken.BLOCK_END_TYPE);
+            //
+            // test.same(token.getColumn(), 6);
 
             test.end();
         });

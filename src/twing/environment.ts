@@ -614,8 +614,6 @@ export class TwingEnvironment {
                 throw e;
             }
             else {
-                console.warn(e);
-
                 throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.message}").`, -1, source, e);
             }
         }
