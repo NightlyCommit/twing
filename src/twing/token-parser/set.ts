@@ -18,6 +18,7 @@ import {TwingNodeSet} from "../node/set";
 export class TwingTokenParserSet extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let stream = this.parser.getStream();
         let names = this.parser.getExpressionParser().parseAssignmentExpression();
 
@@ -47,7 +48,7 @@ export class TwingTokenParserSet extends TwingTokenParser {
             stream.expect(TwingToken.BLOCK_END_TYPE);
         }
 
-        return new TwingNodeSet(capture, names, values, lineno, this.getTag());
+        return new TwingNodeSet(capture, names, values, lineno, columnno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

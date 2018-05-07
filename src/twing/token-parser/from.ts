@@ -38,7 +38,7 @@ export class TwingTokenParserFrom extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.getLine()), token.getLine(), this.getTag());
+        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.getLine(), token.getColumn()), token.getLine(), token.getColumn(), this.getTag());
 
         for (let [name, alias] of targets) {
             this.parser.addImportedSymbol('function', alias, `macro_${name}`, node.getNode('var') as TwingNodeExpression);

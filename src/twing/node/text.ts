@@ -5,8 +5,8 @@ import {TwingNodeOutputInterface} from "../node-output-interface";
 export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
 
-    constructor(data: string, line: number, column: number) {
-        super(new Map(), new Map([['data', data]]), line, column);
+    constructor(data: string, lineno: number, columnno: number) {
+        super(new Map(), new Map([['data', data]]), lineno, columnno);
 
         this.type = TwingNodeType.TEXT;
 

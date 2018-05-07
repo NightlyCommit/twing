@@ -9,13 +9,13 @@ import {TwingNodeExpression} from "./expression";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeImport extends TwingNode {
-    constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, tag: string = null) {
+    constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('expr', expr);
         nodes.set('var', varName);
 
-        super(nodes, new Map(), lineno, tag);
+        super(nodes, new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.IMPORT;
     }

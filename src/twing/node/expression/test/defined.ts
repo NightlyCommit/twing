@@ -16,7 +16,7 @@ import {TwingCompiler} from "../../../compiler";
  * </pre>
  */
 export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
-    constructor(node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
+    constructor(node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
         let changeIgnoreStrictCheck = false;
         let error = null;
 
@@ -34,13 +34,13 @@ export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
             node.setAttribute('is_defined_test', true);
         }
         else if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY) {
-            node = new TwingNodeExpressionConstant(true, node.getTemplateLine());
+            node = new TwingNodeExpressionConstant(true, node.getTemplateLine(), node.getTemplateColumn());
         }
         else {
             error = 'The "defined" test only works with simple variables.';
         }
 
-        super(node, name, nodeArguments, lineno);
+        super(node, name, nodeArguments, lineno, columnno);
 
         if (changeIgnoreStrictCheck) {
             this.changeIgnoreStrictCheck(node);

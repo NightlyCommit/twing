@@ -21,6 +21,7 @@ import {TwingNodeFor} from "../node/for";
 export class TwingTokenParserFor extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let stream = this.parser.getStream();
         let targets = this.parser.getExpressionParser().parseAssignmentExpression();
 
@@ -53,15 +54,15 @@ export class TwingTokenParserFor extends TwingTokenParser {
 
         if ((targets.getNodes().size) > 1) {
             keyTarget = targets.getNode(0);
-            keyTarget = new TwingNodeExpressionAssignName(keyTarget.getAttribute('name'), keyTarget.getTemplateLine());
+            keyTarget = new TwingNodeExpressionAssignName(keyTarget.getAttribute('name'), keyTarget.getTemplateLine(), keyTarget.getTemplateColumn());
 
             valueTarget = targets.getNode(1);
-            valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine());
+            valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine(), valueTarget.getTemplateColumn());
         } else {
-            keyTarget = new TwingNodeExpressionAssignName('_key', lineno);
+            keyTarget = new TwingNodeExpressionAssignName('_key', lineno, columnno);
 
             valueTarget = targets.getNode(0);
-            valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine());
+            valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine(), valueTarget.getTemplateColumn());
         }
 
         if (ifexpr) {
@@ -69,7 +70,7 @@ export class TwingTokenParserFor extends TwingTokenParser {
             this.checkLoopUsageBody(stream, body);
         }
 
-        return new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, elseToken, lineno, this.getTag());
+        return new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, elseToken, lineno, columnno, this.getTag());
     }
 
     decideForFork(token: TwingToken) {

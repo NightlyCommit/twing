@@ -47,7 +47,7 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeEmbed(module.getTemplateName(), module.getAttribute('index'), variables, only, ignoreMissing, token.getLine(), this.getTag());
+        return new TwingNodeEmbed(module.getTemplateName(), module.getAttribute('index'), variables, only, ignoreMissing, token.getLine(), token.getColumn(), this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

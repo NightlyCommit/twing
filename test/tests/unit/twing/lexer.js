@@ -35,9 +35,23 @@ tap.test('lexer', function (test) {
 
         let stream = lexer.tokenize(new TwingSource(data, 'index'));
 
-        stream.expect(TwingToken.BLOCK_START_TYPE);
+        let token = stream.expect(TwingToken.BLOCK_START_TYPE);
 
-        test.same(stream.expect(TwingToken.NAME_TYPE).getValue(), '§');
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 1);
+
+        token = stream.expect(TwingToken.NAME_TYPE);
+
+        test.same(token.getValue(), '§');
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 3);
+
+        token = stream.expect(TwingToken.BLOCK_END_TYPE);
+
+        test.same(token.getValue(), null);
+        test.same(token.getLine(), 1);
+        test.same(token.getColumn(), 6);
 
         test.end();
     });

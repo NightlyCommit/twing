@@ -7,12 +7,12 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
 
-    constructor(expr: TwingNodeExpression, line: number, tag: string = null) {
+    constructor(expr: TwingNodeExpression, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('expr', expr);
 
-        super(nodes, new Map(), line, tag);
+        super(nodes, new Map(), lineno, columnno, tag);
 
         this.TwingNodeOutputInterfaceImpl = this;
 

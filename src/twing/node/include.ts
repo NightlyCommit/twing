@@ -4,7 +4,7 @@ import {TwingNodeExpression} from "./expression";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeInclude extends TwingNode {
-    constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, tag: string = null) {
+    constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('expr', expr);
@@ -13,7 +13,7 @@ export class TwingNodeInclude extends TwingNode {
             nodes.set('variables', variables);
         }
 
-        super(nodes, new Map([['only', only], ['ignore_missing', ignoreMissing]]), lineno, tag);
+        super(nodes, new Map([['only', only], ['ignore_missing', ignoreMissing]]), lineno, columnno, tag);
 
         this.type = TwingNodeType.INCLUDE;
     }

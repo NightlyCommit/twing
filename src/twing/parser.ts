@@ -71,8 +71,6 @@ export class TwingParser {
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
         let self = this;
 
-        console.warn(stream);
-
         this.stack.push(new TwingParserStackEntry(
             this.stream,
             this.parent,
@@ -189,7 +187,7 @@ export class TwingParser {
                     let expression = this.expressionParser.parseExpression();
 
                     this.stream.expect(TwingToken.VAR_END_TYPE);
-                    rv.set(i++, new TwingNodePrint(expression, token.getLine()));
+                    rv.set(i++, new TwingNodePrint(expression, token.getLine(), token.getColumn()));
 
                     break;
                 case TwingToken.BLOCK_START_TYPE:

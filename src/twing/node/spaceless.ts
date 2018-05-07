@@ -3,12 +3,12 @@ import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeSpaceless extends TwingNode {
-    constructor(body: TwingNode, lineno: number, tag = 'spaceless') {
+    constructor(body: TwingNode, lineno: number, columnno: number, tag = 'spaceless') {
         let nodes = new Map();
 
         nodes.set('body', body);
 
-        super(nodes, new Map(), lineno, tag);
+        super(nodes, new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.SPACELESS;
     }

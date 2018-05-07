@@ -7,7 +7,6 @@ import {TwingNodeExpressionArray} from "./array";
 import {TwingReflectionParameter} from "../../reflection-parameter";
 import {TwingReflectionMethod} from "../../reflection-method";
 import {TwingCompiler} from "../../compiler";
-import {TwingExtension} from "../../extension";
 import {TwingEnvironment} from "../../environment";
 
 const array_merge = require('locutus/php/array/array_merge');
@@ -177,7 +176,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 ++pos;
             }
             else if (callableParameter.isDefaultValueAvailable()) {
-                optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1));
+                optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1, -1));
             }
             else {
                 throw new TwingErrorSyntax(`Value for argument "${name}" is required for ${callType} "${callName}".`);
@@ -185,7 +184,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         }
 
         if (isVariadic) {
-            let arbitraryArguments = new TwingNodeExpressionArray(new Map(), -1);
+            let arbitraryArguments = new TwingNodeExpressionArray(new Map(), -1, -1);
             let resolvedKeys: Array<any> = [];
 
             for (let [key, value] of parameters) {
@@ -193,7 +192,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                     arbitraryArguments.addElement(value);
                 }
                 else {
-                    arbitraryArguments.addElement(value, new TwingNodeExpressionConstant(key, -1));
+                    arbitraryArguments.addElement(value, new TwingNodeExpressionConstant(key, -1, -1));
                 }
 
                 resolvedKeys.push(key);

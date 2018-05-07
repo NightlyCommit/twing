@@ -11,7 +11,7 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodeMacro extends TwingNode {
     static VARARGS_NAME = 'varargs';
 
-    constructor(name: string, body: TwingNode, macroArguments: TwingNode, lineno: number, tag: string = null) {
+    constructor(name: string, body: TwingNode, macroArguments: TwingNode, lineno: number, columnno: number, tag: string = null) {
         for (let [argumentName, macroArgument] of macroArguments.getNodes()) {
             if (argumentName === TwingNodeMacro.VARARGS_NAME) {
                 throw new TwingErrorSyntax(`The argument "${TwingNodeMacro.VARARGS_NAME}" in macro "${name}" cannot be defined because the variable "${TwingNodeMacro.VARARGS_NAME}" is reserved for arbitrary arguments.`, macroArgument.getTemplateLine());
@@ -23,7 +23,7 @@ export class TwingNodeMacro extends TwingNode {
         nodes.set('body', body);
         nodes.set('arguments', macroArguments);
 
-        super(nodes, new Map([['name', name]]), lineno, tag);
+        super(nodes, new Map([['name', name]]), lineno, columnno, tag);
 
         this.type = TwingNodeType.MACRO;
     }

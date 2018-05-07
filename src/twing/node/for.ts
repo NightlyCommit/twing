@@ -9,8 +9,8 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
 
-    constructor(keyTarget: TwingNodeExpressionAssignName, valueTarget: TwingNodeExpressionAssignName, seq: TwingNodeExpression, ifexpr: TwingNodeExpression, body: TwingNode, elseNode: TwingNode, lineno: number, tag: string = null) {
-        let loop = new TwingNodeForLoop(lineno, tag);
+    constructor(keyTarget: TwingNodeExpressionAssignName, valueTarget: TwingNodeExpressionAssignName, seq: TwingNodeExpression, ifexpr: TwingNodeExpression, body: TwingNode, elseNode: TwingNode, lineno: number, columnno: number, tag: string = null) {
+        let loop = new TwingNodeForLoop(lineno, columnno, tag);
 
         let bodyNodes = new Map();
         let i: number = 0;
@@ -27,7 +27,7 @@ export class TwingNodeFor extends TwingNode {
             ifNodes.set(i++, ifexpr);
             ifNodes.set(i++, body);
 
-            body = new TwingNodeIf(new TwingNode(ifNodes), null, lineno, tag);
+            body = new TwingNodeIf(new TwingNode(ifNodes), null, lineno, columnno, tag);
         }
 
         let nodes = new Map();
@@ -46,7 +46,7 @@ export class TwingNodeFor extends TwingNode {
         attributes.set('with_loop', true);
         attributes.set('ifexpr', ifexpr !== null);
 
-        super(nodes, attributes, lineno, tag);
+        super(nodes, attributes, lineno, columnno, tag);
 
         this.type = TwingNodeType.FOR;
         this.loop = loop;

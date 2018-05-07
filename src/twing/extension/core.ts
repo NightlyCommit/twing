@@ -280,8 +280,8 @@ export class TwingExtensionCore extends TwingExtension {
 
             // iteration and runtime
             [i++, new TwingFilter('default', twingDefaultFilter, {
-                expression_factory: function (node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string) {
-                    return new TwingNodeExpressionFilterDefault(node, filterName, methodArguments, lineno, tag);
+                expression_factory: function (node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, columnno: number, tag: string) {
+                    return new TwingNodeExpressionFilterDefault(node, filterName, methodArguments, lineno, columnno, tag);
                 }
             })],
             [i++, new TwingFilter('keys', twingGetArrayKeysFilter)],
@@ -321,43 +321,43 @@ export class TwingExtensionCore extends TwingExtension {
     getTests(): Array<TwingTest> {
         return [
             new TwingTest('even', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestEven(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestEven(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('odd', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestOdd(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestOdd(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('defined', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestDefined(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestDefined(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('same as', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestSameAs(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestSameAs(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('none', null, {
-                node_factory: function (node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestNull(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestNull(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('null', null, {
-                node_factory: function (node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestNull(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestNull(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('divisible by', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestDivisibleBy(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestDivisibleBy(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('constant', null, {
-                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                    return new TwingNodeExpressionTestConstant(node, name, nodeArguments, lineno);
+                node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                    return new TwingNodeExpressionTestConstant(node, name, nodeArguments, lineno, columnno);
                 }
             }),
             new TwingTest('empty', twingTestEmpty),
@@ -370,20 +370,20 @@ export class TwingExtensionCore extends TwingExtension {
             new Map([
                 ['not', {
                     precedence: 50,
-                    factory: function (expr: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionUnaryNot(expr, lineno) as any;
+                    factory: function (expr: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionUnaryNot(expr, lineno, columnno) as any;
                     }
                 }],
                 ['-', {
                     precedence: 500,
-                    factory: function (expr: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionUnaryNeg(expr, lineno) as any;
+                    factory: function (expr: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionUnaryNeg(expr, lineno, columnno) as any;
                     }
                 }],
                 ['+', {
                     precedence: 500,
-                    factory: function (expr: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionUnaryPos(expr, lineno) as any;
+                    factory: function (expr: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionUnaryPos(expr, lineno, columnno) as any;
                     }
                 }]
             ]),
@@ -391,169 +391,169 @@ export class TwingExtensionCore extends TwingExtension {
                 ['or', {
                     precedence: 10,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryOr(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryOr(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['and', {
                     precedence: 15,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryAnd(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryAnd(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['b-or', {
                     precedence: 16,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryBitwiseOr(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryBitwiseOr(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['b-xor', {
                     precedence: 17,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryBitwiseXor(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryBitwiseXor(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['b-and', {
                     precedence: 18,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryBitwiseAnd(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryBitwiseAnd(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['==', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryEqual(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryEqual(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['!=', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryNotEqual(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryNotEqual(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['<', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryLess(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryLess(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['>', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryGreater(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryGreater(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['>=', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryGreaterEqual(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryGreaterEqual(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['<=', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryLessEqual(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryLessEqual(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['not in', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryNotIn(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryNotIn(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['in', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryIn(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryIn(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['matches', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryMatches(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryMatches(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['starts with', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryStartsWith(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryStartsWith(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['ends with', {
                     precedence: 20,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryEndsWith(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryEndsWith(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['..', {
                     precedence: 25,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryRange(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryRange(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['+', {
                     precedence: 30,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryAdd(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryAdd(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['-', {
                     precedence: 30,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinarySub(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinarySub(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['~', {
                     precedence: 40,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryConcat(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryConcat(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['*', {
                     precedence: 60,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryMul(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryMul(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['/', {
                     precedence: 60,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryDiv(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryDiv(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['//', {
                     precedence: 60,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryFloorDiv(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryFloorDiv(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['%', {
                     precedence: 60,
                     associativity: TwingExpressionParser.OPERATOR_LEFT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryMod(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryMod(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['is', {
@@ -569,15 +569,15 @@ export class TwingExtensionCore extends TwingExtension {
                 ['**', {
                     precedence: 200,
                     associativity: TwingExpressionParser.OPERATOR_RIGHT,
-                    factory: function (left: TwingNode, right: TwingNode, lineno: number) {
-                        return new TwingNodeExpressionBinaryPower(left, right, lineno) as any;
+                    factory: function (left: TwingNode, right: TwingNode, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionBinaryPower(left, right, lineno, columnno) as any;
                     }
                 }],
                 ['??', {
                     precedence: 300,
                     associativity: TwingExpressionParser.OPERATOR_RIGHT,
-                    factory: function (left: TwingNodeExpression, right: TwingNodeExpression, lineno: number) {
-                        return new TwingNodeExpressionNullCoalesce(left, right, lineno) as any;
+                    factory: function (left: TwingNodeExpression, right: TwingNodeExpression, lineno: number, columnno: number) {
+                        return new TwingNodeExpressionNullCoalesce(left, right, lineno, columnno) as any;
                     }
                 }]
             ])

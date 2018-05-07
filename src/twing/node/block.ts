@@ -3,8 +3,8 @@ import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeBlock extends TwingNode {
-    constructor(name: string, body: TwingNode, lineno: number, tag: string = null) {
-        super(new Map([['body', body]]), new Map([['name', name]]), lineno, tag);
+    constructor(name: string, body: TwingNode, lineno: number, columnno: number, tag: string = null) {
+        super(new Map([['body', body]]), new Map([['name', name]]), lineno, columnno, tag);
 
         this.type = TwingNodeType.BLOCK;
     }
