@@ -164,7 +164,7 @@ export class TwingLexer {
             }
         }
 
-        this.pushTwingToken(TwingToken.EOF_TYPE);
+        this.pushToken(TwingToken.EOF_TYPE);
 
         if (this.brackets.length > 0) {
             let bracket = this.brackets.pop();
@@ -181,8 +181,11 @@ export class TwingLexer {
     private lexData() {
         // if no matches are left we return the rest of the template as simple text token
         if (this.position === (this.positions.length - 1)) {
-            this.pushTwingToken(TwingToken.TEXT_TYPE, this.code.substring(this.cursor));
-            this.cursor = this.end;
+            let text = this.code.substring(this.cursor);
+
+            this.pushToken(TwingToken.TEXT_TYPE, text);
+            this.moveCursor(text);
+            this.moveCoordinates(text);
 
             return;
         }
@@ -208,14 +211,13 @@ export class TwingLexer {
             text = text.trimRight();
         }
 
-        this.pushTwingToken(TwingToken.TEXT_TYPE, text);
-        this.moveCursor(textContent);
-
-        console.warn(this.positions);
-        console.warn(textContent);
+        this.pushToken(TwingToken.TEXT_TYPE, text);
+        this.moveCoordinates(textContent);
+        this.moveCursor(textContent + position[0]);
 
         switch (position[1]) {
             case this.options.tag_comment[0]:
+                this.moveCoordinates(textContent + position[0]);
                 this.lexComment();
                 break;
             case this.options.tag_block[0]:
@@ -223,28 +225,29 @@ export class TwingLexer {
                 let match: RegExpExecArray;
 
                 if ((match = this.regexes.lex_block_raw.exec(this.code.substring(this.cursor))) !== null) {
-                    this.moveCursor(match[0]);
+                    this.moveCoordinates(position[0] + match[0]);
                     this.lexRawData();
                 }
                 // {% line \d+ %}
                 else if ((match = this.regexes.lex_block_line.exec(this.code.substring(this.cursor))) !== null) {
                     this.moveCursor(match[0]);
+                    this.moveCoordinates(position[0] + match[0]);
                     this.lineno = parseInt(match[1]);
                 }
                 else {
-                    this.pushTwingToken(TwingToken.BLOCK_START_TYPE);
+                    this.pushToken(TwingToken.BLOCK_START_TYPE);
+                    this.moveCoordinates(position[0]);
                     this.pushState(TwingLexer.STATE_BLOCK);
                     this.currentVarBlockLine = this.lineno;
                 }
                 break;
             case this.options.tag_variable[0]:
-                this.pushTwingToken(TwingToken.VAR_START_TYPE);
+                this.pushToken(TwingToken.VAR_START_TYPE);
+                this.moveCoordinates(position[0]);
                 this.pushState(TwingLexer.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
                 break;
         }
-
-        this.moveCursor(position[0]);
     }
 
     private lexBlock() {
@@ -252,9 +255,9 @@ export class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_block.exec(string)) !== null)) {
-            this.pushTwingToken(TwingToken.BLOCK_END_TYPE);
-
+            this.pushToken(TwingToken.BLOCK_END_TYPE);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
             this.popState();
         }
         else {
@@ -266,10 +269,14 @@ export class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_var.exec(this.code.substring(this.cursor))) !== null)) {
-            this.pushTwingToken(TwingToken.VAR_END_TYPE);
-            this.moveCursor(match[0]);
+            let text = this.handleLeadingLineFeeds(match[0]);
+
+            this.pushToken(TwingToken.VAR_END_TYPE);
+            this.moveCursor(text);
+            this.moveCoordinates(text);
             this.popState();
-        } else {
+        }
+        else {
             this.lexExpression();
         }
     }
@@ -282,6 +289,7 @@ export class TwingLexer {
         // whitespace
         if ((match = /^\s+/.exec(candidate)) !== null) {
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
 
             if (this.cursor >= this.end) {
                 throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexer.STATE_BLOCK ? 'block' : 'variable'}".`, this.currentVarBlockLine, this.source);
@@ -295,17 +303,18 @@ export class TwingLexer {
         if ((match = this.regexes.operator.exec(candidate)) !== null) {
             let tokenValue = match[0].replace(/\s+/, ' ');
 
-            this.pushTwingToken(TwingToken.OPERATOR_TYPE, tokenValue);
+            this.pushToken(TwingToken.OPERATOR_TYPE, tokenValue);
             this.moveCursor(match[0]);
         }
         // names
         else if ((match = TwingLexer.REGEX_NAME.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingToken.NAME_TYPE, match[0]);
+            this.pushToken(TwingToken.NAME_TYPE, match[0]);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // numbers
         else if ((match = TwingLexer.REGEX_NUMBER.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingToken.NUMBER_TYPE, Number(match[0]));
+            this.pushToken(TwingToken.NUMBER_TYPE, Number(match[0]));
             this.moveCursor(match[0]);
         }
         // punctuation
@@ -338,15 +347,16 @@ export class TwingLexer {
                 }
             }
 
-            this.pushTwingToken(TwingToken.PUNCTUATION_TYPE, punctuationCandidate);
+            this.pushToken(TwingToken.PUNCTUATION_TYPE, punctuationCandidate);
 
-            // this.cursor++;
-            this.moveCursor(' ');
+            this.cursor++;
+            this.columnno++;
         }
         // strings
         else if ((match = TwingLexer.REGEX_STRING.exec(candidate)) !== null) {
-            this.pushTwingToken(TwingToken.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
+            this.pushToken(TwingToken.STRING_TYPE, stripcslashes(match[0].slice(1, -1)));
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // opening double quoted string
         else if ((match = TwingLexer.REGEX_DQ_STRING_DELIM.exec(candidate)) !== null) {
@@ -381,8 +391,11 @@ export class TwingLexer {
             text = text.trimRight();
         }
 
-        this.pushTwingToken(TwingToken.TEXT_TYPE, text);
+        text = this.handleLeadingLineFeeds(text);
+
+        this.pushToken(TwingToken.TEXT_TYPE, text);
         this.moveCursor(text + match[0]);
+        this.moveCoordinates(text + match[0]);
     }
 
     private lexComment() {
@@ -392,7 +405,10 @@ export class TwingLexer {
             throw new TwingErrorSyntax('Unclosed comment.', this.lineno, this.source);
         }
 
-        this.moveCursor(this.code.substr(this.cursor, match.index) + match[0]);
+        let text = this.code.substr(this.cursor, match.index) + match[0];
+
+        this.moveCursor(text);
+        this.moveCoordinates(text);
     }
 
     private lexString() {
@@ -403,13 +419,15 @@ export class TwingLexer {
                 value: this.options.interpolation[0],
                 line: this.lineno
             });
-            this.pushTwingToken(TwingToken.INTERPOLATION_START_TYPE);
+            this.pushToken(TwingToken.INTERPOLATION_START_TYPE);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
             this.pushState(TwingLexer.STATE_INTERPOLATION);
         }
         else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
-            this.pushTwingToken(TwingToken.STRING_TYPE, stripcslashes(match[0]));
+            this.pushToken(TwingToken.STRING_TYPE, stripcslashes(match[0]));
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // unit: else path not coverable
         // else if ((TwingLexer.REGEX_DQ_STRING_DELIM.exec(this.code.substring(this.cursor))) !== null) {
@@ -422,8 +440,8 @@ export class TwingLexer {
             // }
 
             this.popState();
-            // this.cursor++;
-            this.moveCursor(' ');
+            this.cursor++;
+            this.columnno++;
         }
     }
 
@@ -433,30 +451,53 @@ export class TwingLexer {
 
         if (this.options.interpolation[0] === bracket.value && (match = this.regexes.interpolation_end.exec(this.code.substring(this.cursor))) !== null) {
             this.brackets.pop();
-            this.pushTwingToken(TwingToken.INTERPOLATION_END_TYPE);
+            this.pushToken(TwingToken.INTERPOLATION_END_TYPE);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
             this.popState();
-        } else {
+        }
+        else {
             this.lexExpression();
         }
     }
 
-    private moveCursor(text: string) {
-        // console.warn('moveCursor "' +  text + '"');
+    private handleLeadingLineFeeds(text: string) {
+        let match: RegExpExecArray = /^\n+/.exec(text);
 
+        if (match) {
+            let lineno = this.lineno;
+
+            this.moveCoordinates(match[0]);
+
+            let lineCount = this.lineno - lineno;
+
+            this.cursor += lineCount;
+
+            text = text.substring(lineCount);
+        }
+
+        return text;
+    }
+
+    private moveCursor(text: string) {
         this.cursor += text.length;
-        this.columnno = this.cursor; // 0-based
-        // console.warn('> this.cursor', this.cursor);
-        // console.warn('> this.columnno', this.columnno);
+        //
+        // let lineCount = text.split('\n').length - 1;
+        //
+        // if (lineCount > 0) {
+        //     this.lineno += lineCount;
+        // }
+    }
+
+    private moveCoordinates(text: string) {
+        this.columnno += text.length;
 
         let lineCount = text.split('\n').length - 1;
 
         if (lineCount > 0) {
             this.lineno += lineCount;
-            this.columnno = 1;
+            this.columnno = 0;
         }
-
-        // this.columnno += (text.length - lineCount);
     }
 
     private getOperatorRegEx() {
@@ -494,7 +535,7 @@ export class TwingLexer {
         return new RegExp(patterns.join('|'));
     };
 
-    private pushTwingToken(type: number, value: any = null) {
+    private pushToken(type: number, value: any = null) {
         if ((TwingToken.TEXT_TYPE === type) && (value.length < 1)) {
             return;
         }
