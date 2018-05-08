@@ -225,8 +225,9 @@ export class TwingLexer {
                 let match: RegExpExecArray;
 
                 if ((match = this.regexes.lex_block_raw.exec(this.code.substring(this.cursor))) !== null) {
-                    this.moveCoordinates(position[0] + match[0]);
+                    this.moveCursor(match[0]);
                     this.lexRawData();
+                    this.moveCoordinates(position[0] + match[0]);
                 }
                 // {% line \d+ %}
                 else if ((match = this.regexes.lex_block_line.exec(this.code.substring(this.cursor))) !== null) {
@@ -305,6 +306,7 @@ export class TwingLexer {
 
             this.pushToken(TwingToken.OPERATOR_TYPE, tokenValue);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // names
         else if ((match = TwingLexer.REGEX_NAME.exec(candidate)) !== null) {
@@ -316,6 +318,7 @@ export class TwingLexer {
         else if ((match = TwingLexer.REGEX_NUMBER.exec(candidate)) !== null) {
             this.pushToken(TwingToken.NUMBER_TYPE, Number(match[0]));
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // punctuation
         else if (TwingLexer.PUNCTUATION.indexOf(punctuationCandidate) > -1) {
@@ -328,6 +331,7 @@ export class TwingLexer {
             }
             // closing bracket
             else if (')]}'.indexOf(punctuationCandidate) > -1) {
+
                 if (this.brackets.length < 1) {
                     throw new TwingErrorSyntax(`Unexpected "${punctuationCandidate}".`, this.lineno, this.source);
                 }
@@ -367,6 +371,7 @@ export class TwingLexer {
 
             this.pushState(TwingLexer.STATE_STRING);
             this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
         }
         // unlexable
         else {
@@ -419,6 +424,7 @@ export class TwingLexer {
                 value: this.options.interpolation[0],
                 line: this.lineno
             });
+
             this.pushToken(TwingToken.INTERPOLATION_START_TYPE);
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
@@ -451,6 +457,7 @@ export class TwingLexer {
 
         if (this.options.interpolation[0] === bracket.value && (match = this.regexes.interpolation_end.exec(this.code.substring(this.cursor))) !== null) {
             this.brackets.pop();
+
             this.pushToken(TwingToken.INTERPOLATION_END_TYPE);
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);

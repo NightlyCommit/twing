@@ -318,101 +318,233 @@ baz
 
         test.end();
     });
-    //
-    // test.test('testLongVerbatim', function (test) {
-    //     let template = '{% verbatim %}' + '*'.repeat(100000) + '{% endverbatim %}';
-    //     let lexer = createLexer();
-    //
-    //     lexer.tokenize(new TwingSource(template, 'index'));
-    //
-    //     // add a dummy assertion here to satisfy tape, the only thing we want to test is that the code above
-    //     // can be executed without throwing any exceptions
-    //     test.pass('should not throw an exception');
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testLongVar', function (test) {
-    //     let template = '{{ ' + 'x'.repeat(100000) + ' }}';
-    //     let lexer = createLexer();
-    //
-    //     lexer.tokenize(new TwingSource(template, 'index'));
-    //
-    //     // add a dummy assertion here to satisfy tape, the only thing we want to test is that the code above
-    //     // can be executed without throwing any exceptions
-    //     test.pass('should not throw an exception');
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testLongBlock', function (test) {
-    //     let template = '{% ' + 'x'.repeat(100000) + ' %}';
-    //     let lexer = createLexer();
-    //
-    //     lexer.tokenize(new TwingSource(template, 'index'));
-    //
-    //     // add a dummy assertion here to satisfy the test, the only thing we want to test is that the code above
-    //     // can be executed without throwing any exceptions
-    //     test.pass('should not throw an exception');
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testBigNumbers', function (test) {
-    //     let template = '{{ 922337203685477580700 }}';
-    //     let lexer = createLexer();
-    //
-    //     let stream = lexer.tokenize(new TwingSource(template, 'index'));
-    //
-    //     stream.next();
-    //
-    //     let token = stream.next();
-    //
-    //     test.equal(token.getValue(), 922337203685477580700);
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testStringWithEscapedDelimiter', function (test) {
-    //     let fixtures = [
-    //         {template: "{{ 'foo \\' bar' }}", expected: 'foo \' bar'},
-    //         {template: '{{ "foo \\" bar" }}', expected: 'foo " bar'}
-    //     ];
-    //
-    //     let lexer = createLexer();
-    //
-    //     fixtures.forEach(function (fixture) {
-    //         test.doesNotThrow(function () {
-    //             let stream = lexer.tokenize(new TwingSource(fixture.template, 'index'));
-    //
-    //             stream.expect(TwingToken.VAR_START_TYPE);
-    //             stream.expect(TwingToken.STRING_TYPE, fixture.expected);
-    //         });
-    //     });
-    //
-    //     test.end();
-    // });
-    //
-    // test.test('testStringWithInterpolation', function (test) {
-    //     let lexer = createLexer();
-    //     let data = 'foo {{ "bar #{ baz + 1 }" }}';
-    //
-    //     test.doesNotThrow(function () {
-    //         let stream = lexer.tokenize(new TwingSource(data, 'index'));
-    //
-    //         stream.expect(TwingToken.TEXT_TYPE, 'foo ');
-    //         stream.expect(TwingToken.VAR_START_TYPE);
-    //         stream.expect(TwingToken.STRING_TYPE, 'bar ');
-    //         stream.expect(TwingToken.INTERPOLATION_START_TYPE);
-    //         stream.expect(TwingToken.NAME_TYPE, 'baz');
-    //         stream.expect(TwingToken.OPERATOR_TYPE, '+');
-    //         stream.expect(TwingToken.NUMBER_TYPE, '1');
-    //         stream.expect(TwingToken.INTERPOLATION_END_TYPE);
-    //         stream.expect(TwingToken.VAR_END_TYPE);
-    //     });
-    //
-    //     test.end();
-    // });
+
+    test.test('testLongVerbatim', function (test) {
+        let template = '{% verbatim %}' + '*'.repeat(100000) + '{% endverbatim %}';
+
+        let lexer = createLexer();
+        let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+        test.test('"*"', function(test) {
+            testToken(test, stream.expect(TwingToken.TEXT_TYPE), '*'.repeat(100000), 1, 0);
+
+            test.end();
+        });
+
+        test.test('EOF', function(test) {
+            testToken(test, stream.getCurrent(), null, 1, 100031, TwingToken.EOF_TYPE);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('testLongVar', function (test) {
+        let template = '{{ ' + 'x'.repeat(100000) + ' }}';
+
+        let lexer = createLexer();
+        let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+        test.test('"{{"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_START_TYPE), null, 1, 0);
+
+            test.end();
+        });
+
+        test.test('"x"', function(test) {
+            testToken(test, stream.expect(TwingToken.NAME_TYPE), 'x'.repeat(100000), 1, 3);
+
+            test.end();
+        });
+
+        test.test('" }}"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_END_TYPE), null, 1, 100003);
+
+            test.end();
+        });
+
+        test.test('EOF', function(test) {
+            testToken(test, stream.getCurrent(), null, 1, 100006, TwingToken.EOF_TYPE);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('testLongBlock', function (test) {
+        let template = '{% ' + 'x'.repeat(100000) + ' %}';
+
+        let lexer = createLexer();
+        let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+        test.test('"{%"', function(test) {
+            testToken(test, stream.expect(TwingToken.BLOCK_START_TYPE), null, 1, 0);
+
+            test.end();
+        });
+
+        test.test('"x"', function(test) {
+            testToken(test, stream.expect(TwingToken.NAME_TYPE), 'x'.repeat(100000), 1, 3);
+
+            test.end();
+        });
+
+        test.test('" %}"', function(test) {
+            testToken(test, stream.expect(TwingToken.BLOCK_END_TYPE), null, 1, 100003);
+
+            test.end();
+        });
+
+        test.test('EOF', function(test) {
+            testToken(test, stream.getCurrent(), null, 1, 100006, TwingToken.EOF_TYPE);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('testBigNumbers', function (test) {
+        let template = '{{ 922337203685477580700 }}';
+
+        let lexer = createLexer();
+        let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+        test.test('"{{"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_START_TYPE), null, 1, 0);
+
+            test.end();
+        });
+
+        test.test('"922337203685477580700"', function(test) {
+            testToken(test, stream.expect(TwingToken.NUMBER_TYPE), '922337203685477580700', 1, 3);
+
+            test.end();
+        });
+
+        test.test('" }}"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_END_TYPE), null, 1, 24);
+
+            test.end();
+        });
+
+        test.test('EOF', function(test) {
+            testToken(test, stream.getCurrent(), null, 1, 27, TwingToken.EOF_TYPE);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('testStringWithEscapedDelimiter', function (test) {
+        let fixtures = [
+            {template: "{{ 'foo \\' bar' }}", name: "foo \\' bar", expected: "foo ' bar"},
+            {template: '{{ "foo \\" bar" }}', name: 'foo \\" bar', expected: 'foo " bar'}
+        ];
+
+        fixtures.forEach(function (fixture, index) {
+            let lexer = createLexer();
+            let stream = lexer.tokenize(new TwingSource(fixture.template, 'index'));
+
+            test.test('"{{"', function(test) {
+                testToken(test, stream.expect(TwingToken.VAR_START_TYPE), null, 1, 0);
+
+                test.end();
+            });
+
+            test.test(`"${fixture.name}"`, function(test) {
+                testToken(test, stream.expect(TwingToken.STRING_TYPE), fixture.expected, 1, 3);
+
+                test.end();
+            });
+
+            test.test('" }}"', function(test) {
+                testToken(test, stream.expect(TwingToken.VAR_END_TYPE), null, 1, 15);
+
+                test.end();
+            });
+
+            test.test('EOF', function(test) {
+                testToken(test, stream.getCurrent(), null, 1, 18, TwingToken.EOF_TYPE);
+
+                test.end();
+            });
+        });
+
+        test.end();
+    });
+
+    test.test('testStringWithInterpolation', function (test) {
+        let template = 'foo {{ "bar #{ baz + 1 }" }}';
+
+        let lexer = createLexer();
+        let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+        test.test('"foo "', function(test) {
+            testToken(test, stream.expect(TwingToken.TEXT_TYPE), 'foo ', 1, 0);
+
+            test.end();
+        });
+
+        test.test('"{{"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_START_TYPE), null, 1, 4);
+
+            test.end();
+        });
+
+        test.test('""bar"', function(test) {
+            testToken(test, stream.expect(TwingToken.STRING_TYPE), 'bar ', 1, 8);
+
+            test.end();
+        });
+
+        test.test('" #{"', function(test) {
+            testToken(test, stream.expect(TwingToken.INTERPOLATION_START_TYPE), null, 1, 12);
+
+            test.end();
+        });
+
+        test.test('" baz"', function(test) {
+            testToken(test, stream.expect(TwingToken.NAME_TYPE), 'baz', 1, 15);
+
+            test.end();
+        });
+
+        test.test('" + "', function(test) {
+            testToken(test, stream.expect(TwingToken.OPERATOR_TYPE), '+', 1, 19);
+
+            test.end();
+        });
+
+        test.test('"1"', function(test) {
+            testToken(test, stream.expect(TwingToken.NUMBER_TYPE), '1', 1, 21);
+
+            test.end();
+        });
+
+        test.test('" }"', function(test) {
+            testToken(test, stream.expect(TwingToken.INTERPOLATION_END_TYPE), null, 1, 22);
+
+            test.end();
+        });
+
+        test.test('" }}"', function(test) {
+            testToken(test, stream.expect(TwingToken.VAR_END_TYPE), null, 1, 25);
+
+            test.end();
+        });
+
+        test.test('EOF', function(test) {
+            testToken(test, stream.getCurrent(), null, 1, 28, TwingToken.EOF_TYPE);
+
+            test.end();
+        });
+
+        test.end();
+    });
     //
     // test.test('testStringWithEscapedInterpolation', function (test) {
     //     let lexer = createLexer();
