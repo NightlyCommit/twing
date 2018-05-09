@@ -114,73 +114,73 @@ tap.test('expression-parser', function (test) {
         let templatesAndNodes = [
             // simple array
             ['{{ [1, 2] }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant(0, 1)],
-                [1, new TwingNodeExpressionConstant(1, 1)],
+                [0, new TwingNodeExpressionConstant(0, 1, 5)],
+                [1, new TwingNodeExpressionConstant(1, 1, 5)],
 
-                [2, new TwingNodeExpressionConstant(1, 1)],
-                [3, new TwingNodeExpressionConstant(2, 1)]
-            ]), 1)
+                [2, new TwingNodeExpressionConstant(1, 1, 8)],
+                [3, new TwingNodeExpressionConstant(2, 1, 8)]
+            ]), 1, 5)
             ],
 
             // array with trailing ,
             ['{{ [1, 2, ] }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant(0, 1)],
-                [1, new TwingNodeExpressionConstant(1, 1)],
+                [0, new TwingNodeExpressionConstant(0, 1, 5)],
+                [1, new TwingNodeExpressionConstant(1, 1, 5)],
 
-                [2, new TwingNodeExpressionConstant(1, 1)],
-                [3, new TwingNodeExpressionConstant(2, 1)]
-            ]), 1)
+                [2, new TwingNodeExpressionConstant(1, 1, 8)],
+                [3, new TwingNodeExpressionConstant(2, 1, 8)]
+            ]), 1, 5)
             ],
 
             // simple hash
             ['{{ {"a": "b", "b": "c"} }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1)],
-                [1, new TwingNodeExpressionConstant('b', 1)],
+                [0, new TwingNodeExpressionConstant('a', 1, 5)],
+                [1, new TwingNodeExpressionConstant('b', 1, 10)],
 
-                [2, new TwingNodeExpressionConstant('b', 1)],
-                [3, new TwingNodeExpressionConstant('c', 1)]
-            ]), 1)
+                [2, new TwingNodeExpressionConstant('b', 1, 15)],
+                [3, new TwingNodeExpressionConstant('c', 1, 20)]
+            ]), 1, 5)
             ],
 
             // hash with trailing ,
             ['{{ {"a": "b", "b": "c", } }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1)],
-                [1, new TwingNodeExpressionConstant('b', 1)],
+                [0, new TwingNodeExpressionConstant('a', 1, 5)],
+                [1, new TwingNodeExpressionConstant('b', 1, 10)],
 
-                [2, new TwingNodeExpressionConstant('b', 1)],
-                [3, new TwingNodeExpressionConstant('c', 1)]
-            ]), 1)
+                [2, new TwingNodeExpressionConstant('b', 1, 15)],
+                [3, new TwingNodeExpressionConstant('c', 1, 20)]
+            ]), 1, 5)
             ],
 
             // hash in an array
             ['{{ [1, {"a": "b", "b": "c"}] }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant(0, 1)],
-                [1, new TwingNodeExpressionConstant(1, 1)],
+                [0, new TwingNodeExpressionConstant(0, 1, 5)],
+                [1, new TwingNodeExpressionConstant(1, 1, 5)],
 
-                [2, new TwingNodeExpressionConstant(1, 1)],
+                [2, new TwingNodeExpressionConstant(1, 1, 9)],
                 [3, new TwingNodeExpressionArray(new Map([
-                    [0, new TwingNodeExpressionConstant('a', 1)],
-                    [1, new TwingNodeExpressionConstant('b', 1)],
+                    [0, new TwingNodeExpressionConstant('a', 1, 9)],
+                    [1, new TwingNodeExpressionConstant('b', 1, 14)],
 
-                    [2, new TwingNodeExpressionConstant('b', 1)],
-                    [3, new TwingNodeExpressionConstant('c', 1)]
-                ]), 1)]
-            ]), 1)
+                    [2, new TwingNodeExpressionConstant('b', 1, 19)],
+                    [3, new TwingNodeExpressionConstant('c', 1, 24)]
+                ]), 1, 9)]
+            ]), 1, 5)
             ],
 
             // array in a hash
             ['{{ {"a": [1, 2], "b": "c"} }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1)],
+                [0, new TwingNodeExpressionConstant('a', 1, 5)],
                 [1, new TwingNodeExpressionArray(new Map([
-                    [0, new TwingNodeExpressionConstant(0, 1)],
-                    [1, new TwingNodeExpressionConstant(1, 1)],
+                    [0, new TwingNodeExpressionConstant(0, 1, 11)],
+                    [1, new TwingNodeExpressionConstant(1, 1, 11)],
 
-                    [2, new TwingNodeExpressionConstant(1, 1)],
-                    [3, new TwingNodeExpressionConstant(2, 1)]
-                ]), 1)],
-                [2, new TwingNodeExpressionConstant('b', 1)],
-                [3, new TwingNodeExpressionConstant('c', 1)]
-            ]), 1)
+                    [2, new TwingNodeExpressionConstant(1, 1, 14)],
+                    [3, new TwingNodeExpressionConstant(2, 1, 14)]
+                ]), 1, 11)],
+                [2, new TwingNodeExpressionConstant('b', 1, 18)],
+                [3, new TwingNodeExpressionConstant('c', 1, 23)]
+            ]), 1, 5)
             ],
         ];
 
@@ -243,40 +243,38 @@ tap.test('expression-parser', function (test) {
 
     test.test('stringExpression', function (test) {
         let templatesAndNodes = [
-            ['{{ "foo" }}', new TwingNodeExpressionConstant('foo', 1)],
+            ['{{ "foo" }}', new TwingNodeExpressionConstant('foo', 1, 4)],
             ['{{ "foo #{bar}" }}', new TwingNodeExpressionBinaryConcat(
-                new TwingNodeExpressionConstant('foo ', 1),
-                new TwingNodeExpressionName('bar', 1),
-                1
+                new TwingNodeExpressionConstant('foo ', 1, 5),
+                new TwingNodeExpressionName('bar', 1, 11),
+                1, 11
             )
             ],
             ['{{ "foo #{bar} baz" }}', new TwingNodeExpressionBinaryConcat(
                 new TwingNodeExpressionBinaryConcat(
-                    new TwingNodeExpressionConstant('foo ', 1),
-                    new TwingNodeExpressionName('bar', 1),
-                    1
+                    new TwingNodeExpressionConstant('foo ', 1, 5),
+                    new TwingNodeExpressionName('bar', 1, 11),
+                    1, 11
                 ),
-                new TwingNodeExpressionConstant(' baz', 1),
-                1
+                new TwingNodeExpressionConstant(' baz', 1, 15),
+                1, 15
             )
             ],
             ['{{ "foo #{"foo #{bar} baz"} baz" }}', new TwingNodeExpressionBinaryConcat(
                 new TwingNodeExpressionBinaryConcat(
-                    new TwingNodeExpressionConstant('foo ', 1),
+                    new TwingNodeExpressionConstant('foo ', 1, 5),
                     new TwingNodeExpressionBinaryConcat(
                         new TwingNodeExpressionBinaryConcat(
-                            new TwingNodeExpressionConstant('foo ', 1),
-                            new TwingNodeExpressionName('bar', 1),
-                            1
+                            new TwingNodeExpressionConstant('foo ', 1, 12),
+                            new TwingNodeExpressionName('bar', 1, 18),
+                            1, 18
                         ),
-                        new TwingNodeExpressionConstant(' baz', 1),
-                        1
+                        new TwingNodeExpressionConstant(' baz', 1, 22),
+                        1, 22
                     ),
-                    1
+                    1, 22
                 ),
-                new TwingNodeExpressionConstant(' baz', 1),
-                1
-            )
+                new TwingNodeExpressionConstant(' baz', 1, 28), 1, 28)
             ]
         ];
 

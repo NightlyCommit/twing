@@ -46,8 +46,8 @@ export class TwingLexer {
     private cursor: number;
     private end: number;
     private env: TwingEnvironment;
-    private lineno: number;
-    private columnno: number;
+    private lineno: number; // 1-based
+    private columnno: number; // 1-based
     private options: {
         interpolation: Array<string>,
         tag_block: Array<string>,
@@ -126,7 +126,7 @@ export class TwingLexer {
         this.cursor = 0;
         this.end = this.code.length;
         this.lineno = 1;
-        this.columnno = 0;
+        this.columnno = 1;
         this.tokens = [];
         this.state = TwingLexer.STATE_DATA;
         this.states = [];
@@ -226,8 +226,8 @@ export class TwingLexer {
 
                 if ((match = this.regexes.lex_block_raw.exec(this.code.substring(this.cursor))) !== null) {
                     this.moveCursor(match[0]);
-                    this.lexRawData();
                     this.moveCoordinates(position[0] + match[0]);
+                    this.lexRawData();
                 }
                 // {% line \d+ %}
                 else if ((match = this.regexes.lex_block_line.exec(this.code.substring(this.cursor))) !== null) {
@@ -259,6 +259,7 @@ export class TwingLexer {
             this.pushToken(TwingToken.BLOCK_END_TYPE);
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
+
             this.popState();
         }
         else {
@@ -392,14 +393,13 @@ export class TwingLexer {
 
         let text = this.code.substr(this.cursor, match.index);
 
+        this.moveCursor(text + match[0]);
+
         if (match[1].indexOf(this.options.whitespace_trim) > -1) {
             text = text.trimRight();
         }
 
-        text = this.handleLeadingLineFeeds(text);
-
         this.pushToken(TwingToken.TEXT_TYPE, text);
-        this.moveCursor(text + match[0]);
         this.moveCoordinates(text + match[0]);
     }
 
@@ -488,22 +488,17 @@ export class TwingLexer {
 
     private moveCursor(text: string) {
         this.cursor += text.length;
-        //
-        // let lineCount = text.split('\n').length - 1;
-        //
-        // if (lineCount > 0) {
-        //     this.lineno += lineCount;
-        // }
     }
 
     private moveCoordinates(text: string) {
         this.columnno += text.length;
 
-        let lineCount = text.split('\n').length - 1;
+        let lines = text.split('\n');
+        let lineCount = lines.length - 1;
 
         if (lineCount > 0) {
             this.lineno += lineCount;
-            this.columnno = 0;
+            this.columnno = 1 + lines[lineCount].length;
         }
     }
 

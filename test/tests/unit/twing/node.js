@@ -5,13 +5,13 @@ const TwingNode = require('../../../../lib/twing/node').TwingNode;
 tap.test('token', function (test) {
     test.test('should provide textual representation', function(test) {
         let node = new TwingNode(new Map([
-            ['foo', new TwingNode(new Map(), new Map(), 2, 'foo')]
+            ['foo', new TwingNode(new Map(), new Map(), 2, 1, 'foo')]
         ]), new Map([
-            ['foo-attr', new TwingNode(new Map(), new Map(), 2, 'bar')]
-        ]), 1, 'foo');
+            ['foo-attr', new TwingNode(new Map(), new Map(), 2, 1, 'bar')]
+        ]), 1, 1, 'foo');
 
-        test.same(node.toString(), `TwingNode(foo-attr: array (  name => null,  nodes =>   array (  ),  attributes =>   array (  ),  lineno => 2,  tag => 'bar',  type => null)
-  foo: TwingNode()
+        test.same(node.toString(), `TwingNode(foo-attr: TwingNode(line: 2, column: 1), line: 1, column: 1
+  foo: TwingNode(line: 2, column: 1)
 )`);
 
         test.end();

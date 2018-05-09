@@ -4,7 +4,7 @@ import {TwingExtensionSourceMap} from "../extension/source-map";
 
 export class TwingSourceMapNode extends TwingNode {
     constructor(node: TwingNode) {
-        super(new Map([['node', node]]), new Map(), node.getTemplateLine(), node.getTemplateColumn(), node.getNodeTag());
+        super(new Map([['node', node]]), new Map());
     }
 
     compile(compiler: TwingCompiler) {

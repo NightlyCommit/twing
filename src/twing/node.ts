@@ -102,10 +102,20 @@ export class TwingNode {
         let attributes = [];
 
         for (let [name, value] of this.attributes) {
-            let attributeRepr = '' + var_export(value, true);
+            let attributeRepr: string;
+
+            if (value instanceof TwingNode) {
+                attributeRepr = '' + value.toString();
+            }
+            else {
+                attributeRepr = '' + var_export(value, true);
+            }
 
             attributes.push(`${name}: ${attributeRepr.replace(/\n/g, '')}`);
         }
+
+        attributes.push(`line: ${this.getTemplateLine()}`);
+        attributes.push(`column: ${this.getTemplateColumn()}`);
 
         let repr = [this.constructor.name + '(' + attributes.join(', ')];
 
