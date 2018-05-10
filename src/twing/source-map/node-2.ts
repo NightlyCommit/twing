@@ -2,7 +2,7 @@ import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 import {TwingExtensionSourceMap} from "../extension/source-map";
 
-export class TwingSourceMapNode extends TwingNode {
+export class TwingSourceMapNode2 extends TwingNode {
     constructor(node: TwingNode) {
         super(new Map([['node', node]]), new Map());
     }
@@ -20,9 +20,9 @@ export class TwingSourceMapNode extends TwingNode {
         // ;
 
         compiler
-            .write('((true), (() => {\n')
-            .indent()
-            .write('return ')
+            .raw('\n')
+            .outdent()
+            .raw('})(), true)\n')
         ;
     }
 }

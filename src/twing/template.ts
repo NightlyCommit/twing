@@ -59,11 +59,11 @@ export abstract class TwingTemplate {
     /**
      * Returns debug information about the template.
      *
-     * @returns {Map<number, number>} Debug information
+     * @returns {Map<number, {line: number, column: number}>} Debug information
      *
      * @internal
      */
-    abstract getDebugInfo(): Map<number, number>;
+    abstract getDebugInfo(): Map<number, {line: number, column: number}>;
 
     /**
      * Returns information about the original template source code.

@@ -13,7 +13,7 @@ export class TwingCompiler {
     private source: string;
     private indentation: number;
     private env: TwingEnvironment;
-    private debugInfo: Map<number, number>;
+    private debugInfo: Map<number, { line: number; column: number }>;
     private sourceOffset: number;
     private sourceLine: number;
     private varNameSalt = 0;
@@ -201,13 +201,16 @@ export class TwingCompiler {
      * @returns TwingCompiler
      */
     addDebugInfo(node: TwingNode) {
+        this.write(`// line ${node.getTemplateLine()}, column ${node.getTemplateColumn()}\n`);
+
+        this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
+        this.sourceOffset = this.source.length;
+        this.debugInfo.set(this.sourceLine, {
+            line: node.getTemplateLine(),
+            column: node.getTemplateColumn()
+        });
+
         if (node.getTemplateLine() != this.lastLine) {
-            this.write(`// line ${node.getTemplateLine()}\n`);
-
-            this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
-            this.sourceOffset = this.source.length;
-            this.debugInfo.set(this.sourceLine, node.getTemplateLine());
-
             this.lastLine = node.getTemplateLine();
         }
 

@@ -5,39 +5,40 @@ const TwingEnvironment = require("../../../../../lib/twing/environment").TwingEn
 const tap = require('tap');
 const merge = require('merge');
 const path = require('path');
+const fs = require('fs-extra');
 
 let moduleAlias = require('module-alias');
 
 moduleAlias.addAlias('twing/lib/runtime', path.resolve('lib/runtime.js'));
 
-let templates = new Map([
-    ['basic', 'Foo{{ bar }}'],
-    ['multiple_lines', `Foo{{ bar }}
+let warmUp = (templates, options = {}) => {
+    // clean cache
+    fs.emptyDirSync('tmp');
 
-Oof{{ bar }}`] // Foo => line 1, column 0; Bar => line 1, column 6; Oof => line 3, column 0; Bar => line 3, column 6
-]);
-
-let getEnvironment = (options = {}) => {
     let loader = new TwingLoaderArray(templates);
-    let twing = new TwingEnvironment(loader, merge({cache: false}, options));
+    let twing = new TwingEnvironment(loader, options);
 
-    return twing;
+    let sourceMapExtension = new TwingExtensionSourceMap();
+
+    twing.addExtension(sourceMapExtension);
+
+    return {env: twing, extension: sourceMapExtension};
 };
 
 tap.test('extension/source-map', function (test) {
-    test.test('getSourceMap', function(test) {
-        let env = getEnvironment();
-        let sourceMapExtension = new TwingExtensionSourceMap();
+    test.test('include', function(test) {
+        let {env, extension} = warmUp({
+            index: '{% set base %}{% include "base" %}{% endset %}{{ base }}',
+            base: '{{ foo }}'
+        }, {cache: 'tmp'});
 
-        env.addExtension(sourceMapExtension);
-
-        let render = env.render('multiple_lines', {
-            bar: 'Bar'
+        let render = env.render('index', {
+            foo: 'Foo'
         });
 
-        console.warn(sourceMapExtension.getSourceMap());
+        console.warn(extension.getSourceMap());
 
-        test.same(render, 'FooBar\n\nOofBar');
+        test.same(render, 'Foo');
 
         test.end();
     });

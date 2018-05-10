@@ -2,6 +2,7 @@ import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
 
 import {TwingCompiler} from "../compiler";
+import {TwingExtensionSourceMap} from "../extension/source-map";
 
 export class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, columnno: number, tag: string = null) {
@@ -20,6 +21,20 @@ export class TwingNodeInclude extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler.addDebugInfo(this);
+
+        if (compiler.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
+            let extension = compiler.getEnvironment().getExtension('TwingExtensionSourceMap') as TwingExtensionSourceMap;
+
+            compiler
+                .write('this.extensions.get(\'TwingExtensionSourceMap\').log(')
+                .raw('this, ')
+                .raw(this.getTemplateLine())
+                .raw(', ')
+                .raw(this.getTemplateColumn())
+                .raw(', ')
+                .subcompile(this.getNode('expr'))
+                .raw(');\n')
+        }
 
         if (this.getAttribute('ignore_missing')) {
             compiler
@@ -53,9 +68,23 @@ export class TwingNodeInclude extends TwingNode {
                 .outdent()
                 .write('}\n')
                 .outdent()
-                .write("}\n\n")
+                .write("}\n")
             ;
         }
+
+        if (compiler.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
+            let extension = compiler.getEnvironment().getExtension('TwingExtensionSourceMap') as TwingExtensionSourceMap;
+
+            compiler
+                .write('this.extensions.get(\'TwingExtensionSourceMap\').log(')
+                .raw('this, ')
+                .raw(this.getTemplateLine())
+                .raw(', ')
+                .raw(this.getTemplateColumn())
+                .raw(');\n')
+        }
+
+        compiler.write('\n');
     }
 
     addGetTemplate(compiler: TwingCompiler) {
