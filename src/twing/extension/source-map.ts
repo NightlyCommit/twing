@@ -1,34 +1,90 @@
 import {TwingExtension} from "../extension";
 import {TwingSourceMapNodeVisitor} from "../source-map/node-visitor";
 import {Mapping, SourceMapGenerator} from "source-map";
-import {TwingTemplate} from "../template";
 import {TwingOutputBuffering} from "../output-buffering";
+import {TwingErrorRuntime} from "../error/runtime";
+
+type UnitOfWork = {
+    name: string;
+    source: string;
+    original: {
+        line: number;
+        column: number;
+    };
+    generated: {
+        line: number;
+        column: number;
+    };
+}
 
 export class TwingExtensionSourceMap extends TwingExtension {
     private generator: SourceMapGenerator;
+    private unitOfWorks: UnitOfWork[];
+    private mappings: Mapping[];
 
     constructor() {
         super();
 
-        this.generator = new SourceMapGenerator();
+        this.unitOfWorks = [];
+        this.mappings = [];
     }
 
     getNodeVisitors() {
         return [new TwingSourceMapNodeVisitor()];
     }
 
-    addMapping(mapping: Mapping) {
-        this.generator.addMapping(mapping);
+    getGenerator(): SourceMapGenerator {
+        if (!this.generator) {
+            this.generator = new SourceMapGenerator();
+
+            console.warn('MAPPINGS', this.mappings);
+
+            for (let mapping of this.mappings.reverse()) {
+                this.generator.addMapping(mapping);
+            }
+        }
+
+        return this.generator;
     }
 
-    getSourceMap() {
-        console.warn(this.generator.toJSON());
+    startUnitOfWork(line: number, column: number, name: string, source: string) {
+        let unitOfWork = {
+            source: source,
+            name: name,
+            original: {
+                line: line, // 1-based
+                column: column - 1 // 0-based
+            },
+            generated: this.foo()
+        };
 
-        return this.generator.toString();
+        this.unitOfWorks.push(unitOfWork);
     }
 
-    log(template: TwingTemplate, sourceLine: number, sourceColumn: number) {
+    stopUnitOfWork() {
+        let unitOfWork = this.unitOfWorks.pop();
+
+        if (!unitOfWork) {
+            throw new TwingErrorRuntime('UNIT OF WORK');
+        }
+
+        if (!this.mappings.find((item: Mapping): boolean => {
+                return item.generated.line === unitOfWork.generated.line
+                    && item.generated.column === unitOfWork.generated.column;
+            })) {
+            this.mappings.push(unitOfWork);
+        }
+    }
+
+    /**
+     *
+     * @returns {{line: number, column: number}}
+     */
+    private foo() {
         let content = TwingOutputBuffering.obGetContents();
+
+        // console.warn('CONTENT "' + content + '"');
+
         let lines: string[];
 
         let line: number;
@@ -44,28 +100,6 @@ export class TwingExtensionSourceMap extends TwingExtension {
         line = lines.length;
         column = lines[line - 1].length;
 
-        this.generator.addMapping({
-            source: template.getSourceContext().getName(),
-            original: {
-                line: sourceLine, // 1-based
-                column: sourceColumn // 0-based
-            },
-            generated: {
-                line: line, // 1-based
-                column: column // 0-based
-            }
-        });
-
-        console.warn({
-            source: template.getSourceContext().getName(),
-            original: {
-                line: sourceLine, // 1-based
-                column: sourceColumn // 0-based
-            },
-            generated: {
-                line: line, // 1-based
-                column: column // 0-based
-            }
-        });
+        return {line: line, column: column};
     }
 }

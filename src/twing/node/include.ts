@@ -20,21 +20,10 @@ export class TwingNodeInclude extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.addDebugInfo(this);
-
-        if (compiler.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
-            let extension = compiler.getEnvironment().getExtension('TwingExtensionSourceMap') as TwingExtensionSourceMap;
-
-            compiler
-                .write('this.extensions.get(\'TwingExtensionSourceMap\').log(')
-                .raw('this, ')
-                .raw(this.getTemplateLine())
-                .raw(', ')
-                .raw(this.getTemplateColumn())
-                .raw(', ')
-                .subcompile(this.getNode('expr'))
-                .raw(');\n')
-        }
+        compiler
+            .addDebugInfo(this)
+            .addSourceMapInfo(this)
+        ;
 
         if (this.getAttribute('ignore_missing')) {
             compiler
@@ -72,19 +61,9 @@ export class TwingNodeInclude extends TwingNode {
             ;
         }
 
-        if (compiler.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
-            let extension = compiler.getEnvironment().getExtension('TwingExtensionSourceMap') as TwingExtensionSourceMap;
-
-            compiler
-                .write('this.extensions.get(\'TwingExtensionSourceMap\').log(')
-                .raw('this, ')
-                .raw(this.getTemplateLine())
-                .raw(', ')
-                .raw(this.getTemplateColumn())
-                .raw(');\n')
-        }
-
-        compiler.write('\n');
+        compiler
+            .stopSourceMapInfo()
+            .write('\n');
     }
 
     addGetTemplate(compiler: TwingCompiler) {

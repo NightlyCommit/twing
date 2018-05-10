@@ -200,7 +200,7 @@ export class TwingCompiler {
      *
      * @returns TwingCompiler
      */
-    addDebugInfo(node: TwingNode) {
+    addDebugInfo(node: TwingNode): TwingCompiler {
         this.write(`// line ${node.getTemplateLine()}, column ${node.getTemplateColumn()}\n`);
 
         this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
@@ -221,6 +221,44 @@ export class TwingCompiler {
         ksort(this.debugInfo);
 
         return this.debugInfo;
+    }
+
+    /**
+     * Adds source-map information.
+     *
+     * @returns TwingCompiler
+     */
+    addSourceMapInfo(node: TwingNode, source: string | TwingNode = null): TwingCompiler {
+        if (this.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
+            this
+                .write('this.extensions.get(\'TwingExtensionSourceMap\').startUnitOfWork(')
+                .raw(node.getTemplateLine())
+                .raw(', ')
+                .raw(node.getTemplateColumn())
+                .raw(', ')
+                .string(node.getType())
+                .raw(', ')
+            ;
+
+            if (source && source instanceof TwingNode) {
+                this.subcompile(source);
+            }
+            else {
+                this.raw(source ? source : 'this.getTemplateName()');
+            }
+
+            this.raw(');\n');
+        }
+
+        return this;
+    }
+
+    stopSourceMapInfo() {
+        if (this.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
+            this.write('this.extensions.get(\'TwingExtensionSourceMap\').stopUnitOfWork();')
+        }
+
+        return this;
     }
 
     /**
