@@ -34,7 +34,7 @@ export class TwingNodeModule extends TwingNode {
         attributes.set('index', null);
         attributes.set('embedded_templates', embeddedTemplates);
 
-        super(nodes, attributes, 1);
+        super(nodes, attributes, 1, 1);
 
         this.type = TwingNodeType.MODULE;
         this.source = source;

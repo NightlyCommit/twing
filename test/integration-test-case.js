@@ -201,7 +201,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
     getExpectedErrorMessage() {
         return null;
     }
-}
+};
 
 /**
  * nl2br which also escapes, for testing escaper filters.

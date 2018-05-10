@@ -3,6 +3,7 @@ import {TwingEnvironment} from "./environment";
 
 import {isNullOrUndefined} from "util";
 import {ksort} from "./helper/ksort";
+import {TwingExtensionSourceMap} from "./extension/source-map";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
@@ -224,38 +225,36 @@ export class TwingCompiler {
     }
 
     /**
-     * Adds source-map information.
+     * Adds source-map enter call.
      *
      * @returns TwingCompiler
      */
-    addSourceMapInfo(node: TwingNode, source: string | TwingNode = null): TwingCompiler {
+    addSourceMapEnter(node: TwingNode, source: string | TwingNode = null): TwingCompiler {
         if (this.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
             this
-                .write('this.extensions.get(\'TwingExtensionSourceMap\').startUnitOfWork(')
+                .write('this.extensions.get(\'TwingExtensionSourceMap\').enter(')
                 .raw(node.getTemplateLine())
                 .raw(', ')
                 .raw(node.getTemplateColumn())
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
+                .raw('this.getTemplateName()')
+                .raw(');\n')
             ;
-
-            if (source && source instanceof TwingNode) {
-                this.subcompile(source);
-            }
-            else {
-                this.raw(source ? source : 'this.getTemplateName()');
-            }
-
-            this.raw(');\n');
         }
 
         return this;
     }
 
-    stopSourceMapInfo() {
+    /**
+     * Adds source-map leave call.
+     *
+     * @returns TwingCompiler
+     */
+    addSourceMapLeave() {
         if (this.getEnvironment().hasExtension('TwingExtensionSourceMap')) {
-            this.write('this.extensions.get(\'TwingExtensionSourceMap\').stopUnitOfWork();')
+            this.write('this.extensions.get(\'TwingExtensionSourceMap\').leave();\n')
         }
 
         return this;
@@ -294,15 +293,7 @@ export class TwingCompiler {
         return this;
     }
 
-    getSourceLine() {
-        return this.sourceLine;
-    }
-
-    getSourceOffset() {
-        return this.sourceOffset;
-    }
-
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${crypto.createHash('sha256').update('TwingCompiler::getVarName' + this.varNameSalt++).digest('hex')}`;
     }
 }

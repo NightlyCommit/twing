@@ -92,6 +92,7 @@ export class TwingNode {
         }
 
         result.lineno = this.lineno;
+        result.columnno = this.columnno;
         result.tag = this.tag;
         result.type = this.type;
 

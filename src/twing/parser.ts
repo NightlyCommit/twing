@@ -65,7 +65,7 @@ export class TwingParser {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${crypto.createHash('sha256').update('TwingParser::getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {

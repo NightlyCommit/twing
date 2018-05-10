@@ -22,7 +22,6 @@ export class TwingNodeInclude extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .addSourceMapInfo(this)
         ;
 
         if (this.getAttribute('ignore_missing')) {
@@ -57,13 +56,9 @@ export class TwingNodeInclude extends TwingNode {
                 .outdent()
                 .write('}\n')
                 .outdent()
-                .write("}\n")
+                .write("}\n\n")
             ;
         }
-
-        compiler
-            .stopSourceMapInfo()
-            .write('\n');
     }
 
     addGetTemplate(compiler: TwingCompiler) {

@@ -216,7 +216,7 @@ export class TwingExpressionParser {
                     throw new TwingErrorSyntax('The "attribute" function takes at least two arguments (the variable and the attributes).', line, this.parser.getStream().getSourceContext());
                 }
 
-                return new TwingNodeExpressionGetAttr(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().size > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line);
+                return new TwingNodeExpressionGetAttr(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().size > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line, column);
             default:
                 let alias = this.parser.getImportedSymbol('function', name);
 
@@ -442,7 +442,7 @@ export class TwingExpressionParser {
             stream.expect(TwingToken.PUNCTUATION_TYPE, ']');
         }
 
-        return new TwingNodeExpressionGetAttr(node, arg, arguments_, type, lineno);
+        return new TwingNodeExpressionGetAttr(node, arg, arguments_, type, lineno, columnno);
     }
 
     parsePostfixExpression(node: TwingNodeExpression): TwingNodeExpression {

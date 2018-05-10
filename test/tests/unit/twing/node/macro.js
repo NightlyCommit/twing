@@ -11,34 +11,36 @@ const tap = require('tap');
 
 tap.test('node/macro', function (test) {
     test.test('constructor', function (test) {
-        let body = new TwingNodeText('foo', 1);
+        let body = new TwingNodeText('foo', 1, 1);
 
         let argumentsNode = new Map([
-            [0, new TwingNodeExpressionName('foo', 1)]
+            [0, new TwingNodeExpressionName('foo', 1, 1)]
         ]);
 
-        let arguments_ = new TwingNode(argumentsNode, new Map(), 1);
-        let node = new TwingNodeMacro('foo', body, arguments_, 1);
+        let arguments_ = new TwingNode(argumentsNode, new Map(), 1, 1);
+        let node = new TwingNodeMacro('foo', body, arguments_, 1, 1);
 
         test.same(node.getNode('body'), body);
         test.same(node.getNode('arguments'), arguments_);
         test.same(node.getAttribute('name'), 'foo');
         test.same(node.getType(), TwingNodeType.MACRO);
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 1);
 
         test.end();
     });
 
     test.test('compile', function (test) {
-        let body = new TwingNodeText('foo', 1);
+        let body = new TwingNodeText('foo', 1, 1);
 
         let arguments_ = new TwingNode(new Map([
-            ['foo', new TwingNodeExpressionConstant(null, 1)],
-            ['bar', new TwingNodeExpressionConstant('Foo', 1)]
-        ]), new Map(), 1);
-        let node = new TwingNodeMacro('foo', body, arguments_, 1);
+            ['foo', new TwingNodeExpressionConstant(null, 1, 1)],
+            ['bar', new TwingNodeExpressionConstant('Foo', 1, 1)]
+        ]), new Map(), 1, 1);
+        let node = new TwingNodeMacro('foo', body, arguments_, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1
+        test.same(compiler.compile(node).getSource(), `// line 1, column 1
 macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
     let context = this.env.mergeGlobals(new Map([
         ["foo", __foo__],
@@ -52,6 +54,7 @@ macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
 
     Twing.obStart();
     try {
+        // line 1, column 1
         Twing.echo("foo");
 
         let tmp = Twing.obGetContents();

@@ -6,9 +6,6 @@ const TwingNodeText = require('../../../../../lib/twing/node/text').TwingNodeTex
 const TwingNode = require('../../../../../lib/twing/node').TwingNode;
 const TwingSource = require('../../../../../lib/twing/source').TwingSource;
 const TwingNodeModule = require('../../../../../lib/twing/node/module').TwingNodeModule;
-const TwingNodeBlock = require('../../../../../lib/twing/node/block').TwingNodeBlock;
-const TwingNodeBlockReference = require('../../../../../lib/twing/node/block-reference').TwingNodeBlockReference;
-
 const TwingNodeExpressionConditional = require('../../../../../lib/twing/node/expression/conditional').TwingNodeExpressionConditional;
 const TwingNodeSet = require('../../../../../lib/twing/node/set').TwingNodeSet;
 const TwingTestEnvironmentStub = require('../../../../mock/environment');
@@ -19,8 +16,8 @@ const tap = require('tap');
 
 tap.test('node/module', function (test) {
     test.test('constructor', function (test) {
-        let body = new TwingNodeText('foo', 1);
-        let parent = new TwingNodeExpressionConstant('layout.twig', 1);
+        let body = new TwingNodeText('foo', 1, 1);
+        let parent = new TwingNodeExpressionConstant('layout.twig', 1, 1);
         let blocks = new TwingNode();
         let macros = new TwingNode();
         let traits = new TwingNode();
@@ -33,6 +30,8 @@ tap.test('node/module', function (test) {
         test.same(node.getNode('parent'), parent);
         test.same(node.getTemplateName(), source.getName());
         test.same(node.getType(), TwingNodeType.MODULE);
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(),1);
 
         test.end();
     });
@@ -41,7 +40,7 @@ tap.test('node/module', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.test('basic', function (test) {
-            let body = new TwingNodeText('foo', 1);
+            let body = new TwingNodeText('foo', 1, 1);
             let parent = null;
             let blocks = new TwingNode();
             let macros = new TwingNode();
@@ -68,7 +67,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     doDisplay(context, blocks = new Map()) {
-        // line 1
+        // line 1, column 1
         Twing.echo("foo");
     }
 
@@ -77,7 +76,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[21, 1]]);
+        return new Map([[21, {"line": 1, "column": 1}]]);
     }
 
     getSourceContext() {
@@ -91,14 +90,14 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         });
 
         test.test('with parent', function (test) {
-            let import_ = new TwingNodeImport(new TwingNodeExpressionConstant('foo.twig', 1), new TwingNodeExpressionAssignName('macro', 1), 2);
+            let import_ = new TwingNodeImport(new TwingNodeExpressionConstant('foo.twig', 1, 1), new TwingNodeExpressionAssignName('macro', 1, 1), 2, 1);
 
             let bodyNodes = new Map([
                 [0, import_]
             ]);
 
             let body = new TwingNode(bodyNodes);
-            let extends_ = new TwingNodeExpressionConstant('layout.twig', 1);
+            let extends_ = new TwingNodeExpressionConstant('layout.twig', 1, 1);
 
             let blocks = new TwingNode();
             let macros = new TwingNode();
@@ -119,20 +118,21 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
         this.source = this.getSourceContext();
 
-        // line 1
+        // line 1, column 1
         this.parent = this.loadTemplate("layout.twig", "foo.twig", 1);
         this.blocks = new Map([
         ]);
     }
 
     doGetParent(context) {
+        // line 1, column 1
         return "layout.twig";
     }
 
     doDisplay(context, blocks = new Map()) {
-        // line 2
+        // line 2, column 1
         context.set("macro", this.loadTemplate("foo.twig", "foo.twig", 2));
-        // line 1
+        // line 1, column 1
         this.parent.display(context, Twing.merge(this.blocks, blocks));
     }
 
@@ -145,7 +145,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[27, 1], [25, 2], [14, 1]]);
+        return new Map([[28, {"line": 1, "column": 1}], [26, {"line": 2, "column": 1}], [21, {"line": 1, "column": 1}], [14, {"line": 1, "column": 1}]]);
     }
 
     getSourceContext() {
@@ -160,14 +160,14 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
         test.test('with conditional parent, set body and debug', function (test) {
             let setNames = new Map([
-                [0, new TwingNodeExpressionAssignName('foo', 4)]
+                [0, new TwingNodeExpressionAssignName('foo', 4, 1)]
             ]);
 
             let setValues = new Map([
-                [0, new TwingNodeExpressionConstant('foo', 4)]
+                [0, new TwingNodeExpressionConstant('foo', 4, 1)]
             ]);
 
-            let set = new TwingNodeSet(false, new TwingNode(setNames), new TwingNode(setValues), 4);
+            let set = new TwingNodeSet(false, new TwingNode(setNames), new TwingNode(setValues), 4, 1);
 
             let bodyNodes = new Map([
                 [0, set]
@@ -175,10 +175,10 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
             let body = new TwingNode(bodyNodes);
             let extends_ = new TwingNodeExpressionConditional(
-                new TwingNodeExpressionConstant(true, 2),
-                new TwingNodeExpressionConstant('foo', 2),
-                new TwingNodeExpressionConstant('foo', 2),
-                2
+                new TwingNodeExpressionConstant(true, 2, 1),
+                new TwingNodeExpressionConstant('foo', 2, 1),
+                new TwingNodeExpressionConstant('foo', 2, 1),
+                2, 1
             );
 
             let blocks = new TwingNode();
@@ -209,14 +209,14 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     doGetParent(context) {
-        // line 2
+        // line 2, column 1
         return this.loadTemplate(((true) ? ("foo") : ("foo")), "foo.twig", 2);
     }
 
     doDisplay(context, blocks = new Map()) {
-        // line 4
+        // line 4, column 1
         context.set("foo", "foo");
-        // line 2
+        // line 2, column 1
         this.getParent(context).display(context, Twing.merge(this.blocks, blocks));
     }
 
@@ -229,7 +229,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getDebugInfo() {
-        return new Map([[26, 2], [24, 4], [19, 2]]);
+        return new Map([[26, {"line": 2, "column": 1}], [24, {"line": 4, "column": 1}], [19, {"line": 2, "column": 1}]]);
     }
 
     getSourceContext() {

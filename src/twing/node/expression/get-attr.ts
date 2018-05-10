@@ -5,7 +5,7 @@ import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
-    constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number) {
+    constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number, columnno: number) {
         let nodes = new Map();
 
         nodes.set('node', node);
@@ -22,7 +22,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         nodeAttributes.set('ignore_strict_check', false);
         nodeAttributes.set('optimizable', true);
 
-        super(nodes, nodeAttributes, lineno);
+        super(nodes, nodeAttributes, lineno, columnno);
 
         this.type = TwingNodeType.EXPRESSION_GET_ATTR;
     }

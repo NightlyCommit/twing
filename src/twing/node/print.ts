@@ -22,11 +22,11 @@ export class TwingNodePrint extends TwingNode implements TwingNodeOutputInterfac
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .addSourceMapInfo(this)
+            .addSourceMapEnter(this)
             .write('Twing.echo(')
             .subcompile(this.getNode('expr'))
             .raw(');\n')
-            .stopSourceMapInfo()
+            .addSourceMapLeave()
         ;
     }
 }

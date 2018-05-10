@@ -2,22 +2,23 @@ const TwingNodeForLoop = require("../../../../../lib/twing/node/for-loop").Twing
 const TwingCompiler = require("../../../../../lib/twing/compiler").TwingCompiler;
 const TwingEnvironment = require("../../../../../lib/twing/environment").TwingEnvironment;
 const TwingLoaderArray = require("../../../../../lib/twing/loader/array").TwingLoaderArray;
-const TwingNodeExpressionConstant = require("../../../../../lib/twing/node/expression/constant").TwingNodeExpressionConstant;
 
 const tap = require('tap');
 
 tap.test('node/for-loop', function (test) {
     test.test('constructor', function (test) {
-        let node = new TwingNodeForLoop(1);
+        let node = new TwingNodeForLoop(1, 1);
 
         test.equals(node.getNodeTag(), null);
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 1);
 
         test.end();
     });
 
     test.test('compile', function (test) {
         test.test('with_loop', function (test) {
-            let node = new TwingNodeForLoop(1);
+            let node = new TwingNodeForLoop(1, 1);
             let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
             node.setAttribute('with_loop', true);

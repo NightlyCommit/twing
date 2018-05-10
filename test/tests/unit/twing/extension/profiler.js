@@ -18,7 +18,7 @@ tap.test('extension/profiler', function (test) {
     test.same(profile.getProfiles(), [profile2]);
     test.same(Reflect.get(extension, 'actives'), [profile2, profile]);
 
-    test.test('leave', function(test) {
+    test.test('leave', function (test) {
         let stub = sinon.stub(profile, 'leave');
 
         extension.leave(profile2);
@@ -32,10 +32,10 @@ tap.test('extension/profiler', function (test) {
         test.end();
     });
 
-    test.test('getNodeVisitors', function(test) {
-        test.same(extension.getNodeVisitors(), [new TwingProfilerNodeVisitorProfiler('TwingExtensionProfiler')])
+    test.test('getNodeVisitors', function (test) {
+        test.same(extension.getNodeVisitors(), [new TwingProfilerNodeVisitorProfiler('TwingExtensionProfiler')]);
 
-       test.end();
+        test.end();
     });
 
     test.end();

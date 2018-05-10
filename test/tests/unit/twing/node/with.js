@@ -17,6 +17,8 @@ tap.test('node/with', function (test) {
         test.same(node.getNode('body'), bodyNode);
         test.same(node.getNode('variables'), variablesNode);
         test.same(node.getType(), TwingNodeType.WITH);
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 1);
 
         test.end();
     });

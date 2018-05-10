@@ -26,6 +26,10 @@ tap.test('token', function (test) {
         test.notEquals(clone, node);
         test.notEquals(clone.getNode(0), childNode);
         test.notEquals(clone.getAttribute('foo'), childAttribute);
+        test.same(clone.getTemplateLine(), node.getTemplateLine());
+        test.same(clone.getTemplateColumn(), node.getTemplateColumn());
+        test.same(clone.getType(), node.getType());
+        test.same(clone.getNodeTag(), node.getNodeTag());
 
         test.end();
     });

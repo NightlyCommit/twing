@@ -16,11 +16,11 @@ export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .addSourceMapInfo(this)
+            .addSourceMapEnter(this)
             .write('Twing.echo(')
             .string(this.getAttribute('data'))
             .raw(");\n")
-            .stopSourceMapInfo()
+            .addSourceMapLeave()
         ;
     }
 }
