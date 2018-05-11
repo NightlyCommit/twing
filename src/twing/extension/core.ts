@@ -92,6 +92,9 @@ import {reverse} from "../helper/reverse";
 import {first} from "../helper/first";
 import {TwingMarkup} from "../markup";
 import {isMap} from "../helper/is-map";
+import {TwingSourceMapGeneratorInterface} from "../source-map/generator-interface";
+import {TwingSourceMapGeneratorCommon} from "../source-map/generator/common";
+import {TwingSourceMapGeneratorSpaceless} from "../source-map/generator/spaceless";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -581,6 +584,17 @@ export class TwingExtensionCore extends TwingExtension {
                     }
                 }]
             ])
+        ];
+    }
+
+    /**
+     *
+     * @returns {Array<TwingSourceMapGeneratorInterface>}
+     */
+    getSourceMapGenerators(): Array<TwingSourceMapGeneratorInterface> {
+        return [
+            new TwingSourceMapGeneratorCommon(),
+            new TwingSourceMapGeneratorSpaceless()
         ];
     }
 }

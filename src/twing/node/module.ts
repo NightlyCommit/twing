@@ -302,6 +302,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("doDisplay(context, blocks = new Map()) {\n")
             .indent()
+            .addSourceMapEnter(this)
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))
         ;
@@ -323,6 +324,7 @@ export class TwingNodeModule extends TwingNode {
 
         compiler
             .subcompile(this.getNode('display_end'))
+            .addSourceMapLeave()
             .outdent()
             .write("}\n\n")
         ;

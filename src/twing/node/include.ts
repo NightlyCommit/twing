@@ -1,8 +1,6 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";
-
 import {TwingCompiler} from "../compiler";
-import {TwingExtensionSourceMap} from "../extension/source-map";
 
 export class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, columnno: number, tag: string = null) {
@@ -22,6 +20,7 @@ export class TwingNodeInclude extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
+            .addSourceMapEnter(this)
         ;
 
         if (this.getAttribute('ignore_missing')) {
@@ -59,6 +58,8 @@ export class TwingNodeInclude extends TwingNode {
                 .write("}\n\n")
             ;
         }
+
+        compiler.addSourceMapLeave();
     }
 
     addGetTemplate(compiler: TwingCompiler) {

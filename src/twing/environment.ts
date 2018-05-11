@@ -22,7 +22,7 @@ import {TwingLoaderArray} from "./loader/array";
 import {TwingLoaderChain} from "./loader/chain";
 import {TwingExtensionOptimizer} from "./extension/optimizer";
 import {TwingCompiler} from "./compiler";
-import {TwingNode} from "./node";
+import {TwingNode, TwingNodeType} from "./node";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingCacheFilesystem} from "./cache/filesystem";
@@ -32,6 +32,9 @@ import {TwingReflectionObject} from "./reflection-object";
 import {merge as twingMerge} from "./helper/merge";
 import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
+import {TwingOutputBuffering} from "./output-buffering";
+import {TwingSourceMapUnitOfWork} from "./source-map/unit-of-work";
+import {SourceMapGenerator} from "source-map";
 
 const merge = require('merge');
 const path = require('path');
@@ -78,6 +81,7 @@ export type TwingEnvironmentOptions = {
     strict_variables?: boolean;
     autoescape?: string | boolean | Function;
     optimizations?: number;
+    source_map?: boolean;
 }
 
 /**
@@ -105,6 +109,8 @@ export class TwingEnvironment {
     private runtimes: Map<string, any> = new Map();
     private optionsHash: string;
     private loading: Map<string, string> = new Map();
+    private sourceMap: boolean;
+    private sourceMapUnitOfWork: TwingSourceMapUnitOfWork;
 
     /**
      * Constructor.
@@ -124,6 +130,7 @@ export class TwingEnvironment {
             cache: false,
             auto_reload: null,
             optimizations: -1,
+            source_map: false
         }, options);
 
         this.debug = options.debug;
@@ -133,6 +140,7 @@ export class TwingEnvironment {
         this.strictVariables = options.strict_variables;
         this.setCache(options.cache);
         this.extensionSet = new TwingExtensionSet();
+        this.sourceMap = options.source_map;
 
         this.addExtension(new TwingExtensionCore());
         this.addExtension(new TwingExtensionEscaper(options.autoescape));
@@ -297,6 +305,15 @@ export class TwingEnvironment {
         let key = this.getLoader().getCacheKey(name) + this.optionsHash;
 
         return this.templateClassPrefix + crypto.createHash('sha256').update(key).digest('hex') + (index === null ? '' : '_' + index);
+    }
+
+    /**
+     * Checks if the source_map option is enabled.
+     *
+     * @returns {boolean} true if source_map is enabled, false otherwise
+     */
+    isSourceMap() {
+        return this.sourceMap;
     }
 
     /**
@@ -898,7 +915,7 @@ export class TwingEnvironment {
         }
 
         if (this.resolvedGlobals) {
-            this.resolvedGlobals.set(name,  value);
+            this.resolvedGlobals.set(name, value);
         }
         else {
             this.globals.set(name, value);
@@ -976,5 +993,55 @@ export class TwingEnvironment {
             this.baseTemplateClass,
             this.strictVariables,
         ].join(':');
+    }
+
+    // source map support
+    /**
+     *
+     * @param {number} line 0-based
+     * @param {number} column 1-based
+     * @param {string} type
+     * @param {string} source
+     */
+    enter(line: number, column: number, type: TwingNodeType, source: string) {
+        console.warn(TwingNodeType.EXPRESSION_BINARY_RANGE);
+
+        TwingOutputBuffering.obStart();
+
+        let unitOfWork = new TwingSourceMapUnitOfWork(type, source, line - 1, column - 1);
+
+        if (this.sourceMapUnitOfWork) {
+            this.sourceMapUnitOfWork.addChild(unitOfWork);
+        }
+
+        this.sourceMapUnitOfWork = unitOfWork;
+    }
+
+    leave() {
+        this.sourceMapUnitOfWork.setContent(TwingOutputBuffering.obGetFlush());
+
+        if (this.sourceMapUnitOfWork.hasParent()) {
+            this.sourceMapUnitOfWork = this.sourceMapUnitOfWork.getParent();
+        }
+    }
+
+    getSourceMap(): SourceMapGenerator {
+        let generator = new SourceMapGenerator();
+
+        let proceedUnitOfWork = (unitOfWork: TwingSourceMapUnitOfWork) => {
+            for (let mapping of unitOfWork.toMappings()) {
+                generator.addMapping(mapping);
+            }
+
+            for (let child of unitOfWork.getChildren()) {
+                proceedUnitOfWork(child);
+            }
+        };
+
+        proceedUnitOfWork(this.sourceMapUnitOfWork);
+
+        console.warn(this.sourceMapUnitOfWork.toString());
+
+        return generator;
     }
 }
