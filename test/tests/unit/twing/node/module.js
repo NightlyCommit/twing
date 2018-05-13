@@ -75,6 +75,10 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         return "foo.twig";
     }
 
+    getSourceMapSource() {
+        return "foo.twig";
+    }
+
     getDebugInfo() {
         return new Map([[21, {"line": 1, "column": 1}]]);
     }
@@ -137,6 +141,10 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getTemplateName() {
+        return "foo.twig";
+    }
+
+    getSourceMapSource() {
         return "foo.twig";
     }
 
@@ -221,6 +229,10 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getTemplateName() {
+        return "foo.twig";
+    }
+
+    getSourceMapSource() {
         return "foo.twig";
     }
 

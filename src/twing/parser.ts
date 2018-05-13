@@ -69,8 +69,6 @@ export class TwingParser {
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
-        let self = this;
-
         this.stack.push(new TwingParserStackEntry(
             this.stream,
             this.parent,
@@ -86,11 +84,11 @@ export class TwingParser {
         if (this.handlers === null) {
             this.handlers = new Map();
 
-            this.env.getTokenParsers().forEach(function (handler) {
-                handler.setParser(self);
+            for (let handler of this.env.getTokenParsers()) {
+                handler.setParser(this);
 
-                self.handlers.set(handler.getTag(), handler);
-            });
+                this.handlers.set(handler.getTag(), handler);
+            }
         }
 
         // node visitors
@@ -379,10 +377,9 @@ export class TwingParser {
      * @returns {TwingNode}
      */
     filterBodyNodes(node: TwingNode): TwingNode {
-        let self = this;
-
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl))) {
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl)))
+        {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingErrorSyntax(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
@@ -405,11 +402,11 @@ export class TwingParser {
             return null;
         }
 
-        node.getNodes().forEach(function (n: TwingNode, k: string) {
-            if (n !== null && (self.filterBodyNodes(n) === null)) {
+        for (let [k, n] of node.getNodes()) {
+            if (n !== null && (this.filterBodyNodes(n) === null)) {
                 node.removeNode(k);
             }
-        });
+        }
 
         return node;
     }

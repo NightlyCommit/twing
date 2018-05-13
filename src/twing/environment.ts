@@ -32,9 +32,9 @@ import {TwingReflectionObject} from "./reflection-object";
 import {merge as twingMerge} from "./helper/merge";
 import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
-import {TwingOutputBuffering} from "./output-buffering";
-import {TwingSourceMapUnitOfWork} from "./source-map/unit-of-work";
 import {SourceMapGenerator} from "source-map";
+import {TwingSourceMapNode} from "./source-map/node";
+import {TwingOutputBuffering} from "./output-buffering";
 
 const merge = require('merge');
 const path = require('path');
@@ -109,8 +109,8 @@ export class TwingEnvironment {
     private runtimes: Map<string, any> = new Map();
     private optionsHash: string;
     private loading: Map<string, string> = new Map();
+    private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean;
-    private sourceMapUnitOfWork: TwingSourceMapUnitOfWork;
 
     /**
      * Constructor.
@@ -631,7 +631,7 @@ export class TwingEnvironment {
                 throw e;
             }
             else {
-                console.warn(e)
+                console.warn(e);
 
                 throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.message}").`, -1, source, e);
             }
@@ -995,7 +995,6 @@ export class TwingEnvironment {
         ].join(':');
     }
 
-    // source map support
     /**
      *
      * @param {number} line 0-based
@@ -1003,44 +1002,44 @@ export class TwingEnvironment {
      * @param {string} type
      * @param {string} source
      */
-    enter(line: number, column: number, type: TwingNodeType, source: string) {
-        console.warn(TwingNodeType.EXPRESSION_BINARY_RANGE);
-
+    enterSourceMapBlock(line: number, column: number, type: TwingNodeType, source: string) {
         TwingOutputBuffering.obStart();
 
-        let unitOfWork = new TwingSourceMapUnitOfWork(type, source, line - 1, column - 1);
+        let node = new TwingSourceMapNode(type, source, line - 1, column - 1);
 
-        if (this.sourceMapUnitOfWork) {
-            this.sourceMapUnitOfWork.addChild(unitOfWork);
+        if (this.sourceMapNode) {
+            this.sourceMapNode.addChild(node);
         }
 
-        this.sourceMapUnitOfWork = unitOfWork;
+        this.sourceMapNode = node;
     }
 
-    leave() {
-        this.sourceMapUnitOfWork.setContent(TwingOutputBuffering.obGetFlush());
+    leaveSourceMapBlock() {
+        this.sourceMapNode.setContent(TwingOutputBuffering.obGetFlush());
 
-        if (this.sourceMapUnitOfWork.hasParent()) {
-            this.sourceMapUnitOfWork = this.sourceMapUnitOfWork.getParent();
+        let parent = this.sourceMapNode.getParent();
+
+        if (parent) {
+            this.sourceMapNode = parent;
         }
     }
 
     getSourceMap(): SourceMapGenerator {
         let generator = new SourceMapGenerator();
 
-        let proceedUnitOfWork = (unitOfWork: TwingSourceMapUnitOfWork) => {
-            for (let mapping of unitOfWork.toMappings()) {
+        let proceedNode = (node: TwingSourceMapNode) => {
+            for (let mapping of node.toMappings()) {
                 generator.addMapping(mapping);
             }
 
-            for (let child of unitOfWork.getChildren()) {
-                proceedUnitOfWork(child);
+            for (let child of node.getChildren()) {
+                proceedNode(child);
             }
         };
 
-        proceedUnitOfWork(this.sourceMapUnitOfWork);
+        proceedNode(this.sourceMapNode);
 
-        console.warn(this.sourceMapUnitOfWork.toString());
+        console.warn(this.sourceMapNode.toString());
 
         return generator;
     }

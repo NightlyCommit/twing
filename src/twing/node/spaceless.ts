@@ -16,9 +16,11 @@ export class TwingNodeSpaceless extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
+            .addSourceMapEnter(this)
             .write("Twing.obStart();\n")
             .subcompile(this.getNode('body'))
             .write("Twing.echo(Twing.obGetClean().replace(/>\\s+</g, '><').trim());\n")
+            .addSourceMapLeave()
         ;
     }
 }

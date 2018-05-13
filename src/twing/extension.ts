@@ -4,6 +4,7 @@ import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
 import {TwingTest} from "./test";
+import {TwingSourceMapNode} from "./source-map/node";
 
 export type TwingOperator = {
     precedence: number,

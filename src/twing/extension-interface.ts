@@ -11,7 +11,7 @@ import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
 import {TwingTest} from "./test";
 import {TwingOperator} from "./extension";
-import {TwingSourceMapGeneratorInterface} from "./source-map/generator-interface";
+import {TwingSourceMapNode} from "./source-map/node";
 
 export interface TwingExtensionInterface {
     TwingExtensionInterfaceImpl: TwingExtensionInterface;
@@ -57,12 +57,5 @@ export interface TwingExtensionInterface {
      * @return [Map<string, TwingOperator>, Map<string, TwingOperator>] First array of unary operators, second array of binary operators
      */
     getOperators(): [Map<string, TwingOperator>, Map<string, TwingOperator>];
-
-    /**
-     * Returns a lost of source-map generatirs to add to the existing list.
-     *
-     * @returns {Array<TwingSourceMapGeneratorInterface>}
-     */
-    getSourceMapGenerators?(): Array<TwingSourceMapGeneratorInterface>;
 }
 

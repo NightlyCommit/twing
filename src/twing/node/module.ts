@@ -77,6 +77,8 @@ export class TwingNodeModule extends TwingNode {
 
         this.compileGetTemplateName(compiler);
 
+        this.compileGetSourceMapSource(compiler);
+
         this.compileIsTraitable(compiler);
 
         this.compileDebugInfo(compiler);
@@ -336,6 +338,18 @@ export class TwingNodeModule extends TwingNode {
             .indent()
             .write('return ')
             .repr(this.source.getName())
+            .raw(";\n")
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
+
+    protected compileGetSourceMapSource(compiler: TwingCompiler) {
+        compiler
+            .write("getSourceMapSource() {\n")
+            .indent()
+            .write('return ')
+            .repr(this.source.getPath() || this.source.getName())
             .raw(";\n")
             .outdent()
             .write("}\n\n")

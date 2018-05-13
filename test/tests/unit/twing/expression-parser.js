@@ -36,21 +36,23 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     }
 
     getFunctions() {
-        return [
-            new TwingFunction('deprecated', () => {
+        let i = 0;
+
+        return new Map([
+            [i++, new TwingFunction('deprecated', () => {
             }, {
                 deprecated: true
-            }),
-            new TwingFunction('deprecated_with_version', () => {
+            })],
+            [i++, new TwingFunction('deprecated_with_version', () => {
             }, {
                 deprecated: 1
-            }),
-            new TwingFunction('deprecated_with_alternative', () => {
+            })],
+            [i++, new TwingFunction('deprecated_with_alternative', () => {
             }, {
                 deprecated: true,
                 alternative: 'alternative'
-            })
-        ]
+            })]
+        ])
     }
 
     getTests() {
@@ -60,21 +62,23 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     }
 
     getFilters() {
-        return [
-            new TwingFilter('deprecated', () => {
+        let i = 0;
+
+        return new Map([
+            [i++, new TwingFilter('deprecated', () => {
             }, {
                 deprecated: true
-            }),
-            new TwingFilter('deprecated_with_version', () => {
+            })],
+            [i++, new TwingFilter('deprecated_with_version', () => {
             }, {
                 deprecated: 1
-            }),
-            new TwingFilter('deprecated_with_alternative', () => {
+            })],
+            [i++, new TwingFilter('deprecated_with_alternative', () => {
             }, {
                 deprecated: true,
                 alternative: 'alternative'
-            })
-        ]
+            })]
+        ])
     }
 }
 

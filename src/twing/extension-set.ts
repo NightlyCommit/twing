@@ -63,7 +63,7 @@ export class TwingExtensionSet {
     /**
      * Registers an array of extensions.
      *
-     * @param array $extensions An array of extensions
+     * @param {Array<TwingExtensionInterface>} extensions An array of extensions
      */
     setExtensions(extensions: Array<TwingExtensionInterface>) {
         for (let extension of extensions) {
@@ -385,8 +385,6 @@ export class TwingExtensionSet {
     }
 
     private initExtensions() {
-        let self = this;
-
         this.parsers = [];
         this.filters = new Map();
         this.functions = new Map();
@@ -395,9 +393,9 @@ export class TwingExtensionSet {
         this.unaryOperators = new Map();
         this.binaryOperators = new Map();
 
-        this.extensions.forEach(function (extension) {
-            self.initExtension(extension);
-        });
+        for (let [key, extension] of this.extensions) {
+            this.initExtension(extension);
+        }
 
         this.initExtension(this.staging);
 
@@ -406,36 +404,34 @@ export class TwingExtensionSet {
     }
 
     private initExtension(extension: TwingExtensionInterface) {
-        let self = this;
-
         // filters
-        extension.getFilters().forEach(function (filter) {
-            self.filters.set(filter.getName(), filter);
-        });
+        for (let [key, filter] of extension.getFilters()) {
+            this.filters.set(filter.getName(), filter);
+        }
 
         // functions
-        extension.getFunctions().forEach(function (function_: TwingFunction) {
-            self.functions.set(function_.getName(), function_);
-        });
+        for (let [key, function_] of extension.getFunctions()) {
+            this.functions.set(function_.getName(), function_);
+        }
 
         // tests
-        extension.getTests().forEach(function (test: TwingTest) {
-            self.tests.set(test.getName(), test);
-        });
+        for (let test of extension.getTests()) {
+            this.tests.set(test.getName(), test);
+        }
 
         // token parsers
-        extension.getTokenParsers().forEach(function (parser) {
+        for (let parser of extension.getTokenParsers()) {
             // if (!parser instanceof Twig_TokenParserInterface) {
             //     throw new Error('getTokenParsers() must return an array of Twig_TokenParserInterface.');
             // }
 
-            self.parsers.push(parser);
-        });
+            this.parsers.push(parser);
+        }
 
         // node visitors
-        extension.getNodeVisitors().forEach(function (visitor) {
-            self.visitors.push(visitor);
-        });
+        for (let visitor of extension.getNodeVisitors()) {
+            this.visitors.push(visitor);
+        }
 
         // operators
         let operators = extension.getOperators();

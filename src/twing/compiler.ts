@@ -230,14 +230,14 @@ export class TwingCompiler {
     addSourceMapEnter(node: TwingNode, source: string | TwingNode = null): TwingCompiler {
         if (this.getEnvironment().isSourceMap()) {
             this
-                .write('this.env.enter(')
+                .write('this.env.enterSourceMapBlock(')
                 .raw(node.getTemplateLine())
                 .raw(', ')
                 .raw(node.getTemplateColumn())
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
-                .raw('this.getTemplateName()')
+                .raw('this.getSourceMapSource()')
                 .raw(');\n')
             ;
         }
@@ -252,7 +252,7 @@ export class TwingCompiler {
      */
     addSourceMapLeave() {
         if (this.getEnvironment().isSourceMap()) {
-            this.write('this.env.leave();\n');
+            this.write('this.env.leaveSourceMapBlock();\n');
         }
 
         return this;
