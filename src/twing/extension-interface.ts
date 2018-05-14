@@ -11,6 +11,7 @@ import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
 import {TwingTest} from "./test";
 import {TwingOperator} from "./extension";
+import {TwingSourceMapNode} from "./source-map/node";
 
 export interface TwingExtensionInterface {
     TwingExtensionInterfaceImpl: TwingExtensionInterface;

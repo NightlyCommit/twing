@@ -5,14 +5,14 @@ import {TwingNodeExpressionCall} from "./call";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
-    constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
+    constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('node', node);
         nodes.set('filter', filterName);
         nodes.set('arguments', methodArguments);
 
-        super(nodes, new Map(), lineno, tag);
+        super(nodes, new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.EXPRESSION_FILTER;
     }

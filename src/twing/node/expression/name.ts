@@ -6,7 +6,7 @@ import {TwingNodeType} from "../../node";
 export class TwingNodeExpressionName extends TwingNodeExpression {
     private specialVars: Map<string, string>;
 
-    constructor(name: string, lineno: number) {
+    constructor(name: string, lineno: number, columnno: number) {
         let attributes = new Map();
 
         attributes.set('name', name);
@@ -14,7 +14,7 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
         attributes.set('ignore_strict_check', false);
         attributes.set('always_defined', false);
 
-        super(new Map(), attributes, lineno);
+        super(new Map(), attributes, lineno, columnno);
 
         this.specialVars = new Map([
             ['_self', 'this.getTemplateName()'],

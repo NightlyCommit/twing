@@ -25,7 +25,7 @@ export class TwingTokenParserUse extends TwingTokenParser {
                     alias = stream.expect(TwingToken.NAME_TYPE).getValue();
                 }
 
-                targets.set(name, new TwingNodeExpressionConstant(alias, token.getLine()));
+                targets.set(name, new TwingNodeExpressionConstant(alias, token.getLine(), token.getColumn()));
 
                 if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
                     break;

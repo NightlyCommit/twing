@@ -11,8 +11,8 @@ let ctype_digit = require('locutus/php/ctype/ctype_digit');
 export class TwingNodeExpressionArray extends TwingNodeExpression {
     private index: number;
 
-    constructor(elements: Map<string, TwingNodeExpression>, lineno: number) {
-        super(elements, new Map(), lineno);
+    constructor(elements: Map<string, TwingNodeExpression>, lineno: number, columno: number) {
+        super(elements, new Map(), lineno, columno);
 
         this.type = TwingNodeType.EXPRESSION_ARRAY;
 
@@ -44,7 +44,7 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
         if (key === null) {
             this.index++;
 
-            key = new TwingNodeExpressionConstant(this.index, value.getTemplateLine());
+            key = new TwingNodeExpressionConstant(this.index, value.getTemplateLine(), value.getTemplateColumn());
         }
 
         push(this.nodes, key);

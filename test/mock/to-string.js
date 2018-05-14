@@ -6,4 +6,4 @@ module.exports = class {
     toString() {
         return this.value;
     }
-}
+};

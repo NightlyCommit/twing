@@ -82,7 +82,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
             return node;
         }
 
-        return new TwingNodePrint(this.getEscaperFilter(type, expression), node.getTemplateLine());
+        return new TwingNodePrint(this.getEscaperFilter(type, expression), node.getTemplateLine(), node.getTemplateColumn());
     }
 
     private preEscapeFilterNode(filter: TwingNodeExpressionFilter, env: TwingEnvironment) {
@@ -138,19 +138,20 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
 
     private getEscaperFilter(type: any, node: TwingNode) {
         let line = node.getTemplateLine();
+        let column = node.getTemplateColumn();
 
         let nodes = new Map();
 
-        let name = new TwingNodeExpressionConstant('escape', line);
+        let name = new TwingNodeExpressionConstant('escape', line, column);
         let i: number = 0;
 
-        nodes.set(i++, new TwingNodeExpressionConstant(type, line));
-        nodes.set(i++, new TwingNodeExpressionConstant(null, line));
-        nodes.set(i++, new TwingNodeExpressionConstant(true, line));
+        nodes.set(i++, new TwingNodeExpressionConstant(type, line, column));
+        nodes.set(i++, new TwingNodeExpressionConstant(null, line, column));
+        nodes.set(i++, new TwingNodeExpressionConstant(true, line, column));
 
         let nodeArgs = new TwingNode(nodes);
 
-        return new TwingNodeExpressionFilter(node, name, nodeArgs, line);
+        return new TwingNodeExpressionFilter(node, name, nodeArgs, line, column);
     }
 
     public getPriority() {

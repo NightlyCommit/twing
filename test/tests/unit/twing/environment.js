@@ -81,9 +81,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFilters() {
-        return [
-            new TwingFilter('foo_filter')
-        ];
+        return new Map([
+            [0, new TwingFilter('foo_filter')]
+        ]);
     }
 
     getTests() {
@@ -93,9 +93,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFunctions() {
-        return [
-            new TwingFunction('foo_function'),
-        ];
+        return new Map([
+            [0, new TwingFunction('foo_function')],
+        ]);
     }
 
     getOperators() {
@@ -134,10 +134,10 @@ class TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime extends Tw
 
 class TwingTestsEnvironmentTestExtensionWithoutRuntime extends TwingExtension {
     getFunctions() {
-        return [
-            new TwingFunction('from_runtime_array', ['TwingTestsEnvironmentTestRuntime', 'fromRuntime']),
-            new TwingFunction('from_runtime_string', 'TwingTestsEnvironmentTestRuntime::fromRuntime')
-        ];
+        return new Map([
+            [0, new TwingFunction('from_runtime_array', ['TwingTestsEnvironmentTestRuntime', 'fromRuntime'])],
+            [1, new TwingFunction('from_runtime_string', 'TwingTestsEnvironmentTestRuntime::fromRuntime')]
+        ]);
     }
 
     getName() {

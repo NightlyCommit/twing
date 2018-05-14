@@ -35,8 +35,8 @@ export class TwingFilter {
             'is_safe_callback': null,
             'pre_escape': null,
             'preserves_safety': null,
-            'expression_factory': function (node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, tag: string = null) {
-                return new TwingNodeExpressionFilter(node, filterName, methodArguments, lineno, tag);
+            'expression_factory': function (node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, columnno: number, tag: string = null) {
+                return new TwingNodeExpressionFilter(node, filterName, methodArguments, lineno, columnno, tag);
             },
             'deprecated': false,
             'alternative': null,

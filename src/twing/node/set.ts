@@ -6,7 +6,7 @@ import {TwingNodeCaptureInterface} from "../node-capture-interface";
 export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface {
     TwingNodeCaptureInterfaceImpl: TwingNodeCaptureInterface;
 
-    constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, tag: string = null) {
+    constructor(capture: boolean, names: TwingNode, values: TwingNode, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('names', names);
@@ -17,7 +17,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
         attributes.set('capture', capture);
         attributes.set('safe', false);
 
-        super(nodes, attributes, lineno, tag);
+        super(nodes, attributes, lineno, columnno, tag);
 
         this.type = TwingNodeType.SET;
 
@@ -34,7 +34,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
             let values = this.getNode('values');
 
             if (values.getType() === TwingNodeType.TEXT) {
-                this.setNode('values', new TwingNodeExpressionConstant(values.getAttribute('data'), values.getTemplateLine()));
+                this.setNode('values', new TwingNodeExpressionConstant(values.getAttribute('data'), values.getTemplateLine(), values.getTemplateColumn()));
                 this.setAttribute('capture', false);
             }
         }

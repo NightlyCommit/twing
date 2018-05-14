@@ -6,7 +6,7 @@ export class TwingTokenParserFlush extends TwingTokenParser {
     parse(token: TwingToken) {
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeFlush(token.getLine(), this.getTag());
+        return new TwingNodeFlush(token.getLine(), token.getColumn(), this.getTag());
     }
 
     getTag() {
