@@ -999,13 +999,13 @@ export class TwingEnvironment {
      *
      * @param {number} line 0-based
      * @param {number} column 1-based
-     * @param {string} type
+     * @param {string} name
      * @param {string} source
      */
-    enterSourceMapBlock(line: number, column: number, type: TwingNodeType, source: string) {
+    enterSourceMapBlock(line: number, column: number, name: string, source: string) {
         TwingOutputBuffering.obStart();
 
-        let node = new TwingSourceMapNode(type, source, line - 1, column - 1);
+        let node = new TwingSourceMapNode(name, source, line - 1, column - 1);
 
         if (this.sourceMapNode) {
             this.sourceMapNode.addChild(node);
