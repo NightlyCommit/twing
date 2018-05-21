@@ -207,7 +207,7 @@ export abstract class TwingTemplate {
             }
         }
         else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
-            parent.displayBlock(name, context, twingMerge(this.blocks, blocks), false);
+            parent.displayBlock(name, context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>, false);
         }
         else if (blocks.has(name)) {
             throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getTemplateName());
@@ -371,7 +371,7 @@ export abstract class TwingTemplate {
             context = iteratorToMap(context);
         }
 
-        this.displayWithErrorHandling(this.env.mergeGlobals(context), twingMerge(this.blocks, blocks));
+        this.displayWithErrorHandling(this.env.mergeGlobals(context), twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
     }
 
     render(context: any): string {
