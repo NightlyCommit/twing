@@ -124,7 +124,7 @@ export class TwingExtensionSet {
                 throw new Error(`"${extension.constructor.name}[TwingExtensionGlobalsInterface].getGlobals()" must return a Map of globals.`);
             }
 
-            globals = merge(globals, extGlobals);
+            globals = merge(globals, extGlobals) as Map<any, any>;
         }
 
         if (this.initialized) {

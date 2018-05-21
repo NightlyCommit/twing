@@ -282,7 +282,8 @@ tap.test('TwingExtensionCore', function (test) {
                 callable([], 'a');
             }, new Error('The merge filter only works with arrays or "Traversable", got "string" as second argument.'));
 
-            test.same(callable(['a'], ['b']), new Map([[0, 'a'], [1, 'b']]));
+            test.same(callable(['a'], ['b']), ['a', 'b']);
+            test.same(callable(new Map([[0, 'a']]), ['b']), new Map([[0, 'a'], [1, 'b']]));
 
             test.end();
         });

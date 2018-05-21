@@ -949,17 +949,11 @@ export function twingUrlencodeFilter(url: string | {}): string {
  * @return array The merged array
  */
 export function twingArrayMerge(arr1: any, arr2: any) {
-    if (!isNullOrUndefined(arr1) && (isTraversable(arr1) || (typeof arr1 === 'object'))) {
-        arr1 = iteratorToMap(arr1);
-    }
-    else {
+    if (isNullOrUndefined(arr1) || (!isTraversable(arr1) && (typeof arr1 !== 'object'))) {
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr1) ? typeof arr1 : arr1}" as first argument.`);
     }
 
-    if (!isNullOrUndefined(arr2) && (isTraversable(arr2) || (typeof arr2 === 'object'))) {
-        arr2 = iteratorToMap(arr2);
-    }
-    else {
+    if (isNullOrUndefined(arr2) || (!isTraversable(arr2) && (typeof arr2 !== 'object'))) {
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr2) ? typeof arr2 : arr2}" as second argument.`);
     }
 

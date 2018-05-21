@@ -1,7 +1,11 @@
-export function merge(map1: Map<any, any>, map2: Map<any, any>) {
+import {iteratorToMap} from "./iterator-to-map";
+
+export function merge(iterable1: Array<any> | Map<any, any>, iterable2: Array<any> | Map<any, any>): Array<any> | Map<any, any> {
     let result = new Map();
 
     let index = 0;
+
+    let map1 = iteratorToMap(iterable1);
 
     for (let [key, value] of map1) {
         if (typeof key === 'number') {
@@ -11,12 +15,18 @@ export function merge(map1: Map<any, any>, map2: Map<any, any>) {
         result.set(key, value);
     }
 
+    let map2 = iteratorToMap(iterable2);
+
     for (let [key, value] of map2) {
         if (typeof key === 'number') {
             key = index++;
         }
 
         result.set(key, value);
+    }
+
+    if (Array.isArray(iterable1)) {
+        return [...result.values()];
     }
 
     return result;

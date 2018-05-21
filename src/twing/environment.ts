@@ -417,7 +417,7 @@ export class TwingEnvironment {
         this.extensionSet.initRuntime(this);
 
         if (this.loading.has(cls)) {
-            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${join(twingMerge(this.loading, new Map([[0, name]])), ' -> ')}.`);
+            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${join(twingMerge(this.loading, new Map([[0, name]])) as Map<any, string>, ' -> ')}.`);
         }
 
         let mainTemplate: TwingTemplate;
@@ -919,7 +919,7 @@ export class TwingEnvironment {
             return this.resolvedGlobals;
         }
 
-        return twingMerge(this.extensionSet.getGlobals(), this.globals);
+        return twingMerge(this.extensionSet.getGlobals(), this.globals) as Map<any, any>;
     }
 
     /**
