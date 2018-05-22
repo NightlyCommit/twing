@@ -942,5 +942,31 @@ tap.test('environment', function (test) {
         test.end();
     });
 
+    test.test('should emit events', (test) => {
+        test.test('template', (test) => {
+            let env = new TwingEnvironment(new TwingLoaderArray({
+                index: '{% include "foo" %}',
+                foo: 'Foo'
+            }));
+
+            let templates = [];
+
+            env.on('template', (name) => {
+                templates.push(name);
+            });
+
+            env.render('index');
+
+            test.same(templates, [
+                'index',
+                'foo'
+            ]);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
     test.end();
 });
