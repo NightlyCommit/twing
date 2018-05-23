@@ -146,6 +146,7 @@ tap.test('Twing library', function (test) {
         TwingNodeSpaceless: './twing/node/spaceless',
         TwingNodeText: './twing/node/text',
         TwingNodeTraverser: './twing/node-traverser',
+        TwingNodeType: './twing/node',
         TwingNodeVisitorEscaper: './twing/node-visitor/escaper',
         TwingNodeVisitorOptimizer: './twing/node-visitor/optimizer',
         TwingNodeVisitorSafeAnalysis: './twing/node-visitor/safe-analysis',
