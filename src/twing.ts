@@ -125,6 +125,7 @@ import {TwingNodeSet} from "./twing/node/set";
 import {TwingNodeSpaceless} from "./twing/node/spaceless";
 import {TwingNodeText} from "./twing/node/text";
 import {TwingNodeTraverser} from "./twing/node-traverser";
+import {TwingNodeType} from "./twing/node";
 import {TwingNodeVisitorEscaper} from "./twing/node-visitor/escaper";
 import {TwingNodeVisitorOptimizer} from "./twing/node-visitor/optimizer";
 import {TwingNodeVisitorSafeAnalysis} from "./twing/node-visitor/safe-analysis";
@@ -330,6 +331,7 @@ let Twing = {
     TwingNodeSpaceless: TwingNodeSpaceless,
     TwingNodeText: TwingNodeText,
     TwingNodeTraverser: TwingNodeTraverser,
+    TwingNodeType: TwingNodeType,
     TwingNodeVisitorEscaper: TwingNodeVisitorEscaper,
     TwingNodeVisitorOptimizer: TwingNodeVisitorOptimizer,
     TwingNodeVisitorSafeAnalysis: TwingNodeVisitorSafeAnalysis,
