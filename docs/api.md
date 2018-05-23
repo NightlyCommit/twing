@@ -71,6 +71,12 @@ If a template defines blocks, they can be rendered individually via the
 template.renderBlock('block_name', {'the': 'variables', 'go': 'here'});
 ```
 
+## Events
+
+### twing.on('template', function(name) {})
+
+When a template is encountered, Twing environment emits a `template` event with the name of the encountered template.
+
 ## Environment Options
 
 When creating a new ``TwingEnvironment`` instance, you can pass a hash of

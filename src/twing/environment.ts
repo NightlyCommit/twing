@@ -32,6 +32,7 @@ import {TwingReflectionObject} from "./reflection-object";
 import {merge as twingMerge} from "./helper/merge";
 import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
+import {EventEmitter} from 'events';
 
 const merge = require('merge');
 const path = require('path');
@@ -85,7 +86,7 @@ export type TwingEnvironmentOptions = {
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-export class TwingEnvironment {
+export class TwingEnvironment extends EventEmitter {
     private charset: string;
     private loader: TwingLoaderInterface = null;
     private debug: boolean;
@@ -113,6 +114,8 @@ export class TwingEnvironment {
      * @param {TwingEnvironmentOptions} options
      */
     constructor(loader: TwingLoaderInterface, options: TwingEnvironmentOptions = null) {
+        super();
+
         this.setLoader(loader);
 
         options = merge({}, {
@@ -365,6 +368,8 @@ export class TwingEnvironment {
      * @internal
      */
     loadTemplate(name: string, index: number = null): TwingTemplate {
+        this.emit('template', name);
+
         let cls = this.getTemplateClass(name);
         let mainCls = cls;
 
