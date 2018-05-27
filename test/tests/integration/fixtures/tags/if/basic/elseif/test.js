@@ -4,18 +4,12 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getTemplates() {
         let templates = super.getTemplates();
 
-        templates.set('index.twig', require('../index.twig'));
+        templates.set('index.twig', require('./index.twig'));
 
         return templates;
     }
 
     getExpected() {
         return require('./expected.html');
-    }
-
-    getData() {
-        return {
-            b: 'b'
-        };
     }
 };

@@ -99,6 +99,38 @@ else {
             test.end();
         });
 
+        test.test('with multiple elseif', function (test) {
+            let tNodes = new Map([
+                [0, new TwingNodeExpressionName('a', 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionConstant('a', 1), 1)],
+                [2, new TwingNodeExpressionName('b', 1)],
+                [3, new TwingNodePrint(new TwingNodeExpressionConstant('b', 1), 1)],
+                [4, new TwingNodeExpressionName('c', 1)],
+                [5, new TwingNodePrint(new TwingNodeExpressionConstant('c', 1), 1)],
+            ]);
+
+            let t = new TwingNode(tNodes, new Map(), 1);
+            let else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1);
+
+            let node = new TwingNodeIf(t, else_, 1);
+
+            test.same(compiler.compile(node).getSource(), `// line 1
+if ((context.has("a") ? context.get("a") : null)) {
+    Twing.echo("a");
+}
+else if ((context.has("b") ? context.get("b") : null)) {
+    Twing.echo("b");
+}
+else if ((context.has("c") ? context.get("c") : null)) {
+    Twing.echo("c");
+}
+else {
+    Twing.echo((context.has("bar") ? context.get("bar") : null));
+}
+`);
+            test.end();
+        });
+
         test.end();
     });
 
