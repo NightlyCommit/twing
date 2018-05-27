@@ -26,10 +26,11 @@ export class TwingTokenParserIf extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
+        let index = 0;
         let body = this.parser.subparse([this, this.decideIfFork]);
         let tests = new Map([
-            [0, expr],
-            [1, body]
+            [index++, expr],
+            [index++, body]
         ]);
 
         let elseNode = null;
@@ -47,8 +48,8 @@ export class TwingTokenParserIf extends TwingTokenParser {
                     expr = this.parser.getExpressionParser().parseExpression();
                     stream.expect(TwingToken.BLOCK_END_TYPE);
                     body = this.parser.subparse([this, this.decideIfFork]);
-                    tests.set(2, expr);
-                    tests.set(3, body);
+                    tests.set(index++, expr);
+                    tests.set(index++, body);
                     break;
 
                 case 'endif':
