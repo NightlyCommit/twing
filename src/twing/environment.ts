@@ -709,8 +709,13 @@ export class TwingEnvironment extends EventEmitter {
         throw new TwingErrorRuntime(`Unable to load the "${class_}" runtime.`);
     }
 
-    addExtension(extension: TwingExtensionInterface) {
-        this.extensionSet.addExtension(extension);
+    /**
+     *
+     * @param {TwingExtensionInterface} extension
+     * @param {string} name
+     */
+    addExtension(extension: TwingExtensionInterface, name: string = null) {
+        this.extensionSet.addExtension(extension, name);
         this.updateOptionsHash();
     }
 
