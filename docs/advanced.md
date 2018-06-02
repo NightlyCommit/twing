@@ -541,6 +541,12 @@ let twing = new Twing.TwingEnvironment(loader);
 twing.addExtension(new ProjectTwingExtension());
 ```
 
+The extension will be registered under the name of its constructor - `ProjectTwingExtension` in this case. You can also pass an explicit extension name under which the extension will be registered:
+
+```
+twing.addExtension(new ProjectTwingExtension(), 'foo');
+```
+
 > The Twing core extensions are great examples of how extensions work.
 
 ### Globals
