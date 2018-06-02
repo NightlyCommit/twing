@@ -137,20 +137,23 @@ export class TwingExtensionSet {
     /**
      * Registers an extension.
      *
-     * @param extension TwingExtensionInterface A TwingExtensionInterface instance
+     * @param {TwingExtensionInterface} extension A TwingExtensionInterface instance
+     * @param {String} name An optional name the extension will be registered as
      */
-    addExtension(extension: TwingExtensionInterface) {
-        let extensionClass: string = extension.constructor.name;
+    addExtension(extension: TwingExtensionInterface, name: string = null) {
+        if (!name) {
+            name = extension.constructor.name;
+        }
 
         if (this.initialized) {
-            throw new Error(`Unable to register extension "${extensionClass}" as extensions have already been initialized.`);
+            throw new Error(`Unable to register extension "${name}" as extensions have already been initialized.`);
         }
 
-        if (this.extensions.has(extensionClass)) {
-            throw new Error(`Unable to register extension "${extensionClass}" as it is already registered.`);
+        if (this.extensions.has(name)) {
+            throw new Error(`Unable to register extension "${name}" as it is already registered.`);
         }
 
-        this.extensions.set(extensionClass, extension);
+        this.extensions.set(name, extension);
     }
 
     addTokenParser(parser: TwingTokenParserInterface) {
