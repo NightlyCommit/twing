@@ -520,6 +520,20 @@ tap.test('environment', function (test) {
 
         test.true(found);
 
+        test.test('with explicit name', (test) => {
+            let twing = new TwingEnvironment(new TwingTestMockLoader());
+            let ext1 = new TwingTestsEnvironmentTestExtension();
+            let ext2 = new TwingTestsEnvironmentTestExtension();
+
+            twing.addExtension(ext1, 'ext1');
+            twing.addExtension(ext2, 'ext2');
+
+            test.equals(twing.getExtension('ext1'), ext1);
+            test.equals(twing.getExtension('ext2'), ext2);
+
+            test.end();
+        });
+
         test.end();
     });
 
