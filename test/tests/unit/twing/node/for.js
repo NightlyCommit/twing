@@ -12,19 +12,19 @@ const tap = require('tap');
 
 tap.test('node/for', function (test) {
     test.test('constructor', function (test) {
-        let keyTarget = new TwingNodeExpressionAssignName('key', 1);
-        let valueTarget = new TwingNodeExpressionAssignName('item', 1);
-        let seq = new TwingNodeExpressionName('items', 1);
-        let ifexpr = new TwingNodeExpressionConstant(true, 1);
+        let keyTarget = new TwingNodeExpressionAssignName('key', 1, 1);
+        let valueTarget = new TwingNodeExpressionAssignName('item', 1, 1);
+        let seq = new TwingNodeExpressionName('items', 1, 1);
+        let ifexpr = new TwingNodeExpressionConstant(true, 1, 1);
 
         let bodyNodes = new Map([
-            [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+            [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
         ]);
 
-        let body = new TwingNode(bodyNodes, new Map(), 1);
+        let body = new TwingNode(bodyNodes, new Map(), 1, 1);
         let else_ = null;
 
-        let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+        let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
 
         test.same(node.getNode('key_target'), keyTarget);
         test.same(node.getNode('value_target'), valueTarget);
@@ -33,9 +33,11 @@ tap.test('node/for', function (test) {
         test.same(node.getNode('body').constructor.name, 'TwingNodeIf');
         test.same(node.getNode('body').getNode('tests').getNode(1).getNode(0), body);
         test.false(node.hasNode('else'));
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 1);
 
-        else_ = new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1);
-        node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+        else_ = new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1);
+        node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
         node.setAttribute('with_loop', false);
 
         test.same(node.getNode('else'), else_);
@@ -49,23 +51,23 @@ tap.test('node/for', function (test) {
 
         test.test('without loop', function (test) {
             // ...
-            let keyTarget = new TwingNodeExpressionAssignName('key', 1);
-            let valueTarget = new TwingNodeExpressionAssignName('item', 1);
-            let seq = new TwingNodeExpressionName('items', 1);
+            let keyTarget = new TwingNodeExpressionAssignName('key', 1, 1);
+            let valueTarget = new TwingNodeExpressionAssignName('item', 1, 1);
+            let seq = new TwingNodeExpressionName('items', 1, 1);
             let ifexpr = null;
 
             let bodyNodes = new Map([
-                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let body = new TwingNode(bodyNodes, new Map(), 1);
+            let body = new TwingNode(bodyNodes, new Map(), 1, 1);
             let else_ = null;
 
-            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
 
             node.setAttribute('with_loop', false);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 context.set('_parent', Twing.clone(context));
 
 (() => {
@@ -105,23 +107,23 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
         test.test('with loop', function (test) {
             // ...
-            let keyTarget = new TwingNodeExpressionAssignName('k', 1);
-            let valueTarget = new TwingNodeExpressionAssignName('v', 1);
-            let seq = new TwingNodeExpressionName('items', 1);
+            let keyTarget = new TwingNodeExpressionAssignName('k', 1, 1);
+            let valueTarget = new TwingNodeExpressionAssignName('v', 1, 1);
+            let seq = new TwingNodeExpressionName('items', 1, 1);
             let ifexpr = null;
 
             let bodyNodes = new Map([
-                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let body = new TwingNode(bodyNodes, new Map(), 1);
+            let body = new TwingNode(bodyNodes, new Map(), 1, 1);
             let else_ = null;
 
-            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 context.set('_parent', Twing.clone(context));
 
 (() => {
@@ -186,23 +188,23 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
         test.test('with ifexpr', function (test) {
             // ...
-            let keyTarget = new TwingNodeExpressionAssignName('k', 1);
-            let valueTarget = new TwingNodeExpressionAssignName('v', 1);
-            let seq = new TwingNodeExpressionName('items', 1);
-            let ifexpr = new TwingNodeExpressionConstant(true, 1);
+            let keyTarget = new TwingNodeExpressionAssignName('k', 1, 1);
+            let valueTarget = new TwingNodeExpressionAssignName('v', 1, 1);
+            let seq = new TwingNodeExpressionName('items', 1, 1);
+            let ifexpr = new TwingNodeExpressionConstant(true, 1, 1);
 
             let bodyNodes = new Map([
-                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let body = new TwingNode(bodyNodes, new Map(), 1);
+            let body = new TwingNode(bodyNodes, new Map(), 1, 1);
             let else_ = null;
 
-            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 context.set('_parent', Twing.clone(context));
 
 (() => {
@@ -256,23 +258,23 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
         test.test('with else', function (test) {
             // ...
-            let keyTarget = new TwingNodeExpressionAssignName('k', 1);
-            let valueTarget = new TwingNodeExpressionAssignName('v', 1);
-            let seq = new TwingNodeExpressionName('items', 1);
+            let keyTarget = new TwingNodeExpressionAssignName('k', 1, 1);
+            let valueTarget = new TwingNodeExpressionAssignName('v', 1, 1);
+            let seq = new TwingNodeExpressionName('items', 1, 1);
             let ifexpr = null;
 
             let bodyNodes = new Map([
-                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let body = new TwingNode(bodyNodes, new Map(), 1);
-            let else_ = new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1);
+            let body = new TwingNode(bodyNodes, new Map(), 1, 1);
+            let else_ = new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1);
 
-            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1);
+            let node = new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, else_, 1, 1);
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 context.set('_parent', Twing.clone(context));
 
 (() => {

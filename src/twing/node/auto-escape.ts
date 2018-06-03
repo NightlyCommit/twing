@@ -14,8 +14,8 @@ import {TwingCompiler} from "../compiler";
  * @author Fabien Potencier <fabien@symfony.com>
  */
 export class TwingNodeAutoEscape extends TwingNode {
-    constructor(value: {}, body: TwingNode, lineno: number, tag = 'autoescape') {
-        super(new Map([['body', body]]), new Map([['value', value]]), lineno, tag);
+    constructor(value: {}, body: TwingNode, lineno: number, columnno: number, tag = 'autoescape') {
+        super(new Map([['body', body]]), new Map([['value', value]]), lineno, columnno, tag);
 
         this.type = TwingNodeType.AUTO_ESCAPE;
     }

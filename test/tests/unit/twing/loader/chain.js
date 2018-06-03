@@ -2,6 +2,7 @@ const TwingLoaderChain = require('../../../../../lib/twing/loader/chain').TwingL
 const TwingLoaderArray = require('../../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingLoaderFilesystem = require('../../../../../lib/twing/loader/filesystem').TwingLoaderFilesystem;
 const TwingErrorLoader = require('../../../../../lib/twing/error/loader').TwingErrorLoader;
+const TwingError = require('../../../../../lib/twing/error').TwingError;
 
 const tap = require('tap');
 const nodePath = require('path');
@@ -10,8 +11,8 @@ const sinon = require('sinon');
 let fixturesPath = nodePath.resolve('test/tests/integration/fixtures');
 
 tap.test('loader chain', function (test) {
-    test.test('constructor', function(test) {
-        test.test('should accept zero parameters', function(test) {
+    test.test('constructor', function (test) {
+        test.test('should accept zero parameters', function (test) {
             let loader = new TwingLoaderChain();
 
             test.ok(loader);
@@ -48,7 +49,7 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.getSourceContext('foo');
         }, new TwingErrorLoader('Template "foo" is not defined (foo).'));
 
@@ -61,7 +62,7 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.getSourceContext('foo');
         }, new TwingErrorLoader('Template "foo" is not defined.'));
 
@@ -95,7 +96,7 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.getCacheKey('foo');
         }, new TwingErrorLoader('Template "foo" is not defined (TwingLoaderChain: foo).'));
 
@@ -108,7 +109,7 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.getCacheKey('foo');
         }, new TwingErrorLoader('Template "foo" is not defined.'));
 
@@ -190,7 +191,7 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.isFresh('foo');
         }, new TwingErrorLoader('Template "foo" is not defined (TwingLoaderChain: foo).'));
 
@@ -203,11 +204,81 @@ tap.test('loader chain', function (test) {
             loader
         ]);
 
-        test.throws(function() {
+        test.throws(function () {
             loader.isFresh('foo');
         }, new TwingErrorLoader('Template "foo" is not defined.'));
 
         stub.restore();
+
+        test.end();
+    });
+
+    test.test('resolve', (test) => {
+        let loader = new TwingLoaderChain([
+            new TwingLoaderArray({'foo': 'bar'}),
+            new TwingLoaderArray({'bar': 'foo'}),
+        ]);
+
+        test.equals(loader.resolve('bar'), 'bar');
+
+        test.test('when some loaders throw an error', (test) => {
+            let loader1 = new TwingLoaderArray({});
+            sinon.stub(loader1, 'resolve').throws(new TwingError('foo'));
+            sinon.stub(loader1, 'exists').returns(true);
+
+            let loader2 = new TwingLoaderArray({'bar': 'foo'});
+
+            loader = new TwingLoaderChain([
+                loader1,
+                loader2
+            ]);
+
+            test.equals(loader.resolve('bar'), 'bar');
+
+            test.end();
+        });
+
+        test.test('when all loaders throw loader-related errors', (test) => {
+            loader1 = new TwingLoaderArray({});
+            sinon.stub(loader1, 'resolve').throws(new TwingErrorLoader('foo'));
+            sinon.stub(loader1, 'exists').returns(true);
+
+            loader2 = new TwingLoaderArray({});
+            sinon.stub(loader2, 'resolve').throws(new TwingErrorLoader('bar'));
+            sinon.stub(loader2, 'exists').returns(true);
+
+            loader = new TwingLoaderChain([
+                loader1,
+                loader2
+            ]);
+
+            test.throws(() => {
+                loader.resolve('bar');
+            }, new TwingErrorLoader('Template "bar" is not defined (TwingLoaderArray: foo, TwingLoaderArray: bar).'));
+
+            test.end();
+        });
+
+        test.test('when all loaders throw non loader-related errors', (test) => {
+            loader1 = new TwingLoaderArray({});
+            sinon.stub(loader1, 'resolve').throws(new TwingError('foo'));
+            sinon.stub(loader1, 'exists').returns(true);
+
+            loader2 = new TwingLoaderArray({});
+            sinon.stub(loader2, 'resolve').throws(new TwingError('bar'));
+            sinon.stub(loader2, 'exists').returns(true);
+
+            loader = new TwingLoaderChain([
+                loader1,
+                loader2
+            ]);
+
+            test.throws(() => {
+                loader.resolve('bar');
+            }, new TwingErrorLoader('Template "bar" is not defined.'));
+
+            test.end();
+        });
 
         test.end();
     });

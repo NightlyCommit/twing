@@ -9,7 +9,7 @@ export class TwingTokenParserInclude extends TwingTokenParser {
 
         let parsedArguments = this.parseArguments();
 
-        return new TwingNodeInclude(expr, parsedArguments.variables, parsedArguments.only, parsedArguments.ignoreMissing, token.getLine(), this.getTag());
+        return new TwingNodeInclude(expr, parsedArguments.variables, parsedArguments.only, parsedArguments.ignoreMissing, token.getLine(), token.getColumn(), this.getTag());
     }
 
     getTag() {

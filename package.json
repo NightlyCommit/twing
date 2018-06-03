@@ -66,6 +66,7 @@
     "regex-parser": "^2.2.8",
     "runes": "^0.4.3",
     "snake-case": "^2.1.0",
+    "source-map": "^0.6.1",
     "stack-trace": "0.0.10",
     "tmp": "0.0.33",
     "utf8-binary-cutter": "^0.9.1",

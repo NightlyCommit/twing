@@ -1,6 +1,5 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
-
 import {isNullOrUndefined} from "util";
 import {ksort} from "./helper/ksort";
 
@@ -13,7 +12,7 @@ export class TwingCompiler {
     private source: string;
     private indentation: number;
     private env: TwingEnvironment;
-    private debugInfo: Map<number, number>;
+    private debugInfo: Map<number, { line: number; column: number }>;
     private sourceOffset: number;
     private sourceLine: number;
     private varNameSalt = 0;
@@ -200,13 +199,16 @@ export class TwingCompiler {
      *
      * @returns TwingCompiler
      */
-    addDebugInfo(node: TwingNode) {
+    addDebugInfo(node: TwingNode): TwingCompiler {
         if (node.getTemplateLine() != this.lastLine) {
-            this.write(`// line ${node.getTemplateLine()}\n`);
+            this.write(`// line ${node.getTemplateLine()}, column ${node.getTemplateColumn()}\n`);
 
             this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
             this.sourceOffset = this.source.length;
-            this.debugInfo.set(this.sourceLine, node.getTemplateLine());
+            this.debugInfo.set(this.sourceLine, {
+                line: node.getTemplateLine(),
+                column: node.getTemplateColumn()
+            });
 
             this.lastLine = node.getTemplateLine();
         }
@@ -218,6 +220,42 @@ export class TwingCompiler {
         ksort(this.debugInfo);
 
         return this.debugInfo;
+    }
+
+    /**
+     * Adds source-map enter call.
+     *
+     * @returns TwingCompiler
+     */
+    addSourceMapEnter(node: TwingNode, source: string | TwingNode = null): TwingCompiler {
+        if (this.getEnvironment().isSourceMap()) {
+            this
+                .write('this.env.enterSourceMapBlock(')
+                .raw(node.getTemplateLine())
+                .raw(', ')
+                .raw(node.getTemplateColumn())
+                .raw(', ')
+                .string(node.getType())
+                .raw(', ')
+                .raw('this.getSourceMapSource()')
+                .raw(');\n')
+            ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Adds source-map leave call.
+     *
+     * @returns TwingCompiler
+     */
+    addSourceMapLeave() {
+        if (this.getEnvironment().isSourceMap()) {
+            this.write('this.env.leaveSourceMapBlock();\n');
+        }
+
+        return this;
     }
 
     /**
@@ -254,6 +292,6 @@ export class TwingCompiler {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${crypto.createHash('sha256').update('TwingCompiler::getVarName' + this.varNameSalt++).digest('hex')}`;
     }
 }

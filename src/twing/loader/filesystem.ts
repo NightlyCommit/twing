@@ -284,4 +284,8 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
     private isAbsolutePath(file: string) {
         return nodePath.isAbsolute(file);
     }
+
+    resolve(name: string): string {
+        return this.findTemplate(name, false);
+    }
 }

@@ -17,7 +17,8 @@ const TwingTestMockTemplate = require('../../../mock/template');
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 const TwingParser = require('../../../../lib/twing/parser').TwingParser;
 const TwingLexer = require('../../../../lib/twing/lexer').TwingLexer;
-const TwingExtensionGlobalsInterfaceImpl = require('../../../../lib/twing/extension/globals-interface').TwingExtensionGlobalsInterfaceImpl;
+const {TwingLoaderFilesystem} = require('../../../../lib/twing');
+const {SourceMapConsumer} = require('source-map');
 
 const path = require('path');
 const tap = require('tap');
@@ -81,9 +82,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFilters() {
-        return [
-            new TwingFilter('foo_filter')
-        ];
+        return new Map([
+            [0, new TwingFilter('foo_filter')]
+        ]);
     }
 
     getTests() {
@@ -93,9 +94,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFunctions() {
-        return [
-            new TwingFunction('foo_function'),
-        ];
+        return new Map([
+            [0, new TwingFunction('foo_function')],
+        ]);
     }
 
     getOperators() {
@@ -134,10 +135,10 @@ class TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime extends Tw
 
 class TwingTestsEnvironmentTestExtensionWithoutRuntime extends TwingExtension {
     getFunctions() {
-        return [
-            new TwingFunction('from_runtime_array', ['TwingTestsEnvironmentTestRuntime', 'fromRuntime']),
-            new TwingFunction('from_runtime_string', 'TwingTestsEnvironmentTestRuntime::fromRuntime')
-        ];
+        return new Map([
+            [0, new TwingFunction('from_runtime_array', ['TwingTestsEnvironmentTestRuntime', 'fromRuntime'])],
+            [1, new TwingFunction('from_runtime_string', 'TwingTestsEnvironmentTestRuntime::fromRuntime')]
+        ]);
     }
 
     getName() {
@@ -975,6 +976,276 @@ tap.test('environment', function (test) {
                 'index',
                 'foo'
             ]);
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('source map support', (test) => {
+        let loader = new TwingLoaderFilesystem('test/fixtures/css');
+        loader.addPath('test/fixtures/css', 'Css');
+
+        test.test('with boolean', (test) => {
+            let env = new TwingEnvironment(loader, {
+                source_map: true
+            });
+
+            // 1.foo {
+            // 2    text-align: right;
+            // 3    color: whitesmoke;
+            // 4    background-color: brown;
+            // 5    background-image: url("foo.png");
+            // 6    display: block;
+            // 7}
+
+            env.render('index.css.twig', {
+                align: 'right'
+            });
+
+            let map = env.getSourceMap();
+
+            let consumer = SourceMapConsumer.fromSourceMap(map);
+            let mappings = [];
+
+            consumer.eachMapping((mapping) => {
+                mappings.push(mapping);
+            });
+
+            test.same(
+                mappings,
+                [
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 1,
+                        generatedColumn: 0,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 1,
+                        generatedColumn: 0,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 2,
+                        generatedColumn: 16,
+                        originalLine: 2,
+                        originalColumn: 16,
+                        name: 'print'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 2,
+                        generatedColumn: 21,
+                        originalLine: 2,
+                        originalColumn: 27,
+                        name: 'text'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 3,
+                        originalColumn: 14,
+                        name: 'include'
+                    },
+                    {
+                        source: 'partial/color.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'partial/color.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 21,
+                        originalLine: 3,
+                        originalColumn: 49,
+                        name: 'text'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 4,
+                        originalColumn: 7,
+                        name: 'include'
+                    },
+                    {
+                        source: 'partial/background.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'partial/background.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'index.css.twig',
+                        generatedLine: 6,
+                        generatedColumn: 0,
+                        originalLine: 5,
+                        originalColumn: 0,
+                        name: 'text'
+                    }
+                ]
+            );
+
+            test.end();
+        });
+
+        test.test('with string', (test) => {
+            let env = new TwingEnvironment(loader, {
+                source_map: 'foo'
+            });
+
+            // 1.foo {
+            // 2    text-align: right;
+            // 3    color: whitesmoke;
+            // 4    background-color: brown;
+            // 5    background-image: url("foo.png");
+            // 6    display: block;
+            // 7}
+
+            env.render('index.css.twig', {
+                align: 'right'
+            });
+
+            let map = env.getSourceMap();
+
+            let consumer = SourceMapConsumer.fromSourceMap(map);
+
+            let mappings = [];
+
+            consumer.eachMapping((mapping) => {
+                mappings.push(mapping);
+            });
+
+            test.same(
+                mappings,
+                [
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 1,
+                        generatedColumn: 0,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 1,
+                        generatedColumn: 0,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 2,
+                        generatedColumn: 16,
+                        originalLine: 2,
+                        originalColumn: 16,
+                        name: 'print'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 2,
+                        generatedColumn: 21,
+                        originalLine: 2,
+                        originalColumn: 27,
+                        name: 'text'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 3,
+                        originalColumn: 14,
+                        name: 'include'
+                    },
+                    {
+                        source: 'foo/partial/color.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'foo/partial/color.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 11,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 3,
+                        generatedColumn: 21,
+                        originalLine: 3,
+                        originalColumn: 49,
+                        name: 'text'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 4,
+                        originalColumn: 7,
+                        name: 'include'
+                    },
+                    {
+                        source: 'foo/partial/background.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'module'
+                    },
+                    {
+                        source: 'foo/partial/background.css.twig',
+                        generatedLine: 4,
+                        generatedColumn: 4,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'foo/index.css.twig',
+                        generatedLine: 6,
+                        generatedColumn: 0,
+                        originalLine: 5,
+                        originalColumn: 0,
+                        name: 'text'
+                    }
+                ]
+            );
 
             test.end();
         });

@@ -70,4 +70,8 @@ export class TwingLoaderArray implements TwingLoaderInterface {
 
         return true;
     }
+
+    resolve(name: string): string {
+        return name;
+    }
 }

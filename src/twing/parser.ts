@@ -65,14 +65,10 @@ export class TwingParser {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${crypto.createHash('sha256').update('TwingParser::getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
-        let self = this;
-
-        // console.warn(stream);
-
         this.stack.push(new TwingParserStackEntry(
             this.stream,
             this.parent,
@@ -88,11 +84,11 @@ export class TwingParser {
         if (this.handlers === null) {
             this.handlers = new Map();
 
-            this.env.getTokenParsers().forEach(function (handler) {
-                handler.setParser(self);
+            for (let handler of this.env.getTokenParsers()) {
+                handler.setParser(this);
 
-                self.handlers.set(handler.getTag(), handler);
-            });
+                this.handlers.set(handler.getTag(), handler);
+            }
         }
 
         // node visitors
@@ -181,7 +177,7 @@ export class TwingParser {
             switch (this.getCurrentToken().getType()) {
                 case TwingToken.TEXT_TYPE:
                     token = this.stream.next();
-                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine()));
+                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine(), token.getColumn()));
 
                     break;
                 case TwingToken.VAR_START_TYPE:
@@ -189,7 +185,7 @@ export class TwingParser {
                     let expression = this.expressionParser.parseExpression();
 
                     this.stream.expect(TwingToken.VAR_END_TYPE);
-                    rv.set(i++, new TwingNodePrint(expression, token.getLine()));
+                    rv.set(i++, new TwingNodePrint(expression, token.getLine(), token.getColumn()));
 
                     break;
                 case TwingToken.BLOCK_START_TYPE:
@@ -381,10 +377,9 @@ export class TwingParser {
      * @returns {TwingNode}
      */
     filterBodyNodes(node: TwingNode): TwingNode {
-        let self = this;
-
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl))) {
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl)))
+        {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingErrorSyntax(
                     `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
@@ -407,11 +402,11 @@ export class TwingParser {
             return null;
         }
 
-        node.getNodes().forEach(function (n: TwingNode, k: string) {
-            if (n !== null && (self.filterBodyNodes(n) === null)) {
+        for (let [k, n] of node.getNodes()) {
+            if (n !== null && (this.filterBodyNodes(n) === null)) {
                 node.removeNode(k);
             }
-        });
+        }
 
         return node;
     }

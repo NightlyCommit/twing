@@ -4,12 +4,12 @@ import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 export abstract class TwingNodeExpressionUnary extends TwingNodeExpression {
-    constructor(expr: TwingNode, lineno: number) {
+    constructor(expr: TwingNode, lineno: number, columno: number) {
         let nodes = new Map();
 
         nodes.set('node', expr);
 
-        super(nodes, new Map(), lineno);
+        super(nodes, new Map(), lineno, columno);
 
         this.type = TwingNodeType.EXPRESSION_UNARY;
     }

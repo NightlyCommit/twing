@@ -8,7 +8,7 @@ export class TwingTokenParserDo extends TwingTokenParser {
 
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeDo(expr, token.getLine(), this.getTag());
+        return new TwingNodeDo(expr, token.getLine(), token.getColumn(), this.getTag());
     }
 
     getTag() {

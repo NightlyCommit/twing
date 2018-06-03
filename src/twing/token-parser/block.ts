@@ -22,6 +22,7 @@ const varValidator = require('var-validator');
 export class TwingTokenParserBlock extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let stream = this.parser.getStream();
         let name = stream.expect(TwingToken.NAME_TYPE).getValue();
 
@@ -35,7 +36,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().getLine(), stream.getSourceContext());
         }
 
-        let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno);
+        let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno, columnno);
 
         this.parser.setBlock(name, block);
         this.parser.pushLocalScope();
@@ -59,7 +60,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         else {
             let nodes = new Map();
 
-            nodes.set(0, new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno));
+            nodes.set(0, new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno, columnno));
 
             body = new TwingNode(nodes);
         }
@@ -71,7 +72,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         this.parser.popBlockStack();
         this.parser.popLocalScope();
 
-        return new TwingNodeBlockReference(name, lineno, this.getTag());
+        return new TwingNodeBlockReference(name, lineno, columnno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

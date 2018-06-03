@@ -8,14 +8,19 @@ import {TwingNodeExpressionBinaryAnd} from "./binary/and";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
-    constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number) {
+    constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number, columno: number) {
         let test = new TwingNodeExpressionBinaryAnd(
-            new TwingNodeExpressionTestDefined(<TwingNodeExpression>left.clone(), 'defined', new TwingNode(), left.getTemplateLine()),
-            new TwingNodeExpressionUnaryNot(new TwingNodeExpressionTestNull(left, 'null', new TwingNode(), left.getTemplateLine()), left.getTemplateLine()),
-            left.getTemplateLine()
+            new TwingNodeExpressionTestDefined(<TwingNodeExpression>left.clone(), 'defined', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
+            new TwingNodeExpressionUnaryNot(
+                new TwingNodeExpressionTestNull(left, 'null', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
+                left.getTemplateLine(),
+                left.getTemplateColumn()
+            ),
+            left.getTemplateLine(),
+            left.getTemplateColumn()
         );
 
-        super(test, left, right, lineno);
+        super(test, left, right, lineno, columno);
 
         this.type = TwingNodeType.EXPRESSION_NULL_COALESCE;
     }

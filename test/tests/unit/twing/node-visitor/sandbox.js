@@ -10,7 +10,7 @@ tap.test('node-visitor/sandbox', function (test) {
         test.test('with not "module" node', function(test) {
             let env = new TwingEnvironment(new TwingLoaderArray({}));
             let visitor = new TwingNodeVisitorSandbox();
-            let node = new TwingNodeExpressionConstant('foo', 1);
+            let node = new TwingNodeExpressionConstant('foo', 1, 1);
 
             test.equals(visitor.doEnterNode(node, env), node, 'returns the node untouched');
 

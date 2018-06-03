@@ -6,4 +6,4 @@ module.exports = class {
     __call() {
         throw new Error('__call shall not be called');
     }
-}
+};

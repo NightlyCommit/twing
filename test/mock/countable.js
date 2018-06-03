@@ -11,4 +11,4 @@ module.exports = class {
     toString() {
         throw new Error('toString shall not be called on Countables');
     }
-}
+};

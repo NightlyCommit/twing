@@ -3,7 +3,7 @@ import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeIf extends TwingNode {
-    constructor(tests: TwingNode, elseNode: TwingNode, lineno: number, tag: string = null) {
+    constructor(tests: TwingNode, elseNode: TwingNode, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('tests', tests);
@@ -12,7 +12,7 @@ export class TwingNodeIf extends TwingNode {
             nodes.set('else', elseNode);
         }
 
-        super(nodes, new Map(), lineno, tag);
+        super(nodes, new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.IF;
     }

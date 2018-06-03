@@ -11,8 +11,8 @@ import {TwingNodeOutputInterface} from "../node-output-interface";
 export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
 
-    constructor(name: string, lineno: number, tag: string = null) {
-        super(new Map(), new Map([['name', name]]), lineno, tag);
+    constructor(name: string, lineno: number, columnno: number, tag: string = null) {
+        super(new Map(), new Map([['name', name]]), lineno, columnno, tag);
 
         this.type = TwingNodeType.BLOCK_REFERENCE;
 

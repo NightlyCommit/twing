@@ -47,6 +47,7 @@ export class TwingNode {
     protected nodes: Map<number | string, TwingNode>;
     protected attributes: Map<string, any>;
     protected lineno: number;
+    protected columnno: number;
     protected tag: string;
     protected type: TwingNodeType;
     private name: string = null;
@@ -60,12 +61,14 @@ export class TwingNode {
      * @param nodes         Map<string, TwingNode>  A map of named nodes
      * @param attributes    Map<string, {}>         A map of attributes (should not be nodes)
      * @param lineno        number                  The line number
+     * @param columnno      number                  The column number
      * @param tag           string                  The tag name associated with the Nodel
      */
-    constructor(nodes: Map<any, any> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, tag: string = null) {
+    constructor(nodes: Map<any, any> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, columnno: number = 0, tag: string = null) {
         this.nodes = nodes;
         this.attributes = attributes;
         this.lineno = lineno;
+        this.columnno = columnno;
         this.tag = tag;
         this.type = null;
     }
@@ -89,6 +92,7 @@ export class TwingNode {
         }
 
         result.lineno = this.lineno;
+        result.columnno = this.columnno;
         result.tag = this.tag;
         result.type = this.type;
 
@@ -99,10 +103,20 @@ export class TwingNode {
         let attributes = [];
 
         for (let [name, value] of this.attributes) {
-            let attributeRepr = '' + var_export(value, true);
+            let attributeRepr: string;
+
+            if (value instanceof TwingNode) {
+                attributeRepr = '' + value.toString();
+            }
+            else {
+                attributeRepr = '' + var_export(value, true);
+            }
 
             attributes.push(`${name}: ${attributeRepr.replace(/\n/g, '')}`);
         }
+
+        attributes.push(`line: ${this.getTemplateLine()}`);
+        attributes.push(`column: ${this.getTemplateColumn()}`);
 
         let repr = [this.constructor.name + '(' + attributes.join(', ')];
 
@@ -139,6 +153,10 @@ export class TwingNode {
 
     getTemplateLine() {
         return this.lineno;
+    }
+
+    getTemplateColumn() {
+        return this.columnno;
     }
 
     getNodeTag() {

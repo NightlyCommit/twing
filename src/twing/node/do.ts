@@ -13,8 +13,8 @@ import {TwingCompiler} from "../compiler";
  * @author Eric Morand <eric.morand@gmail.com>
  */
 export class TwingNodeDo extends TwingNode {
-    constructor(expr: TwingNodeExpression, lineno: number, tag: string = null) {
-        super(new Map([['expr', expr]]), new Map(), lineno, tag);
+    constructor(expr: TwingNodeExpression, lineno: number, columnno: number, tag: string = null) {
+        super(new Map([['expr', expr]]), new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.DO;
     }
