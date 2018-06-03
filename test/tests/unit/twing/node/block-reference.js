@@ -6,7 +6,7 @@ const tap = require('tap');
 
 tap.test('node/block-reference', function (test) {
     test.test('constructor', function (test) {
-        let node = new TwingNodeBlockReference('foo', 1);
+        let node = new TwingNodeBlockReference('foo', 1, 1);
 
         test.same(node.getAttribute('name'), 'foo');
         test.same(node.getType(), TwingNodeType.BLOCK_REFERENCE);
@@ -15,10 +15,10 @@ tap.test('node/block-reference', function (test) {
     });
 
     test.test('compile', function (test) {
-        let node = new TwingNodeBlockReference('foo', 1);
+        let node = new TwingNodeBlockReference('foo', 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1
+        test.same(compiler.compile(node).getSource(), `// line 1, column 1
 this.displayBlock(\'foo\', context, blocks);
 `);
 

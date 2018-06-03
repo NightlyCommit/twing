@@ -3,8 +3,8 @@ import {TwingNode, TwingNodeType} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeSandbox extends TwingNode {
-    constructor(body: TwingNode, lineno: number, tag: string = null) {
-        super(new Map([['body', body]]), new Map(), lineno, tag);
+    constructor(body: TwingNode, lineno: number, columnno: number, tag: string = null) {
+        super(new Map([['body', body]]), new Map(), lineno, columnno, tag);
 
         this.type = TwingNodeType.SANDBOX;
     }

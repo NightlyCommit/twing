@@ -51,60 +51,63 @@ class TwingTestExtension extends TwingExtension {
 
     getFilters() {
         let self = this;
+        let i = 0;
 
-        return [
+        return new Map([
             // new TwingFilter('§', array($this, '§Filter')),
-            new TwingFilter('escape_and_nl2br', escape_and_nl2br, {
+            [i++, new TwingFilter('escape_and_nl2br', escape_and_nl2br, {
                 'needs_environment': true,
                 'is_safe': ['html']
-            }),
+            })],
             // name this filter "nl2br_" to allow the core "nl2br" filter to be tested
-            new TwingFilter('nl2br_', nl2br, {'pre_escape': 'html', 'is_safe': ['html']}),
-            new TwingFilter('§', this.sectionFilter),
-            new TwingFilter('escape_something', escape_something, {'is_safe': ['something']}),
-            new TwingFilter('preserves_safety', preserves_safety, {'preserves_safety': ['html']}),
-            new TwingFilter('static_call_string', TwingTestExtension.staticCall),
-            new TwingFilter('static_call_array', TwingTestExtension.staticCall),
-            new TwingFilter('magic_call', function () {
+            [i++, new TwingFilter('nl2br_', nl2br, {'pre_escape': 'html', 'is_safe': ['html']})],
+            [i++, new TwingFilter('§', this.sectionFilter)],
+            [i++, new TwingFilter('escape_something', escape_something, {'is_safe': ['something']})],
+            [i++, new TwingFilter('preserves_safety', preserves_safety, {'preserves_safety': ['html']})],
+            [i++, new TwingFilter('static_call_string', TwingTestExtension.staticCall)],
+            [i++, new TwingFilter('static_call_array', TwingTestExtension.staticCall)],
+            [i++, new TwingFilter('magic_call', function () {
                 return self.__call('magicCall', arguments);
-            }),
-            new TwingFilter('magic_call_string', function () {
+            })],
+            [i++, new TwingFilter('magic_call_string', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            }),
-            new TwingFilter('magic_call_array', function () {
+            })],
+            [i++, new TwingFilter('magic_call_array', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            }),
-            new TwingFilter('*_path', dynamic_path),
-            new TwingFilter('*_foo_*_bar', dynamic_foo),
-            new TwingFilter('anon_foo', function (name) {
+            })],
+            [i++, new TwingFilter('*_path', dynamic_path)],
+            [i++, new TwingFilter('*_foo_*_bar', dynamic_foo)],
+            [i++, new TwingFilter('anon_foo', function (name) {
                 return '*' + name + '*';
-            }),
-            new TwingFilter('async_foo', function (name) {
+            })],
+            [i++, new TwingFilter('async_foo', function (name) {
                 return new Promise((resolve) => {
                     resolve('*' + name + '*');
                 });
-            })
-        ];
+            })]
+        ]);
     }
 
     getFunctions() {
-        return [
-            new TwingFunction('§', this.sectionFunction),
-            new TwingFunction('safe_br', this.br, {'is_safe': ['html']}),
-            new TwingFunction('unsafe_br', this.br),
-            new TwingFunction('static_call_string', TwingTestExtension.staticCall),
-            new TwingFunction('static_call_array', TwingTestExtension.staticCall),
-            new TwingFunction('*_path', dynamic_path),
-            new TwingFunction('*_foo_*_bar', dynamic_foo),
-            new TwingFunction('anon_foo', function (name) {
+        let i = 0;
+
+        return new Map([
+            [i++, new TwingFunction('§', this.sectionFunction)],
+            [i++, new TwingFunction('safe_br', this.br, {'is_safe': ['html']})],
+            [i++, new TwingFunction('unsafe_br', this.br)],
+            [i++, new TwingFunction('static_call_string', TwingTestExtension.staticCall)],
+            [i++, new TwingFunction('static_call_array', TwingTestExtension.staticCall)],
+            [i++, new TwingFunction('*_path', dynamic_path)],
+            [i++, new TwingFunction('*_foo_*_bar', dynamic_foo)],
+            [i++, new TwingFunction('anon_foo', function (name) {
                 return '*' + name + '*';
-            }),
-            new TwingFunction('async_foo', function (name) {
+            })],
+            [i++, new TwingFunction('async_foo', function (name) {
                 return new Promise((resolve) => {
                     resolve('*' + name + '*');
-                });
-            })
-        ];
+                })
+            })]
+        ]);
     }
 
     getTests() {
@@ -201,7 +204,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
     getExpectedErrorMessage() {
         return null;
     }
-}
+};
 
 /**
  * nl2br which also escapes, for testing escaper filters.

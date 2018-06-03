@@ -9,11 +9,11 @@ const tap = require('tap');
 tap.test('node/autoescape', function (test) {
     test.test('constructor', function (test) {
         let bodyNodes = new Map([
-            [0, new TwingNodeText('foo', 1)]
+            [0, new TwingNodeText('foo', 1, 1)]
         ]);
 
         let body = new TwingNode(bodyNodes);
-        let node = new TwingNodeAutoEscape(true, body, 1);
+        let node = new TwingNodeAutoEscape(true, body, 1, 1);
 
         test.same(node.getNode('body'), body);
         test.true(node.getAttribute('value'));
@@ -24,14 +24,14 @@ tap.test('node/autoescape', function (test) {
 
     test.test('compile', function (test) {
         let bodyNodes = new Map([
-            [0, new TwingNodeText('foo', 1)]
+            [0, new TwingNodeText('foo', 1, 1)]
         ]);
 
         let body = new TwingNode(bodyNodes);
         let node = new TwingNodeAutoEscape(true, body, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1
+        test.same(compiler.compile(node).getSource(), `// line 1, column 1
 Twing.echo("foo");
 `);
 

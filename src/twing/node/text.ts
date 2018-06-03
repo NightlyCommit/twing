@@ -5,8 +5,8 @@ import {TwingNodeOutputInterface} from "../node-output-interface";
 export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
 
-    constructor(data: string, line: number) {
-        super(new Map(), new Map([['data', data]]), line);
+    constructor(data: string, lineno: number, columnno: number) {
+        super(new Map(), new Map([['data', data]]), lineno, columnno);
 
         this.type = TwingNodeType.TEXT;
 
@@ -16,9 +16,11 @@ export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
+            .addSourceMapEnter(this)
             .write('Twing.echo(')
             .string(this.getAttribute('data'))
             .raw(");\n")
+            .addSourceMapLeave()
         ;
     }
 }

@@ -111,4 +111,25 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
         throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
+
+    resolve(name: string): string {
+        let exceptions = [];
+
+        for (let loader of this.loaders) {
+            if (!loader.exists(name)) {
+                continue;
+            }
+
+            try {
+                return loader.resolve(name);
+            }
+            catch (e) {
+                if (e instanceof TwingErrorLoader) {
+                    exceptions.push(loader.constructor.name + ': ' + e.message);
+                }
+            }
+        }
+
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+    }
 }

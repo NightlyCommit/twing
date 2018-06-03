@@ -145,7 +145,7 @@ module.exports.__TwingTemplate_db681609e4f9c30158d1ad21d3956cdc61011a3e96df392a5
     }
 
     doDisplay(context, blocks = new Twing.TwingMap()) {
-        // line 1
+        // line 1, column 1
         Twing.echo("Hello ");
         Twing.echo(this.env.getFilter('escape').getCallable()(...[this.env, (context.has("name") ? context.get("name") : null), "html", null, true]));
     }
@@ -159,7 +159,7 @@ module.exports.__TwingTemplate_db681609e4f9c30158d1ad21d3956cdc61011a3e96df392a5
     }
 
     getDebugInfo() {
-        return new Map([[19,1]]);
+        return new Map([[19, {"line": 1, "column": 1}]]);
     }
 
     getSourceContext() {

@@ -10,6 +10,7 @@ import {TwingNodeAutoEscape} from "../node/auto-escape";
 export class TwingTokenParserAutoEscape extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let stream = this.parser.getStream();
         let value: string;
 
@@ -32,7 +33,7 @@ export class TwingTokenParserAutoEscape extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeAutoEscape(value, body, lineno, this.getTag());
+        return new TwingNodeAutoEscape(value, body, lineno, columnno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

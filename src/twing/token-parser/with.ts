@@ -21,7 +21,7 @@ export class TwingTokenParserWith extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeWith(body, variables, only, token.getLine(), this.getTag());
+        return new TwingNodeWith(body, variables, only, token.getLine(), token.getColumn(), this.getTag());
     }
 
     decideWithEnd(token: TwingToken) {

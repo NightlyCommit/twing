@@ -49,7 +49,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
 
             // wrap print to check toString() calls
             if (node.getType() === TwingNodeType.PRINT) {
-                return new TwingNodeSandboxedPrint(node.getNode('expr') as TwingNodeExpression, node.getTemplateLine(), node.getNodeTag());
+                return new TwingNodeSandboxedPrint(node.getNode('expr') as TwingNodeExpression, node.getTemplateLine(), node.getTemplateColumn(), node.getNodeTag());
             }
         }
 

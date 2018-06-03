@@ -3,7 +3,7 @@ import {TwingNode, TwingNodeType} from "../../node";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
-    constructor(name: TwingNode, template: TwingNode, lineno: number, tag: string = null) {
+    constructor(name: TwingNode, template: TwingNode, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
         nodes.set('name', name);
@@ -17,7 +17,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
             ['output', false]
         ]);
 
-        super(nodes, attributes, lineno, tag);
+        super(nodes, attributes, lineno, columnno, tag);
 
         this.type = TwingNodeType.EXPRESSION_BLOCK_REFERENCE;
     }

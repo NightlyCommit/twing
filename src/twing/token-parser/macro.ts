@@ -20,6 +20,7 @@ const varValidator = require('var-validator');
 export class TwingTokenParserMacro extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let stream = this.parser.getStream();
         let name = stream.expect(TwingToken.NAME_TYPE).getValue();
         let safeName = name;
@@ -52,7 +53,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
             [0, body]
         ]);
 
-        this.parser.setMacro(name, new TwingNodeMacro(safeName, new TwingNodeBody(nodes), macroArguments, lineno, this.getTag()));
+        this.parser.setMacro(name, new TwingNodeMacro(safeName, new TwingNodeBody(nodes), macroArguments, lineno, columnno, this.getTag()));
 
         return null;
     }

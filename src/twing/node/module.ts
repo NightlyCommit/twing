@@ -34,7 +34,7 @@ export class TwingNodeModule extends TwingNode {
         attributes.set('index', null);
         attributes.set('embedded_templates', embeddedTemplates);
 
-        super(nodes, attributes, 1);
+        super(nodes, attributes, 1, 1);
 
         this.type = TwingNodeType.MODULE;
         this.source = source;
@@ -76,6 +76,8 @@ export class TwingNodeModule extends TwingNode {
         this.compileMacros(compiler);
 
         this.compileGetTemplateName(compiler);
+
+        this.compileGetSourceMapSource(compiler);
 
         this.compileIsTraitable(compiler);
 
@@ -302,6 +304,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("doDisplay(context, blocks = new Map()) {\n")
             .indent()
+            .addSourceMapEnter(this)
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))
         ;
@@ -323,6 +326,7 @@ export class TwingNodeModule extends TwingNode {
 
         compiler
             .subcompile(this.getNode('display_end'))
+            .addSourceMapLeave()
             .outdent()
             .write("}\n\n")
         ;
@@ -335,6 +339,18 @@ export class TwingNodeModule extends TwingNode {
             .write('return ')
             .repr(this.source.getName())
             .raw(";\n")
+            .outdent()
+            .write("}\n\n")
+        ;
+    }
+
+    protected compileGetSourceMapSource(compiler: TwingCompiler) {
+        compiler
+            .write("getSourceMapSource() {\n")
+            .indent()
+            .write('return this.env.getLoader().resolve(')
+            .repr(this.source.getName())
+            .raw(');\n')
             .outdent()
             .write("}\n\n")
         ;

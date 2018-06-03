@@ -3,14 +3,14 @@ import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 
 export class TwingNodeForLoop extends TwingNode {
-    constructor(lineno: number, tag: string = null) {
+    constructor(lineno: number, columnno: number, tag: string = null) {
         let attributes = new Map();
 
         attributes.set('with_loop', false);
         attributes.set('ifexpr', false);
         attributes.set('else', false);
 
-        super(new Map(), attributes, lineno, tag);
+        super(new Map(), attributes, lineno, columnno, tag);
     }
 
     compile(compiler: TwingCompiler) {

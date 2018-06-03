@@ -27,7 +27,7 @@ export class TwingTokenParserSandbox extends TwingTokenParser {
             });
         }
 
-        return new TwingNodeSandbox(body, token.getLine(), this.getTag());
+        return new TwingNodeSandbox(body, token.getLine(), token.getColumn(), this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

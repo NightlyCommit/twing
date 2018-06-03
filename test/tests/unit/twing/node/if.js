@@ -12,22 +12,24 @@ const tap = require('tap');
 tap.test('node/if', function (test) {
     test.test('constructor', function (test) {
         let tNodes = new Map([
-            [0, new TwingNodeExpressionConstant(true, 1)],
-            [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+            [0, new TwingNodeExpressionConstant(true, 1, 1)],
+            [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
         ]);
 
-        let t = new TwingNode(tNodes, new Map(), 1);
+        let t = new TwingNode(tNodes, new Map(), 1, 1);
         let else_ = null;
-        let node = new TwingNodeIf(t, else_, 1);
+        let node = new TwingNodeIf(t, else_, 1, 1);
 
         test.same(node.getNode('tests'), t);
         test.false(node.hasNode('else'));
 
-        else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1);
-        node = new TwingNodeIf(t, else_, 1);
+        else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1, 1), 1, 1);
+        node = new TwingNodeIf(t, else_, 1, 1);
 
         test.same(node.getNode('else'), else_);
         test.same(node.getType(), TwingNodeType.IF);
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 1);
 
         test.end();
     });
@@ -37,15 +39,15 @@ tap.test('node/if', function (test) {
 
         test.test('without else', function (test) {
             let tNodes = new Map([
-                [0, new TwingNodeExpressionConstant(true, 1)],
-                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodeExpressionConstant(true, 1, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let t = new TwingNode(tNodes, new Map(), 1);
+            let t = new TwingNode(tNodes, new Map(), 1, 1);
             let else_ = null;
-            let node = new TwingNodeIf(t, else_, 1);
+            let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
     Twing.echo((context.has("foo") ? context.get("foo") : null));
 }
@@ -55,18 +57,18 @@ if (true) {
 
         test.test('with multiple tests', function (test) {
             let tNodes = new Map([
-                [0, new TwingNodeExpressionConstant(true, 1)],
-                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)],
-                [2, new TwingNodeExpressionConstant(false, 1)],
-                [3, new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1)]
+                [0, new TwingNodeExpressionConstant(true, 1, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)],
+                [2, new TwingNodeExpressionConstant(false, 1, 1)],
+                [3, new TwingNodePrint(new TwingNodeExpressionName('bar', 1, 1), 1, 1)]
             ]);
 
-            let t = new TwingNode(tNodes, new Map(), 1);
+            let t = new TwingNode(tNodes, new Map(), 1, 1);
             let else_ = null;
 
-            let node = new TwingNodeIf(t, else_, 1);
+            let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
     Twing.echo((context.has("foo") ? context.get("foo") : null));
 }
@@ -79,16 +81,16 @@ else if (false) {
 
         test.test('with else', function (test) {
             let tNodes = new Map([
-                [0, new TwingNodeExpressionConstant(true, 1)],
-                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1), 1)]
+                [0, new TwingNodeExpressionConstant(true, 1, 1)],
+                [1, new TwingNodePrint(new TwingNodeExpressionName('foo', 1, 1), 1, 1)]
             ]);
 
-            let t = new TwingNode(tNodes, new Map(), 1);
-            let else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1), 1);
+            let t = new TwingNode(tNodes, new Map(), 1, 1);
+            let else_ = new TwingNodePrint(new TwingNodeExpressionName('bar', 1, 1), 1, 1);
 
-            let node = new TwingNodeIf(t, else_, 1);
+            let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
     Twing.echo((context.has("foo") ? context.get("foo") : null));
 }
@@ -114,7 +116,7 @@ else {
 
             let node = new TwingNodeIf(t, else_, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1
+            test.same(compiler.compile(node).getSource(), `// line 1, column 0
 if ((context.has("a") ? context.get("a") : null)) {
     Twing.echo("a");
 }

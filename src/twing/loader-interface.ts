@@ -48,4 +48,13 @@ export interface TwingLoaderInterface {
      * @returns boolean If the template source code is handled by this loader or not
      */
     exists(name: string): boolean;
+
+    /**
+     * Resolve the path of a template, given its name, whatever it means in the context of the loader.
+     *
+     * @param {string} name The name of the template to resolve
+     *
+     * @returns {string} The resolved path of the template
+     */
+    resolve(name: string): string;
 }

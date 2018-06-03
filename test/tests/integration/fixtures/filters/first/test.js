@@ -22,4 +22,4 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
             arr: [1, 2, 3, 4]
         }
     }
-}
+};

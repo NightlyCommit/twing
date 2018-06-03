@@ -88,56 +88,42 @@ let twing = new Twing.TwingEnvironment(loader, {debug: true});
 
 The following options are available:
 
-* ``debug`` *boolean*
+* `debug` *boolean*
 
-  When set to ``true``, the generated templates have a
-  ``__toString()`` method that you can use to display the generated nodes
-  (default to ``false``).
+  When set to `true`, the generated templates have a `__toString()` method that you can use to display the generated nodes (defaults to `false`).
 
-* ``charset`` *string* (defaults to ``utf-8``)
+* `charset` *string* (defaults to `utf-8`)
 
   The charset used by the templates.
 
-* ``base_template_class`` *string* (defaults to ``Twing.TwingTemplate``)
+* `base_template_class` *string* (defaults to `Twing.TwingTemplate`)
 
-  The base template class to use for generated
-  templates.
+  The base template class to use for generated templates.
 
-* ``cache`` *string* or ``false``
+* `cache` *string* or `false`
 
-  An absolute path where to store the compiled templates, or
-  ``false`` to disable caching (which is the default).
+  An absolute path where to store the compiled templates, or `false` to disable caching (which is the default).
 
-* ``auto_reload`` *boolean*
+* `auto_reload` *boolean*
 
-  When developing with Twing, it's useful to recompile the
-  template whenever the source code changes. If you don't provide a value for
-  the ``auto_reload`` option, it will be determined automatically based on the
-  ``debug`` value.
+  When developing with Twing, it's useful to recompile the template whenever the source code changes. If you don't provide a value for the `auto_reload` option, it will be determined automatically based on the `debug` value.
 
-* ``strict_variables`` *boolean*
+* `strict_variables` *boolean*
 
-  If set to ``false``, Twing will silently ignore invalid
-  variables (variables and or attributes/methods that do not exist) and
-  replace them with a ``null`` value. When set to ``true``, Twing throws an
-  exception instead (default to ``false``).
+  If set to `false`, Twing will silently ignore invalid variables (variables and or attributes/methods that do not exist) and replace them with a `null` value. When set to `true`, Twing throws an exception instead (default to `false`).
 
-* ``autoescape`` *string*
+* `autoescape` *string*
 
-  Sets the default auto-escaping strategy (``name``, ``html``, ``js``, ``css``,
-  ``url``, ``html_attr``, or a JavaScript callback that takes the template "filename"
-  and returns the escaping strategy to use); set it to
-  ``false`` to disable auto-escaping. The ``name`` escaping strategy determines
-  the escaping strategy to use for a template based on the template filename
-  extension (this strategy does not incur any overhead at runtime as
-  auto-escaping is done at compilation time.)
+  Sets the default auto-escaping strategy (`name`, `html`, `js`, `css`, `url`, `html_attr`, or a JavaScript callback that takes the template "filename" and returns the escaping strategy to use); set it to `false` to disable auto-escaping. The `name` escaping strategy determines the escaping strategy to use for a template based on the template filename extension (this strategy does not incur any overhead at runtime as auto-escaping is done at compilation time.)
 
-* ``optimizations`` *integer*
+* `optimizations` *integer*
 
-  A flag that indicates which optimizations to apply
-  (default to ``-1`` -- all optimizations are enabled; set it to ``0`` to
-  disable).
-
+  A flag that indicates which optimizations to apply (default to `-1` -- all optimizations are enabled; set it to `0` to disable).
+  
+* `source_map` *string* or *boolean* (defaults to `false`)
+  
+  If set to a *string* or `true`, Twing will add source map support to the compiled template. The source map can then be retrieved after the rendering by calling `TwingEnvironment.getSourceMap()` method. If set to a *string*, specifies the intended location of the output file. Strongly recommended when outputting source maps so that they can properly refer back to their intended files.
+  
 ## Loaders
 
 Loaders are responsible for loading templates from a resource such as the file
@@ -315,6 +301,15 @@ interface TwingLoaderInterface {
      * @returns boolean If the template source code is handled by this loader or not
      */
     exists(name: string): boolean;
+    
+    /**
+     * Resolve the path of a template, given its name, whatever it means in the context of the loader.
+     *
+     * @param {string} name The name of the template to resolve
+     *
+     * @returns {string} The resolved path of the template
+     */
+    resolve(name: string): string;
 }
 ```
 

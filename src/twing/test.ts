@@ -29,8 +29,8 @@ export class TwingTest {
         this.callable = callable;
         this.options = merge({
             is_variadic: false,
-            node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number) {
-                return new TwingNodeExpressionTest(node, name, nodeArguments, lineno);
+            node_factory: function (node: TwingNodeExpression, name: string, nodeArguments: TwingNode, lineno: number, columnno: number) {
+                return new TwingNodeExpressionTest(node, name, nodeArguments, lineno, columnno);
             },
             deprecated: false,
             alternative: null,

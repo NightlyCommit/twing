@@ -262,10 +262,10 @@ export class TwingError extends Error {
                     continue;
                 }
 
-                for (let [codeLine, templateLine] of templateToUse.getDebugInfo()) {
+                for (let [codeLine, templateCoordinates] of templateToUse.getDebugInfo()) {
                     if (codeLine <= trace.getLineNumber()) {
                         // update template line
-                        this.lineno = templateLine;
+                        this.lineno = templateCoordinates.line;
 
                         return;
                     }

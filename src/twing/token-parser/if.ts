@@ -21,6 +21,7 @@ import {TwingNodeIf} from "../node/if";
 export class TwingTokenParserIf extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
+        let columnno = token.getColumn();
         let expr = this.parser.getExpressionParser().parseExpression();
         let stream = this.parser.getStream();
 
@@ -60,7 +61,7 @@ export class TwingTokenParserIf extends TwingTokenParser {
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 
-        return new TwingNodeIf(new TwingNode(tests), elseNode, lineno, this.getTag());
+        return new TwingNodeIf(new TwingNode(tests), elseNode, lineno, columnno, this.getTag());
     }
 
     decideIfFork(token: TwingToken) {
