@@ -377,6 +377,10 @@ export class TwingEnvironment extends EventEmitter {
             cls = `${cls}_${index}`;
         }
 
+        if (this.loadedTemplates.has(cls)) {
+            return this.loadedTemplates.get(cls);
+        }
+
         let cache = this.cache as TwingCacheInterface;
         let key = cache.generateKey(name, mainCls);
 
@@ -384,10 +388,6 @@ export class TwingEnvironment extends EventEmitter {
         let fileName: string = path.resolve(key);
 
         if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key))) {
-            if (this.loadedTemplates.has(cls)) {
-                return this.loadedTemplates.get(cls);
-            }
-
             templates = cache.load(key);
         }
 
