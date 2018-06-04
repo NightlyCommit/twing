@@ -331,157 +331,79 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('autoReload', function (test) {
+    test.test('autoReloadCacheMiss', function (test) {
         let templateName = test.name;
         let templateContent = test.name;
 
-        test.test('set to false', function (test) {
-            test.test('loaded templates cache miss', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: false, debug: false});
+        let cache = new TwingTestMockCache();
+        let loader = getMockLoader(templateName, templateContent);
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(0);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(false);
+        sinon.stub(cache, 'generateKey').returns('key');
+        sinon.stub(cache, 'getTimestamp').returns(0);
+        sinon.stub(cache, 'write');
+        sinon.stub(cache, 'load');
+        sinon.stub(loader, 'isFresh').returns(false);
 
-                twing.loadTemplate(templateName);
+        twing.loadTemplate(templateName);
 
-                sinon.assert.notCalled(cache['getTimestamp']);
-                sinon.assert.notCalled(loader['isFresh']);
-                sinon.assert.calledOnce(cache['write']);
-                sinon.assert.calledTwice(cache['load']);
+        sinon.assert.calledOnce(cache['generateKey']);
+        sinon.assert.calledOnce(cache['getTimestamp']);
+        sinon.assert.calledOnce(loader['isFresh']);
+        sinon.assert.calledOnce(cache['write']);
+        sinon.assert.calledOnce(cache['load']);
 
-                test.end();
-            });
+        test.end();
+    });
 
-            test.test('loaded templates cache hit', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
+    test.test('autoReloadCacheHit', function (test) {
+        let templateName = test.name;
+        let templateContent = test.name;
 
-                sinon.stub(twing, 'getTemplateClass').returns('foo');
+        let cache = new TwingTestMockCache();
+        let loader = getMockLoader(templateName, templateContent);
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
-                Reflect.set(twing, 'loadedTemplates', new Map([
-                    ['foo', 'bar']
-                ]));
+        sinon.stub(cache, 'generateKey').returns('key');
+        sinon.stub(cache, 'getTimestamp').returns(0);
+        sinon.stub(cache, 'write');
+        sinon.stub(cache, 'load');
+        sinon.stub(loader, 'isFresh').returns(true);
 
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(0);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(true);
+        twing.loadTemplate(templateName);
 
-                twing.loadTemplate(templateName);
+        sinon.assert.calledOnce(cache['generateKey']);
+        sinon.assert.calledOnce(cache['getTimestamp']);
+        sinon.assert.calledOnce(loader['isFresh']);
+        sinon.assert.calledOnce(cache['write']);
+        sinon.assert.calledTwice(cache['load']);
 
-                sinon.assert.calledOnce(cache['getTimestamp']);
-                sinon.assert.calledOnce(loader['isFresh']);
-                sinon.assert.notCalled(cache['write']);
-                sinon.assert.notCalled(cache['load']);
+        test.end();
+    });
 
-                test.end();
-            });
+    test.test('autoReloadOutdatedCacheHit', function (test) {
+        let templateName = test.name;
+        let templateContent = test.name;
 
-            test.end();
-        });
+        let cache = new TwingTestMockCache();
+        let loader = getMockLoader(templateName, templateContent);
+        let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
-        test.test('set to true', function (test) {
-            test.test('cache miss', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
+        let now = new Date();
 
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(0);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(false);
+        sinon.stub(cache, 'generateKey').returns('key');
+        sinon.stub(cache, 'getTimestamp').returns(now);
+        sinon.stub(cache, 'write');
+        sinon.stub(cache, 'load');
+        sinon.stub(loader, 'isFresh').returns(false);
 
-                twing.loadTemplate(templateName);
+        twing.loadTemplate(templateName);
 
-                sinon.assert.calledOnce(cache['getTimestamp']);
-                sinon.assert.calledOnce(loader['isFresh']);
-                sinon.assert.calledOnce(cache['write']);
-                sinon.assert.calledOnce(cache['load']);
-
-                test.end();
-            });
-
-            test.test('cache hit', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
-
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(0);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(true);
-
-                twing.loadTemplate(templateName);
-
-                sinon.assert.calledOnce(cache['getTimestamp']);
-                sinon.assert.calledOnce(loader['isFresh']);
-                sinon.assert.calledOnce(cache['write']);
-                sinon.assert.calledTwice(cache['load']);
-
-                test.end();
-            });
-
-            test.test('outdated cache hit', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
-
-                let now = new Date();
-
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(now);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(false);
-
-                twing.loadTemplate(templateName);
-
-                sinon.assert.calledOnce(cache['getTimestamp']);
-                sinon.assert.calledOnce(loader['isFresh']);
-                sinon.assert.calledOnce(cache['write']);
-                sinon.assert.calledOnce(cache['load']);
-
-                test.end();
-            });
-
-            test.test('loaded templates cache hit', function (test) {
-                let cache = new TwingTestMockCache();
-                let loader = getMockLoader(templateName, templateContent);
-                let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
-
-                sinon.stub(twing, 'getTemplateClass').returns('foo');
-
-                Reflect.set(twing, 'loadedTemplates', new Map([
-                    ['foo', 'bar']
-                ]));
-
-                sinon.stub(cache, 'generateKey').returns('key');
-                sinon.stub(cache, 'getTimestamp').returns(0);
-                sinon.stub(cache, 'write');
-                sinon.stub(cache, 'load');
-                sinon.stub(loader, 'isFresh').returns(true);
-
-                twing.loadTemplate(templateName);
-
-                sinon.assert.calledOnce(cache['getTimestamp']);
-                sinon.assert.calledOnce(loader['isFresh']);
-                sinon.assert.notCalled(cache['write']);
-                sinon.assert.notCalled(cache['load']);
-
-                test.end();
-            });
-
-            test.end();
-        });
+        sinon.assert.calledOnce(cache['generateKey']);
+        sinon.assert.calledOnce(cache['getTimestamp']);
+        sinon.assert.calledOnce(loader['isFresh']);
+        sinon.assert.calledOnce(cache['write']);
+        sinon.assert.calledOnce(cache['load']);
 
         test.end();
     });
