@@ -4,7 +4,7 @@
  * @param {Map<*, *>} map
  * @param {Function} handler
  */
-export function ksort(map: Map<any, any>, handler: any = null): void {
+export function ksort(map: Map<any, any>, handler: any = undefined): void {
     let sortedMap = new Map();
 
     let sortedKeys = [...map.keys()].sort(handler);
