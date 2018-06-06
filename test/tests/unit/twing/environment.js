@@ -111,6 +111,20 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 }
 
+class TwingTestsEnvironmentTestExtensionRegression extends TwingTestsEnvironmentTestExtension {
+    getFilters() {
+        return [
+            new TwingFilter('foo_filter')
+        ];
+    }
+
+    getFunctions() {
+        return [
+            new TwingFunction('foo_function')
+        ];
+    }
+}
+
 class TwingTestsEnvironmentTestExtensionWithDeprecationInitRuntime extends TwingExtension {
     constructor() {
         super();
@@ -453,6 +467,17 @@ tap.test('environment', function (test) {
 
             test.equals(twing.getExtension('ext1'), ext1);
             test.equals(twing.getExtension('ext2'), ext2);
+
+            test.end();
+        });
+
+        test.test('support pre-1.2.0 API', (test) => {
+            let twing = new TwingEnvironment(new TwingTestMockLoader());
+            let ext = new TwingTestsEnvironmentTestExtensionRegression();
+            twing.addExtension(ext);
+
+            test.true(twing.getFilters().has('foo_filter'));
+            test.true(twing.getFunctions().has('foo_function'));
 
             test.end();
         });
