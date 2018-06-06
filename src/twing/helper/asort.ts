@@ -2,7 +2,7 @@
  * @param {Map<*, *>} map
  * @param {Function} handler
  */
-export function asort(map: Map<any, any>, handler: any = null) {
+export function asort(map: Map<any, any>, handler: any = undefined) {
     let sortedMap = new Map();
 
     let keys: Array<any> = [].fill(null, 0, map.size);
