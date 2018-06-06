@@ -408,13 +408,29 @@ export class TwingExtensionSet {
 
     private initExtension(extension: TwingExtensionInterface) {
         // filters
-        for (let [key, filter] of extension.getFilters()) {
-            this.filters.set(filter.getName(), filter);
+        // BC, @see https://github.com/ericmorand/twing/issues/218
+        if (Array.isArray(extension.getFilters())) {
+            for (let [key, filter] of extension.getFilters().entries()) {
+                this.filters.set(filter.getName(), filter);
+            }
+        }
+        else {
+            for (let [key, filter] of extension.getFilters()) {
+                this.filters.set(filter.getName(), filter);
+            }
         }
 
         // functions
-        for (let [key, function_] of extension.getFunctions()) {
-            this.functions.set(function_.getName(), function_);
+        // BC, @see https://github.com/ericmorand/twing/issues/218
+        if (Array.isArray(extension.getFunctions())) {
+            for (let [key, function_] of extension.getFunctions().entries()) {
+                this.functions.set(function_.getName(), function_);
+            }
+        }
+        else {
+            for (let [key, function_] of extension.getFunctions()) {
+                this.functions.set(function_.getName(), function_);
+            }
         }
 
         // tests
