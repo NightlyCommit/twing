@@ -909,7 +909,7 @@ tap.test('environment', function (test) {
         let loader = new TwingLoaderFilesystem('test/fixtures/css');
         loader.addPath('test/fixtures/css', 'Css');
 
-        test.test('with boolean', (test) => {
+        test.test('when source_map is set to true', (test) => {
             let env = new TwingEnvironment(loader, {
                 source_map: true
             });
@@ -1040,7 +1040,23 @@ tap.test('environment', function (test) {
             test.end();
         });
 
-        test.test('with string', (test) => {
+        test.test('when source_map is set to false', (test) => {
+            let env = new TwingEnvironment(loader, {
+                source_map: false
+            });
+
+            env.render('index.css.twig', {
+                align: 'right'
+            });
+
+            let map = env.getSourceMap();
+
+            test.equals(map, null);
+
+            test.end();
+        });
+
+        test.test('when source_map is a string', (test) => {
             let env = new TwingEnvironment(loader, {
                 source_map: 'foo'
             });
