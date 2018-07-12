@@ -93,7 +93,7 @@ export class TwingCompiler {
     string(value: string): TwingCompiler {
         if (!isNullOrUndefined(value)) {
             if (typeof value === 'string') {
-                value = '`' + addcslashes(value, "\0\t\"\\`") + '`';
+                value = '`' + addcslashes(value, "\0\t\\`") + '`';
             }
         }
         else {
