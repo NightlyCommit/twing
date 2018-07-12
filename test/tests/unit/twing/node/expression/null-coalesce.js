@@ -26,7 +26,7 @@ tap.test('node/expression/null-coalesce', function (test) {
         let node = new TwingNodeExpressionNullCoalesce(left, right, 1, 1);
 
         test.same(compiler.compile(node).getSource(), `((!!(// line 1, column 1
-(context.has("foo")) &&  !(context.get("foo") === null))) ? (context.get("foo")) : (2))`);
+(context.has(\`foo\`)) &&  !(context.get(\`foo\`) === null))) ? (context.get(\`foo\`)) : (2))`);
         test.same(node.getType(), TwingNodeType.EXPRESSION_NULL_COALESCE);
         test.end();
     });

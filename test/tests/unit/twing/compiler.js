@@ -26,9 +26,9 @@ tap.test('compiler', function (test) {
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
-        test.same(compiler.compile(node).string('').getSource(), '""', 'supports empty parameter');
-        test.same(compiler.compile(node).string(null).getSource(), '""', 'supports null parameter');
-        test.same(compiler.compile(node).string(undefined).getSource(), '""', 'supports undefined parameter');
+        test.same(compiler.compile(node).string('').getSource(), '\`\`', 'supports empty parameter');
+        test.same(compiler.compile(node).string(null).getSource(), '\`\`', 'supports null parameter');
+        test.same(compiler.compile(node).string(undefined).getSource(), '\`\`', 'supports undefined parameter');
 
         test.end();
     });
@@ -38,8 +38,8 @@ tap.test('compiler', function (test) {
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
-        test.same(compiler.compile(node).repr([1, 2, '3']).getSource(), '[1, 2, "3"]', 'supports arrays');
-        test.same(compiler.compile(node).repr({1: 'a', 'b': 2, 'c': '3'}).getSource(), '{"1": "a", "b": 2, "c": "3"}', 'supports hashes');
+        test.same(compiler.compile(node).repr([1, 2, '3']).getSource(), '[1, 2, \`3\`]', 'supports arrays');
+        test.same(compiler.compile(node).repr({1: 'a', 'b': 2, 'c': '3'}).getSource(), '{"1": \`a\`, "b": 2, "c": \`3\`}', 'supports hashes');
         test.same(compiler.compile(node).repr(undefined).getSource(), '', 'supports undefined');
 
         test.end();

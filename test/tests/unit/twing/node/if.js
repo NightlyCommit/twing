@@ -49,7 +49,7 @@ tap.test('node/if', function (test) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 `);
             test.end();
@@ -70,10 +70,10 @@ if (true) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else if (false) {
-    Twing.echo((context.has("bar") ? context.get("bar") : null));
+    Twing.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -92,10 +92,10 @@ else if (false) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else {
-    Twing.echo((context.has("bar") ? context.get("bar") : null));
+    Twing.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -117,17 +117,17 @@ else {
             let node = new TwingNodeIf(t, else_, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 0
-if ((context.has("a") ? context.get("a") : null)) {
-    Twing.echo("a");
+if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
+    Twing.echo(\`a\`);
 }
-else if ((context.has("b") ? context.get("b") : null)) {
-    Twing.echo("b");
+else if ((context.has(\`b\`) ? context.get(\`b\`) : null)) {
+    Twing.echo(\`b\`);
 }
-else if ((context.has("c") ? context.get("c") : null)) {
-    Twing.echo("c");
+else if ((context.has(\`c\`) ? context.get(\`c\`) : null)) {
+    Twing.echo(\`c\`);
 }
 else {
-    Twing.echo((context.has("bar") ? context.get("bar") : null));
+    Twing.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();

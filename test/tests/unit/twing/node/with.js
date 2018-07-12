@@ -30,13 +30,13 @@ tap.test('node/with', function (test) {
         let stub = sinon.stub(compiler, 'getVarName').returns('__internal_fooVar');
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-let __internal_fooVar = "bar";
+let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
     throw new Twing.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.');
 }
 context.set('_parent', Twing.clone(context));
 context = Twing.merge(context, Twing.iteratorToMap(__internal_fooVar));
-(context.has("foo") ? context.get("foo") : null)context = context.get('_parent');
+(context.has(\`foo\`) ? context.get(\`foo\`) : null)context = context.get('_parent');
 `);
 
         stub.restore();

@@ -10,7 +10,7 @@ const tap = require('tap');
 
 tap.test('node/expression/filter/default', function (test) {
     test.test('compile', function (test) {
-        test.test('when filter is "default" and "EXPRESSION_NAME" or "EXPRESSION_GET_ATTR" node', function (test) {
+        test.test('when filter is \`default\` and \`EXPRESSION_NAME\` or \`EXPRESSION_GET_ATTR\` node', function (test) {
             let node = new TwingNodeExpressionFilterDefault(
                 new TwingNodeExpressionName('foo', 1, 1),
                 new TwingNodeExpressionConstant('default', 1, 1),
@@ -21,7 +21,7 @@ tap.test('node/expression/filter/default', function (test) {
             let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
             test.same(compiler.compile(node).getSource(), `((// line 1, column 1
-(context.has("foo"))) ? (this.env.getFilter('default').getCallable()(...[(context.has("foo") ? context.get("foo") : null)])) : (""))`);
+(context.has(\`foo\`))) ? (this.env.getFilter('default').getCallable()(...[(context.has(\`foo\`) ? context.get(\`foo\`) : null)])) : (\`\`))`);
 
             test.end();
         });

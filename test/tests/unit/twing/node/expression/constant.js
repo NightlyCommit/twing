@@ -17,7 +17,7 @@ tap.test('node/expression/constant', function (test) {
 
         let node = new TwingNodeExpressionConstant('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), '"foo"');
+        test.same(compiler.compile(node).getSource(), '\`foo\`');
         test.end();
     });
 

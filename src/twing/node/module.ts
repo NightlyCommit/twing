@@ -437,9 +437,9 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("getSourceContext() {\n")
             .indent()
-            .write('return new Twing.TwingSource(`')
-            .raw(compiler.getEnvironment().isDebug() ? this.source.getCode() : '')
-            .raw('`, ')
+            .write('return new Twing.TwingSource(')
+            .string(compiler.getEnvironment().isDebug() ? this.source.getCode() : '')
+            .raw(', ')
             .string(this.source.getName())
             .raw(', ')
             .string(this.source.getPath())

@@ -15,6 +15,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingErrorRuntime: Variable "nothing" does not exist in "index.twig" at line 5.'
+        return 'TwingErrorRuntime: Variable `nothing` does not exist in "index.twig" at line 5.'
     }
 };

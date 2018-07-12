@@ -62,7 +62,7 @@ tap.test('TwingError', function (test) {
             test.fail();
         }
         catch (e) {
-            test.same(e.getMessage(), 'Variable "foo" does not exist in "index.html" at line 3.');
+            test.same(e.getMessage(), 'Variable \`foo\` does not exist in "index.html" at line 3.');
             test.same(e.getTemplateLine(), 3);
             test.same(e.getSourceContext().getName(), 'index.html');
             test.true(e instanceof TwingErrorRuntime);
@@ -126,7 +126,7 @@ tap.test('TwingError', function (test) {
         }
         catch (e) {
             test.true(e instanceof TwingErrorRuntime);
-            test.same(e.getMessage(), 'Variable "foo" does not exist.');
+            test.same(e.getMessage(), 'Variable \`foo\` does not exist.');
             test.same(e.getTemplateLine(), 3);
             test.same(e.getSourceContext().getName(), 'index.html');
         }
@@ -202,7 +202,7 @@ tap.test('TwingError', function (test) {
             }
             catch (e) {
                 test.true(e instanceof TwingErrorRuntime);
-                test.same(e.getMessage(), `Variable "foo" does not exist in "${erroredTemplate.name}" at line ${erroredTemplate.line}.`);
+                test.same(e.getMessage(), `Variable \`foo\` does not exist in "${erroredTemplate.name}" at line ${erroredTemplate.line}.`);
                 test.same(e.getTemplateLine(), erroredTemplate.line);
                 test.same(e.getSourceContext().getName(), erroredTemplate.name);
             }

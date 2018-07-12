@@ -21,6 +21,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingErrorRuntime: Variable "with_context" does not exist in "index.twig" at line 3.';
+        return 'TwingErrorRuntime: Variable `with_context` does not exist in "index.twig" at line 3.';
     }
 };

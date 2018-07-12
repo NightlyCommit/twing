@@ -62,7 +62,7 @@ tap.test('node/expression/filter', function (test) {
 
             node = createFilter(node, 'number_format', argsNodes);
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'number_format\').getCallable()(...[this.env, this.env.getFilter(\'upper\').getCallable()(...[this.env, "foo"]), 2, ".", ","])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'number_format\').getCallable()(...[this.env, this.env.getFilter(\'upper\').getCallable()(...[this.env, \`foo\`]), 2, \`.\`, \`,\`])');
 
             test.end();
         });
@@ -74,7 +74,7 @@ tap.test('node/expression/filter', function (test) {
                 ['format', new TwingNodeExpressionConstant('d/m/Y H:i:s P', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'date\').getCallable()(...[this.env, 0, "d/m/Y H:i:s P", "America/Chicago"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'date\').getCallable()(...[this.env, 0, \`d/m/Y H:i:s P\`, \`America/Chicago\`])');
 
             test.end();
         });
@@ -85,7 +85,7 @@ tap.test('node/expression/filter', function (test) {
                 ['timezone', new TwingNodeExpressionConstant('America/Chicago', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'date\').getCallable()(...[this.env, 0, null, "America/Chicago"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'date\').getCallable()(...[this.env, 0, null, \`America/Chicago\`])');
 
             test.end();
         });
@@ -96,14 +96,14 @@ tap.test('node/expression/filter', function (test) {
                 ['preserve_keys', new TwingNodeExpressionConstant(true, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'reverse\').getCallable()(...[this.env, "abc", true])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'reverse\').getCallable()(...[this.env, \`abc\`, true])');
 
             string = new TwingNodeExpressionConstant('abc', 1);
             node = createFilter(string, 'reverse', new Map([
                 ['preserveKeys', new TwingNodeExpressionConstant(true, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'reverse\').getCallable()(...[this.env, "abc", true])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'reverse\').getCallable()(...[this.env, \`abc\`, true])');
 
             test.end();
         });
@@ -111,7 +111,7 @@ tap.test('node/expression/filter', function (test) {
         test.test('filter as an anonymous function', function (test) {
             let node = createFilter(new TwingNodeExpressionConstant('foo', 1), 'anonymous');
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'anonymous\').getCallable()(...["foo"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'anonymous\').getCallable()(...[\`foo\`])');
 
             test.end();
         });
@@ -120,7 +120,7 @@ tap.test('node/expression/filter', function (test) {
             let string = new TwingNodeExpressionConstant('abc', 1);
             let node = createFilter(string, 'bar');
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'bar\').getCallable()(...[this.env, "abc"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'bar\').getCallable()(...[this.env, \`abc\`])');
 
             let argsNodes = new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1)]
@@ -128,7 +128,7 @@ tap.test('node/expression/filter', function (test) {
 
             node = createFilter(string, 'bar', argsNodes);
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'bar\').getCallable()(...[this.env, "abc", "bar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'bar\').getCallable()(...[this.env, \`abc\`, \`bar\`])');
 
             test.end();
         });
@@ -137,15 +137,15 @@ tap.test('node/expression/filter', function (test) {
             let string = new TwingNodeExpressionConstant('abc', 1);
             let node = createFilter(string, 'barbar');
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, "abc"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, \`abc\`])');
 
             node = createFilter(string, 'barbar', new Map([['foo', new TwingNodeExpressionConstant('bar', 1)]]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, "abc", null, null, ["bar"]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, \`abc\`, null, null, [\`bar\`]])');
 
             node = createFilter(string, 'barbar', new Map([['arg2', new TwingNodeExpressionConstant('bar', 1)]]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, "abc", null, "bar"])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, \`abc\`, null, \`bar\`])');
 
             node = createFilter(string, 'barbar', new Map([
                 [0, new TwingNodeExpressionConstant('1', 1)],
@@ -154,7 +154,7 @@ tap.test('node/expression/filter', function (test) {
                 ['foo', new TwingNodeExpressionConstant('bar', 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, "abc", "1", "2", ["3", "bar"]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').getCallable()(...[context, \`abc\`, \`1\`, \`2\`, [\`3\`, \`bar\`]])');
 
             test.end();
         });

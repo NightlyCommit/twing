@@ -23,7 +23,7 @@ tap.test('node/print', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Twing.echo("foo");
+Twing.echo(\`foo\`);
 `);
 
         test.end();

@@ -33,7 +33,7 @@ tap.test('node/expression/array', function (test) {
 
         let node = new TwingNodeExpressionArray(elements, 1);
 
-        test.same(compiler.compile(node).getSource(), '["bar", "foo"]');
+        test.same(compiler.compile(node).getSource(), '[\`bar\`, \`foo\`]');
         test.end();
     });
 

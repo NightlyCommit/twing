@@ -93,11 +93,11 @@ export class TwingCompiler {
     string(value: string): TwingCompiler {
         if (!isNullOrUndefined(value)) {
             if (typeof value === 'string') {
-                value = `"${addcslashes(value, "\0\t\"\\\n")}"`;
+                value = '`' + addcslashes(value, "\0\t\"\\`") + '`';
             }
         }
         else {
-            value = '""';
+            value = '``';
         }
 
         this.source += value;
@@ -176,7 +176,7 @@ export class TwingCompiler {
                 first = false;
 
                 this
-                    .repr(k)
+                    .raw(`"${k}"`)
                     .raw(': ')
                     .repr(value[k])
                 ;

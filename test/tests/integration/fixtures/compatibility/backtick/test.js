@@ -2,7 +2,13 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'Exception for multiline array with undefined variable';
+        return 'backticks';
+    }
+
+    getConfig() {
+        return {
+            debug: true
+        };
     }
 
     getTemplates() {
@@ -13,7 +19,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         return templates;
     }
 
-    getExpectedErrorMessage() {
-        return 'TwingErrorRuntime: Variable `foobar` does not exist in "index.twig" at line 7.';
+    getExpected() {
+        return require('./expected.html');
     }
 };
