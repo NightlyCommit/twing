@@ -15,6 +15,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingErrorRuntime: Block "foobar" is not defined in trait "foo" in "index.twig" at line 2.';
+        return 'TwingErrorRuntime: Block `foobar` is not defined in trait `foo` in "index.twig" at line 2.';
     }
 };

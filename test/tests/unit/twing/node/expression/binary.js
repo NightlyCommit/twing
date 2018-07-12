@@ -17,7 +17,7 @@ tap.test('node/expression/binary', function (test) {
 
         compiler.compile(expr);
 
-        test.same(compiler.getSource(), '("foo"  "bar")');
+        test.same(compiler.getSource(), '(\`foo\`  \`bar\`)');
 
         test.end();
     });

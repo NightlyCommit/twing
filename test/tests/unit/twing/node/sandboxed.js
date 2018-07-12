@@ -30,7 +30,7 @@ tap.test('node/sandboxed', function (test) {
     if (!alreadySandboxed) {
         sandbox.enableSandbox();
     }
-    Twing.echo("foo");
+    Twing.echo(\`foo\`);
     if (!alreadySandboxed) {
         sandbox.disableSandbox();
     }

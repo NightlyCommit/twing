@@ -17,7 +17,7 @@ tap.test('node/expression/unary', function (test) {
 
         compiler.compile(expr);
 
-        test.same(compiler.getSource(), ' "foo"');
+        test.same(compiler.getSource(), ' \`foo\`');
 
         test.end();
     });

@@ -19,12 +19,12 @@ tap.test('node/expression/parent', function (test) {
 
         let node = new TwingNodeExpressionParent('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), 'this.renderParentBlock("foo", context, blocks)');
+        test.same(compiler.compile(node).getSource(), 'this.renderParentBlock(\`foo\`, context, blocks)');
 
         test.test('when name is not valid', function (test) {
             let node = new TwingNodeExpressionParent('£', 1);
 
-            test.same(compiler.compile(node).getSource(), 'this.renderParentBlock("c2a3", context, blocks)');
+            test.same(compiler.compile(node).getSource(), 'this.renderParentBlock(\`c2a3\`, context, blocks)');
 
             test.end();
         });

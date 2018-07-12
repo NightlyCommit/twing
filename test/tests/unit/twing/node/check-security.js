@@ -10,9 +10,9 @@ tap.test('node/check-security', function (test) {
         let node = new TwingNodeCheckSecurity(new Map([['foo', 'bar']]), new Map([['foo', 'bar']]), new Map([['foo', 'bar']]));
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
-        test.same(compiler.compile(node).getSource(), `let tags = new Map([["bar", null]]);
-let filters = new Map([["bar", null]]);
-let functions = new Map([["bar", null]]);
+        test.same(compiler.compile(node).getSource(), `let tags = new Map([[\`bar\`, null]]);
+let filters = new Map([[\`bar\`, null]]);
+let functions = new Map([[\`bar\`, null]]);
 
 try {
     this.extensions.get('TwingExtensionSandbox').checkSecurity(

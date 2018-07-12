@@ -71,7 +71,7 @@ tap.test('node/for', function (test) {
 context.set('_parent', Twing.clone(context));
 
 (() => {
-    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+    let c = Twing.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', Twing.clone(context));
@@ -82,9 +82,9 @@ context.set('_parent', Twing.clone(context));
 })();
 
 Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set("key", __key__);
-    context.set("item", __value__);
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    context.set(\`key\`, __key__);
+    context.set(\`item\`, __value__);
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 });
 (() => {
     let parent = context.get('_parent');
@@ -127,7 +127,7 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 context.set('_parent', Twing.clone(context));
 
 (() => {
-    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+    let c = Twing.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', Twing.clone(context));
@@ -152,9 +152,9 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('last', (length === 1));
 }
 Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set("k", __key__);
-    context.set("v", __value__);
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    context.set(\`k\`, __key__);
+    context.set(\`v\`, __value__);
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     (() => {
         let loop = context.get('loop');
         loop.set('index0', loop.get('index0') + 1);
@@ -208,7 +208,7 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 context.set('_parent', Twing.clone(context));
 
 (() => {
-    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+    let c = Twing.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', Twing.clone(context));
@@ -225,10 +225,10 @@ context.set('loop', new Map([
   ['first', true]
 ]));
 Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set("k", __key__);
-    context.set("v", __value__);
+    context.set(\`k\`, __key__);
+    context.set(\`v\`, __value__);
     if (true) {
-        Twing.echo((context.has("foo") ? context.get("foo") : null));
+        Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
         (() => {
             let loop = context.get('loop');
             loop.set('index0', loop.get('index0') + 1);
@@ -278,7 +278,7 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 context.set('_parent', Twing.clone(context));
 
 (() => {
-    let c = Twing.twingEnsureTraversable((context.has("items") ? context.get("items") : null));
+    let c = Twing.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', Twing.clone(context));
@@ -304,9 +304,9 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('last', (length === 1));
 }
 Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set("k", __key__);
-    context.set("v", __value__);
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    context.set(\`k\`, __key__);
+    context.set(\`v\`, __value__);
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     context.set('_iterated',  true);
     (() => {
         let loop = context.get('loop');
@@ -321,7 +321,7 @@ Twing.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
     })();
 });
 if (context.get('_iterated') === false) {
-    Twing.echo((context.has("foo") ? context.get("foo") : null));
+    Twing.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 (() => {
     let parent = context.get('_parent');

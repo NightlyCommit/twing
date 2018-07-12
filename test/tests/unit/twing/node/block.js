@@ -26,7 +26,7 @@ tap.test('node/block', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 block_foo(context, blocks = new Map()) {
-    Twing.echo("foo");
+    Twing.echo(\`foo\`);
 }
 
 `);

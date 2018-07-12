@@ -35,7 +35,7 @@ tap.test('node/expression/hash', function (test) {
 
         let node = new TwingNodeExpressionHash(elements, 1, 1);
 
-        test.same(compiler.compile(node).getSource(), 'new Map([["foo", "bar"], ["bar", "foo"]])');
+        test.same(compiler.compile(node).getSource(), 'new Map([[\`foo\`, \`bar\`], [\`bar\`, \`foo\`]])');
         test.end();
     });
 

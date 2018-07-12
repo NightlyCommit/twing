@@ -68,15 +68,15 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
     doDisplay(context, blocks = new Map()) {
         // line 1, column 1
-        Twing.echo("foo");
+        Twing.echo(\`foo\`);
     }
 
     getTemplateName() {
-        return "foo.twig";
+        return \`foo.twig\`;
     }
 
     getSourceMapSource() {
-        return this.env.getLoader().resolve("foo.twig");
+        return this.env.getLoader().resolve(\`foo.twig\`);
     }
 
     getDebugInfo() {
@@ -84,7 +84,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getSourceContext() {
-        return new Twing.TwingSource(\`\`, "foo.twig", "");
+        return new Twing.TwingSource(\`\`, \`foo.twig\`, \`\`);
     }
 };
 
@@ -123,28 +123,28 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
         this.source = this.getSourceContext();
 
         // line 1, column 1
-        this.parent = this.loadTemplate("layout.twig", "foo.twig", 1);
+        this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
         this.blocks = new Map([
         ]);
     }
 
     doGetParent(context) {
-        return "layout.twig";
+        return \`layout.twig\`;
     }
 
     doDisplay(context, blocks = new Map()) {
         // line 2, column 1
-        context.set("macro", this.loadTemplate("foo.twig", "foo.twig", 2));
+        context.set(\`macro\`, this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2));
         // line 1, column 1
         this.parent.display(context, Twing.merge(this.blocks, blocks));
     }
 
     getTemplateName() {
-        return "foo.twig";
+        return \`foo.twig\`;
     }
 
     getSourceMapSource() {
-        return this.env.getLoader().resolve("foo.twig");
+        return this.env.getLoader().resolve(\`foo.twig\`);
     }
 
     isTraitable() {
@@ -156,7 +156,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getSourceContext() {
-        return new Twing.TwingSource(\`\`, "foo.twig", "");
+        return new Twing.TwingSource(\`\`, \`foo.twig\`, \`\`);
     }
 };
 
@@ -217,22 +217,22 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
 
     doGetParent(context) {
         // line 2, column 1
-        return this.loadTemplate(((true) ? ("foo") : ("foo")), "foo.twig", 2);
+        return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
     }
 
     doDisplay(context, blocks = new Map()) {
         // line 4, column 1
-        context.set("foo", "foo");
+        context.set(\`foo\`, \`foo\`);
         // line 2, column 1
         this.getParent(context).display(context, Twing.merge(this.blocks, blocks));
     }
 
     getTemplateName() {
-        return "foo.twig";
+        return \`foo.twig\`;
     }
 
     getSourceMapSource() {
-        return this.env.getLoader().resolve("foo.twig");
+        return this.env.getLoader().resolve(\`foo.twig\`);
     }
 
     isTraitable() {
@@ -244,7 +244,7 @@ module.exports.__TwingTemplate_foo = class __TwingTemplate_foo extends Twing.Twi
     }
 
     getSourceContext() {
-        return new Twing.TwingSource(\`{{ foo }}\`, "foo.twig", "");
+        return new Twing.TwingSource(\`{{ foo }}\`, \`foo.twig\`, \`\`);
     }
 };
 

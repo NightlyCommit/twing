@@ -55,7 +55,7 @@ tap.test('node/set', function (test) {
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set("foo", "foo");
+context.set(\`foo\`, \`foo\`);
 `);
 
             test.end();
@@ -80,8 +80,8 @@ context.set("foo", "foo");
 (() => {
     let tmp;
     Twing.obStart();
-    Twing.echo("foo");
-    context.set("foo", ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+    Twing.echo(\`foo\`);
+    context.set(\`foo\`, ((tmp = Twing.obGetClean()) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
 })();
 `);
 
@@ -101,7 +101,7 @@ context.set("foo", "foo");
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 (() => {
     let tmp;
-    context.set("foo", ((tmp = "foo") === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
+    context.set(\`foo\`, ((tmp = \`foo\`) === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset()));
 })();
 `);
 
@@ -126,7 +126,7 @@ context.set("foo", "foo");
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set("foo", "foo"); context.set("bar", "bar");
+context.set(\`foo\`, \`foo\`); context.set(\`bar\`, \`bar\`);
 `);
 
             test.end();

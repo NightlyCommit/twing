@@ -35,7 +35,7 @@ tap.test('node/spaceless', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 Twing.obStart();
-Twing.echo("<div>   <div>   foo   </div>   </div>");
+Twing.echo(\`<div>   <div>   foo   </div>   </div>\`);
 Twing.echo(Twing.obGetClean().replace(/>\\s+</g, '><').trim());
 `);
 

@@ -41,11 +41,11 @@ tap.test('node/macro', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
+macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
     let context = this.env.mergeGlobals(new Map([
-        ["foo", __foo__],
-        ["bar", __bar__],
-        ["varargs", __varargs__]
+        [\`foo\`, __foo__],
+        [\`bar\`, __bar__],
+        [\`varargs\`, __varargs__]
     ]));
 
     let blocks = new Map();
@@ -54,7 +54,7 @@ macro_foo(__foo__ = null, __bar__ = "Foo", ...__varargs__) {
 
     Twing.obStart();
     try {
-        Twing.echo("foo");
+        Twing.echo(\`foo\`);
 
         let tmp = Twing.obGetContents();
         result = (tmp === '') ? '' : new Twing.TwingMarkup(tmp, this.env.getCharset());
