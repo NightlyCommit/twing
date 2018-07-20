@@ -5,3 +5,10 @@
   * {{ loop.first }}/{{ loop.last }}/{{ loop.length }}
 
 {% endfor %}
+
+{% for item in items_as_object %}
+  * {{ loop.index }}/{{ loop.index0 }}
+  * {{ loop.revindex }}/{{ loop.revindex0 }}
+  * {{ loop.first }}/{{ loop.last }}/{{ loop.length }}
+
+{% endfor %}
