@@ -1,3 +1,41 @@
+1.2.3
+
+ * Fix #234 - loop.last & loop.length & iterable not available in nested for
+
+1.2.2
+
+ * Fix #230 - Compiler should not escape quotation mark
+ * Fix #232 - Twing throws: "SyntaxError: missing ) after argument list" whenever it encounters a ` character.
+
+1.2.1
+
+ * Fix #218 - Twing@1.2.0 created a breaking changes with extension filters and functions
+ * Fix #219 - An exception has been thrown during the compilation of a template ("The comparison function must be either a function or undefined").
+ * Fix #220 - Error when getSourceMap is called with source_map option set to false
+
+1.2.0
+
+ * Fix #12 - Add source map support enhancement in progress
+ * Fix #205 - Unable to register extension "_default" when using babel + twing extensions
+ * Fix #216 - Restore auto reload behavior from pre-#194
+
+1.1.1
+
+ * Fix #210 - If with multiple elseif not working as expected
+
+1.1.0
+
+ * Fix #204 - Export TwingNodeType as part of twing
+ * Fix #206 - Make TwingEnvironment emit an event when encountering a template
+
+1.0.3
+
+ * Fix #194 - Autoreload broken
+
+1.0.2
+
+ * Fix #201 - The merge filter returns a Map even if the filtered object is an array
+
 1.0.1
 
  * Catch-up with TwigPHP 2.4.8
