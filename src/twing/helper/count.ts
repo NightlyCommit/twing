@@ -4,5 +4,18 @@
  * @returns {number}
  */
 export function count(countable: any) {
-    return Array.isArray(countable) ? countable.length : countable.size;
+    if (typeof countable === 'object') {
+        if (Reflect.has(countable, 'length')) {
+            return countable.length;
+        }
+        else if (Reflect.has(countable, 'size')) {
+            return countable.size;
+        }
+        else
+        {
+            return Object.keys(countable).length;
+        }
+    }
+
+    return 0;
 }

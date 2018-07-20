@@ -22,7 +22,11 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
             items: [
                 'a',
                 'b'
-            ]
+            ],
+            items_as_object: {
+                a: 'a',
+                b: 'b'
+            }
         };
     }
 };
