@@ -26,7 +26,8 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "node tasks/clean.js",
+    "clean": "rimraf lib",
+    "precover": "rimraf coverage",
     "prelib": "npm run clean",
     "pretest": "npm run lib",
     "prepublish": "npm run lib -- --sourceMap false",
@@ -34,7 +35,6 @@
     "fastest:all": "tape 'test/tests/**/*.js' | tap-mocha-reporter spec",
     "fastest:integration": "tape 'test/tests/integration/*.js' | tap-mocha-reporter spec",
     "fastest:unit": "tape 'test/tests/unit/**/*.js' | tap-mocha-reporter spec",
-    "benchmark": "node benchmark/index.js",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lib": "tsc --project .",
@@ -84,11 +84,11 @@
     "module-alias": "^2.0.3",
     "node-hook": "^1.0.0",
     "nyc": "^11.5.0",
+    "rimraf": "^2.6.2",
     "sinon": "^4.3.0",
     "tap": "^11.0.1",
     "tap-mocha-reporter": "^3.0.6",
     "tape": "^4.9.0",
-    "twig": "^1.10.5",
     "typescript": "^2.8.1"
   }
 }
