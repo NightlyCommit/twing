@@ -1749,6 +1749,10 @@ export function twingConstant(env: TwingEnvironment, constant: string, object: a
  * @returns Array<any>
  */
 export function twingArrayBatch(items: Array<any>, size: number, fill: any = null): Array<Map<any, any>> {
+    if (isNullOrUndefined(items)) {
+        return [];
+    }
+
     let chunks: Array<Map<any, any>> = chunk(items, size, true);
 
     if (fill !== null && chunks.length) {
