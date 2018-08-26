@@ -22,6 +22,7 @@
     "url": "git://github.com/ericmorand/twing"
   },
   "main": "lib/twing.js",
+  "types": "lib/twing.d.ts",
   "engines": {
     "node": ">=6.0.0"
   },
