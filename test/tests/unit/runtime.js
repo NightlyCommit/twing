@@ -1,54 +1,48 @@
 const Runtime = require('../../../lib/runtime');
 
 const tap = require('tap');
-const path = require('path');
 
 tap.test('Twing runtime', function (test) {
-    let exports = {
-        clone: './twing/helper/clone',
-        compare: './twing/helper/compare',
-        count: './twing/helper/count',
-        each: './twing/helper/each',
-        echo: './twing/output-buffering',
-        flush: './twing/output-buffering',
-        isCountable: './twing/helper/is-countable',
-        isMap: './twing/helper/is-map',
-        isPlainObject: './twing/helper/is-plain-object',
-        iteratorToMap: './twing/helper/iterator-to-map',
-        merge: './twing/helper/merge',
-        obEndClean: './twing/output-buffering',
-        obGetClean: './twing/output-buffering',
-        obGetContents: './twing/output-buffering',
-        obStart: './twing/output-buffering',
-        range: './twing/helper/range',
-        regexParser: './twing/helper/regex-parser',
-        twingArrayMerge: './twing/extension/core',
-        twingConstant: './twing/extension/core',
-        twingEnsureTraversable: './twing/extension/core',
-        TwingErrorLoader: './twing/error/loader',
-        TwingErrorRuntime: './twing/error/runtime',
-        twingGetAttribute: './twing/extension/core',
-        twingInFilter: './twing/extension/core',
-        TwingMarkup: './twing/markup',
-        TwingProfilerProfile: './twing/profiler/profile',
-        TwingSandboxSecurityError: './twing/sandbox/security-error',
-        TwingSandboxSecurityNotAllowedFilterError: './twing/sandbox/security-not-allowed-filter-error',
-        TwingSandboxSecurityNotAllowedFunctionError: './twing/sandbox/security-not-allowed-function-error',
-        TwingSandboxSecurityNotAllowedTagError: './twing/sandbox/security-not-allowed-tag-error',
-        TwingSource: './twing/source',
-        TwingTemplate: './twing/template'
-    };
+    let expected = ['clone',
+        'compare',
+        'count',
+        'each',
+        'echo',
+        'flush',
+        'isCountable',
+        'isMap',
+        'isPlainObject',
+        'iteratorToMap',
+        'merge',
+        'obEndClean',
+        'obGetClean',
+        'obGetContents',
+        'obStart',
+        'range',
+        'regexParser',
+        'twingArrayMerge',
+        'twingConstant',
+        'twingEnsureTraversable',
+        'TwingErrorLoader',
+        'TwingErrorRuntime',
+        'twingGetAttribute',
+        'twingInFilter',
+        'TwingMarkup',
+        'TwingProfilerProfile',
+        'TwingSandboxSecurityError',
+        'TwingSandboxSecurityNotAllowedFilterError',
+        'TwingSandboxSecurityNotAllowedFunctionError',
+        'TwingSandboxSecurityNotAllowedTagError',
+        'TwingSource',
+        'TwingTemplate'
+    ];
 
-    for (let key in exports) {
-        let fileName = exports[key];
-
-        let exportedSymbol = require(path.resolve('lib', fileName))[key];
-
-        test.same(exportedSymbol, Runtime[key], `${key} is exported`);
+    for (let key of expected) {
+        test.true(Runtime[key], `${key} is exported`);
     }
 
     for (let key in Runtime) {
-        test.true(exports[key], `${key} is legit`);
+        test.true(expected.includes(key), `${key} is legit`);
     }
 
     test.end();

@@ -1,66 +1,29 @@
-import {clone} from "./twing/helper/clone";
-import {compare} from "./twing/helper/compare";
-import {count} from "./twing/helper/count";
-import {each} from "./twing/helper/each";
-import {isCountable} from "./twing/helper/is-countable";
-import {isMap} from "./twing/helper/is-map";
-import {isPlainObject} from "./twing/helper/is-plain-object";
-import {iteratorToMap} from "./twing/helper/iterator-to-map";
-import {merge} from "./twing/helper/merge";
-import {regexParser} from "./twing/helper/regex-parser";
-import {TwingErrorLoader} from "./twing/error/loader";
-import {TwingErrorRuntime} from "./twing/error/runtime";
-import {
+export {clone} from "./twing/helper/clone";
+export {compare} from "./twing/helper/compare";
+export {count} from "./twing/helper/count";
+export {each} from "./twing/helper/each";
+export {isCountable} from "./twing/helper/is-countable";
+export {isMap} from "./twing/helper/is-map";
+export {isPlainObject} from "./twing/helper/is-plain-object";
+export {iteratorToMap} from "./twing/helper/iterator-to-map";
+export {merge} from "./twing/helper/merge";
+export {regexParser} from "./twing/helper/regex-parser";
+export {TwingErrorLoader} from "./twing/error/loader";
+export {TwingErrorRuntime} from "./twing/error/runtime";
+export {
     twingArrayMerge,
     twingConstant,
     twingEnsureTraversable,
     twingGetAttribute,
     twingInFilter
 } from "./twing/extension/core";
-import {TwingMarkup} from "./twing/markup";
-import {echo, flush, obEndClean, obGetClean, obGetContents, obStart} from "./twing/output-buffering";
-import {range} from "./twing/helper/range";
-import {TwingSandboxSecurityError} from "./twing/sandbox/security-error";
-import {TwingSandboxSecurityNotAllowedFilterError} from "./twing/sandbox/security-not-allowed-filter-error";
-import {TwingSandboxSecurityNotAllowedFunctionError} from "./twing/sandbox/security-not-allowed-function-error";
-import {TwingSandboxSecurityNotAllowedTagError} from "./twing/sandbox/security-not-allowed-tag-error";
-import {TwingSource} from "./twing/source";
-import {TwingTemplate} from "./twing/template";
-import {TwingProfilerProfile} from "./twing/profiler/profile";
-
-let Twing = {
-    clone: clone,
-    compare: compare,
-    count: count,
-    each: each,
-    echo: echo,
-    flush: flush,
-    isCountable: isCountable,
-    isMap: isMap,
-    isPlainObject: isPlainObject,
-    iteratorToMap: iteratorToMap,
-    merge: merge,
-    obEndClean: obEndClean,
-    obGetClean: obGetClean,
-    obGetContents: obGetContents,
-    obStart: obStart,
-    range: range,
-    regexParser: regexParser,
-    twingArrayMerge: twingArrayMerge,
-    twingConstant: twingConstant,
-    twingEnsureTraversable: twingEnsureTraversable,
-    TwingErrorLoader: TwingErrorLoader,
-    TwingErrorRuntime: TwingErrorRuntime,
-    twingGetAttribute: twingGetAttribute,
-    twingInFilter: twingInFilter,
-    TwingMarkup: TwingMarkup,
-    TwingProfilerProfile: TwingProfilerProfile,
-    TwingSandboxSecurityError: TwingSandboxSecurityError,
-    TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
-    TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
-    TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
-    TwingSource: TwingSource,
-    TwingTemplate: TwingTemplate
-};
-
-export = Twing;
+export {TwingMarkup} from "./twing/markup";
+export {echo, flush, obEndClean, obGetClean, obGetContents, obStart} from "./twing/output-buffering";
+export {range} from "./twing/helper/range";
+export {TwingSandboxSecurityError} from "./twing/sandbox/security-error";
+export {TwingSandboxSecurityNotAllowedFilterError} from "./twing/sandbox/security-not-allowed-filter-error";
+export {TwingSandboxSecurityNotAllowedFunctionError} from "./twing/sandbox/security-not-allowed-function-error";
+export {TwingSandboxSecurityNotAllowedTagError} from "./twing/sandbox/security-not-allowed-tag-error";
+export {TwingSource} from "./twing/source";
+export {TwingTemplate} from "./twing/template";
+export {TwingProfilerProfile} from "./twing/profiler/profile";
