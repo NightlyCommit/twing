@@ -1,5 +1,5 @@
 import {TwingExtension} from "../extension";
-import {TwingSandboxSecurityPolicyInterface} from "../sandbox/sandbox-policy-interface";
+import {TwingSandboxSecurityPolicyInterface} from "../sandbox/security-policy-interface";
 import {TwingTokenParserSandbox} from "../token-parser/sandbox";
 import {TwingNodeVisitorSandbox} from "../node-visitor/sandbox";
 

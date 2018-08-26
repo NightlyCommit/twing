@@ -162,7 +162,6 @@ tap.test('Twing library', function (test) {
         'TwingProfilerProfile',
         'TwingReflectionMethod',
         'TwingReflectionParameter',
-        'TwingRuntimeLoaderInterface',
         'TwingSandboxSecurityError',
         'TwingSandboxSecurityNotAllowedFilterError',
         'TwingSandboxSecurityNotAllowedFunctionError',

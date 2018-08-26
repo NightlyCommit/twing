@@ -1,4 +1,4 @@
-import {TwingSandboxSecurityPolicyInterface} from "./sandbox-policy-interface";
+import {TwingSandboxSecurityPolicyInterface} from "./security-policy-interface";
 import {TwingSandboxSecurityNotAllowedFilterError} from "./security-not-allowed-filter-error";
 import {TwingSandboxSecurityNotAllowedTagError} from "./security-not-allowed-tag-error";
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./security-not-allowed-function-error";

@@ -5,7 +5,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-export abstract class TwingRuntimeLoaderInterface {
+export interface TwingRuntimeLoaderInterface {
     TwingRuntimeLoaderInterfaceImpl: TwingRuntimeLoaderInterface;
 
     /**
@@ -15,5 +15,5 @@ export abstract class TwingRuntimeLoaderInterface {
      *
      * @return {{}|null} The runtime instance or null if the loader does not know how to create the runtime for this class
      */
-    abstract load(class_: string): any | null;
+    load(class_: string): any | null;
 }
