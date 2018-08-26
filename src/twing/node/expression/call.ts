@@ -13,7 +13,7 @@ const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
 const capitalize = require('capitalize');
 
-interface TwingNodeExpressionCallReflector {
+type TwingNodeExpressionCallReflector = {
     r: TwingReflectionMethod;
     callable: Function;
 }

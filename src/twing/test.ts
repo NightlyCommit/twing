@@ -4,7 +4,7 @@ import {TwingNodeExpressionTest} from "./node/expression/test";
 
 const merge = require('merge');
 
-export interface TwingTestOptions {
+export type TwingTestOptions = {
     is_variadic?: boolean;
     node_factory?: Function;
     deprecated?: string;
