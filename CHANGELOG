@@ -1,10 +1,14 @@
+1.2.5
+
+ * #247 - Package manifest uses deprecated licenses key
+
 1.2.4
 
-  * #236 - Batch filter throws an error when used on an undefined variable
-  * #238 - "types" entry missing from package.json
-  * #242 - Improve Travis CI support
-  * #240 - Remove benchmark and tasks folders and dependencies
-  * #239 - TwingEnvironmentOptions is not exported
+ * #236 - Batch filter throws an error when used on an undefined variable
+ * #238 - "types" entry missing from package.json
+ * #242 - Improve Travis CI support
+ * #240 - Remove benchmark and tasks folders and dependencies
+ * #239 - TwingEnvironmentOptions is not exported
 
 1.2.3
 
