@@ -180,10 +180,15 @@ tap.test('loader filesystem', function (test) {
 
         let loader = new TwingLoaderFilesystem();
         let filePath = nodePath.resolve(nodePath.join(fixturesPath, 'named', 'index.html'));
+        let missingPath = nodePath.resolve(nodePath.join(fixturesPath, 'missing'));
 
         test.throws(function () {
             loader.addPath(filePath);
         }, new TwingErrorLoader(`The "${filePath}" directory does not exist ("${filePath}").`));
+
+        test.throws(function () {
+            loader.addPath(missingPath);
+        }, new TwingErrorLoader(`The "${missingPath}" directory does not exist ("${missingPath}").`));
 
         filePath = nodePath.resolve(nodePath.join(fixturesPath, 'named', 'index.html'));
 
