@@ -1,6 +1,7 @@
 import {TwingLoaderInterface} from "../loader-interface";
 import {TwingSource} from "../source";
 import {TwingErrorLoader} from "../error/loader";
+import {Stats} from "fs";
 
 const nodePath = require('path');
 const fs = require('fs');
@@ -95,9 +96,16 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
 
         let checkPath = this.isAbsolutePath(path) ? path : nodePath.join(this.rootPath, path);
 
-        let stat = fs.statSync(this.normalizeName(checkPath));
+        let stat: Stats = null;
 
-        if (!stat.isDirectory()) {
+        try {
+            stat = fs.statSync(this.normalizeName(checkPath));
+        }
+        catch (err) {
+            // noop, we just want to handle the error
+        }
+
+        if (!stat || !stat.isDirectory()) {
             throw new TwingErrorLoader(`The "${path}" directory does not exist ("${checkPath}").`);
         }
 
