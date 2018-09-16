@@ -1004,7 +1004,7 @@ tap.test('environment', function (test) {
                 mappings,
                 [
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 1,
                         generatedColumn: 0,
                         originalLine: 1,
@@ -1012,7 +1012,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 1,
                         generatedColumn: 0,
                         originalLine: 1,
@@ -1020,7 +1020,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 2,
                         generatedColumn: 16,
                         originalLine: 2,
@@ -1028,7 +1028,7 @@ tap.test('environment', function (test) {
                         name: 'print'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 2,
                         generatedColumn: 21,
                         originalLine: 2,
@@ -1036,7 +1036,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 3,
@@ -1044,7 +1044,7 @@ tap.test('environment', function (test) {
                         name: 'include'
                     },
                     {
-                        source: 'partial/color.css.twig',
+                        source: 'test/fixtures/css/partial/color.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 1,
@@ -1052,7 +1052,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'partial/color.css.twig',
+                        source: 'test/fixtures/css/partial/color.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 1,
@@ -1060,7 +1060,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 3,
                         generatedColumn: 21,
                         originalLine: 3,
@@ -1068,7 +1068,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 4,
@@ -1076,7 +1076,7 @@ tap.test('environment', function (test) {
                         name: 'include'
                     },
                     {
-                        source: 'partial/background.css.twig',
+                        source: 'test/fixtures/css/partial/background.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 1,
@@ -1084,7 +1084,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'partial/background.css.twig',
+                        source: 'test/fixtures/css/partial/background.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 1,
@@ -1092,7 +1092,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'index.css.twig',
+                        source: 'test/fixtures/css/index.css.twig',
                         generatedLine: 6,
                         generatedColumn: 0,
                         originalLine: 5,
@@ -1152,7 +1152,7 @@ tap.test('environment', function (test) {
                 mappings,
                 [
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 1,
                         generatedColumn: 0,
                         originalLine: 1,
@@ -1160,7 +1160,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 1,
                         generatedColumn: 0,
                         originalLine: 1,
@@ -1168,7 +1168,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 2,
                         generatedColumn: 16,
                         originalLine: 2,
@@ -1176,7 +1176,7 @@ tap.test('environment', function (test) {
                         name: 'print'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 2,
                         generatedColumn: 21,
                         originalLine: 2,
@@ -1184,7 +1184,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 3,
@@ -1192,7 +1192,7 @@ tap.test('environment', function (test) {
                         name: 'include'
                     },
                     {
-                        source: 'foo/partial/color.css.twig',
+                        source: 'foo/test/fixtures/css/partial/color.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 1,
@@ -1200,7 +1200,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'foo/partial/color.css.twig',
+                        source: 'foo/test/fixtures/css/partial/color.css.twig',
                         generatedLine: 3,
                         generatedColumn: 11,
                         originalLine: 1,
@@ -1208,7 +1208,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 3,
                         generatedColumn: 21,
                         originalLine: 3,
@@ -1216,7 +1216,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 4,
@@ -1224,7 +1224,7 @@ tap.test('environment', function (test) {
                         name: 'include'
                     },
                     {
-                        source: 'foo/partial/background.css.twig',
+                        source: 'foo/test/fixtures/css/partial/background.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 1,
@@ -1232,7 +1232,7 @@ tap.test('environment', function (test) {
                         name: 'module'
                     },
                     {
-                        source: 'foo/partial/background.css.twig',
+                        source: 'foo/test/fixtures/css/partial/background.css.twig',
                         generatedLine: 4,
                         generatedColumn: 4,
                         originalLine: 1,
@@ -1240,7 +1240,7 @@ tap.test('environment', function (test) {
                         name: 'text'
                     },
                     {
-                        source: 'foo/index.css.twig',
+                        source: 'foo/test/fixtures/css/index.css.twig',
                         generatedLine: 6,
                         generatedColumn: 0,
                         originalLine: 5,
