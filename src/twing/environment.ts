@@ -1046,7 +1046,7 @@ export class TwingEnvironment extends EventEmitter {
     getSourceMap(): SourceMapGenerator {
         let generator = null;
 
-        if (this.isSourceMap()) {
+        if (this.isSourceMap() && this.sourceMapNode) {
             generator = new SourceMapGenerator();
 
             let mappings = this.sourceMapNode.toMappings();

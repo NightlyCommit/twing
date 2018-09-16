@@ -17,7 +17,7 @@ const TwingTestMockTemplate = require('../../../mock/template');
 const TwingErrorSyntax = require('../../../../lib/twing/error/syntax').TwingErrorSyntax;
 const TwingParser = require('../../../../lib/twing/parser').TwingParser;
 const TwingLexer = require('../../../../lib/twing/lexer').TwingLexer;
-const {TwingLoaderFilesystem} = require('../../../../lib/twing');
+const {TwingLoaderFilesystem, TwingCacheNull, TwingTemplate} = require('../../../../lib/twing');
 const {SourceMapConsumer} = require('source-map');
 
 const path = require('path');
@@ -1210,6 +1210,44 @@ tap.test('environment', function (test) {
                 ]
             );
 
+            test.end();
+        });
+
+        test.test('handle templates compiled without source map support', (test) => {
+            class CustomTemplate extends TwingTemplate {
+                getTemplateName() {
+                    return 'foo';
+                }
+
+                doDisplay() {
+
+                }
+            }
+
+            class CustomCache extends TwingCacheNull {
+                generateKey(name, className) {
+                    return className;
+                }
+
+                load(key) {
+                    let obj = {};
+
+                    obj[key] = CustomTemplate;
+
+                    return obj;
+                }
+            }
+
+            let env = new TwingEnvironment(loader, {
+                source_map: true,
+                cache: new CustomCache()
+            });
+
+            env.render('index.css.twig');
+
+            let sourceMap = env.getSourceMap();
+
+            test.false(sourceMap);
             test.end();
         });
 
