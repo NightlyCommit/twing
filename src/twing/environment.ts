@@ -112,7 +112,6 @@ export class TwingEnvironment extends EventEmitter {
     private loading: Map<string, string> = new Map();
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
-    private sourceMapEntry: string;
 
     /**
      * Constructor.
@@ -1015,11 +1014,7 @@ export class TwingEnvironment extends EventEmitter {
     enterSourceMapBlock(line: number, column: number, name: string, source: string) {
         TwingOutputBuffering.obStart();
 
-        if (!this.sourceMapEntry) {
-            this.sourceMapEntry = source;
-        }
-
-        source = path.relative(path.dirname(this.sourceMapEntry), source);
+        source = path.relative('.', source);
 
         if (typeof this.sourceMap === 'string') {
             source = path.join(this.sourceMap, source);
