@@ -1,3 +1,11 @@
+1.2.6
+
+ * #256 - Source map sources are not relative to the project root
+ * #254 - Changing source map config doesn't invalidate template cache
+ * #255 - TypeError: Cannot read property 'toMappings' of undefined
+ * #253 - "Error: ENOENT: no such file or directory" on non-existent namespace folder
+ * #249 - Interfaces are not exported
+
 1.2.5
 
  * #247 - Package manifest uses deprecated licenses key
