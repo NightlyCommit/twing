@@ -1001,6 +1001,7 @@ export class TwingEnvironment extends EventEmitter {
             this.debug,
             this.baseTemplateClass,
             this.strictVariables,
+            this.sourceMap
         ].join(':');
     }
 

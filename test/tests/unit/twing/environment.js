@@ -422,6 +422,46 @@ tap.test('environment', function (test) {
         test.end();
     });
 
+    test.test('sourceMapChangeCacheMiss', function (test) {
+        let templateName = test.name;
+        let templateContent = test.name;
+
+        let cache = new TwingTestMockCache();
+        let loader = getMockLoader(templateName, templateContent);
+        let twing = new TwingEnvironment(loader, {
+            cache: cache,
+            source_map: true
+        });
+
+        let firstKey = null;
+        let secondKey = null;
+
+        sinon.stub(cache, 'generateKey').callsFake((name, className) => {
+            return className;
+        });
+        sinon.stub(cache, 'load').callsFake((key) => {
+            if (firstKey) {
+                secondKey = key;
+            }
+            else {
+                firstKey = key;
+            }
+        });
+
+        twing.loadTemplate(templateName);
+
+        twing = new TwingEnvironment(loader, {
+            cache: cache,
+            source_map: false
+        });
+
+        twing.loadTemplate(templateName);
+
+        test.notEquals(firstKey, secondKey);
+
+        test.end();
+    });
+
     test.test('hasGetExtensionByClassName', function (test) {
         let twing = new TwingEnvironment(new TwingTestMockLoader());
         let ext = new TwingTestsEnvironmentTestExtension();
