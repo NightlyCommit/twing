@@ -171,6 +171,7 @@ tap.test('Twing library', function (test) {
         'TwingTemplate',
         'TwingTemplateWrapper',
         'TwingTest',
+        'TwingToken',
         'TwingTokenParser',
         'TwingTokenParserAutoEscape',
         'TwingTokenParserBlock',
