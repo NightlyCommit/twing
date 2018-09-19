@@ -160,6 +160,7 @@ export {TwingSource} from "./twing/source";
 export {TwingTemplateWrapper} from "./twing/template-wrapper";
 export {TwingTemplate} from "./twing/template";
 export {TwingTest, TwingTestOptions} from "./twing/test";
+export {TwingToken} from "./twing/token";
 export {TwingTokenParserAutoEscape} from "./twing/token-parser/auto-escape";
 export {TwingTokenParserBlock} from "./twing/token-parser/block";
 export {TwingTokenParserDo} from "./twing/token-parser/do";
