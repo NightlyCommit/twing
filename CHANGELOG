@@ -1,3 +1,7 @@
+1.2.7
+
+ * #262 - TwingToken is not exported
+
 1.2.6
 
  * #256 - Source map sources are not relative to the project root
