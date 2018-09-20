@@ -374,11 +374,13 @@ export class TwingParser {
     /**
      *
      * @param node
+     * @param nested {boolean}
      * @returns {TwingNode}
      */
-    filterBodyNodes(node: TwingNode): TwingNode {
+    filterBodyNodes(node: TwingNode, nested: boolean = false): TwingNode {
+        // check that the body does not contain non-empty output nodes
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl)))
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS)))
         {
             if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 throw new TwingErrorSyntax(
@@ -393,17 +395,36 @@ export class TwingParser {
                 this.stream.getSourceContext());
         }
 
-        // bypass nodes that will "capture" the output
+        // bypass nodes that "capture" the output
         if ((node as any).TwingNodeCaptureInterfaceImpl) {
+            // a "block" tag in such a node will serve as a block definition AND be displayed in place as well
             return node;
         }
 
-        if ((node as any).TwingNodeOutputInterfaceImpl) {
+        // to be removed completely in Twig 3.0
+        if (!nested && (node.getType() === TwingNodeType.SPACELESS)) {
+            console.error(`Using the spaceless tag at the root level of a child template in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
+        }
+
+        // "block" tags that are not captured (see above) are only used for defining
+        // the content of the block. In such a case, nesting it does not work as
+        // expected as the definition is not part of the default template code flow.
+        if (nested && (node.getType() === TwingNodeType.BLOCK_REFERENCE)) {
+            console.error(`Nesting a block definition under a non-capturing node in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
+
             return null;
         }
 
+        if ((node as any).TwingNodeOutputInterfaceImpl && (node.getType() !== TwingNodeType.SPACELESS)) {
+            return null;
+        }
+
+        // here, nested means "being at the root level of a child template"
+        // we need to discard the wrapping "TwingNode" for the "body" node
+        nested = nested || (node.getType() !== null);
+
         for (let [k, n] of node.getNodes()) {
-            if (n !== null && (this.filterBodyNodes(n) === null)) {
+            if (n !== null && (this.filterBodyNodes(n, nested) === null)) {
                 node.removeNode(k);
             }
         }

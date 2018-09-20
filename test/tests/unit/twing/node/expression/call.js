@@ -4,7 +4,6 @@ const TwingCompiler = require('../../../../../../lib/twing/compiler').TwingCompi
 const TwingEnvironment = require('../../../../../../lib/twing/environment').TwingEnvironment;
 const TwingLoaderArray = require('../../../../../../lib/twing/loader/array').TwingLoaderArray;
 const TwingErrorSyntax = require('../../../../../../lib/twing/error/syntax').TwingErrorSyntax;
-const TwingExtension = require('../../../../../../lib/twing/extension').TwingExtension;
 
 const tap = require('tap');
 const sinon = require('sinon');
@@ -94,8 +93,8 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [date, new Map([['timestamp', 123456], [0, 'Y-m-d']])])
-            }, new TwingErrorSyntax('Positional arguments cannot be used after named arguments for function "date".'), 'should throw a TwingErrorSyntax'
+                getArguments(node, [date, new Map([['timestamp', 123456], [0, 'Y-m-d']])]);
+            }, new TwingErrorSyntax('Positional arguments cannot be used after named arguments for function "date".', 0), 'should throw a TwingErrorSyntax'
         );
 
         test.end();
@@ -109,8 +108,8 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['format', 'U']])])
-            }, new TwingErrorSyntax('Argument "format" is defined twice for function "date".'), 'should throw a TwingErrorSyntax'
+                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['format', 'U']])]);
+            }, new TwingErrorSyntax('Argument "format" is defined twice for function "date".', 0), 'should throw a TwingErrorSyntax'
         );
 
         test.end();
@@ -124,8 +123,8 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown', '']])])
-            }, new TwingErrorSyntax('Unknown argument "unknown" for function "date(format, timestamp)".'), 'should throw a TwingErrorSyntax'
+                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown', '']])]);
+            }, new TwingErrorSyntax('Unknown argument "unknown" for function "date(format, timestamp)".', 0), 'should throw a TwingErrorSyntax'
         );
 
         test.end();
@@ -139,8 +138,8 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown1', ''], ['unknown2', '']])])
-            }, new TwingErrorSyntax('Unknown arguments "unknown1", "unknown2" for function "date(format, timestamp)".'), 'should throw a TwingErrorSyntax'
+                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown1', ''], ['unknown2', '']])]);
+            }, new TwingErrorSyntax('Unknown arguments "unknown1", "unknown2" for function "date(format, timestamp)".', 0), 'should throw a TwingErrorSyntax'
         );
 
         test.end();
@@ -190,7 +189,7 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [callTest.customFunctionWithArbitraryArguments, new Map()])
+                getArguments(node, [callTest.customFunctionWithArbitraryArguments, new Map()]);
             }, new Error('The last parameter of "customFunctionWithArbitraryArguments" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
         );
 
@@ -206,7 +205,7 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [custom_Twig_Tests_Node_Expression_CallTest_function, new Map()])
+                getArguments(node, [custom_Twig_Tests_Node_Expression_CallTest_function, new Map()]);
             }, new Error('The last parameter of "custom_Twig_Tests_Node_Expression_CallTest_function" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
         );
 
@@ -222,7 +221,7 @@ tap.test('node/expression/call', function (test) {
 
         test.throws(
             function () {
-                getArguments(node, [new CallableTestClass(), new Map()])
+                getArguments(node, [new CallableTestClass(), new Map()]);
             }, new Error('The last parameter of "CallableTestClass::__invoke" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
         );
 

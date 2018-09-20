@@ -1292,6 +1292,8 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
         case 'html':
             return htmlspecialchars(string);
         case 'js':
+            // escape all non-alphanumeric characters
+            // into their \x or \uHHHH representations
             // if (charset !== 'UTF-8') {
             //     string = iconv(charset, 'UTF-8', string).toString();
             // }
@@ -1304,9 +1306,23 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
             string = string.replace(/[^a-zA-Z0-9,\._]/ug, function (matches: string) {
                 let char = matches;
 
-                // \xHH
-                if (strlen(char) === 1) {
-                    return '\\x' + ('00' + bin2hex(char)).substr(-2,).toUpperCase();
+                /**
+                 * A few characters have short escape sequences in JSON and JavaScript.
+                 * Escape sequences supported only by JavaScript, not JSON, are ommitted.
+                 * \" is also supported but omitted, because the resulting string is not HTML safe.
+                 */
+                let shortMap = new Map([
+                    ['\\', '\\\\'],
+                    ['/', '\\/'],
+                    ["\x08", '\\b'],
+                    ["\x0C", '\\f'],
+                    ["\x0A", '\\n'],
+                    ["\x0D", '\\r'],
+                    ["\x09", '\\t'],
+                ]);
+
+                if (shortMap.has(char)) {
+                    return shortMap.get(char);
                 }
 
                 // \uHHHH

@@ -204,6 +204,10 @@ module.exports = class TwingTestIntegrationTestCaseBase {
     getExpectedErrorMessage() {
         return null;
     }
+
+    getExpectedDeprecationMessages() {
+        return null;
+    }
 };
 
 /**

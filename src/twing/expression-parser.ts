@@ -22,6 +22,19 @@ import {TwingNodeExpressionUnaryNot} from "./node/expression/unary/not";
 import {push} from "./helper/push";
 import {TwingOperator} from "./extension";
 
+/**
+ * Parses expressions.
+ *
+ * This parser implements a "Precedence climbing" algorithm.
+ *
+ * @see https://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
+ * @see https://en.wikipedia.org/wiki/Operator-precedence_parser
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
+ *
+ * @internal
+ */
 export class TwingExpressionParser {
     // @todo: should be a separate enum
     static OPERATOR_LEFT = 'OPERATOR_LEFT';

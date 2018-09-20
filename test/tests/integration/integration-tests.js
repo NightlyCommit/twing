@@ -5,6 +5,7 @@ const tap = require('tap');
 const path = require('path');
 const finder = require('fs-finder');
 const merge = require('merge');
+const sinon = require('sinon');
 
 let moduleAlias = require('module-alias');
 
@@ -64,6 +65,15 @@ tap.test('integration tests', function (test) {
 
         let expected = integrationTest.getExpected();
         let expectedErrorMessage = integrationTest.getExpectedErrorMessage();
+        let expectedDeprecationMessages = integrationTest.getExpectedDeprecationMessages();
+        let consoleStub = null;
+        let consoleData = [];
+
+        if (expectedDeprecationMessages) {
+            consoleStub = sinon.stub(console, 'error').callsFake((data, ...args) => {
+                consoleData.push(data);
+            });
+        }
 
         if (!expectedErrorMessage) {
             try {
@@ -86,6 +96,12 @@ tap.test('integration tests', function (test) {
             catch (e) {
                 test.same(e.toString(), expectedErrorMessage, testMessage);
             }
+        }
+
+        if (consoleStub) {
+            consoleStub.restore();
+
+            test.same(consoleData, expectedDeprecationMessages);
         }
     }
 

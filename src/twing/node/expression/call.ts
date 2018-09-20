@@ -121,7 +121,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 name = self.normalizeName(name);
             }
             else if (named) {
-                throw new TwingErrorSyntax(`Positional arguments cannot be used after named arguments for ${callType} "${callName}".`);
+                throw new TwingErrorSyntax(`Positional arguments cannot be used after named arguments for ${callType} "${callName}".`, this.getTemplateLine());
             }
 
             parameters.set(name, node);
@@ -160,7 +160,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
             if (parameters.has(name)) {
                 if (parameters.has(pos)) {
-                    throw new TwingErrorSyntax(`Argument "${name}" is defined twice for ${callType} "${callName}".`);
+                    throw new TwingErrorSyntax(`Argument "${name}" is defined twice for ${callType} "${callName}".`, this.getTemplateLine());
                 }
 
                 arguments_ = array_merge(arguments_, optionalArguments);
@@ -179,7 +179,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.getDefaultValue(), -1, -1));
             }
             else {
-                throw new TwingErrorSyntax(`Value for argument "${name}" is required for ${callType} "${callName}".`);
+                throw new TwingErrorSyntax(`Value for argument "${name}" is required for ${callType} "${callName}".`, this.getTemplateLine());
             }
         }
 
@@ -214,7 +214,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 return parameter instanceof TwingNode;
             });
 
-            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : -1, self.getTemplateName());
+            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : this.getTemplateLine(), self.getTemplateName());
         }
 
         return arguments_;

@@ -183,7 +183,7 @@ tap.test('node/expression/filter', function (test) {
             test.throws(
                 function () {
                     compiler.compile(node);
-                }, new TwingErrorSyntax('Value for argument "from" is required for filter "replace".'), 'should throw a TwingErrorSyntax'
+                }, new TwingErrorSyntax('Value for argument "from" is required for filter "replace".', 1), 'should throw a TwingErrorSyntax'
             );
 
             test.end();

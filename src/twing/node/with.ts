@@ -29,7 +29,9 @@ export class TwingNodeWith extends TwingNode {
                 .raw(";\n")
                 .write(`if (typeof (${varsName}) !== 'object') {\n`)
                 .indent()
-                .write('throw new Twing.TwingErrorRuntime(\'Variables passed to the "with" tag must be a hash.\');\n')
+                .write('throw new Twing.TwingErrorRuntime(\'Variables passed to the "with" tag must be a hash.\', ')
+                .repr(this.getTemplateLine())
+                .raw(", this.source);\n")
                 .outdent()
                 .write("}\n")
             ;

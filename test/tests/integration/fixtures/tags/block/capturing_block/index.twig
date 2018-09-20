@@ -1,0 +1,12 @@
+
+{% set foo %}{% block foo %}FOO{% endblock %}{% endset %}
+{{ foo }}
+{% spaceless %}
+    {% block bar %}
+        <h1>
+            <b>Title</b>
+        </h1>
+    {% endblock %}
+{% endspaceless %}
+
+{{ block('bar') }}
