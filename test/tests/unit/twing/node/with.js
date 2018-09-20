@@ -32,7 +32,7 @@ tap.test('node/with', function (test) {
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
-    throw new Twing.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.');
+    throw new Twing.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.', 1, this.source);
 }
 context.set('_parent', Twing.clone(context));
 context = Twing.merge(context, Twing.iteratorToMap(__internal_fooVar));

@@ -171,7 +171,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
     isFresh(name: string, time: number): boolean {
         let stat = fs.statSync(this.findTemplate(name));
 
-        return stat.mtimeMs <= time;
+        return stat.mtimeMs < time;
     }
 
     /**

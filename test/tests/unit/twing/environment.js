@@ -213,7 +213,7 @@ tap.test('environment', function (test) {
         });
 
         test.same(twing.render('html', {'foo': 'foo<br/ >'}), 'foo&lt;br/ &gt; foo&lt;br/ &gt;');
-        test.same(twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\x3Cbr\\x2F\\x20\\x3E foo\\x3Cbr\\x2F\\x20\\x3E');
+        test.same(twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\u003Cbr\\/\\u0020\\u003E foo\\u003Cbr\\/\\u0020\\u003E');
 
         test.end();
     });

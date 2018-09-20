@@ -65,10 +65,15 @@ export class TwingNodeTraverser {
         node = visitor.TwingNodeVisitorInterfaceImpl.enterNode(node, this.env);
 
         for (let [k, n] of node.getNodes()) {
-            if (n = self.traverseForVisitor(visitor, n)) {
-                node.setNode(k, n);
+            let m = self.traverseForVisitor(visitor, n);
+
+            if (m) {
+                if (m !== n) {
+                    node.setNode(k, m);
+                }
             }
             else {
+
                 node.removeNode(k);
             }
         }
