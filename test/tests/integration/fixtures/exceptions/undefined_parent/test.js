@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/undefined_parent';
+    }
+
     getDescription() {
         return 'Exception for an undefined parent';
     }

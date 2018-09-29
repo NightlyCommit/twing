@@ -7,10 +7,10 @@
 /.travis.yml
 /benchmark
 /coverage
+/dist
 /docs
 /package-lock.json
 /src
-/tasks
 /test
 /tmp
 /tsconfig.json

@@ -12,9 +12,9 @@ The `split` filter splits a string by the given delimiter and returns a list of 
 
 You can also pass a `limit` argument:
 
- * If `limit` is positive, the returned array will contain a maximum of limit elements with the last element containing the rest of string;
- * If `limit` is negative, all components except the last -limit are returned;
- * If `limit` is zero, then this is treated as 1.
+* If `limit` is positive, the returned array will contain a maximum of limit elements with the last element containing the rest of string;
+* If `limit` is negative, all components except the last -limit are returned;
+* If `limit` is zero, then this is treated as 1.
 
 ````twig
 {% set foo = "one,two,three,four,five"|split(',', 3) %}

@@ -1,8 +1,0 @@
-import {TwingError} from "../error";
-import {TwingSource} from "../source";
-
-export class TwingErrorRuntime extends TwingError {
-    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous: Error = null) {
-        super(message, lineno, source, previous);
-    }
-}

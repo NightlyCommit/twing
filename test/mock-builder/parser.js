@@ -1,4 +1,4 @@
-const TwingParser = require("../../lib/twing/parser").TwingParser;
+const {TwingParser} = require("../../dist");
 
 const sinon = require('sinon');
 

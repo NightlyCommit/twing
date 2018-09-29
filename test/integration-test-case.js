@@ -1,22 +1,16 @@
-const TwingTokenParser = require('../lib/twing/token-parser').TwingTokenParser;
-const TwingNodePrint = require('../lib/twing/node/print').TwingNodePrint;
-const TwingToken = require('../lib/twing/token').TwingToken;
-const TwingNodeExpressionConstant = require('../lib/twing/node/expression/constant').TwingNodeExpressionConstant;
-const TwingExtension = require('../lib/twing/extension').TwingExtension;
-const TwingExtensionDebug = require('../lib/twing/extension/debug').TwingExtensionDebug;
-const escape = require('../lib/twing/extension/core').twingEscapeFilter;
-
-const path = require('path');
-const TwingExtensionSandbox = require('../lib/twing/extension/sandbox').TwingExtensionSandbox;
-const TwingExtensionStringLoader = require('../lib/twing/extension/string-loader').TwingExtensionStringLoader;
-const TwingFilter = require('../lib/twing/filter').TwingFilter;
-const TwingFunction = require('../lib/twing/function').TwingFunction;
-const TwingTest = require('../lib/twing/test').TwingTest;
-const TwingSandboxSecurityPolicy = require('../lib/twing/sandbox/security-policy').TwingSandboxSecurityPolicy;
-
-let moduleAlias = require('module-alias');
-
-moduleAlias.addAlias('twing', path.resolve('./lib/runtime.js'));
+const {TwingTokenParser} = require('../dist/lib/token-parser');
+const {TwingNodePrint} = require('../dist/lib/node/print');
+const {TwingToken} = require('../dist/lib/token');
+const {TwingNodeExpressionConstant} = require('../dist/lib/node/expression/constant');
+const {TwingExtension} = require('../dist/lib/extension');
+const {TwingExtensionDebug} = require('../dist/lib/extension/debug');
+const {TwingExtensionSandbox} = require('../dist/lib/extension/sandbox');
+const {TwingExtensionStringLoader} = require('../dist/lib/extension/string-loader');
+const {TwingFilter} = require('../dist/lib/filter');
+const {TwingFunction} = require('../dist/lib/function');
+const {TwingTest} = require('../dist/lib/test');
+const {TwingSandboxSecurityPolicy} = require('../dist/lib/sandbox/security-policy');
+const escape = require('../dist/lib/extension/core').twingEscapeFilter;
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
@@ -146,14 +140,19 @@ class TwingTestExtension extends TwingExtension {
     }
 }
 
+const {TwingLoaderArray} = require('../dist/lib/loader/array');
+
+const test = require('tape');
+const merge = require('merge');
+const sinon = require('sinon');
+
 module.exports = class TwingTestIntegrationTestCaseBase {
-    constructor(name) {
-        this.name = name;
+    constructor() {
         this.twing = null;
     }
 
-    setTwing(twing) {
-        this.twing = twing;
+    setTwing(env) {
+        this.twing = env;
     }
 
     getExtensions(includeSandbox = true) {
@@ -173,12 +172,8 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         return extensions;
     }
 
-    getName() {
-        return this.name;
-    }
-
     getDescription() {
-        return this.getName();
+        return '<no description provided>';
     }
 
     getTemplates() {
@@ -203,6 +198,86 @@ module.exports = class TwingTestIntegrationTestCaseBase {
 
     getExpectedErrorMessage() {
         return null;
+    }
+
+    getExpectedDeprecationMessages() {
+        return null;
+    }
+
+    run(TwingEnvironment) {
+        test(this.getDescription(), (test) => {
+            // templates
+            let templates = this.getTemplates();
+
+            // config
+            let config = merge({
+                strict_variables: true,
+                cache: false
+            }, this.getConfig());
+
+            let loader = new TwingLoaderArray(templates);
+            let twing = new TwingEnvironment(loader, config);
+
+            this.setTwing(twing);
+
+            // extensions
+            this.getExtensions().forEach(function (extension) {
+                twing.addExtension(extension);
+            });
+
+            // globals
+            this.getGlobals().forEach(function (value, key) {
+                twing.addGlobal(key, value);
+            });
+
+            twing.addGlobal('global', 'global');
+
+            // data
+            let data = this.getData();
+
+            let expected = this.getExpected();
+            let expectedErrorMessage = this.getExpectedErrorMessage();
+            let expectedDeprecationMessages = this.getExpectedDeprecationMessages();
+            let consoleStub = null;
+            let consoleData = [];
+
+            if (expectedDeprecationMessages) {
+                consoleStub = sinon.stub(console, 'error').callsFake((data, ...args) => {
+                    consoleData.push(data);
+                });
+            }
+
+            if (!expectedErrorMessage) {
+                try {
+                    let actual = twing.render('index.twig', data);
+
+                    test.same(actual.trim(), expected.trim(), 'should render as expected');
+
+                    if (consoleStub) {
+                        consoleStub.restore();
+
+                        test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
+                    }
+                }
+                catch (e) {
+                    console.warn(e);
+
+                    test.fail(`should not throw an error (${e})`);
+                }
+            }
+            else {
+                try {
+                    twing.render('index.twig', data);
+
+                    test.fail(`should throw an error`);
+                }
+                catch (e) {
+                    test.same(e.toString(), expectedErrorMessage, 'should throw an error');
+                }
+            }
+
+            test.end();
+        });
     }
 };
 

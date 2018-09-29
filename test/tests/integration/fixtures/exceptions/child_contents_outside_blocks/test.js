@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/child_contents_outside_blocks';
+    }
+
     getDescription() {
         return 'Exception for child templates defining content outside blocks defined by parent';
     }

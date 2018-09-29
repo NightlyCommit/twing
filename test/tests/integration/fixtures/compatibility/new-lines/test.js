@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'compatibility/new-lines';
+    }
+
     getDescription() {
         return 'all flavors of new lines are rendered as line feeds';
     }
