@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'Twing supports the ?? operator';
+        return '"??" operator';
     }
 
     getTemplates() {

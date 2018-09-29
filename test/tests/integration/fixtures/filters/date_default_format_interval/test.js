@@ -22,12 +22,12 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getData() {
         Luxon.Settings.defaultZoneName = 'UTC';
 
-        this.twing.getCoreExtension().setDateFormat('Y-m-d', '%d days %h hours');
+        this.twing.getExtension('TwingExtensionCore').setDateFormat('Y-m-d', '%d days %h hours');
 
         return {
             date2: Luxon.Duration.fromObject({
                 days: 2
             })
-        }
+        };
     }
 };

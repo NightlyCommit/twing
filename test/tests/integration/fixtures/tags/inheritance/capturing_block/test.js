@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'tags/inheritance/capturing_block';
+    }
+
     getDescription() {
         return 'capturing "block" tag with "extends" tag';
     }

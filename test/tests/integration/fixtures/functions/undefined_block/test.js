@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'functions/undefined_block';
+    }
+
     getDescription() {
         return '"block" function with undefined block';
     }
@@ -15,7 +19,8 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingErrorRuntime: Block "unknown" on template "base.twig" does not exist in "base.twig" at line 2.';
+        // @see https://github.com/twigphp/Twig/issues/2753
+        return 'TwingErrorRuntime: Block "unknown" on template "base.twig" does not exist in "index.twig" at line 3.';
     }
 
     getData() {

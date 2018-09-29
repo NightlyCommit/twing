@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'functions/block_without_parent';
+    }
+
     getDescription() {
         return '"block" calling parent() with no definition in parent template';
     }

@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/multiline_function_with_undefined_variable';
+    }
+
     getDescription() {
         return 'Exception for multiline function with undefined variable';
     }

@@ -1,5 +1,5 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
-const TwingMarkup = require('../../../../../../lib/twing/markup').TwingMarkup;
+const {TwingMarkup} = require('../../../../../../dist/lib/markup');
 
 class ToStringStub {
     constructor(value) {
@@ -48,6 +48,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
             tostring_not_empty: new ToStringStub('0' /* edge case of using "0" as the string */),
             markup_empty: new TwingMarkup('', 'UTF-8'),
             markup_not_empty: new TwingMarkup('test', 'UTF-8'),
-        }
+        };
     }
 };

@@ -4,11 +4,22 @@ node_js:
   - 7
   - 8
   - 9
-  - 10
 jobs:
   include:
-    - stage: cover
+    - stage: test & cover
       node_js: 10
       script:
         - npm run cover
         - npm run coverage
+    - stage: browser
+      node_js: 10
+      script:
+        - npm run test:browser
+      addons:
+        apt:
+          packages:
+            - xvfb
+      install:
+        - export DISPLAY=':99.0'
+        - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        - npm install

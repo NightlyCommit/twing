@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/undefined_template_in_child_template';
+    }
+
     getDescription() {
         return 'Exception for an undefined template in a child template';
     }

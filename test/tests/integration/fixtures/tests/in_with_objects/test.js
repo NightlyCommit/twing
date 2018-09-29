@@ -2,6 +2,10 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 const TwingTestFoo = require('../../../../../foo');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'tests/in_with_objects';
+    }
+
     getDescription() {
         return 'Twing supports the in operator when using objects';
     }

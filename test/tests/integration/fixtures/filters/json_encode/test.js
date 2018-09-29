@@ -1,5 +1,5 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
-const TwingMarkup = require('../../../../../../lib/twing/markup').TwingMarkup;
+const {TwingMarkup} = require('../../../../../../dist/lib/markup');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
@@ -21,6 +21,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getData() {
         return {
             foo: new TwingMarkup('foo', 'UTF-8')
-        }
+        };
     }
 };
