@@ -1,4 +1,14 @@
+2.0.0
+
+ * #267 - Update documentation
+ * #271 - Improve the packaging process
+ * #200 - Cannot find module 'twing/lib/runtime'
+ * #237 - Can twing be run on the frontend?
+ * #258 - Twing should return source map as string instead of SourceMapGenerator
+ * #209 - How to use base_template_class?
+
 1.3.1
+
  * #266 - CHANGELOG not up-to-date on v1.3.0
 
 1.3.0
