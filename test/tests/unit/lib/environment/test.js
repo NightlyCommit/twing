@@ -1005,7 +1005,9 @@ tap.test('environment', function (test) {
 
             let map = env.getSourceMap();
 
-            let consumer = SourceMapConsumer.fromSourceMap(map);
+            test.same(typeof map, 'string');
+
+            let consumer = new SourceMapConsumer(JSON.parse(map));
             let mappings = [];
 
             consumer.eachMapping((mapping) => {
@@ -1152,7 +1154,9 @@ tap.test('environment', function (test) {
 
             let map = env.getSourceMap();
 
-            let consumer = SourceMapConsumer.fromSourceMap(map);
+            test.same(typeof map, 'string');
+
+            let consumer = new SourceMapConsumer(JSON.parse(map));
 
             let mappings = [];
 

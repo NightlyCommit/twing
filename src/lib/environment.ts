@@ -1075,19 +1075,21 @@ return module.exports;
         }
     }
 
-    getSourceMap(): SourceMapGenerator {
-        let generator = null;
+    getSourceMap(): string {
+        let sourceMap: string = null;
 
         if (this.isSourceMap() && this.sourceMapNode) {
-            generator = new SourceMapGenerator();
+            let generator = new SourceMapGenerator();
 
             let mappings = this.sourceMapNode.toMappings();
 
             for (let mapping of mappings) {
                 generator.addMapping(mapping);
             }
+
+            sourceMap = generator.toString();
         }
 
-        return generator;
+        return sourceMap;
     }
 }
