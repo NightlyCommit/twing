@@ -3,6 +3,10 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 let Luxon = require('luxon');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'filters/date_invalid';
+    }
+
     getDescription() {
         return '"date" filter with invalid date';
     }

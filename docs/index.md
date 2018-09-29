@@ -1,3 +1,9 @@
+# Forewords about terminology
+
+In this documentation, the `Twig` term represents the Twig language *specifications*, not the SensioLabs PHP *implementation* of the language - implementation being known as `TwigPHP`. SensioLabs use `Twig` to talk about both the specifications of the language and their implementation, and their documentation mix both specifications and implementation details. This should be considered as an oversight instead of an official convention.
+
+`Twing` is a Node.js implementation of `Twig` language specifications.
+
 # Twing Documentation
 
 Read the online documentation to learn more about Twing.

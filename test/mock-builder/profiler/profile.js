@@ -1,4 +1,4 @@
-const TwingProfilerProfile = require('../../../lib/twing/profiler/profile').TwingProfilerProfile;
+const {TwingProfilerProfile} = require('../../../dist');
 const sinon = require('sinon');
 
 /**

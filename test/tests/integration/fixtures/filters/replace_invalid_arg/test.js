@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'filters/replace_invalid_arg';
+    }
+
     getDescription() {
         return 'Exception for invalid argument type in replace call';
     }

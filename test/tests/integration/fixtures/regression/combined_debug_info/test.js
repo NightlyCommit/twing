@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'regression/combined_debug_info';
+    }
+
     getDescription() {
         return 'Exception with bad line number';
     }

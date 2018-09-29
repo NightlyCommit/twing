@@ -5,8 +5,11 @@
 /docs/_site
 /docs/Gemfile.lock
 /docs/vendor
-/lib
+/dist
 /node_modules
 /tmp
-/benchmark/cache
+/browser.*
+/index.*
+/runtime.*
 npm-debug.log
+

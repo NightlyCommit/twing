@@ -249,7 +249,7 @@ By default, included templates have access to the same context as the template w
 
 The included template `render_box.html` is able to access the `box` variable.
 
-The filename of the template depends on the template loader. For instance, the `TwingLoaderFilesystem` allows you to access other templates by giving the filename. You can access templates in subdirectories with a slash:
+The name of the template depends on the template loader. For instance, the `TwingLoaderFilesystem` allows you to access other templates by giving the filename. You can access templates in subdirectories with a slash:
 
 ```twig
 {{ include('sections/articles/sidebar.html') }}

@@ -1,4 +1,4 @@
-const TwingSource = require('../../lib/twing/source').TwingSource;
+const {TwingSource} = require('../../dist/lib/source');
 
 module.exports = class {
     getSourceContext(name) {

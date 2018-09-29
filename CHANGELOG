@@ -1,3 +1,14 @@
+1.3.1
+ * #266 - CHANGELOG not up-to-date on v1.3.0
+
+1.3.0
+
+ * #251 - Support Twig 2.5.0
+
+1.2.7
+
+ * #262 - TwingToken is not exported
+
 1.2.6
 
  * #256 - Source map sources are not relative to the project root

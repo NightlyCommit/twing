@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'expressions/unary_precedence';
+    }
+
     getDescription() {
         return 'Twing unary operators precedence';
     }

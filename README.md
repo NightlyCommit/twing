@@ -53,7 +53,7 @@ Read the [documentation](http://ericmorand.github.io/twing) for more information
 
 * Fork this repository
 * Code
-* Implement tests using [node-tap](https://github.com/tapjs/node-tap)
+* Implement tests using [tape](https://github.com/substack/tape)
 * Issue a pull request keeping in mind that all pull requests must reference an issue in the issue queue
 
 ## License
