@@ -1,5 +1,5 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
-const {TwingMarkup} = require('../../../../../../dist/lib/markup');
+const {TwingMarkup} = require('../../../../../../build/lib/markup');
 
 class ToStringStub {
     constructor(value) {

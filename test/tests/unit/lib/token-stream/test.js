@@ -5,7 +5,7 @@ const {
     TwingErrorSyntax,
     TwingToken,
     TwingTokenStream
-} = require('../../../../../dist/index');
+} = require('../../../../../build/index');
 
 const tap = require('tape');
 

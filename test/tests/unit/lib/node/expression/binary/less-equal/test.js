@@ -1,7 +1,7 @@
 const {
     TwingNodeExpressionBinaryLessEqual,
     TwingNodeExpressionConstant
-} = require('../../../../../../../../dist/index');
+} = require('../../../../../../../../build/index');
 const TwingTestMockCompiler = require('../../../../../../../mock/compiler');
 
 const tap = require('tape');

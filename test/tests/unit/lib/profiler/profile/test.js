@@ -1,4 +1,4 @@
-const {TwingProfilerProfile} = require('../../../../../../dist/index');
+const {TwingProfilerProfile} = require('../../../../../../build/index');
 
 const tap = require('tape');
 const sinon = require('sinon');

@@ -3,7 +3,7 @@ const {
     TwingFilter,
     TwingFunction,
     TwingTokenParserFilter
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 
 const tap = require('tape');
 

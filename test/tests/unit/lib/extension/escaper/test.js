@@ -1,5 +1,5 @@
-const {twingRawFilter} = require("../../../../../../dist/lib/extension/escaper");
-const {TwingExtensionEscaper} = require('../../../../../../dist/index');
+const {twingRawFilter} = require("../../../../../../build/lib/extension/escaper");
+const {TwingExtensionEscaper} = require('../../../../../../build/index');
 
 const tap = require('tape');
 

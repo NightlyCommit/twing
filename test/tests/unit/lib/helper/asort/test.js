@@ -1,4 +1,4 @@
-const {asort} = require('../../../../../../dist');
+const {asort} = require('../../../../../../build');
 
 const tap = require('tape');
 

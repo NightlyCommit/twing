@@ -17,7 +17,7 @@ const {
     TwingTokenParser,
     TwingExtension,
     TwingErrorRuntime
-} = require('../../../../../dist');
+} = require('../../../../../build');
 
 const TwingTestMockRuntimeLoader = require('../../../../mock/runtime-loader');
 const TwingTestMockLoader = require('../../../../mock/loader');

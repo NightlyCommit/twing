@@ -10,7 +10,7 @@ const {
     TwingNodeType,
     TwingNodeBlock,
     TwingNodeMacro
-} = require("../../../../../../../dist/index");
+} = require("../../../../../../../build/index");
 
 const tap = require('tape');
 

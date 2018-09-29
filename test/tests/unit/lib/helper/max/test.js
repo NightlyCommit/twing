@@ -1,4 +1,4 @@
-const {max} = require('../../../../../../dist');
+const {max} = require('../../../../../../build');
 
 const tap = require('tape');
 

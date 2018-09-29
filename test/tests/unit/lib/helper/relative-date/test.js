@@ -1,4 +1,4 @@
-const {relativeDate} = require('../../../../../../dist');
+const {relativeDate} = require('../../../../../../build');
 
 const tap = require('tape');
 const sinon = require('sinon');

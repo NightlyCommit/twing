@@ -1,8 +1,8 @@
-const {TwingCallableWrapper} = require("../../../../../dist/lib/callable-wrapper");
+const {TwingCallableWrapper} = require("../../../../../build/lib/callable-wrapper");
 const {
     TwingError,
     TwingSource
-} = require("../../../../../dist");
+} = require("../../../../../build");
 
 const test = require('tape');
 

@@ -1,4 +1,4 @@
-const {TwingCompiler} = require("../../dist");
+const {TwingCompiler} = require("../../build");
 const TwingTestMockEnvironment = require("./environment");
 const TwingTestMockLoader = require("./loader");
 

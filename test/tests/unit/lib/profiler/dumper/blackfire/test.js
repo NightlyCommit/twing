@@ -1,4 +1,4 @@
-const {TwingProfilerDumperBlackfire} = require('../../../../../../../dist/index');
+const {TwingProfilerDumperBlackfire} = require('../../../../../../../build/index');
 const TwingTestMockBuilderProfile = require('../../../../../../mock-builder/profiler/profile');
 
 const tap = require('tape');

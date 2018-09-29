@@ -1,4 +1,4 @@
-const {TwingFactoryRuntimeLoader} = require("../../../../../dist/index");
+const {TwingFactoryRuntimeLoader} = require("../../../../../build/index");
 
 const tap = require('tape');
 

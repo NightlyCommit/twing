@@ -1,4 +1,4 @@
-const {count} = require('../../../../../../dist');
+const {count} = require('../../../../../../build');
 
 const tap = require('tape');
 

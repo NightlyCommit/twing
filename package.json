@@ -3,6 +3,7 @@
   "name": "twing",
   "description": "First-class Twig engine for Node.js",
   "keywords": [
+    "browser",
     "compiler",
     "template",
     "twig",
@@ -23,14 +24,14 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf build",
     "precover": "rimraf coverage .nyc_output",
     "prebuild": "npm run clean",
-    "postbuild": "replace-in-file '__VERSION__' $npm_package_version dist/**/*",
+    "postbuild": "replace-in-file '__VERSION__' $npm_package_version build/**/*",
     "pretest": "npm run build",
     "pretest:browser": "npm run pretest",
-    "prepack": "npm run build -- --sourceMap false --outDir .",
-    "postpack": "rimraf lib browser.* index.*",
+    "prepack": "npm run build -- --sourceMap false && npm run bundle && mv build/* .",
+    "postpack": "rimraf lib dist browser.* index.*",
     "test": "npm run fastest:all",
     "test:browser": "npm run fastest:integration:browser",
     "fastest:all": "tape 'test/tests/**/test.js' | tap-bail | tap-spec",
@@ -40,6 +41,7 @@
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "tsc --project .",
+    "bundle": "browserify build/browser.js -g uglifyify -s Twing -o build/dist/lib.min.js",
     "docs": "cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
@@ -89,6 +91,7 @@
     "tap-spec": "^5.0.0",
     "tape": "^4.9.0",
     "tape-run": "^4.0.0",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "uglifyify": "^5.0.1"
   }
 }

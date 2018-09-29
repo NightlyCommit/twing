@@ -4,7 +4,7 @@ const {
     TwingLoaderFilesystem,
     TwingErrorLoader,
     TwingError
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 
 const tap = require('tape');
 const nodePath = require('path');

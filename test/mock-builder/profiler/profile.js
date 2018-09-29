@@ -1,4 +1,4 @@
-const {TwingProfilerProfile} = require('../../../dist');
+const {TwingProfilerProfile} = require('../../../build');
 const sinon = require('sinon');
 
 /**

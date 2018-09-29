@@ -76,9 +76,9 @@ Twing allows some syntax customization for the block delimiters. It's not recomm
 To change the block delimiters, you need to create your own lexer object:
 
 ````javascript
-let twing = new Twing.TwingEnvironment(...);
+let twing = new TwingEnvironment(...);
 
-let lexer = new Twing.TwingLexer(twing, {
+let lexer = new TwingLexer(twing, {
     'tag_comment': ['{#', '#}'],
     'tag_block': ['{%', '%}'],
     'tag_variable': ['{{', '}}'],
@@ -92,7 +92,7 @@ Here are some configuration example that simulates some other template engines s
 
 ````javascript
 // Ruby erb syntax
-let lexer = new Twing.TwingLexer(twing, {
+let lexer = new TwingLexer(twing, {
     'tag_comment': ['<%#', '%>'],
     'tag_block':  ['<%', '%>'],
     'tag_variable': ['<%=', '%>']
@@ -101,7 +101,7 @@ let lexer = new Twing.TwingLexer(twing, {
 
 ````javascript
 // SGML Comment Syntax
-let lexer = new Twing.TwingLexer(twing, {
+let lexer = new TwingLexer(twing, {
     'tag_comment': ['<!--#', '-->'],
     'tag_block': ['<!--', '-->'],
     'tag_variable': ['${', '}']
@@ -110,7 +110,7 @@ let lexer = new Twing.TwingLexer(twing, {
 
 ````javascript
 // Smarty like
-let lexer = new Twing.TwingLexer(twing, {
+let lexer = new TwingLexer(twing, {
     'tag_comment': ['{*', '*}'],
     'tag_block': ['{', '}'],
     'tag_variable': ['{$', '}']
@@ -184,12 +184,12 @@ When template code is provided by a third-party (through a web interface for ins
 
 ````javascript
 try {
-    twing.parse(twing.tokenize(new Twing.TwingSource(template)));
+    twing.parse(twing.tokenize(new TwingSource(template)));
 
     // the template is valid
 }
 catch (e) {
-    if (e instanceof Twing.TwingErrorSyntax) {
+    if (e instanceof TwingErrorSyntax) {
         // template contains one or more syntax errors
     }
 }
@@ -200,12 +200,12 @@ If you iterate over a set of files, you can pass the filename to the `tokenize()
 ````javascript
 for (let file of files) {
     try {
-        twing.parse(twing.tokenize(new Twing.TwingSource(template, file.filename, file.path)));
+        twing.parse(twing.tokenize(new TwingSource(template, file.filename, file.path)));
 
         // the template is valid
     } 
     catch (e) {
-        if (e instanceof Twing.TwingErrorSyntax) {
+        if (e instanceof TwingErrorSyntax) {
             // template contains one or more syntax errors
         }    
     }

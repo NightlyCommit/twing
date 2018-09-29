@@ -15,8 +15,6 @@ export abstract class TwingCallableWrapper {
     }
 
     /**
-     * Returns the callable to execute for this filter.
-     *
      * @returns {Function}
      */
     getCallable() {
@@ -24,7 +22,7 @@ export abstract class TwingCallableWrapper {
     }
 
     /**
-     * Returns the callable to execute for this function.
+     * Returns the traceable callable.
      *
      * @param {number} lineno
      * @param {TwingSource} source

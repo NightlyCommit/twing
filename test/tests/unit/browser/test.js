@@ -1,4 +1,4 @@
-const lib = require('../../../../dist/browser');
+const lib = require('../../../../build/browser');
 const tap = require('tape');
 
 tap.test('browser library', function (test) {

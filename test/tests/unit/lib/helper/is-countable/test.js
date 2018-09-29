@@ -1,4 +1,4 @@
-const {isCountable} = require('../../../../../../dist');
+const {isCountable} = require('../../../../../../build');
 
 const tap = require('tape');
 

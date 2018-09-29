@@ -3,7 +3,7 @@ const {
     TwingErrorLoader,
     TwingSource,
     TwingEnvironment
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 
 const tap = require('tape');
 const nodePath = require('path');

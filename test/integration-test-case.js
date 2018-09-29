@@ -1,16 +1,16 @@
-const {TwingTokenParser} = require('../dist/lib/token-parser');
-const {TwingNodePrint} = require('../dist/lib/node/print');
-const {TwingToken} = require('../dist/lib/token');
-const {TwingNodeExpressionConstant} = require('../dist/lib/node/expression/constant');
-const {TwingExtension} = require('../dist/lib/extension');
-const {TwingExtensionDebug} = require('../dist/lib/extension/debug');
-const {TwingExtensionSandbox} = require('../dist/lib/extension/sandbox');
-const {TwingExtensionStringLoader} = require('../dist/lib/extension/string-loader');
-const {TwingFilter} = require('../dist/lib/filter');
-const {TwingFunction} = require('../dist/lib/function');
-const {TwingTest} = require('../dist/lib/test');
-const {TwingSandboxSecurityPolicy} = require('../dist/lib/sandbox/security-policy');
-const escape = require('../dist/lib/extension/core').twingEscapeFilter;
+const {TwingTokenParser} = require('../build/lib/token-parser');
+const {TwingNodePrint} = require('../build/lib/node/print');
+const {TwingToken} = require('../build/lib/token');
+const {TwingNodeExpressionConstant} = require('../build/lib/node/expression/constant');
+const {TwingExtension} = require('../build/lib/extension');
+const {TwingExtensionDebug} = require('../build/lib/extension/debug');
+const {TwingExtensionSandbox} = require('../build/lib/extension/sandbox');
+const {TwingExtensionStringLoader} = require('../build/lib/extension/string-loader');
+const {TwingFilter} = require('../build/lib/filter');
+const {TwingFunction} = require('../build/lib/function');
+const {TwingTest} = require('../build/lib/test');
+const {TwingSandboxSecurityPolicy} = require('../build/lib/sandbox/security-policy');
+const escape = require('../build/lib/extension/core').twingEscapeFilter;
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
@@ -140,7 +140,7 @@ class TwingTestExtension extends TwingExtension {
     }
 }
 
-const {TwingLoaderArray} = require('../dist/lib/loader/array');
+const {TwingLoaderArray} = require('../build/lib/loader/array');
 
 const test = require('tape');
 const merge = require('merge');

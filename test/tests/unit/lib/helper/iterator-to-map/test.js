@@ -1,4 +1,4 @@
-const {iteratorToMap} = require('../../../../../../dist');
+const {iteratorToMap} = require('../../../../../../build');
 
 const tap = require('tape');
 
