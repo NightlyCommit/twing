@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'functions/include/sandbox';
+    }
+
     getDescription() {
         return '"include" tag sandboxed';
     }

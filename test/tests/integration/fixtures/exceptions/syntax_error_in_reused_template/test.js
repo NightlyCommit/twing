@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/syntax_error_in_reused_template';
+    }
+
     getDescription() {
         return 'Exception for syntax error in reused template';
     }

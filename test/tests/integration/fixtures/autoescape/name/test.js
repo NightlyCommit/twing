@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'autoescape/name';
+    }
+
     getDescription() {
         return '"name" autoescape strategy';
     }
@@ -23,12 +27,12 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getData() {
         return {
             br: '<br />'
-        }
+        };
     }
 
     getConfig() {
         return {
             autoescape: 'name'
-        }
+        };
     }
 };

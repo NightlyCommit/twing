@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'tags/spaceless/root_level_in_child.legacy';
+    }
+
     getDescription() {
         return '"spaceless" tag in the root level of a child template';
     }

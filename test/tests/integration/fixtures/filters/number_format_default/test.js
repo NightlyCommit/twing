@@ -18,8 +18,8 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getData() {
-        this.twing.getCoreExtension().setNumberFormat(2, '!', '=');
+        this.twing.getExtension('TwingExtensionCore').setNumberFormat(2, '!', '=');
 
-        return {}
+        return {};
     }
 };

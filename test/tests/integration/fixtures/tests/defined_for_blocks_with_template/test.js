@@ -5,6 +5,10 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
  * @see * https://twigfiddle.com/22p2t1
  */
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'tests/defined_for_blocks_with_template';
+    }
+
     getDescription() {
         return '"defined" support for blocks with a template argument';
     }

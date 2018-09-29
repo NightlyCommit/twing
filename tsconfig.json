@@ -4,12 +4,13 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "outDir": "lib",
+    "outDir": "dist",
     "declaration": true,
     "sourceMap": true,
     "removeComments": false
   },
   "include": [
     "src/**/*"
-  ]
+  ],
+  "exclude": []
 }

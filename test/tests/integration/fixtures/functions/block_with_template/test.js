@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'functions/block_with_template';
+    }
+
     getDescription() {
         return '"block" function with a template argument';
     }

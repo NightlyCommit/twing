@@ -1,6 +1,6 @@
 const TwingTestMockTemplate = require('./template');
 
-module.exports = class {
+module.exports = class TwingTestMockCache {
     constructor() {
         this.TwingCacheInterfaceImpl = this;
     }
@@ -18,7 +18,9 @@ module.exports = class {
 
         templates['__TwingTemplate_foo'] = TwingTestMockTemplate;
 
-        return templates;
+        return () => {
+            return templates;
+        };
     }
 
     getTimestamp(key) {

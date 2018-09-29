@@ -1,6 +1,10 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    getName() {
+        return 'exceptions/strict_comparison_operator/equal';
+    }
+
     getDescription() {
         return 'The === strict comparison operator is not supported';
     }
