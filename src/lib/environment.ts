@@ -61,41 +61,6 @@ import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-all
 const path = require('path');
 const crypto = require('crypto');
 
-export const Runtime = {
-    clone: clone,
-    compare: compare,
-    count: count,
-    each: each,
-    isCountable: isCountable,
-    isMap: isMap,
-    isPlainObject: isPlainObject,
-    iteratorToMap: iteratorToMap,
-    merge: merge,
-    regexParser: regexParser,
-    TwingErrorLoader: TwingErrorLoader,
-    TwingErrorRuntime: TwingErrorRuntime,
-    twingArrayMerge: twingArrayMerge,
-    twingConstant: twingConstant,
-    twingEnsureTraversable: twingEnsureTraversable,
-    twingGetAttribute: twingGetAttribute,
-    twingInFilter: twingInFilter,
-    TwingMarkup: TwingMarkup,
-    echo: echo,
-    flush: flush,
-    obEndClean: obEndClean,
-    obGetClean: obGetClean,
-    obGetContents: obGetContents,
-    obStart: obStart,
-    range: range,
-    TwingSandboxSecurityError: TwingSandboxSecurityError,
-    TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
-    TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
-    TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
-    TwingSource: TwingSource,
-    TwingTemplate: TwingTemplate,
-    TwingProfilerProfile: TwingProfilerProfile
-};
-
 /**
  *  * Available options:
  *
@@ -169,6 +134,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     private loading: Map<string, string> = new Map();
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
+    private templateRuntime: any;
 
     /**
      * Constructor.
@@ -205,6 +171,41 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.addExtension(new TwingExtensionCore());
         this.addExtension(new TwingExtensionEscaper(options.autoescape));
         this.addExtension(new TwingExtensionOptimizer(options.optimizations));
+
+        this.setTemplateRuntime({
+            clone: clone,
+            compare: compare,
+            count: count,
+            each: each,
+            isCountable: isCountable,
+            isMap: isMap,
+            isPlainObject: isPlainObject,
+            iteratorToMap: iteratorToMap,
+            merge: merge,
+            regexParser: regexParser,
+            TwingErrorLoader: TwingErrorLoader,
+            TwingErrorRuntime: TwingErrorRuntime,
+            twingArrayMerge: twingArrayMerge,
+            twingConstant: twingConstant,
+            twingEnsureTraversable: twingEnsureTraversable,
+            twingGetAttribute: twingGetAttribute,
+            twingInFilter: twingInFilter,
+            TwingMarkup: TwingMarkup,
+            echo: echo,
+            flush: flush,
+            obEndClean: obEndClean,
+            obGetClean: obGetClean,
+            obGetContents: obGetContents,
+            obStart: obStart,
+            range: range,
+            TwingSandboxSecurityError: TwingSandboxSecurityError,
+            TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
+            TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
+            TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
+            TwingSource: TwingSource,
+            TwingTemplate: TwingTemplate,
+            TwingProfilerProfile: TwingProfilerProfile
+        });
     }
 
     /**
@@ -336,6 +337,14 @@ export abstract class TwingEnvironment extends EventEmitter {
 
     abstract cacheFromString(cache: string): TwingCacheInterface;
 
+    setTemplateRuntime(runtime: any) {
+        this.templateRuntime = runtime;
+    }
+
+    getTemplateRuntime(): any {
+        return this.templateRuntime;
+    }
+
     /**
      * Gets the template class associated with the given string.
      *
@@ -449,9 +458,10 @@ export abstract class TwingEnvironment extends EventEmitter {
         let key = cache.generateKey(name, mainCls);
 
         let templates: { [s: string]: new(e: TwingEnvironment) => TwingTemplate } = {};
+        let runtime = this.getTemplateRuntime();
 
         if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key))) {
-            templates = cache.load(key)(Runtime);
+            templates = cache.load(key)(runtime);
         }
 
         if (!templates[cls]) {
@@ -460,7 +470,7 @@ export abstract class TwingEnvironment extends EventEmitter {
 
             cache.write(key, content);
 
-            templates = cache.load(key)(Runtime);
+            templates = cache.load(key)(runtime);
 
             if (!templates[cls]) {
                 templates = new Function(`let module = {
@@ -471,7 +481,7 @@ ${content}
 
 return module.exports;
 
-`)()(Runtime);
+`)()(runtime);
 
                 if (!templates[cls]) {
                     throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
@@ -746,7 +756,7 @@ return module.exports;
      *
      * @returns {{}} The runtime implementation
      *
-     * @throws TwimgErrorRuntime When the template cannot be found
+     * @throws TwingErrorRuntime When the runtime cannot be found
      */
     getRuntime(class_: string): any {
         if (this.runtimes.has(class_)) {
