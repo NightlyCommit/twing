@@ -11,7 +11,7 @@ jobs:
       script:
         - npm run cover
         - npm run coverage
-    - stage: browser
+    - stage: test in web browser
       node_js: 10
       script:
         - npm run test:browser
