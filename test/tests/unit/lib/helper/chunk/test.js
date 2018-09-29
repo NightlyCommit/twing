@@ -1,4 +1,4 @@
-const {chunk} = require('../../../../../../dist');
+const {chunk} = require('../../../../../../build');
 
 const tap = require('tape');
 

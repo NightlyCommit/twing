@@ -1,4 +1,4 @@
-const {formatDateTime} = require('../../../../../../dist');
+const {formatDateTime} = require('../../../../../../build');
 
 const tap = require('tape');
 const luxon = require('luxon');

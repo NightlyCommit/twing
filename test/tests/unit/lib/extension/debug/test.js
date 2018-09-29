@@ -1,5 +1,5 @@
-const {twingVarDump} = require("../../../../../../dist/lib/extension/debug");
-const {TwingEnvironment} = require("../../../../../../dist/index");
+const {twingVarDump} = require("../../../../../../build/lib/extension/debug");
+const {TwingEnvironment} = require("../../../../../../build/index");
 
 const tap = require('tape');
 

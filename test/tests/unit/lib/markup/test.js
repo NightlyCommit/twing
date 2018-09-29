@@ -1,4 +1,4 @@
-const {TwingMarkup} = require('../../../../../dist/index');
+const {TwingMarkup} = require('../../../../../build/index');
 
 const tap = require('tape');
 

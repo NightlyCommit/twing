@@ -1,4 +1,4 @@
-const {examineObject} = require('../../../../../../dist');
+const {examineObject} = require('../../../../../../build');
 
 const tap = require('tape');
 

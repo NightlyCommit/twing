@@ -1,4 +1,4 @@
-const {varDump} = require('../../../../../../dist');
+const {varDump} = require('../../../../../../build');
 
 const tap = require('tape');
 

@@ -1,4 +1,4 @@
-const {TwingSandboxSecurityPolicy} = require('../../../../../../dist/index');
+const {TwingSandboxSecurityPolicy} = require('../../../../../../build/index');
 
 const tap = require('tape');
 

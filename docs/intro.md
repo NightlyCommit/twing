@@ -27,12 +27,12 @@ The recommended way to install Twing is via npm:
 This section gives you a brief introduction to the node.js API for Twing.
 
 ```js
-const Twing = require('twing');
+const {TwingEnvironment, TwingLoaderArray} = require('twing');
 
-let loader = new Twing.TwingLoaderArray({
+let loader = new TwingLoaderArray({
     'index.twig': 'Hello {{ name }}!'
 });
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 
 let output = twing.render('index.twig', {name: 'Fabien'});
 ```
@@ -47,10 +47,10 @@ As templates are generally stored on the filesystem, Twing also comes with a
 filesystem loader:
 
 ```js
-const Twing = require('twing');
+const {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 
-let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
-let twing = new Twing.TwingEnvironment(loader);
+let loader = new TwingLoaderFilesystem('/path/to/templates');
+let twing = new TwingEnvironment(loader);
 
 let ouput = twing.render('index.html', {'name': 'Fabien'});
 ```

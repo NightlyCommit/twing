@@ -3,7 +3,7 @@ const {
     TwingTokenStream,
     TwingToken,
     TwingNodeType
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser');
 
 const tap = require('tape');

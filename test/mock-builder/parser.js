@@ -1,4 +1,4 @@
-const {TwingParser} = require("../../dist");
+const {TwingParser} = require("../../build");
 
 const sinon = require('sinon');
 

@@ -1,4 +1,4 @@
-const {each} = require('../../../../../../dist');
+const {each} = require('../../../../../../build');
 
 const tap = require('tape');
 

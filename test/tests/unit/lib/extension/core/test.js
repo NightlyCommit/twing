@@ -1,8 +1,8 @@
-const TwingExtensionCore = require('../../../../../../dist/lib/extension/core');
+const TwingExtensionCore = require('../../../../../../build/lib/extension/core');
 const {
     twingGetAttribute,
     twingDateConverter
-} = require('../../../../../../dist/lib/extension/core');
+} = require('../../../../../../build/lib/extension/core');
 
 const {
     TwingSource,
@@ -21,7 +21,7 @@ const {
     TwingTemplate,
     formatDateTime,
     iconv
-} = require('../../../../../../dist');
+} = require('../../../../../../build');
 
 const TwingTestMockEnvironment = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');

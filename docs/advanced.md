@@ -87,7 +87,7 @@ Globals
 A global variable is like any other template variable, except that it's available in all templates and macros:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 twing.addGlobal('text', new Text());
 ```
 
@@ -111,7 +111,7 @@ let filter = new TwingFilter('rot13', function (string) {
 });
 
 // or a simple JavaScript function
-filter = new Twing.TwingFilter('rot13', rot13);
+filter = new TwingFilter('rot13', rot13);
 
 // or a class static method
 class Rot13Handler {
@@ -120,7 +120,7 @@ class Rot13Handler {
     }
 }
 
-filter = new Twing.TwingFilter('rot13', Rot13Handler.handle);
+filter = new TwingFilter('rot13', Rot13Handler.handle);
 
 // or a class instance method
 class Rot13Handler {
@@ -131,10 +131,10 @@ class Rot13Handler {
 
 let handler = new Rot13Handler();
 
-filter = new Twing.TwingFilter('rot13', handler.handle);
+filter = new TwingFilter('rot13', handler.handle);
 
 // the one below needs a runtime implementation (see below for more information)
-filter = new Twing.TwingFilter('rot13', array('SomeClass', 'rot13Filter'));
+filter = new TwingFilter('rot13', array('SomeClass', 'rot13Filter'));
 ```
 
 The first argument passed to the `TwingFilter` constructor is the name of the filter you will use in templates and the second one is the JavaScript callable to associate with it.
@@ -142,7 +142,7 @@ The first argument passed to the `TwingFilter` constructor is the name of the fi
 Then, add the filter to your Twing environment:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 twing.addFilter(filter);
 ```
 
@@ -166,14 +166,14 @@ For instance, the following code:
 is compiled to something like the following:
 
 ```javascript
-Twing.echo('Twing'.toLowerCase);
-Twing.echo(twing_date_format_filter(new Date(), 'd/m/Y'));
+Runtime.echo('Twing'.toLowerCase());
+Runtime.echo(twing_date_format_filter(new Date(), 'd/m/Y'));
 ```
 
 The `TwingFilter` class takes an array of options as its last argument:
 
 ```javascript
-    let filter = new Twing.TwingFilter('rot13', rot13, options);
+    let filter = new TwingFilter('rot13', rot13, options);
 ```
 
 ### Environment-aware Filters
@@ -181,7 +181,7 @@ The `TwingFilter` class takes an array of options as its last argument:
 If you want to access the current environment instance in your filter, set the `needs_environment` option to `true`. Twing will pass the current environment as the first argument to the filter call:
 
 ```javascript
-let filter = new Twing.TwingFilter('rot13', function (env, string) {
+let filter = new TwingFilter('rot13', function (env, string) {
     // get the current charset for instance
     let charset = env.getCharset();
 
@@ -194,11 +194,11 @@ let filter = new Twing.TwingFilter('rot13', function (env, string) {
 If you want to access the current context in your filter, set the `needs_context` option to `true`. Twing will pass the current context as the first argument to the filter call (or the second one if `needs_environment` is also set to `true`):
 
 ```javascript
-let filter = new Twing.TwingFilter('rot13', function (context, string) {
+let filter = new TwingFilter('rot13', function (context, string) {
     // ...
 }, {needs_context: true});
 
-let filter = new Twing.TwingFilter('rot13', function (env, context, string) {
+let filter = new TwingFilter('rot13', function (env, context, string) {
     // ...
 }, {needs_context: true, needs_environment: true});
 ```
@@ -208,13 +208,13 @@ let filter = new Twing.TwingFilter('rot13', function (env, context, string) {
 If automatic escaping is enabled, the output of the filter may be escaped before printing. If your filter acts as an escaper (or explicitly outputs HTML or JavaScript code), you will want the raw output to be printed. In such a case, set the `is_safe` option:
 
 ```javascript
-let filter = new Twing.TwingFilter('nl2br', nl2br, {is_safe: ['html']});
+let filter = new TwingFilter('nl2br', nl2br, {is_safe: ['html']});
 ```
 
 Some filters may need to work on input that is already escaped or safe, for example when adding (safe) HTML tags to originally unsafe output. In such a case, set the ``pre_escape`` option to escape the input data before it is run through your filter:
 
 ```javascript
-let filter = new Twing.TwingFilter('somefilter', somefilter, {pre_escape: 'html', is_safe: ['html']});
+let filter = new TwingFilter('somefilter', somefilter, {pre_escape: 'html', is_safe: ['html']});
 ```
 
 ### Variadic Filters
@@ -222,7 +222,7 @@ let filter = new Twing.TwingFilter('somefilter', somefilter, {pre_escape: 'html'
 When a filter should accept an arbitrary number of arguments, set the `is_variadic` option to `true`. Twing will pass the extra arguments as the last argument to the filter call as an array:
 
 ```javascript
-let filter = new Twing.TwingFilter('thumbnail', function (file, options = []) {
+let filter = new TwingFilter('thumbnail', function (file, options = []) {
     // ...
 }, {is_variadic: true});
 ```
@@ -271,8 +271,8 @@ When a filter is deprecated, Twing emits a deprecation warning when compiling a 
 Functions are defined in the exact same way as filters, but you need to create an instance of `TwingFunction`:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
-let function = new Twing.TwingFunction('function_name', function () {
+let twing = new TwingEnvironment(loader);
+let function = new TwingFunction('function_name', function () {
     // ...
 });
 twing.addFunction(function);
@@ -285,8 +285,8 @@ Functions support the same features as filters, except for the `pre_escape` and 
 Tests are defined in the exact same way as filters and functions, but you need to create an instance of `TwingTest`:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
-let test = new Twing.TwingTest('test_name', function () {
+let twing = new TwingEnvironment(loader);
+let test = new TwingTest('test_name', function () {
     // ...
 });
 twing.addTest(test);
@@ -295,8 +295,8 @@ twing.addTest(test);
 Tests allow you to create custom application specific logic for evaluating boolean conditions. As a simple example, let's create a Twing test that checks if objects are 'red':
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
-let test = new Twing.TwingTest('red', function (value) {
+let twing = new TwingEnvironment(loader);
+let test = new TwingTest('red', function (value) {
     if (value.color && value.color === 'red') {
         return true;
     }
@@ -313,7 +313,7 @@ Test functions should always return true/false.
 When creating tests you can use the `node_factory` option to provide custom test compilation. This is useful if your test can be compiled into JavaScript primitives. This is used by many of the tests built into Twing:
 
 ```javascript
-class TwingNodeExpressionTestOdd extends Twing.TwingNodeExpressionTest {
+class TwingNodeExpressionTestOdd extends TwingNodeExpressionTest {
     compile(compiler) {
         compiler
             .raw('(')
@@ -324,8 +324,8 @@ class TwingNodeExpressionTestOdd extends Twing.TwingNodeExpressionTest {
     }
 }
 
-let twing = new Twing.TwingEnvironment(loader);
-let test = new Twing.TwingTest('odd', null, {
+let twing = new TwingEnvironment(loader);
+let test = new TwingTest('odd', null, {
     node_factory: function (node, name, nodeArguments, lineno) {
         return new TwingNodeExpressionTestOdd(node, name, nodeArguments, lineno);
     }
@@ -373,7 +373,7 @@ Three steps are needed to define a new tag:
 Adding a tag is as simple as calling the `addTokenParser` method on the `TwingEnvironment` instance:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 twing.addTokenParser(new ProjectSetTokenParser());
 ```
 
@@ -382,15 +382,15 @@ twing.addTokenParser(new ProjectSetTokenParser());
 Now, let's see the actual code of this class:
 
 ```javascript
-class ProjectSetTokenParser extends Twing.TwingTokenParser {
+class ProjectSetTokenParser extends TwingTokenParser {
     parse(token) {
         let parser = this.parser;
         let stream = parser.getStream();
 
-        let name = stream.expect(Twing.TwingToken.NAME_TYPE).getValue();
-        stream.expect(Twing.TwingToken.OPERATOR_TYPE, '=');
+        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+        stream.expect(TwingToken.OPERATOR_TYPE, '=');
         let value = parser.getExpressionParser().parseExpression();
-        stream.expect(Twing.TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         return new ProjectSetNode(name, value, token.getLine(), this.getTag());
     }
@@ -426,9 +426,9 @@ Parsing expressions is done by calling the `parseExpression()` like we did for t
 The `ProjectSetNode` class itself is rather simple:
 
 ```javascript
-class ProjectSetNode extends Twing.TwingNode {
+class ProjectSetNode extends TwingNode {
     constructor(name, value, line, tag = null) {
-        super(new Twing.TwingMap([['value', value]]), new TwingMap([['name': name]]), line, tag);
+        super(new Map([['value', value]]), new Map([['name': name]]), line, tag);
     }
 
     compile(compiler) {
@@ -526,7 +526,7 @@ interface TwingExtensionInterface {
 To keep your extension class clean and lean, inherit from the built-in `TwingExtension` class instead of implementing the interface as it provides empty implementations for all methods:
 
 ```
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
 }
 ```
 
@@ -537,7 +537,7 @@ All extensions must be registered explicitly to be available in your templates.
 You can register an extension by using the `addExtension()` method on your main `TwingEnvironment` object:
 
 ```
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 twing.addExtension(new ProjectTwingExtension());
 ```
 
@@ -554,9 +554,9 @@ twing.addExtension(new ProjectTwingExtension(), 'foo');
 Global variables can be registered in an extension via the `getGlobals()` method:
 
 ```
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
     getGlobals() {
-        return new TwingMap([
+        return new Map([
             ['text': new Text()],
         ]);
     }
@@ -570,10 +570,10 @@ class ProjectTwingExtension extends Twing.TwingExtension {
 Functions can be registered in an extension via the `getFunctions()` method:
 
 ```javascript
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
     getFunctions() {
         return [
-            new Twing.TwingFunction('lipsum', generate_lipsum),
+            new TwingFunction('lipsum', generate_lipsum),
         ];
     }
 
@@ -586,10 +586,10 @@ class ProjectTwingExtension extends Twing.TwingExtension {
 To add a filter to an extension, you need to override the `getFilters()` method. This method must return an array of filters to add to the Twing environment:
 
 ```javascript
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
     getFilters() {
         return [
-            new Twing.TwingFilter('rot13', rot13),
+            new TwingFilter('rot13', rot13),
         ];
     }
 
@@ -602,7 +602,7 @@ class ProjectTwingExtension extends Twing.TwingExtension {
 Adding a tag in an extension can be done by overriding the `getTokenParsers()` method. This method must return an array of tags to add to the Twing environment:
 
 ```javascript
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
     getTokenParsers() {
         return [new ProjectSetTokenParser()];
     }
@@ -618,14 +618,14 @@ In the above code, we have added a single new tag, defined by the `ProjectSetTok
 The `getOperators()` methods lets you add new operators. Here is how to add `!`, `||`, and `&&` operators:
 
 ```javascript
-class ProjectTwingExtension extends Twing.TwingExtension {
+class ProjectTwingExtension extends TwingExtension {
     getOperators() {
         return [
             new Map([
                 ['!', {
                     precedence: 50,
                     factory: function (expr, lineno) {
-                        return new Twing.TwingNodeExpressionUnaryNot(expr, lineno);
+                        return new TwingNodeExpressionUnaryNot(expr, lineno);
                     }
                 }]
             ]),
@@ -633,16 +633,16 @@ class ProjectTwingExtension extends Twing.TwingExtension {
                 ['||', {
                     precedence: 10,
                     factory: function (expr, lineno) {
-                        return new Twing.TwingNodeExpressionBinaryOr(expr, lineno);
+                        return new TwingNodeExpressionBinaryOr(expr, lineno);
                     },
-                    associativity: Twing.TwingExpressionParser.OPERATOR_LEFT
+                    associativity: TwingExpressionParser.OPERATOR_LEFT
                 }],
                 ['&&', {
                     precedence: 15,
                     factory: function (expr, lineno) {
-                        return new Twing.TwingNodeExpressionBinaryAnd(expr, lineno);
+                        return new TwingNodeExpressionBinaryAnd(expr, lineno);
                     },
-                    associativity: Twing.TwingExpressionParser.OPERATOR_LEFT
+                    associativity: TwingExpressionParser.OPERATOR_LEFT
                 }]
             ])
         ];
@@ -660,7 +660,7 @@ The `getTests()` method lets you add new test functions:
 class ProjectTwingExtension extends TwingExtension {
     getTests() {
         return [
-            new Twing.TwingTest('even', twing_test_even),
+            new TwingTest('even', twing_test_even),
         ];
     }
 
@@ -681,7 +681,7 @@ Twing filters, functions, and tests runtime implementations can be defined as an
 The simplest way to use methods is to define them on the extension itself:
 
 ```javascript
-class ProjectTwingExtension extends Twing.Twing_Extension {
+class ProjectTwingExtension extends Twing_Extension {
     constructor(rot13Provider) {
         this.rot13Provider = rot13Provider;
     }
@@ -733,12 +733,12 @@ class ProjectTwingRuntimeExtension
     }
 }
 
-class ProjectTwingExtension extends Twing.Twing_Extension {
+class ProjectTwingExtension extends TwingExtension {
     getFunctions() {
         return [
-            new Twing.TwingFunction('rot13', ['ProjectTwingRuntimeExtension', 'rot13']),
+            new TwingFunction('rot13', ['ProjectTwingRuntimeExtension', 'rot13']),
             // or
-            new Twing.TwingFunction('rot13', 'ProjectTwingRuntimeExtension::rot13'),
+            new TwingFunction('rot13', 'ProjectTwingRuntimeExtension::rot13'),
         );
     }
 }
@@ -749,10 +749,10 @@ class ProjectTwingExtension extends Twing.Twing_Extension {
 To overload an already defined filter, test, operator, global variable, or function, re-define it in an extension and register it **as late as possible** (order matters):
 
 ```javascript
-class MyCoreExtension extends Twing.TwingExtension {
+class MyCoreExtension extends TwingExtension {
     getFilters() {
         return [
-            new Twing.TwingFilter('date', this.dateFilter),
+            new TwingFilter('date', this.dateFilter),
         ];
     }
 
@@ -761,7 +761,7 @@ class MyCoreExtension extends Twing.TwingExtension {
     }
 }
 
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 twing.addExtension(new MyCoreExtension());
 ```
 
@@ -770,8 +770,8 @@ Here, we have overloaded the built-in `date` filter with a custom one.
 If you do the same on the `TwingEnvironment` itself, beware that it takes precedence over any other registered extensions:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader);
-twing.addFilter(new Twing.TwingFilter('date', function (timestamp, $format = 'F j, Y H:i') {
+let twing = new TwingEnvironment(loader);
+twing.addFilter(new TwingFilter('date', function (timestamp, $format = 'F j, Y H:i') {
     // do something different from the built-in date filter
 }));
 // the date filter will come from the above registration, not

@@ -1,4 +1,4 @@
-const {min} = require('../../../../../../dist');
+const {min} = require('../../../../../../build');
 
 const tap = require('tape');
 

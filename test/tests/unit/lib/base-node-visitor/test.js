@@ -1,4 +1,4 @@
-const {TwingBaseNodeVisitor} = require('../../../../../dist/lib/base-node-visitor');
+const {TwingBaseNodeVisitor} = require('../../../../../build/lib/base-node-visitor');
 
 const tap = require('tape');
 

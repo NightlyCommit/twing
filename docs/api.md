@@ -21,10 +21,10 @@ The simplest way to configure Twing to load templates for your application
 looks roughly like this:
 
 ```javascript
-let Twing = require('twing');
+let {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 
-let loader = new Twing.TwingLoaderFilesystem('/path/to/templates');
-let twing = new Twing.TwingEnvironment(loader, {
+let loader = new TwingLoaderFilesystem('/path/to/templates');
+let twing = new TwingEnvironment(loader, {
     'cache': '/path/to/compilation_cache',
 });
 ```
@@ -83,7 +83,7 @@ When creating a new ``TwingEnvironment`` instance, you can pass a hash of
 options as the constructor second argument:
 
 ```javascript
-let twing = new Twing.TwingEnvironment(loader, {debug: true});
+let twing = new TwingEnvironment(loader, {debug: true});
 ```
 
 The following options are available:
@@ -96,7 +96,7 @@ The following options are available:
 
   The charset used by the templates.
 
-* `base_template_class` *string* (defaults to `Twing.TwingTemplate`)
+* `base_template_class` *string* (defaults to `TwingTemplate`)
 
   The base template class to use for generated templates.
 
@@ -147,13 +147,13 @@ can find templates in folders on the file system and is the preferred way to
 load them:
 
 ```javascript
-let loader = new Twing.TwingLoaderFilesystem(templateDir);
+let loader = new TwingLoaderFilesystem(templateDir);
 ```
 
 It can also look for templates in an array of directories:
 
 ```javascript
-let loader = new Twing.TwingLoaderFilesystem([templateDir1, templateDir2]);
+let loader = new TwingLoaderFilesystem([templateDir1, templateDir2]);
 ```
 
 With such a configuration, Twing will first look for templates in
@@ -192,7 +192,7 @@ directory (for instance, it allows warming the cache from a build server where
 the directory might be different from the one used on production servers):
 
 ```javascript
-let loader = new Twing.TwingLoaderFilesystem('templates', process.cwd() + '/..');
+let loader = new TwingLoaderFilesystem('templates', process.cwd() + '/..');
 ```
 
 > When not passing the root path as a second argument, Twing uses ``process.cwd()``
@@ -204,10 +204,10 @@ for relative paths.
 
 {% raw %}
 ```javascript
-let loader = new Twing.TwingLoaderArray({
+let loader = new TwingLoaderArray({
     'index.html': 'Hello {{ name }}!',
 });
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 
 twing.render('index.html', {'name': 'Fabien'});
 ```
@@ -228,17 +228,17 @@ of clearing the old cache file by yourself.
 
 {% raw  %}
 ```javascript
-let loader1 = new Twing.TwingLoaderArray({
+let loader1 = new TwingLoaderArray({
     'base.html': '{% block content %}{% endblock %}',
 });
-let loader2 = new Twing.TwingLoaderArray({
+let loader2 = new TwingLoaderArray({
     'index.html': '{% extends "base.html" %}{% block content %}Hello {{ name }}{% endblock %}',
     'base.html': 'Will never be loaded',
 });
 
-let loader = new Twing.TwingLoaderChain([loader1, loader2]);
+let loader = new TwingLoaderChain([loader1, loader2]);
 
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 ```
 {% endraw %}
 
@@ -313,18 +313,18 @@ interface TwingLoaderInterface {
 }
 ```
 
-The ``isFresh()`` method must return ``true`` if the current cached template
-is still fresh, given the last modification time, or ``false`` otherwise.
+The `isFresh()` method must return `true` if the current cached template
+is still fresh, given the last modification time, or `false` otherwise.
 
-The ``getSourceContext()`` method must return an instance of ``Twing.TwingSource``.
+The `getSourceContext()` method must return an instance of `TwingSource`.
 
 ## Using Extensions
 
 Twing extensions are packages that add new features to Twing. Using an
-extension is as simple as using the ``addExtension()`` method:
+extension is as simple as using the `addExtension()` method:
 
 ```javascript
-twing.addExtension(new Twing.TwingExtensionSandbox());
+twing.addExtension(new TwingExtensionSandbox());
 ```
 
 Twing comes bundled with the following extensions:
@@ -369,7 +369,7 @@ When creating the escaper extension, you can switch on or off the global
 output escaping strategy:
 
 ```javascript
-let escaper = new Twing.TwingExtensionEscaper('html');
+let escaper = new TwingExtensionEscaper('html');
 twing.addExtension(escaper);
 ```
 
@@ -488,7 +488,7 @@ let properties = new Map([
     ['Article', ['title', 'body']],
 ]);
 let functions = ['range'];
-let policy = new Twing.TwingSandboxSecurityPolicy(tags, filters, methods, properties, functions);
+let policy = new TwingSandboxSecurityPolicy(tags, filters, methods, properties, functions);
 ```
 
 With the previous configuration, the security policy will only allow usage of
@@ -500,7 +500,7 @@ won't be allowed and will generate a ``TwingSandboxSecurityError`` exception.
 The policy object is the first argument of the sandbox constructor:
 
 ```javascript
-let sandbox = new Twing.TwingExtensionSandbox(policy);
+let sandbox = new TwingExtensionSandbox(policy);
 twing.addExtension(sandbox);
 ```
 
@@ -519,7 +519,7 @@ You can sandbox all templates by passing ``true`` as the second argument of
 the extension constructor:
 
 ```javascript
-let sandbox = new Twing.TwingExtensionSandbox(policy, true);
+let sandbox = new TwingExtensionSandbox(policy, true);
 ````
 
 ### Profiler Extension
@@ -528,10 +528,10 @@ The ``profiler`` extension enables a profiler for Twing templates; it should
 only be used on your development machines as it adds some overhead:
 
 ```javascript
-let profile = new Twing.TwingProfilerProfile();
-twing.addExtension(new Twing.TwingExtensionProfiler(profile));
+let profile = new TwingProfilerProfile();
+twing.addExtension(new TwingExtensionProfiler(profile));
 
-let dumper = new Twing.TwingProfilerDumperText();
+let dumper = new TwingProfilerDumperText();
 let dump = dumper.dump(profile);
 ```
 
@@ -542,7 +542,7 @@ You can also dump the data in a `Blackfire.io <https://blackfire.io/>`_
 compatible format:
 
 ```javascript
-let dumper = new Twing.TwingProfilerDumperBlackfire();
+let dumper = new TwingProfilerDumperBlackfire();
 fs.writeFileSync('/path/to/profile.prof', dumper.dump(profile));
 ```
 
@@ -558,14 +558,14 @@ blackfire --slot=7 upload /path/to/profile.prof
 The ``optimizer`` extension optimizes the node tree before compilation:
 
 ```javascript
-twing.addExtension(new Twing.TwingExtensionOptimizer());
+twing.addExtension(new TwingExtensionOptimizer());
 ```
 
 By default, all optimizations are turned on. You can select the ones you want
 to enable by passing them to the constructor:
 
 ```javascript
-let optimizer = new Twing.TwingExtensionOptimizer(Twing.TwingNodeVisitorOptimizer.OPTIMIZE_FOR);
+let optimizer = new TwingExtensionOptimizer(TwingNodeVisitorOptimizer.OPTIMIZE_FOR);
 
 twing.addExtension(optimizer);
 ```

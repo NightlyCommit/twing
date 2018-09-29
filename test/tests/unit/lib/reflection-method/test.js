@@ -1,4 +1,4 @@
-const {TwingReflectionMethod} = require('../../../../../dist/index');
+const {TwingReflectionMethod} = require('../../../../../build/index');
 
 const tap = require('tape');
 

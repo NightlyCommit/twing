@@ -1,4 +1,4 @@
-const {iteratorToHash} = require('../../../../../../dist');
+const {iteratorToHash} = require('../../../../../../build');
 
 const tap = require('tape');
 

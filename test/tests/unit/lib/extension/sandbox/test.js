@@ -10,7 +10,7 @@ const {
     TwingSandboxSecurityNotAllowedTagError,
     TwingSandboxSecurityNotAllowedPropertyError,
     TwingSandboxSecurityNotAllowedFunctionError
-} = require("../../../../../../dist/index");
+} = require("../../../../../../build/index");
 
 const tap = require('tape');
 const merge = require('merge');

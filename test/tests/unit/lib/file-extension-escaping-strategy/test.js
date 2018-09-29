@@ -1,4 +1,4 @@
-const {TwingFileExtensionEscapingStrategy} = require('../../../../../dist/index');
+const {TwingFileExtensionEscapingStrategy} = require('../../../../../build/index');
 
 const tap = require('tape');
 

@@ -35,7 +35,7 @@ The lexer tokenizes a template source code into a token stream (each token is an
 You can manually convert a source code into a token stream by calling the `tokenize()` method of an environment:
 
 ````javascript
-let stream = twing.tokenize(new Twing.TwingSource(source, identifier));
+let stream = twing.tokenize(new TwingSource(source, identifier));
 ````
 
 As the stream has a `toString()` method, you can have a textual representation of it:
@@ -127,46 +127,52 @@ let javaScript = twing.compile(nodes);
 The generated template for a `Hello {{ name }}` template reads as follows (the actual output can differ depending on the version of Twing you are using):
 
 ````javascript
-const Twing = require('twing/lib/runtime');
+module.exports = (Runtime) => {
+    let templates = {};
+    
 
-module.exports = {};
+    /* index */
+    templates.__TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 = class __TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 extends Runtime.TwingTemplate {
+        constructor(env) {
+            super(env);
 
+            this.source = this.getSourceContext();
 
+            this.parent = false;
 
-/* Hello {{ name }} */
-module.exports.__TwingTemplate_db681609e4f9c30158d1ad21d3956cdc61011a3e96df392a51446bcf6f35d06e = class __TwingTemplate_db681609e4f9c30158d1ad21d3956cdc61011a3e96df392a51446bcf6f35d06e extends Twing.TwingTemplate {
-    constructor(env) {
-        super(env);
+            this.blocks = new Map([
+            ]);
+        }
 
-        this.parent = false;
+        doDisplay(context, blocks = new Map()) {
+            // line 1, column 1
+            Runtime.echo(`Hello `);
+            Runtime.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
+        }
 
-        this.blocks = new Twing.TwingMap([
-        ]);
-    }
+        getTemplateName() {
+            return `index`;
+        }
 
-    doDisplay(context, blocks = new Twing.TwingMap()) {
-        // line 1, column 1
-        Twing.echo("Hello ");
-        Twing.echo(this.env.getFilter('escape').getCallable()(...[this.env, (context.has("name") ? context.get("name") : null), "html", null, true]));
-    }
+        getSourceMapSource() {
+            return this.env.getLoader().resolve(`index`);
+        }
 
-    getTemplateName() {
-        return "Hello {{ name }}";
-    }
+        isTraitable() {
+            return false;
+        }
 
-    isTraitable() {
-        return false;
-    }
+        getDebugInfo() {
+            return new Map([[20, {"line": 1, "column": 1}]]);
+        }
 
-    getDebugInfo() {
-        return new Map([[19, {"line": 1, "column": 1}]]);
-    }
+        getSourceContext() {
+            return new Runtime.TwingSource(``, `index`, ``);
+        }
+    };
 
-    getSourceContext() {
-        return new Twing.TwingSource(``, "Hello {{ name }}", "");
-    }
+    return templates;
 };
-
 ````
 
 > The default compiler (`TwingCompiler`) can be changed by calling the `setCompiler()` method:

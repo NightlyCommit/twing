@@ -1,4 +1,4 @@
-const {TwingProfilerDumperHtml} = require('../../../../../../../dist/index');
+const {TwingProfilerDumperHtml} = require('../../../../../../../build/index');
 const TwingTestMockBuilderProfile = require('../../../../../../mock-builder/profiler/profile');
 
 const tap = require('tape');

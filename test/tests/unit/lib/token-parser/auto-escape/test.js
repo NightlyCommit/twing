@@ -5,7 +5,7 @@ const {
     TwingParser,
     TwingErrorSyntax,
     TwingSource
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 
 const tap = require('tape');
 const sinon = require('sinon');

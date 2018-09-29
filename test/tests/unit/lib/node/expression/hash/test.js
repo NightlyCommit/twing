@@ -1,7 +1,7 @@
 const {
     TwingNodeExpressionHash,
     TwingNodeExpressionConstant
-} = require('../../../../../../../dist/index');
+} = require('../../../../../../../build/index');
 
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 

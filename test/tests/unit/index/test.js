@@ -1,4 +1,4 @@
-const Twing = require('../../../../dist/index');
+const Twing = require('../../../../build/index');
 const tape = require('tape');
 
 tape.test('library', function (test) {

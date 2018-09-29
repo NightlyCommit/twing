@@ -1,4 +1,4 @@
-const {TwingExtensionOptimizer} = require('../../../../../../dist/index');
+const {TwingExtensionOptimizer} = require('../../../../../../build/index');
 
 const tap = require('tape');
 

@@ -1,9 +1,9 @@
-const {TwingNode} = require('../../../../../dist/lib/node');
+const {TwingNode} = require('../../../../../build/lib/node');
 
-const {TwingCompiler} = require('../../../../../dist/lib/compiler');
+const {TwingCompiler} = require('../../../../../build/lib/compiler');
 const MockEnvironement = require('../../../../mock/environment');
 const MockLoader = require('../../../../mock/loader');
-const {TwingNodeExpressionConstant} = require('../../../../../dist/lib/node/expression/constant');
+const {TwingNodeExpressionConstant} = require('../../../../../build/lib/node/expression/constant');
 
 const tap = require('tape');
 

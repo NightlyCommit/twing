@@ -9,7 +9,7 @@ const {
     TwingSource,
     TwingNodeExpressionConditional,
     TwingNodeSet
-} = require('../../../../../../dist/index');
+} = require('../../../../../../build/index');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 const TwingTestEnvironmentStub = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');

@@ -1,4 +1,4 @@
-const {reverse} = require('../../../../../../dist');
+const {reverse} = require('../../../../../../build');
 
 const tap = require('tape');
 

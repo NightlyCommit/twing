@@ -1,4 +1,4 @@
-const {TwingOutputBuffering} = require('../../../../../dist/index');
+const {TwingOutputBuffering} = require('../../../../../build/index');
 
 const tap = require('tape');
 const sinon = require('sinon');

@@ -6,7 +6,7 @@
     "extension": [
       ".js"
     ],
-    "include": "dist",
+    "include": "build",
     "reporter": [
       "text-summary",
       "html"

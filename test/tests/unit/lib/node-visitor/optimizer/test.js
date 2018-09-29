@@ -8,7 +8,7 @@ const {
     TwingNodeFor,
     TwingNodeExpressionFunction,
     TwingNode
-} = require("../../../../../../dist");
+} = require("../../../../../../build");
 
 const tap = require('tape');
 const sinon = require('sinon');

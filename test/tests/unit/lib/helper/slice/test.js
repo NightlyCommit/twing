@@ -1,4 +1,4 @@
-const {slice} = require('../../../../../../dist');
+const {slice} = require('../../../../../../build');
 
 const tap = require('tape');
 

@@ -4,7 +4,7 @@ const {
     TwingNodeExpressionFilter,
     TwingFilter,
     TwingErrorSyntax
-} = require('../../../../../../../dist/index');
+} = require('../../../../../../../build/index');
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 const TwingTestEnvironmentStub = require('../../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../../mock/loader');

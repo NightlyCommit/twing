@@ -1,4 +1,4 @@
-const {includes} = require('../../../../../../dist');
+const {includes} = require('../../../../../../build');
 
 const tap = require('tape');
 

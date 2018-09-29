@@ -1,4 +1,4 @@
-const {TwingTemplate} = require('../../dist/lib/template');
+const {TwingTemplate} = require('../../build/lib/template');
 const TwingEnvironmentMock = require('./environment');
 
 module.exports = class extends TwingTemplate {

@@ -1,4 +1,4 @@
-const {iconv} = require('../../../../../../dist');
+const {iconv} = require('../../../../../../build');
 
 const tap = require('tape');
 

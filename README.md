@@ -15,7 +15,7 @@ That's what Twing is. A maintainability-first engine that pass 100% of the TwigP
 
 ## Prerequisites
 
-Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** to enjoy the best performance possible.
+Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** or greater to enjoy the best performance possible.
 
 ## Installation
 
@@ -26,24 +26,31 @@ The recommended way to install Twing is via npm:
 ## Basic API Usage
 
 ```js
-const Twing = require('twing');
+const {TwingEnvironment, TwingLoaderArray} = require('twing');
 
-let loader = new Twing.TwingLoaderArray({
+let loader = new TwingLoaderArray({
     'index.twig': 'Hello {{ name }}!'
 });
-let twing = new Twing.TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader);
 
 let output = twing.render('index.twig', {name: 'Fabien'});
 ```
 
-## About async support
+## Browser support
 
-Unfortunately, async support had to be removed starting from 0.10.0, for two reasons:
+Starting with version 2.0.0, Twing can be used in web browsers with very few compromise. Filesystem components are obviously not available (namely filesystem loader and cache) but everything else is fully supported.
 
-* Unpredictable behavior when used with Promise because of the output buffering mechanism not being ready for async operations. Twing rendering was reliable only when called using `await` and thus only when used synchronously. There was no point at keeping async support if the engine is only able to return predictable results when used synchronously.
-* Sub-par performance because of the huge overhead introduced by the async/await syntax.
+### Module bundler
 
-Async support will be re-added post-1.0 and as an option. Since performance issues are likely to persist in the future (the overhead is inherent to the use of Promise under the hood), users who only need sync support should not be impacted by the performance cost of async support. In the mean time, when async support will be re-introduced, usage of Promise will be possible and that should compensate for the overhead for those that need async support.
+Module bundlers will automatically grab the browser-specific flavor of Twing when Twing module is imported. Either `const {TwingEnvironment} = require('twing);` or `import {TwingEnvironment} from 'twing';` will work in both node.js and the browser - once bundled in the latter case.
+
+### Script tag
+
+Use [jsdelivr](https://www.jsdelivr.com/) CDN to include Twing in your HTML document:
+
+`<script src="https://cdn.jsdelivr.net/npm/twing/dist/lib.min.js"></script>`
+
+Once loaded by the browser, Twing is available under the global `Twing` variable.
 
 ## More information
 

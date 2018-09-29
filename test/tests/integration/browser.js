@@ -3,7 +3,7 @@ const {Readable} = require('stream');
 
 let fixtures = require('./fixtures');
 
-let data = `const {TwingEnvironmentBrowser} = require('../dist/lib/environment/browser');
+let data = `const {TwingEnvironmentBrowser} = require('../build/lib/environment/browser');
 
 let testCases = [
 `;

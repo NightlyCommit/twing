@@ -1,4 +1,4 @@
-const {ksort} = require('../../../../../../dist');
+const {ksort} = require('../../../../../../build');
 
 const tap = require('tape');
 
