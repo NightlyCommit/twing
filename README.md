@@ -15,7 +15,7 @@ That's what Twing is. A maintainability-first engine that pass 100% of the TwigP
 
 ## Prerequisites
 
-Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** or greater to enjoy the best performance possible.
+Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** or higher to enjoy the best performance possible.
 
 ## Installation
 
@@ -42,7 +42,7 @@ Starting with version 2.0.0, Twing can be used in web browsers with very few com
 
 ### Module bundler
 
-Module bundlers will automatically grab the browser-specific flavor of Twing when Twing module is imported. Either `const {TwingEnvironment} = require('twing);` or `import {TwingEnvironment} from 'twing';` will work in both node.js and the browser - once bundled in the latter case.
+Module bundlers will automatically grab the browser-specific flavor of Twing when Twing module is imported. Either `const {TwingEnvironment} = require('twing');` or `import {TwingEnvironment} from 'twing';` will work in both node.js and the browser - once bundled in the latter case.
 
 ### Script tag
 
