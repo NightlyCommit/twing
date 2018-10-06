@@ -78,7 +78,6 @@
     "@types/tmp": "0.0.33",
     "browserify": "^16.2.2",
     "coveralls": "^3.0.0",
-    "fs-extra": "^5.0.0",
     "fs-finder": "^1.8.1",
     "node-hook": "^1.0.0",
     "nyc": "^11.5.0",

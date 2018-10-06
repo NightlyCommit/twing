@@ -198,6 +198,18 @@ let loader = new TwingLoaderFilesystem('templates', process.cwd() + '/..');
 > When not passing the root path as a second argument, Twing uses ``process.cwd()``
 for relative paths.
 
+#### `TwingLoaderRelativeFilesystem`
+
+`TwingLoaderRelativeFilesystem` loads templates from the filesystem, relatively to the template that initiated the loading.
+
+Consider for example the following template located in `/foo/bar`:
+
+```twig
+{% include "../index.html" %}
+```
+
+`../index.html` would resolve to `/foo/index.html`.
+
 #### ``TwingLoaderArray``
 
 ``TwingLoaderArray`` loads a template from an object or a Map. It's passed strings bound to template names:

@@ -1,21 +1,14 @@
 import {TwingNodeExpressionFilter} from "./node/expression/filter";
 import {TwingNode} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
-import {TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
 
 let merge = require('merge');
 
-export type TwingFilterOptions = {
-    needs_environment?: boolean;
-    needs_context?: boolean;
-    is_variadic?: boolean;
-    is_safe?: Array<any>;
-    is_safe_callback?: Function;
+export type TwingFilterOptions = TwingCallableWrapperOptions & {
+    expression_factory?: Function;
     pre_escape?: string;
     preserves_safety?: Array<string>;
-    expression_factory?: Function;
-    deprecated?: string;
-    alternative?: TwingFilter;
 }
 
 export class TwingFilter extends TwingCallableWrapper {
@@ -28,6 +21,7 @@ export class TwingFilter extends TwingCallableWrapper {
         this.options = merge({
             'needs_environment': false,
             'needs_context': false,
+            'needs_source': false,
             'is_variadic': false,
             'is_safe': null,
             'is_safe_callback': null,
@@ -63,6 +57,10 @@ export class TwingFilter extends TwingCallableWrapper {
 
     needsContext() {
         return this.options.needs_context;
+    }
+
+    needsSource() {
+        return this.options.needs_source;
     }
 
     /**

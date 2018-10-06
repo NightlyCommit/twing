@@ -90,6 +90,7 @@ import {reverse} from "../helper/reverse";
 import {first} from "../helper/first";
 import {TwingMarkup} from "../markup";
 import {isMap} from "../helper/is-map";
+import {TwingSource} from "../source";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -312,7 +313,7 @@ export class TwingExtensionCore extends TwingExtension {
                 needs_environment: true,
                 is_safe: ['all']
             })],
-            [i++, new TwingFunction('source', twingSource, {needs_environment: true, is_safe: ['all']})],
+            [i++, new TwingFunction('source', twingSource, {needs_environment: true, needs_source: true, is_safe: ['all']})],
         ]);
     }
 
@@ -1701,16 +1702,17 @@ export function twingInclude(env: TwingEnvironment, context: Map<any, any>, temp
  * Returns a template content without rendering it.
  *
  * @param {TwingEnvironment} env
+ * @param {TwingSource} source
  * @param {string} name The template name
  * @param {boolean} ignoreMissing Whether to ignore missing templates or not
  *
  * @return string The template source
  */
-export function twingSource(env: TwingEnvironment, name: string, ignoreMissing: boolean = false) {
+export function twingSource(env: TwingEnvironment, source: TwingSource, name: string, ignoreMissing: boolean = false) {
     let loader = env.getLoader();
 
     try {
-        return loader.getSourceContext(name).getCode();
+        return loader.getSourceContext(name, source).getCode();
     }
     catch (e) {
         if (e instanceof TwingErrorLoader) {

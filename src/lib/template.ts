@@ -290,7 +290,7 @@ export abstract class TwingTemplate {
     public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = null): TwingTemplate | TwingTemplateWrapper {
         try {
             if (Array.isArray(template)) {
-                return this.env.resolveTemplate(template);
+                return this.env.resolveTemplate(template, this.getSourceContext());
             }
 
             if (template instanceof TwingTemplate) {
@@ -301,7 +301,7 @@ export abstract class TwingTemplate {
                 return template;
             }
 
-            return this.env.loadTemplate(template as string, index);
+            return this.env.loadTemplate(template as string, index, this.getSourceContext());
         }
         catch (e) {
             if (e instanceof TwingError) {

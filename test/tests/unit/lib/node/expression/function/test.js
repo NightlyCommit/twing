@@ -16,6 +16,10 @@ function twig_tests_function_dummy() {
 function twig_tests_function_barbar(arg1 = null, arg2 = null, args = []) {
 }
 
+function twig_tests_function_needs_source() {
+
+}
+
 function createFunction(name, args = new Map()) {
     return new TwingNodeExpressionFunction(name, new TwingNode(args), 1);
 }
@@ -44,6 +48,9 @@ tap.test('node/expression/function', function (test) {
         }));
         environment.addFunction(new TwingFunction('barbar', twig_tests_function_barbar, {is_variadic: true}));
         environment.addFunction(new TwingFunction('anonymous', function () {
+        }));
+        environment.addFunction(new TwingFunction('needs_source', twig_tests_function_needs_source, {
+            needs_source: true,
         }));
 
         let compiler = new TwingTestMockCompiler(environment);
@@ -89,6 +96,10 @@ tap.test('node/expression/function', function (test) {
             ]));
 
             test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'foobar\').traceableCallable(1, this.source)(...[this.env, context, \`bar\`])');
+
+            node = createFunction('needs_source');
+
+            test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'needs_source\').traceableCallable(1, this.source)(...[this.source])');
 
             test.test('named arguments', function (test) {
                 let node = createFunction('date', new Map([
