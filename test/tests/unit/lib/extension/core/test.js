@@ -142,8 +142,8 @@ tap.test('TwingExtensionCore', function (test) {
             });
 
             test.same(callable(env, date), 'January 1, 2001 12:00');
-            test.looseEqual(callable(env, date, 'U'), date.toJSDate().getTime());
-            test.same(callable(env, date, 'j-U'), '1-' + date.toJSDate().getTime());
+            test.looseEqual(callable(env, date, 'U'), (date.toJSDate().getTime() / 1000));
+            test.same(callable(env, date, 'j-U'), '1-' + (date.toJSDate().getTime() / 1000));
 
             /************/
             /* duration */
