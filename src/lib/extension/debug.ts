@@ -2,6 +2,9 @@ import {TwingExtension} from "../extension";
 import {TwingFunction} from "../function";
 import {TwingEnvironment} from "../environment";
 import {varDump} from "../helper/var-dump";
+import {TwingOutputBuffering} from "../output-buffering";
+import {each} from "../helper/each";
+import {TwingTemplate} from "../template";
 
 export class TwingExtensionDebug extends TwingExtension {
     getFunctions() {
@@ -16,22 +19,26 @@ export class TwingExtensionDebug extends TwingExtension {
 }
 
 export function twingVarDump(env: TwingEnvironment, context: any, ...vars: Array<any>) {
-    let parts: Array<string> = [];
-
     if (!env.isDebug()) {
         return null;
     }
 
+    TwingOutputBuffering.obStart();
+
     if (vars.length < 1) {
-        // dump the whole context
-        return varDump(context);
+        let vars_: Map<any, any> = new Map();
+
+        each(context, (key: any, value: any) => {
+            if (!(value instanceof TwingTemplate)) {
+                vars_.set(key, value);
+            }
+        });
+
+        varDump(vars_);
+    }
+    else {
+        varDump(...vars);
     }
 
-    for (let var_ of vars) {
-        parts.push(varDump(var_));
-    }
-
-    parts.push('');
-
-    return parts.join('\n');
+    return TwingOutputBuffering.obGetClean();
 }
