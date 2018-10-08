@@ -204,9 +204,11 @@ for relative paths.
 
 Consider for example the following template located in `/foo/bar`:
 
+{% raw %}
 ```twig
 {% include "../index.html" %}
 ```
+{% endraw %}
 
 `../index.html` would resolve to `/foo/index.html`.
 

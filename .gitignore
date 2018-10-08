@@ -2,5 +2,8 @@
 .nyc_output
 build
 coverage
+docs/.bundle
+docs/_site
+docs/vendor
 node_modules
 tmp
