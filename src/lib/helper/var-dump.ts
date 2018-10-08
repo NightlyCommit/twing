@@ -1,28 +1,102 @@
-import {iteratorToHash} from "./iterator-to-hash";
+import {echo} from "../output-buffering";
 import {isTraversable} from "./is-traversable";
+import {iteratorToHash} from "./iterator-to-hash";
+import {count} from "./count";
 
-const locutusVarDump = require('locutus/php/var/var_dump');
+/**
+ * Adapted from https://github.com/kvz/locutus/blob/master/src/php/var/var_dump.js
+ */
+export function varDump(...args: any[]): void {
+    let padChar = ' ';
+    let padVal = 4;
+    let lgth = 0;
 
-export function varDump(thing: any): string {
-    let result: string;
-    let consoleLog = console.log;
+    let getInnerVal = function _getInnerVal(val: any) {
+        let result = '';
 
-    console.log = () => {
-        // no-op to prevent varDump to log to the console
+        if (val === null || typeof val === 'undefined') {
+            result = 'NULL';
+        }
+        else if (typeof val === 'boolean') {
+            result = 'bool(' + val + ')';
+        }
+        else if (typeof val === 'number') {
+            if (parseFloat('' + val) === parseInt('' + val, 10)) {
+                result = 'int(' + val + ')';
+            }
+            else {
+                result = 'float(' + val + ')';
+            }
+        }
+        else if (typeof val === 'function') {
+            result = 'object(Closure) (0) {}';
+        }
+        else {
+            result = 'string(' + val.length + ') "' + val + '"';
+        }
+
+        return result;
     };
 
-    let thingToDump: any;
+    let formatArray = function _formatArray(obj: any, curDepth: number, padVal: number, padChar: string) {
+        if (isTraversable(obj)) {
+            obj = iteratorToHash(obj);
+        }
 
-    if (isTraversable(thing)) {
-        thingToDump = iteratorToHash(thing);
+        if (curDepth > 0) {
+            curDepth++;
+        }
+
+        let baseCount = padVal * (curDepth - 1);
+        let thickCount = padVal * (curDepth + 1);
+
+        let basePad = padChar.repeat(baseCount > 0 ? baseCount : 0);
+        let thickPad = padChar.repeat(thickCount);
+        let str: string = '';
+        let val: string;
+
+        if (typeof obj === 'object' && obj !== null) {
+            lgth = count(obj);
+
+            str += 'array(' + lgth + ') {\n';
+
+            for (let key in obj) {
+                let objVal = obj[key];
+
+                if ((typeof objVal === 'object') && (objVal !== null) && !(objVal instanceof Date)) {
+                    str += thickPad;
+                    str += '[';
+                    str += key;
+                    str += '] =>\n';
+                    str += thickPad;
+                    str += formatArray(objVal, curDepth + 1, padVal, padChar);
+                }
+                else {
+                    val = getInnerVal(objVal);
+                    str += thickPad;
+                    str += '[';
+                    str += key;
+                    str += '] =>\n';
+                    str += thickPad;
+                    str += val;
+                    str += '\n';
+                }
+            }
+
+            str += basePad + '}\n';
+        }
+        else {
+            str = getInnerVal(obj) + '\n';
+        }
+
+        return str;
+    };
+
+    let output: string[] = [];
+
+    for (let arg of args) {
+        output.push(formatArray(arg, 0, padVal, padChar));
     }
-    else {
-        thingToDump = thing;
-    }
 
-    result = locutusVarDump(thingToDump);
-
-    console.log = consoleLog;
-
-    return result;
+    echo(output.join(''));
 }
