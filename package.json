@@ -34,6 +34,7 @@
     "postpack": "rimraf lib dist browser.* index.*",
     "test": "npm run fastest:all",
     "test:browser": "npm run fastest:integration:browser",
+    "test:docs": "cd docs && bundle exec jekyll build",
     "fastest:all": "tape 'test/tests/**/test.js' | tap-bail | tap-spec",
     "fastest:integration": "tape test/tests/integration/**/test.js | tap-bail | tap-spec",
     "fastest:integration:browser": "node test/tests/integration/browser.js | browserify - --basedir ./test -t [ stringify --extensions [.html .twig] ] | tape-run --render='tap-spec'",
