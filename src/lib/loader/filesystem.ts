@@ -171,7 +171,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
     isFresh(name: string, time: number): boolean {
         let stat = fs.statSync(this.findTemplate(name));
 
-        return stat.mtimeMs < time;
+        return stat.mtime.getTime() < time;
     }
 
     /**
@@ -242,7 +242,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         throw new TwingErrorLoader(this.errorCache.get(name));
     }
 
-    private normalizeName(name: string) {
+    protected normalizeName(name: string) {
         if (name === null) {
             return '';
         }
@@ -250,7 +250,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return name.replace(/\\/g, '/').replace(/\/{2,}/g, '/')
     }
 
-    private parseName(name: string, default_: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
+    protected parseName(name: string, default_: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
         if (name[0] === '@') {
             let pos = name.indexOf('/');
 
@@ -267,7 +267,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return [default_, name];
     }
 
-    private validateName(name: string) {
+    protected validateName(name: string) {
         if (name.indexOf(`\0`) > -1) {
             throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
         }
@@ -289,7 +289,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         }
     }
 
-    private isAbsolutePath(file: string) {
+    protected isAbsolutePath(file: string) {
         return nodePath.isAbsolute(file);
     }
 

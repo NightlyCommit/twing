@@ -840,7 +840,7 @@ tap.test('TwingExtensionCore', function (test) {
                 twingSource(env, 'foo');
             }, new TwingErrorLoader('Template "foo" is not defined.'));
 
-            test.equals(twingSource(env, 'foo', true), null);
+            test.equals(twingSource(env, false, 'foo', true), null);
 
             sinon.stub(loader, 'getSourceContext').throws(new Error('foo'));
 

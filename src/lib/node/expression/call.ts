@@ -67,6 +67,16 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             first = false;
         }
 
+        if (this.hasAttribute('needs_source') && this.getAttribute('needs_source')) {
+            if (!first) {
+                compiler.raw(', ');
+            }
+
+            compiler.raw('this.source');
+
+            first = false;
+        }
+
         if (this.hasAttribute('arguments')) {
             for (let argument_ of this.getAttribute('arguments')) {
                 if (!first) {

@@ -357,11 +357,12 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @param {string} name The name for which to calculate the template class name
      * @param {number|null} index The index if it is an embedded template
+     * @param {TwingSource} from The source that initiated the template loading
      *
      * @return string The template class name
      */
-    getTemplateClass(name: string, index: number = null) {
-        let key = this.getLoader().getCacheKey(name) + this.optionsHash;
+    getTemplateClass(name: string, index: number = null, from: TwingSource = null) {
+        let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
         return this.templateClassPrefix + crypto.createHash('sha256').update(key).digest('hex') + (index === null ? '' : '_' + index);
     }
@@ -431,6 +432,7 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @param {string} name  The template name
      * @param {number} index The index if it is an embedded template
+     * @param {TwingSource} from The source that initiated the template loading
      *
      * @returns {TwingTemplate} A template instance representing the given template name
      *
@@ -440,10 +442,10 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @internal
      */
-    loadTemplate(name: string, index: number = null): TwingTemplate {
-        this.emit('template', name);
+    loadTemplate(name: string, index: number = null, from: TwingSource = null): TwingTemplate {
+        this.emit('template', name, from);
 
-        let cls = this.getTemplateClass(name);
+        let cls = this.getTemplateClass(name, null, from);
         let mainCls = cls;
 
         if (index !== null) {
@@ -460,12 +462,12 @@ export abstract class TwingEnvironment extends EventEmitter {
         let templates: { [s: string]: new(e: TwingEnvironment) => TwingTemplate } = {};
         let runtime = this.getTemplateRuntime();
 
-        if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key))) {
+        if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key), from)) {
             templates = cache.load(key)(runtime);
         }
 
         if (!templates[cls]) {
-            let source = this.getLoader().getSourceContext(name);
+            let source = this.getLoader().getSourceContext(name, from);
             let content = this.compileSource(source);
 
             cache.write(key, content);
@@ -559,11 +561,12 @@ return module.exports;
      *
      * @param {string} name The template name
      * @param {number} time The last modification time of the cached template
+     * @param {TwingSource} from The source that initiated the template loading
      *
      * @returns {boolean} true if the template is fresh, false otherwise
      */
-    isTemplateFresh(name: string, time: number) {
-        return this.getLoader().isFresh(name, time);
+    isTemplateFresh(name: string, time: number, from: TwingSource) {
+        return this.getLoader().isFresh(name, time, from);
     }
 
     /**
@@ -579,7 +582,7 @@ return module.exports;
      * @throws {TwingErrorLoader} When none of the templates can be found
      * @throws {TwingErrorSyntax} When an error occurred during compilation
      */
-    resolveTemplate(names: string | TwingTemplate | TwingTemplateWrapper | Array<string | TwingTemplate>): TwingTemplate | TwingTemplateWrapper {
+    resolveTemplate(names: string | TwingTemplate | TwingTemplateWrapper | Array<string | TwingTemplate>, source: TwingSource = null): TwingTemplate | TwingTemplateWrapper {
         let self = this;
         let namesArray: Array<any>;
 
@@ -602,7 +605,7 @@ return module.exports;
             }
 
             try {
-                return self.loadTemplate(name);
+                return self.loadTemplate(name, null, source);
             }
             catch (e) {
                 if (e instanceof TwingErrorLoader) {

@@ -1,6 +1,4 @@
 import {TwingLoaderInterface} from "../loader-interface";
-import {TwingTemplate} from "../template";
-
 import {TwingErrorLoader} from "../error/loader";
 import {TwingSource} from "../source";
 
@@ -31,16 +29,16 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         this.hasSourceCache = new Map();
     }
 
-    getSourceContext(name: string): TwingSource {
+    getSourceContext(name: string, from: TwingSource): TwingSource {
         let exceptions = [];
 
         for (let loader of this.loaders) {
-            if (!loader.exists(name)) {
+            if (!loader.exists(name, from)) {
                 continue;
             }
 
             try {
-                return loader.getSourceContext(name);
+                return loader.getSourceContext(name, from);
             }
             catch (e) {
                 if (e instanceof TwingErrorLoader) {
@@ -52,13 +50,13 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 
-    exists(name: string) {
+    exists(name: string, from: TwingSource) {
         if (this.hasSourceCache.has(name)) {
             return this.hasSourceCache.get(name);
         }
 
         for (let loader of this.loaders) {
-            if (loader.exists(name)) {
+            if (loader.exists(name, from)) {
                 this.hasSourceCache.set(name, true);
 
                 return true;
@@ -70,16 +68,16 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         return false;
     }
 
-    getCacheKey(name: string) {
+    getCacheKey(name: string, from: TwingSource) {
         let exceptions = [];
 
         for (let loader of this.loaders) {
-            if (!loader.exists(name)) {
+            if (!loader.exists(name, from)) {
                 continue;
             }
 
             try {
-                return loader.getCacheKey(name);
+                return loader.getCacheKey(name, from);
             }
             catch (e) {
                 if (e instanceof TwingErrorLoader) {
@@ -91,16 +89,16 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 
-    isFresh(name: string, time: number) {
+    isFresh(name: string, time: number, from: TwingSource) {
         let exceptions = [];
 
         for (let loader of this.loaders) {
-            if (!loader.exists(name)) {
+            if (!loader.exists(name, from)) {
                 continue;
             }
 
             try {
-                return loader.isFresh(name, time);
+                return loader.isFresh(name, time, from);
             }
             catch (e) {
                 if (e instanceof TwingErrorLoader) {
@@ -112,16 +110,16 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
     }
 
-    resolve(name: string): string {
+    resolve(name: string, from: TwingSource): string {
         let exceptions = [];
 
         for (let loader of this.loaders) {
-            if (!loader.exists(name)) {
+            if (!loader.exists(name, from)) {
                 continue;
             }
 
             try {
-                return loader.resolve(name);
+                return loader.resolve(name, from);
             }
             catch (e) {
                 if (e instanceof TwingErrorLoader) {

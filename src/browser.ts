@@ -1,4 +1,5 @@
 export {abs} from "./lib/helper/abs";
+export {compare} from "./lib/helper/compare";
 export {count} from "./lib/helper/count";
 export {each} from "./lib/helper/each";
 export {examineObject} from "./lib/helper/examine-object";
@@ -17,7 +18,6 @@ export {regexParser} from "./lib/helper/regex-parser";
 export {relativeDate} from "./lib/helper/relative-date";
 export {TwingBaseNodeVisitor} from "./lib/base-node-visitor";
 export {TwingCacheNull} from "./lib/cache/null";
-export {compare} from "./lib/helper/compare";
 export {TwingCompiler} from "./lib/compiler";
 export {TwingEnvironmentBrowser as TwingEnvironment} from "./lib/environment/browser";
 export {TwingErrorLoader} from "./lib/error/loader";

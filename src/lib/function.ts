@@ -1,18 +1,11 @@
 import {TwingNodeExpressionFunction} from "./node/expression/function";
 import {TwingNode} from "./node";
-import {TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
 
 const merge = require('merge');
 
-export type TwingFunctionOptions = {
-    needs_environment?: boolean;
-    needs_context?: boolean;
-    is_variadic?: boolean;
-    is_safe?: Array<string>;
-    is_safe_callback?: Function;
+export type TwingFunctionOptions = TwingCallableWrapperOptions & {
     expression_factory?: Function;
-    deprecated?: string;
-    alternative?: string;
 }
 
 export class TwingFunction extends TwingCallableWrapper {
@@ -32,6 +25,7 @@ export class TwingFunction extends TwingCallableWrapper {
         this.options = merge({
             'needs_environment': false,
             'needs_context': false,
+            'needs_source': false,
             'is_variadic': false,
             'is_safe': null,
             'is_safe_callback': null,
@@ -61,6 +55,10 @@ export class TwingFunction extends TwingCallableWrapper {
 
     needsContext() {
         return this.options.needs_context;
+    }
+
+    needsSource() {
+        return this.options.needs_source;
     }
 
     getSafe(functionArgs: TwingNode) {

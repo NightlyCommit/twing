@@ -1,5 +1,17 @@
 import {TwingError} from "./error";
 import {TwingSource} from "./source";
+import {TwingFilter} from "./filter";
+
+export type TwingCallableWrapperOptions = {
+    needs_environment?: boolean;
+    needs_context?: boolean;
+    needs_source?: boolean;
+    is_variadic?: boolean;
+    is_safe?: Array<any>;
+    is_safe_callback?: Function;
+    deprecated?: string;
+    alternative?: TwingFilter;
+}
 
 export abstract class TwingCallableWrapper {
     readonly name: string;

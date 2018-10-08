@@ -61,6 +61,7 @@ tape.test('library', function (test) {
         'TwingLoaderArray',
         'TwingLoaderChain',
         'TwingLoaderFilesystem',
+        'TwingLoaderRelativeFilesystem',
         'TwingMarkup',
         'TwingNode',
         'TwingNodeAutoEscape',

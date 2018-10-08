@@ -1,17 +1,13 @@
 import {TwingNodeExpression} from "./node/expression";
 import {TwingNode} from "./node";
 import {TwingNodeExpressionTest} from "./node/expression/test";
-import {TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
 
 const merge = require('merge');
 
-export type TwingTestOptions = {
-    is_variadic?: boolean;
+export type TwingTestOptions = TwingCallableWrapperOptions & {
     node_factory?: Function;
-    deprecated?: string;
-    alternative?: TwingTest;
-    need_context?: boolean;
-}
+};
 
 export class TwingTest extends TwingCallableWrapper {
     private options: TwingTestOptions;
