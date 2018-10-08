@@ -1,3 +1,11 @@
+2.1.0
+
+ * #280 - Documentation doesn't build anymore
+ * #9 - Rewrite varDump helper
+ * #277 - Add core support for template-relative resolving
+ * #227 - date filter doesn't support all required format
+ * #274 - CHANGELOG not up-to-date
+
 2.0.0
 
  * #267 - Update documentation
