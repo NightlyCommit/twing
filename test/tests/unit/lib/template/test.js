@@ -4,7 +4,9 @@ const {
     TwingLoaderArray,
     TwingSource,
     TwingErrorRuntime,
-    TwingOutputBuffering
+    TwingOutputBuffering,
+    TwingErrorLoader,
+    TwingLoaderChain
 } = require("../../../../../build");
 
 const test = require('tape');
@@ -23,6 +25,26 @@ class TwingTestTemplateTemplate extends TwingTemplate {
 
     doDisplay(context, blocks) {
         TwingOutputBuffering.echo('foo');
+    }
+}
+
+class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
+    constructor() {
+        super(new TwingEnvironment(new TwingLoaderChain([
+            new TwingLoaderArray({})
+        ])));
+    }
+
+    getTemplateName() {
+        return 'foo';
+    }
+
+    doDisplay(context, blocks) {
+        this.loadTemplate('not_found', 'foo');
+    }
+
+    getSourceContext() {
+        return new TwingSource('code', 'foo', 'path');
     }
 }
 
@@ -126,6 +148,23 @@ test('template', function (test) {
             test.true(e instanceof Error);
             test.same(e.message, 'Cannot read property \'loadTemplate\' of null')
         }
+
+        test.test('should return an error with full source information when templateName is set', (test) => {
+            let template = new TwingTestTemplateTemplateWithInvalidLoadTemplate();
+
+            try {
+                template.display({});
+
+                test.fail('should throw an Error');
+            }
+            catch (e) {
+                test.true(e instanceof TwingErrorLoader);
+                test.same(e.message, 'Template "not_found" is not defined in "foo".');
+                test.same(e.getSourceContext(), new TwingSource('code', 'foo', 'path'));
+            }
+
+            test.end();
+        });
 
         test.end();
     });

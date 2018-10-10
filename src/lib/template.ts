@@ -306,7 +306,9 @@ export abstract class TwingTemplate {
         catch (e) {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
-                    e.setSourceContext(templateName ? new TwingSource('', templateName) : this.getSourceContext());
+                    let source = this.getSourceContext();
+
+                    e.setSourceContext(templateName ? new TwingSource(source.getCode(), templateName, source.getPath()) : source);
                 }
 
                 if (e.getTemplateLine() !== -1) {
