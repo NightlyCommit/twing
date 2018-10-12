@@ -1,3 +1,8 @@
+2.1.1
+
+ * #284 - Uncaught TwingErrorSyntax: An exception has been thrown during the compilation of a template ("parseFunction is not a function")
+ * #282 - Template code and path not send to TwingError when TwingTemplate#loadTemplate is called with a template name
+
 2.1.0
 
  * #280 - Documentation doesn't build anymore
