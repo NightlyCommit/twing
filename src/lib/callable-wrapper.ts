@@ -10,7 +10,6 @@ export type TwingCallableWrapperOptions = {
     is_safe?: Array<any>;
     is_safe_callback?: Function;
     deprecated?: string;
-    alternative?: TwingFilter;
 }
 
 export abstract class TwingCallableWrapper {

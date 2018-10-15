@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "outDir": "build",
+    "module": "es6",
+    "moduleResolution": "node",
+    "noEmitOnError": true
+  },
+  "include": [
+    "**/test.ts"
+  ]
+}

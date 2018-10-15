@@ -7,6 +7,7 @@ let merge = require('merge');
 
 export type TwingFilterOptions = TwingCallableWrapperOptions & {
     expression_factory?: Function;
+    alternative?: TwingFilter;
     pre_escape?: string;
     preserves_safety?: Array<string>;
 }
