@@ -7,6 +7,7 @@ const merge = require('merge');
 
 export type TwingTestOptions = TwingCallableWrapperOptions & {
     node_factory?: Function;
+    alternative?: TwingTest;
 };
 
 export class TwingTest extends TwingCallableWrapper {

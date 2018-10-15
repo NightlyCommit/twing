@@ -30,11 +30,13 @@
     "postbuild": "replace-in-file '__VERSION__' $npm_package_version build/**/*",
     "pretest": "npm run build",
     "pretest:browser": "npm run pretest",
+    "pretest:types": "npm run pretest && rimraf test/tests/types/build",
     "prepack": "npm run build -- --sourceMap false && npm run bundle && mv build/* .",
     "postpack": "rimraf lib dist browser.* index.*",
     "test": "npm run fastest:all",
     "test:browser": "npm run fastest:integration:browser",
     "test:docs": "cd docs && bundle exec jekyll build",
+    "test:types": "tsc --project test/tests/types",
     "fastest:all": "tape 'test/tests/**/test.js' | tap-bail | tap-spec",
     "fastest:integration": "tape test/tests/integration/**/test.js | tap-bail | tap-spec",
     "fastest:integration:browser": "node test/tests/integration/browser.js | browserify - --basedir ./test -t [ stringify --extensions [.html .twig] ] | tape-run --render='tap-spec'",
@@ -90,7 +92,7 @@
     "tap-spec": "^5.0.0",
     "tape": "^4.9.0",
     "tape-run": "^4.0.0",
-    "typescript": "^2.8.1",
+    "typescript": "^3.1.3",
     "uglifyify": "^5.0.1"
   }
 }
