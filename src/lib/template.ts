@@ -339,6 +339,10 @@ export abstract class TwingTemplate {
     }
 
     display(context: any, blocks: Map<string, Array<any>> = new Map()) {
+        if (context === null) {
+            throw new TypeError('Argument 1 passed to TwingTemplate::display() must be an iterator, null given');
+        }
+
         if (!(context instanceof Map)) {
             context = iteratorToMap(context);
         }
