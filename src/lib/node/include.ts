@@ -80,7 +80,7 @@ export class TwingNodeInclude extends TwingNode {
         }
         else if (this.getAttribute('only') === false) {
             compiler
-                .raw('Runtime.twingArrayMerge(context, ')
+                .raw('Runtime.merge(context, ')
                 .subcompile(this.getNode('variables'))
                 .raw(')')
             ;
