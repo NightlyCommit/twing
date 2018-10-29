@@ -1,3 +1,8 @@
+2.1.2
+
+ * #289 - "include" tag uses merge filter instead of merge helper
+ * #286 - Types are incorrect - i.e. impossible to build against Twing
+
 2.1.1
 
  * #284 - Uncaught TwingErrorSyntax: An exception has been thrown during the compilation of a template ("parseFunction is not a function")
