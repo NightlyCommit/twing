@@ -36,6 +36,10 @@ let twing = new TwingEnvironment(loader);
 let output = twing.render('index.twig', {name: 'Fabien'});
 ```
 
+### Usage with Express
+
+Twing and Express work quite well together. Have a look at the [documentation](http://ericmorand.github.io/twing/intro.html#real-world-example-using-express) for an example of usage with Express.
+
 ## Browser support
 
 Starting with version 2.0.0, Twing can be used in web browsers with very few compromise. Filesystem components are obviously not available (namely filesystem loader and cache) but everything else is fully supported.
