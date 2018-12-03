@@ -36,7 +36,7 @@ let twing = new TwingEnvironment(loader);
 let output = twing.render('index.twig', {name: 'Fabien'});
 ```
 
-### Usage with Express
+## Usage with Express
 
 Twing and Express work quite well together. Have a look at the [documentation](http://ericmorand.github.io/twing/intro.html#real-world-example-using-express) for an example of usage with Express.
 
