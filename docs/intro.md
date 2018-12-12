@@ -59,6 +59,8 @@ let ouput = twing.render('index.html', {'name': 'Fabien'});
 
 ### Real-world example using Express
 
+_Credit for this example goes to [stela5](https://github.com/stela5)._
+
    1. Create working directory and initialize dependencies:
 
         ```
