@@ -149,7 +149,8 @@ export class TwingProfilerProfile {
 
     reset() {
         this.profiles = [];
-        this.starts = this.ends = new Map();
+        this.starts = new Map();
+        this.ends = new Map();
         this.enter();
     }
 }

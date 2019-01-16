@@ -126,7 +126,8 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
      */
     prependPath(path: string, namespace: string = TwingLoaderFilesystem.MAIN_NAMESPACE) {
         // invalidate the cache
-        this.cache = this.errorCache = new Map();
+        this.cache = new Map();
+        this.errorCache = new Map();
 
         let checkPath = this.isAbsolutePath(path) ? path : nodePath.join(this.rootPath, path);
 
