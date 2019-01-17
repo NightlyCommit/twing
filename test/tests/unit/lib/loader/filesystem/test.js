@@ -344,6 +344,35 @@ tap.test('loader filesystem', function (test) {
         test.end();
     });
 
+    test.test('addPath and prependPath should reset the caches', function (test) {
+        test.test('template cache and error cache should be separate objects', function(test) {
+            // @see https://github.com/ericmorand/twing/issues/300
+            let loader = new TwingLoaderFilesystem(fixturesPath);
+
+            loader.prependPath(nodePath.join(fixturesPath, 'normal'));
+
+            try {
+                loader.getCacheKey('not-found.html');
+            }
+            catch (e) {
+                // at that point, the error cache contains an entry for "not-found.html"
+            }
+
+            try {
+                loader.getCacheKey('not-found.html');
+
+                test.fail('The template cache has been polluted by the previous error');
+            }
+            catch (e) {
+                test.pass('The template cache has not been polluted by the previous error');
+            }
+
+            test.end();
+        });
+
+        test.end();
+    });
+
     test.test('exists', function (test) {
         let loader = new TwingLoaderFilesystem(fixturesPath);
 
