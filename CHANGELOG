@@ -1,3 +1,7 @@
+2.1.4
+
+ * #308 Source map for spaceless tag is still faulty in some case
+
 2.1.3
 
  * #303 Incorrect souce map when spaceless tag is used
