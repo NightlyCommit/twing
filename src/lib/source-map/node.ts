@@ -1,140 +1,88 @@
-import {Mapping} from "source-map";
+import {SourceNode} from "source-map";
 
-export type Position = {
-    line: number, // 0-based
-    column: number // 0-based
+export interface TwingSourceMapNodeConstructor {
+    new(line: number, column: number, source: string, name: string): TwingSourceMapNode;
 }
 
 export class TwingSourceMapNode {
-    protected name: string;
-    protected source: string;
-    protected originalPosition: Position;
-    protected parent: TwingSourceMapNode;
-    protected children: TwingSourceMapNode[];
-    protected content: string;
-    protected cursor: Position;
+    protected _name: string;
+    protected _source: string;
+    protected _line: number;
+    protected _column: number;
+    protected _parent: TwingSourceMapNode;
+    protected _children: TwingSourceMapNode[];
+    protected _content: string;
 
     /**
-     * TwingSourceMapTreeNode constructor
+     * TwingSourceMapNode constructor
      *
-     * @param {string} type
-     * @param {string} source
      * @param {number} line 0-based
      * @param {number} column 0-based
+     * @param {string} source
+     * @param {string} name
      */
-    constructor(name: string, source: string, line: number, column: number) {
-        this.name = name;
-        this.source = source;
-        this.originalPosition = {
-            line: line,
-            column: column
-        };
-        this.content = null;
-        this.parent = null;
-        this.children = [];
-        this.cursor = {
-            line: 0,
-            column: 0
-        };
+    constructor(line: number, column: number, source: string, name: string) {
+        this._name = name;
+        this._source = source;
+        this._line = line;
+        this._column = column;
+        this._content = null;
+        this._parent = null;
+        this._children = [];
     }
 
-    getName() {
-        return this.name;
+    get name() {
+        return this._name;
     }
 
-    getSource() {
-        return this.source;
+    get source() {
+        return this._source;
     }
 
-    getOriginalPosition(): Position {
-        return this.originalPosition;
+    get line() {
+        return this._line
     }
 
-    getContent(): string {
-        return this.content;
+    get column() {
+        return this._column;
     }
 
-    getParent() {
-        return this.parent;
+    get content(): string {
+        return this._content;
     }
 
-    getChildren() {
-        return this.children;
+    get parent() {
+        return this._parent;
     }
 
-    getCursor() {
-        return this.cursor;
+    get children() {
+        return this._children;
+    }
+
+    set content(content: string) {
+        this._content = content;
     }
 
     addChild(child: TwingSourceMapNode) {
-        child.parent = this;
+        child._parent = this;
 
-        this.children.push(child);
+        this._children.push(child);
     }
 
-    setContent(content: string | false) {
-        if (content !== false) {
-            this.content = content;
+    toSourceNode(): SourceNode {
+        let chunks: string | SourceNode | (string | SourceNode)[] = null;
+
+        if (this._children.length === 0) {
+            chunks = this._content;
         }
-        else {
-            this.content = null;
+
+        // source-map@6 types are faulty, we have to force-type chunks as any
+        let sourceNode = new SourceNode(this._line, this._column, this._source, chunks as any, this._name);
+
+        for (let child of this._children) {
+            sourceNode.add(child.toSourceNode() as any);
         }
-    }
 
-    /**
-     * Returns the mappings starting from this node.
-     *
-     * @returns {Array<Mapping>}
-     */
-    toMappings(): Array<Mapping> {
-        let proceedNode = (node: TwingSourceMapNode, parentCursor: Position): Array<Mapping> => {
-            let nodeCursor: Position = node.getCursor();
-
-            nodeCursor.line = parentCursor.line;
-            nodeCursor.column = parentCursor.column;
-
-            let mappings: Array<Mapping> = [];
-            let originalPosition: Position = node.getOriginalPosition();
-
-            mappings.push({
-                name: node.getName(),
-                source: node.getSource(),
-                original: {
-                    line: originalPosition.line + 1,
-                    column: originalPosition.column
-                },
-                generated: {
-                    line: parentCursor.line + 1,
-                    column: parentCursor.column
-                }
-            });
-
-            for (let child of node.getChildren()) {
-                let childMappings: Array<Mapping> = proceedNode(child, node.getCursor());
-
-                for (let mapping of childMappings) {
-                    mappings.push(mapping);
-                }
-            }
-
-            let lines: Array<string> = node.getContent().split('\n');
-            let lastLine: string = lines[lines.length - 1];
-
-            if (lines.length > 1) {
-                parentCursor.line += (lines.length - 1);
-                parentCursor.column = 0;
-            }
-
-            parentCursor.column += lastLine.length;
-
-            return mappings;
-        };
-
-        // send a virtual cursor since the parent is out of the scope
-        // - i.e we are generating the mappings starting from this node
-        return proceedNode(this, {
-            line: 0,
-            column: 0
-        });
+        return sourceNode;
     }
 }

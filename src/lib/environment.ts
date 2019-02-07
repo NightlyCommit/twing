@@ -6,7 +6,8 @@ import {
     twingConstant,
     twingEnsureTraversable,
     TwingExtensionCore,
-    twingGetAttribute, twingInFilter
+    twingGetAttribute,
+    twingInFilter
 } from "./extension/core";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingFilter} from "./filter";
@@ -28,17 +29,15 @@ import {TwingLoaderArray} from "./loader/array";
 import {TwingLoaderChain} from "./loader/chain";
 import {TwingExtensionOptimizer} from "./extension/optimizer";
 import {TwingCompiler} from "./compiler";
-import {TwingNode, TwingNodeType} from "./node";
+import {TwingNode} from "./node";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
-import {merge as twingMerge} from "./helper/merge";
+import {merge as twingMerge, merge} from "./helper/merge";
 import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
 import {EventEmitter} from 'events';
-import {SourceMapGenerator} from "source-map";
-import {TwingSourceMapNode} from "./source-map/node";
 import {echo, flush, obEndClean, obGetClean, obGetContents, obStart, TwingOutputBuffering} from "./output-buffering";
 import {clone} from "./helper/clone";
 import {compare} from "./helper/compare";
@@ -51,12 +50,12 @@ import {iteratorToMap} from "./helper/iterator-to-map";
 import {regexParser} from "./helper/regex-parser";
 import {TwingMarkup} from "./markup";
 import {range} from "./helper/range";
-import {merge} from "./helper/merge";
 import {TwingProfilerProfile} from "./profiler/profile";
 import {TwingSandboxSecurityError} from "./sandbox/security-error";
 import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
 import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
+import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
 
 const path = require('path');
 const crypto = require('crypto');
@@ -1054,13 +1053,13 @@ return module.exports;
     }
 
     /**
-     *
      * @param {number} line 0-based
      * @param {number} column 1-based
      * @param {string} name
      * @param {string} source
+     * @param {TwingSourceMapNodeConstructor} ctor
      */
-    enterSourceMapBlock(line: number, column: number, name: string, source: string) {
+    enterSourceMapBlock(line: number, column: number, name: string, source: string, ctor: TwingSourceMapNodeConstructor) {
         TwingOutputBuffering.obStart();
 
         source = path.relative('.', source);
@@ -1069,7 +1068,7 @@ return module.exports;
             source = path.join(this.sourceMap, source);
         }
 
-        let node = new TwingSourceMapNode(name, source, line - 1, column - 1);
+        let node = new ctor(line, column - 1, source, name);
 
         if (this.sourceMapNode) {
             this.sourceMapNode.addChild(node);
@@ -1079,9 +1078,9 @@ return module.exports;
     }
 
     leaveSourceMapBlock() {
-        this.sourceMapNode.setContent(TwingOutputBuffering.obGetFlush());
+        this.sourceMapNode.content = TwingOutputBuffering.obGetFlush() as string;
 
-        let parent = this.sourceMapNode.getParent();
+        let parent = this.sourceMapNode.parent;
 
         if (parent) {
             this.sourceMapNode = parent;
@@ -1092,15 +1091,11 @@ return module.exports;
         let sourceMap: string = null;
 
         if (this.isSourceMap() && this.sourceMapNode) {
-            let generator = new SourceMapGenerator();
+            let sourceNode = this.sourceMapNode.toSourceNode();
 
-            let mappings = this.sourceMapNode.toMappings();
+            let codeAndMap = sourceNode.toStringWithSourceMap();
 
-            for (let mapping of mappings) {
-                generator.addMapping(mapping);
-            }
-
-            sourceMap = generator.toString();
+            sourceMap = codeAndMap.map.toString();
         }
 
         return sourceMap;

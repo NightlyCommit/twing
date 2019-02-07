@@ -165,6 +165,7 @@ tap.test('browser library', function (test) {
         'TwingSandboxSecurityPolicy',
         'TwingSource',
         'TwingSourceMapNode',
+        'TwingSourceMapNodeSpaceless',
         'TwingTemplate',
         'TwingTemplateWrapper',
         'TwingTest',

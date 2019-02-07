@@ -28,6 +28,7 @@ const {SourceMapConsumer} = require('source-map');
 const tap = require('tape');
 const sinon = require('sinon');
 const tmp = require('tmp');
+const {join} = require('path');
 
 function escapingStrategyCallback(name) {
     return name;
@@ -274,8 +275,7 @@ tap.test('environment', function (test) {
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.false(twing.getGlobals()['bar']);
         }
 
@@ -287,8 +287,7 @@ tap.test('environment', function (test) {
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.false(twing.getGlobals()['bar']);
         }
 
@@ -301,8 +300,7 @@ tap.test('environment', function (test) {
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.false(twing.getGlobals()['bar']);
         }
 
@@ -312,8 +310,7 @@ tap.test('environment', function (test) {
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.false(twing.getGlobals()['bar']);
         }
 
@@ -444,8 +441,7 @@ tap.test('environment', function (test) {
         sinon.stub(cache, 'load').callsFake((key) => {
             if (firstKey) {
                 secondKey = key;
-            }
-            else {
+            } else {
                 firstKey = key;
             }
 
@@ -977,29 +973,30 @@ tap.test('environment', function (test) {
     });
 
     test.test('source map support', (test) => {
-        let fixturesPath = 'test/tests/unit/lib/environment/fixtures/css';
+        let fixturesPath = 'test/tests/unit/lib/environment/fixtures';
 
         let loader = new TwingLoaderFilesystem(fixturesPath);
-        loader.addPath(fixturesPath, 'Css');
+        loader.addPath(join(fixturesPath, 'css'), 'Css');
 
-        let indexSource = fixturesPath + '/index.css.twig';
-        let colorSource = fixturesPath + '/partial/color.css.twig';
-        let backgroundSource = fixturesPath + '/partial/background.css.twig';
+        let indexSource = join(fixturesPath, 'css', 'index.css.twig');
+        let colorSource = join(fixturesPath, 'css', 'partial/color.css.twig');
+        let backgroundSource = join(fixturesPath, 'css', 'partial/background.css.twig');
 
         test.test('when source_map is set to true', (test) => {
             let env = new TwingEnvironment(loader, {
-                source_map: true
+                source_map: true,
+                cache: 'tmp/sm'
             });
 
             // 1.foo {
             // 2    text-align: right;
             // 3    color: whitesmoke;
             // 4    background-color: brown;
-            // 5    background-image: url("foo.png");
+            // 5background-image: url("foo.png");
             // 6    display: block;
             // 7}
 
-            env.render('index.css.twig', {
+            env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1007,11 +1004,19 @@ tap.test('environment', function (test) {
 
             test.same(typeof map, 'string');
 
-            let consumer = new SourceMapConsumer(JSON.parse(map));
+            let consumer = new SourceMapConsumer(map);
+
             let mappings = [];
 
             consumer.eachMapping((mapping) => {
-                mappings.push(mapping);
+                mappings.push({
+                    source: mapping.source,
+                    generatedLine: mapping.generatedLine,
+                    generatedColumn: mapping.generatedColumn,
+                    originalLine: mapping.originalLine,
+                    originalColumn: mapping.originalColumn,
+                    name: mapping.name
+                });
             });
 
             test.same(
@@ -1023,11 +1028,11 @@ tap.test('environment', function (test) {
                         generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
-                        name: 'module'
+                        name: 'text'
                     },
                     {
                         source: indexSource,
-                        generatedLine: 1,
+                        generatedLine: 2,
                         generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
@@ -1052,18 +1057,10 @@ tap.test('environment', function (test) {
                     {
                         source: indexSource,
                         generatedLine: 3,
-                        generatedColumn: 11,
-                        originalLine: 3,
-                        originalColumn: 14,
-                        name: 'include'
-                    },
-                    {
-                        source: colorSource,
-                        generatedLine: 3,
-                        generatedColumn: 11,
-                        originalLine: 1,
-                        originalColumn: 0,
-                        name: 'module'
+                        generatedColumn: 0,
+                        originalLine: 2,
+                        originalColumn: 27,
+                        name: 'text'
                     },
                     {
                         source: colorSource,
@@ -1078,16 +1075,16 @@ tap.test('environment', function (test) {
                         generatedLine: 3,
                         generatedColumn: 21,
                         originalLine: 3,
-                        originalColumn: 49,
+                        originalColumn: 53,
                         name: 'text'
                     },
                     {
                         source: indexSource,
                         generatedLine: 4,
-                        generatedColumn: 4,
-                        originalLine: 4,
-                        originalColumn: 7,
-                        name: 'include'
+                        generatedColumn: 0,
+                        originalLine: 3,
+                        originalColumn: 53,
+                        name: 'text'
                     },
                     {
                         source: backgroundSource,
@@ -1095,12 +1092,12 @@ tap.test('environment', function (test) {
                         generatedColumn: 4,
                         originalLine: 1,
                         originalColumn: 0,
-                        name: 'module'
+                        name: 'text'
                     },
                     {
                         source: backgroundSource,
-                        generatedLine: 4,
-                        generatedColumn: 4,
+                        generatedLine: 5,
+                        generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
                         name: 'text'
@@ -1108,6 +1105,14 @@ tap.test('environment', function (test) {
                     {
                         source: indexSource,
                         generatedLine: 6,
+                        generatedColumn: 0,
+                        originalLine: 5,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: indexSource,
+                        generatedLine: 7,
                         generatedColumn: 0,
                         originalLine: 5,
                         originalColumn: 0,
@@ -1124,7 +1129,7 @@ tap.test('environment', function (test) {
                 source_map: false
             });
 
-            env.render('index.css.twig', {
+            env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1144,11 +1149,11 @@ tap.test('environment', function (test) {
             // 2    text-align: right;
             // 3    color: whitesmoke;
             // 4    background-color: brown;
-            // 5    background-image: url("foo.png");
+            // 5background-image: url("foo.png");
             // 6    display: block;
             // 7}
 
-            env.render('index.css.twig', {
+            env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1156,17 +1161,24 @@ tap.test('environment', function (test) {
 
             test.same(typeof map, 'string');
 
-            let consumer = new SourceMapConsumer(JSON.parse(map));
+            indexSource = 'foo/' + indexSource;
+            colorSource = 'foo/' + colorSource;
+            backgroundSource = 'foo/' + backgroundSource;
+
+            let consumer = new SourceMapConsumer(map);
 
             let mappings = [];
 
             consumer.eachMapping((mapping) => {
-                mappings.push(mapping);
+                mappings.push({
+                    source: mapping.source,
+                    generatedLine: mapping.generatedLine,
+                    generatedColumn: mapping.generatedColumn,
+                    originalLine: mapping.originalLine,
+                    originalColumn: mapping.originalColumn,
+                    name: mapping.name
+                });
             });
-
-            indexSource = 'foo/' + indexSource;
-            colorSource = 'foo/' + colorSource;
-            backgroundSource = 'foo/' + backgroundSource;
 
             test.same(
                 mappings,
@@ -1177,11 +1189,11 @@ tap.test('environment', function (test) {
                         generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
-                        name: 'module'
+                        name: 'text'
                     },
                     {
                         source: indexSource,
-                        generatedLine: 1,
+                        generatedLine: 2,
                         generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
@@ -1206,18 +1218,10 @@ tap.test('environment', function (test) {
                     {
                         source: indexSource,
                         generatedLine: 3,
-                        generatedColumn: 11,
-                        originalLine: 3,
-                        originalColumn: 14,
-                        name: 'include'
-                    },
-                    {
-                        source: colorSource,
-                        generatedLine: 3,
-                        generatedColumn: 11,
-                        originalLine: 1,
-                        originalColumn: 0,
-                        name: 'module'
+                        generatedColumn: 0,
+                        originalLine: 2,
+                        originalColumn: 27,
+                        name: 'text'
                     },
                     {
                         source: colorSource,
@@ -1232,16 +1236,16 @@ tap.test('environment', function (test) {
                         generatedLine: 3,
                         generatedColumn: 21,
                         originalLine: 3,
-                        originalColumn: 49,
+                        originalColumn: 53,
                         name: 'text'
                     },
                     {
                         source: indexSource,
                         generatedLine: 4,
-                        generatedColumn: 4,
-                        originalLine: 4,
-                        originalColumn: 7,
-                        name: 'include'
+                        generatedColumn: 0,
+                        originalLine: 3,
+                        originalColumn: 53,
+                        name: 'text'
                     },
                     {
                         source: backgroundSource,
@@ -1249,12 +1253,12 @@ tap.test('environment', function (test) {
                         generatedColumn: 4,
                         originalLine: 1,
                         originalColumn: 0,
-                        name: 'module'
+                        name: 'text'
                     },
                     {
                         source: backgroundSource,
-                        generatedLine: 4,
-                        generatedColumn: 4,
+                        generatedLine: 5,
+                        generatedColumn: 0,
                         originalLine: 1,
                         originalColumn: 0,
                         name: 'text'
@@ -1262,6 +1266,14 @@ tap.test('environment', function (test) {
                     {
                         source: indexSource,
                         generatedLine: 6,
+                        generatedColumn: 0,
+                        originalLine: 5,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: indexSource,
+                        generatedLine: 7,
                         generatedColumn: 0,
                         originalLine: 5,
                         originalColumn: 0,
@@ -1305,7 +1317,7 @@ tap.test('environment', function (test) {
                 cache: new CustomCache()
             });
 
-            env.render('index.css.twig');
+            env.render('css/index.css.twig');
 
             let sourceMap = env.getSourceMap();
 
@@ -1313,12 +1325,129 @@ tap.test('environment', function (test) {
             test.end();
         });
 
-        test.end();
-    });
+        test.test('with spaceless tag', (test) => {
+            let env = new TwingEnvironment(loader, {
+                source_map: true,
+                cache: 'tmp/spaceless',
+                auto_reload: true
+            });
 
-    test.test('version', (test) => {
-        test.comment('VERSION SUPPORT');
+            indexSource = join(fixturesPath, 'spaceless', 'index.html.twig');
 
+            // 1.foo
+            // 2.bar
+            // 3.    <foo><FOO>FOO
+            // 4.BAROOF</FOO></foo>oof
+
+            let render = env.render('spaceless/index.html.twig', {
+                bar: 'bar'
+            });
+
+            test.same(render, `foo
+bar
+    <foo><FOO>FOO
+BAROOF</FOO></foo>oof`);
+
+            let map = env.getSourceMap();
+
+            test.same(typeof map, 'string');
+
+            let consumer = new SourceMapConsumer(map);
+
+
+            let mappings = [];
+
+            consumer.eachMapping((mapping) => {
+                mappings.push({
+                    source: mapping.source,
+                    generatedLine: mapping.generatedLine,
+                    generatedColumn: mapping.generatedColumn,
+                    originalLine: mapping.originalLine,
+                    originalColumn: mapping.originalColumn,
+                    name: mapping.name
+                });
+            });
+
+            test.same(
+                mappings,
+                [
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 1,
+                        generatedColumn: 0,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 2,
+                        generatedColumn: 0,
+                        originalLine: 3,
+                        originalColumn: 4,
+                        name: 'print'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 2,
+                        generatedColumn: 3,
+                        originalLine: 3,
+                        originalColumn: 13,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 3,
+                        generatedColumn: 0,
+                        originalLine: 3,
+                        originalColumn: 13,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
+                        generatedLine: 3,
+                        generatedColumn: 9,
+                        originalLine: 1,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
+                        generatedLine: 4,
+                        generatedColumn: 0,
+                        originalLine: 3,
+                        originalColumn: 4,
+                        name: 'print'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
+                        generatedLine: 4,
+                        generatedColumn: 3,
+                        originalLine: 5,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 4,
+                        generatedColumn: 12,
+                        originalLine: 6,
+                        originalColumn: 0,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 4,
+                        generatedColumn: 18,
+                        originalLine: 8,
+                        originalColumn: 0,
+                        name: 'text'
+                    }
+                ]
+            );
+
+            test.end();
+        });
 
         test.end();
     });

@@ -1,0 +1,8 @@
+foo
+{% spaceless %}
+    {{ bar }}
+    <foo>
+        {% include "spaceless/partials/foo.html.twig" %}
+    </foo>
+{% endspaceless %}
+oof

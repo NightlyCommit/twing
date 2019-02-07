@@ -1,5 +1,5 @@
-const {TwingNode} = require('../../../../../build/lib/node');
-
+const {TwingNode, TwingNodeType} = require('../../../../../build/lib/node');
+const {TwingNodeText} = require('../../../../../build/lib/node/text');
 const {TwingCompiler} = require('../../../../../build/lib/compiler');
 const MockEnvironement = require('../../../../mock/environment');
 const MockLoader = require('../../../../mock/loader');
@@ -10,8 +10,8 @@ const tap = require('tape');
 tap.test('compiler', function (test) {
     test.test('subcompile method', function (test) {
         let node = new TwingNode(new Map([
-            [0, new TwingNodeExpressionConstant(1, 1)]
-        ]), new Map(), 1, 'foo');
+            [0, new TwingNodeExpressionConstant(1, 1, 1)]
+        ]), new Map(), 1, 1, 'foo');
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
         test.same(compiler.compile(node).indent().subcompile(node).getSource(), '11', 'doesn\'t add indentation when raw is not set');
@@ -22,7 +22,7 @@ tap.test('compiler', function (test) {
     });
 
     test.test('string method', function (test) {
-        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
@@ -34,7 +34,7 @@ tap.test('compiler', function (test) {
     });
 
     test.test('repr method', function (test) {
-        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
@@ -46,13 +46,47 @@ tap.test('compiler', function (test) {
     });
 
     test.test('outdent method', function(test) {
-        let node = new TwingNode(new Map(), new Map(), 1, 'foo');
+        let node = new TwingNode(new Map(), new Map(), 1, 1, 'foo');
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
         test.throws(function(){
             compiler.compile(node).outdent();
         }, new Error('Unable to call outdent() as the indentation would become negative.'), 'throws an error if the indentation becomes negative');
+
+        test.end();
+    });
+
+    test.test('addSourceMapEnter', function(test) {
+        let compiler = new TwingCompiler(new MockEnvironement(new MockLoader, {
+            source_map: true
+        }));
+
+        class CustomNode extends TwingNode {
+            constructor(line, column) {
+                super(new Map(), new Map(), line, column);
+
+                this.type = TwingNodeType.BODY;
+            }
+
+            compile(compiler) {
+                compiler.addSourceMapEnter(this);
+            }
+        }
+
+        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceMapSource(), this.extensions.get(\'TwingExtensionCore\').getSourceMapNodeConstructor(\'body\'));\n');
+
+        test.test('supports a custom source map node constructor', function (test) {
+            class CustomNodeWithSourceMapNodeConstructor extends CustomNode {
+                compile(compiler) {
+                    compiler.addSourceMapEnter(this, 'Foo');
+                }
+            }
+
+            test.same(compiler.compile(new CustomNodeWithSourceMapNodeConstructor(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceMapSource(), Foo);\n');
+
+            test.end();
+        });
 
         test.end();
     });
