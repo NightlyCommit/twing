@@ -1,3 +1,9 @@
+2.1.3
+
+ * #303 Incorrect souce map when spaceless tag is used
+ * #302 TwingErrorSyntax: Unknown "dump" function
+ * #300 Probable bug in TwingFileSystemLoader
+
 2.1.2
 
  * #289 - "include" tag uses merge filter instead of merge helper
