@@ -984,8 +984,7 @@ tap.test('environment', function (test) {
 
         test.test('when source_map is set to true', (test) => {
             let env = new TwingEnvironment(loader, {
-                source_map: true,
-                cache: 'tmp/sm'
+                source_map: true
             });
 
             // 1.foo {
@@ -1327,23 +1326,23 @@ tap.test('environment', function (test) {
 
         test.test('with spaceless tag', (test) => {
             let env = new TwingEnvironment(loader, {
-                source_map: true,
-                cache: 'tmp/spaceless',
-                auto_reload: true
+                source_map: true
             });
 
             indexSource = join(fixturesPath, 'spaceless', 'index.html.twig');
 
             // 1.foo
-            // 2.bar
-            // 3.    <foo><FOO>FOO
-            // 4.BAROOF</FOO></foo>oof
+            // 2.<foo></foo>
+            // 3.bar
+            // 5.    <foo><FOO>FOO
+            // 5.BAROOF</FOO></foo>oof
 
             let render = env.render('spaceless/index.html.twig', {
                 bar: 'bar'
             });
 
             test.same(render, `foo
+<foo></foo>
 bar
     <foo><FOO>FOO
 BAROOF</FOO></foo>oof`);
@@ -1384,28 +1383,36 @@ BAROOF</FOO></foo>oof`);
                         generatedLine: 2,
                         generatedColumn: 0,
                         originalLine: 3,
-                        originalColumn: 4,
-                        name: 'print'
-                    },
-                    {
-                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
-                        generatedLine: 2,
-                        generatedColumn: 3,
-                        originalLine: 3,
-                        originalColumn: 13,
+                        originalColumn: 0,
                         name: 'text'
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
                         generatedLine: 3,
                         generatedColumn: 0,
-                        originalLine: 3,
-                        originalColumn: 13,
+                        originalLine: 6,
+                        originalColumn: 0,
+                        name: 'print'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 3,
+                        generatedColumn: 3,
+                        originalLine: 6,
+                        originalColumn: 9,
+                        name: 'text'
+                    },
+                    {
+                        source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
+                        generatedLine: 4,
+                        generatedColumn: 0,
+                        originalLine: 6,
+                        originalColumn: 9,
                         name: 'text'
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
-                        generatedLine: 3,
+                        generatedLine: 4,
                         generatedColumn: 9,
                         originalLine: 1,
                         originalColumn: 0,
@@ -1413,7 +1420,7 @@ BAROOF</FOO></foo>oof`);
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
-                        generatedLine: 4,
+                        generatedLine: 5,
                         generatedColumn: 0,
                         originalLine: 3,
                         originalColumn: 4,
@@ -1421,7 +1428,7 @@ BAROOF</FOO></foo>oof`);
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/partials/foo.html.twig',
-                        generatedLine: 4,
+                        generatedLine: 5,
                         generatedColumn: 3,
                         originalLine: 5,
                         originalColumn: 0,
@@ -1429,17 +1436,17 @@ BAROOF</FOO></foo>oof`);
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
-                        generatedLine: 4,
+                        generatedLine: 5,
                         generatedColumn: 12,
-                        originalLine: 6,
+                        originalLine: 9,
                         originalColumn: 0,
                         name: 'text'
                     },
                     {
                         source: 'test/tests/unit/lib/environment/fixtures/spaceless/index.html.twig',
-                        generatedLine: 4,
+                        generatedLine: 5,
                         generatedColumn: 18,
-                        originalLine: 8,
+                        originalLine: 11,
                         originalColumn: 0,
                         name: 'text'
                     }
