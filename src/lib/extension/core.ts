@@ -5,7 +5,7 @@ import {TwingNodeExpressionBinaryAnd} from "../node/expression/binary/and";
 import {TwingTokenParserExtends} from "../token-parser/extends";
 import {TwingTokenParserFrom} from "../token-parser/from";
 import {TwingTokenParserMacro} from "../token-parser/macro";
-import {TwingNode} from "../node";
+import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpressionBinaryIn} from "../node/expression/binary/in";
 import {TwingTokenParserIf} from "../token-parser/if";
 import {TwingTokenParserSet} from "../token-parser/set";
@@ -91,6 +91,8 @@ import {first} from "../helper/first";
 import {TwingMarkup} from "../markup";
 import {isMap} from "../helper/is-map";
 import {TwingSource} from "../source";
+import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
+import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "../source-map/node";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -581,6 +583,21 @@ export class TwingExtensionCore extends TwingExtension {
                 }]
             ])
         ];
+    }
+
+    /**
+     * @param {TwingNodeType} type
+     * @returns {TwingSourceMapNodeConstructor}
+     */
+    getSourceMapNodeConstructor(type: TwingNodeType): TwingSourceMapNodeConstructor {
+        switch (type) {
+            case TwingNodeType.SPACELESS: {
+                return TwingSourceMapNodeSpaceless;
+            }
+            default: {
+                return TwingSourceMapNode;
+            }
+        }
     }
 }
 

@@ -158,6 +158,7 @@ export {TwingSandboxSecurityPolicy} from "./lib/sandbox/security-policy";
 export {TwingSandboxSecurityPolicyInterface} from "./lib/sandbox/security-policy-interface";
 export {TwingSource} from "./lib/source";
 export {TwingSourceMapNode} from "./lib/source-map/node";
+export {TwingSourceMapNodeSpaceless} from "./lib/source-map/node/spaceless";
 export {TwingTemplateWrapper} from "./lib/template-wrapper";
 export {TwingTemplate} from "./lib/template";
 export {TwingTest, TwingTestOptions} from "./lib/test";

@@ -168,6 +168,7 @@ tape.test('library', function (test) {
         'TwingSandboxSecurityPolicy',
         'TwingSource',
         'TwingSourceMapNode',
+        'TwingSourceMapNodeSpaceless',
         'TwingTemplate',
         'TwingTemplateWrapper',
         'TwingTest',

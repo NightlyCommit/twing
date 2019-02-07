@@ -145,6 +145,7 @@ export {TwingSandboxSecurityNotAllowedTagError} from "./lib/sandbox/security-not
 export {TwingSandboxSecurityPolicy} from "./lib/sandbox/security-policy";
 export {TwingSource} from "./lib/source";
 export {TwingSourceMapNode} from "./lib/source-map/node";
+export {TwingSourceMapNodeSpaceless} from "./lib/source-map/node/spaceless";
 export {TwingTemplateWrapper} from "./lib/template-wrapper";
 export {TwingTemplate} from "./lib/template";
 export {TwingTest} from "./lib/test";

@@ -2,6 +2,7 @@ import {TwingNode, TwingNodeType} from "../node";
 
 import {TwingCompiler} from "../compiler";
 import {TwingNodeOutputInterface} from "../node-output-interface";
+import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
 
 export class TwingNodeSpaceless extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
