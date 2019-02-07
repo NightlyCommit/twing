@@ -75,6 +75,8 @@ export class TwingSourceMapNodeSpaceless extends TwingSourceMapNode {
 
         for (let child of flattenedChildren) {
             if (!emptyRegex.test(child.content)) {
+                child.content = child.content.replace(/>\s+</g, '><');
+
                 if (closeTagNode) {
                     if (tagOpenRegex.test(child.content)) {
                         closeTagNode.content = closeTagNode.content.replace(/\s+$/, '');
