@@ -1,7 +1,7 @@
 import {TwingNodeExpression} from "./node/expression";
 import {TwingNode} from "./node";
 import {TwingNodeExpressionTest} from "./node/expression/test";
-import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapper, TwingCallableWrapperOptions} from "./callable-wrapper";
 
 const merge = require('merge');
 
@@ -12,6 +12,7 @@ export type TwingTestOptions = TwingCallableWrapperOptions & {
 
 export class TwingTest extends TwingCallableWrapper {
     private options: TwingTestOptions;
+    private methodArguments: Array<any> = [];
 
     /**
      * Creates a template test.
@@ -35,6 +36,14 @@ export class TwingTest extends TwingCallableWrapper {
 
     getNodeFactory() {
         return this.options.node_factory;
+    }
+
+    setArguments(someArguments: Array<any>) {
+        this.methodArguments = someArguments;
+    }
+
+    getArguments() {
+        return this.methodArguments;
     }
 
     isVariadic() {

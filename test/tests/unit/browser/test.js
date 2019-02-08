@@ -66,6 +66,7 @@ tap.test('browser library', function (test) {
         'TwingNodeBlockReference',
         'TwingNodeBody',
         'TwingNodeCheckSecurity',
+        'TwingNodeDeprecated',
         'TwingNodeDo',
         'TwingNodeEmbed',
         'TwingNodeExpression',

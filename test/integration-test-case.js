@@ -74,11 +74,6 @@ class TwingTestExtension extends TwingExtension {
             [i++, new TwingFilter('anon_foo', function (name) {
                 return '*' + name + '*';
             })],
-            [i++, new TwingFilter('async_foo', function (name) {
-                return new Promise((resolve) => {
-                    resolve('*' + name + '*');
-                });
-            })]
         ]);
     }
 
@@ -96,22 +91,13 @@ class TwingTestExtension extends TwingExtension {
             [i++, new TwingFunction('anon_foo', function (name) {
                 return '*' + name + '*';
             })],
-            [i++, new TwingFunction('async_foo', function (name) {
-                return new Promise((resolve) => {
-                    resolve('*' + name + '*');
-                })
-            })]
         ]);
     }
 
     getTests() {
         return [
             new TwingTest('multi word', this.is_multi_word),
-            new TwingTest('async_foo', function (value) {
-                return new Promise((resolve) => {
-                    resolve(value >= 0);
-                })
-            })
+            new TwingTest('test_*', this.dynamic_test)
         ];
     }
 
@@ -129,6 +115,10 @@ class TwingTestExtension extends TwingExtension {
 
     is_multi_word(value) {
         return value.indexOf(' ') > -1;
+    }
+
+    dynamic_test(element, item) {
+        return element === item;
     }
 
     __call(method, arguments_) {
@@ -258,20 +248,17 @@ module.exports = class TwingTestIntegrationTestCaseBase {
 
                         test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     console.warn(e);
 
                     test.fail(`should not throw an error (${e})`);
                 }
-            }
-            else {
+            } else {
                 try {
                     twing.render('index.twig', data);
 
                     test.fail(`should throw an error`);
-                }
-                catch (e) {
+                } catch (e) {
                     test.same(e.toString(), expectedErrorMessage, 'should throw an error');
                 }
             }

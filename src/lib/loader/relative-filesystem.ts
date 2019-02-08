@@ -74,7 +74,16 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
             throw new TwingErrorLoader(this.errorCache.get(name));
         }
 
-        this.validateName(name);
+        try {
+            this.validateName(name);
+        }
+        catch (e) {
+            if (!throw_) {
+                return null;
+            }
+
+            throw e;
+        }
 
         try {
             let stat: Stats = fs.statSync(name);
@@ -108,6 +117,8 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     protected validateName(name: string) {
         if (name.indexOf(`\0`) > -1) {
+            console.warn('NUL');
+
             throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
         }
     }

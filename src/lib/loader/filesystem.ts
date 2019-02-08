@@ -198,12 +198,21 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
             throw new TwingErrorLoader(this.errorCache.get(name));
         }
 
-        this.validateName(name);
-
         let namespace: string;
         let shortname: string;
 
-        [namespace, shortname] = this.parseName(name);
+        try {
+            this.validateName(name);
+
+            [namespace, shortname] = this.parseName(name);
+        }
+        catch (e) {
+            if (!throw_) {
+                return null;
+            }
+
+            throw e;
+        }
 
         if (!this.paths.has(namespace)) {
             this.errorCache.set(name, `There are no registered paths for namespace "${namespace}".`);
