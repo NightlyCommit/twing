@@ -93,6 +93,7 @@ import {isMap} from "../helper/is-map";
 import {TwingSource} from "../source";
 import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "../source-map/node";
+import {TwingTokenParserDeprecated} from "../token-parser/deprecated";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -226,7 +227,8 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingTokenParserFlush(),
             new TwingTokenParserDo(),
             new TwingTokenParserEmbed(),
-            new TwingTokenParserWith()
+            new TwingTokenParserWith(),
+            new TwingTokenParserDeprecated()
         ];
     }
 
@@ -315,7 +317,11 @@ export class TwingExtensionCore extends TwingExtension {
                 needs_environment: true,
                 is_safe: ['all']
             })],
-            [i++, new TwingFunction('source', twingSource, {needs_environment: true, needs_source: true, is_safe: ['all']})],
+            [i++, new TwingFunction('source', twingSource, {
+                needs_environment: true,
+                needs_source: true,
+                is_safe: ['all']
+            })],
         ]);
     }
 
@@ -1051,10 +1057,11 @@ export function twingLast(env: TwingEnvironment, item: any) {
  *
  * @param {Array<*>} value An array
  * @param {string} glue The separator
+ * @param {string | null} and The separator for the last pair
  *
  * @returns {string} The concatenated string
  */
-export function twingJoinFilter(value: Array<any>, glue: string = '') {
+export function twingJoinFilter(value: Array<any>, glue: string = '', and: string = null) {
     if (isNullOrUndefined(value)) {
         return '';
     }
@@ -1072,7 +1079,16 @@ export function twingJoinFilter(value: Array<any>, glue: string = '') {
             return item;
         });
 
-        return safeValue.join(glue);
+
+        if (and === null || and === glue) {
+            return safeValue.join(glue);
+        }
+
+        if (safeValue.length === 1) {
+            return safeValue[0];
+        }
+
+        return safeValue.slice(0, -1).join(glue) + and + safeValue[safeValue.length - 1];
     }
 
     return '';
@@ -1299,6 +1315,10 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
         }
     }
 
+    if (string === '') {
+        return '';
+    }
+
     if (charset === null) {
         charset = env.getCharset();
     }
@@ -1435,19 +1455,16 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
                  * Check if the current character to escape has a name entity we should
                  * replace it with while grabbing the hex value of the character.
                  */
-                let hex: string;
-
-                if (strlen(chr) == 1) {
-                    hex = ('00' + bin2hex(chr)).substr(-2,).toUpperCase();
-                }
-                else {
-                    hex = ('0000' + bin2hex(chr)).substr(-4).toUpperCase()
-                }
-
-                let int = parseInt(hex, 16);
+                let int = chr.codePointAt(0);
 
                 if (entityMap.has(int)) {
                     return `&${entityMap.get(int)};`;
+                }
+
+                let hex: string = int.toString(16).toUpperCase();
+
+                if (hex.length === 1 || hex.length === 3) {
+                    hex = '0' + hex;
                 }
 
                 /*
@@ -1664,7 +1681,7 @@ export function twingTestIterable(value: any) {
  *
  * @returns {string} The rendered template
  */
-export function twingInclude(env: TwingEnvironment, context: Map<any, any>, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false) {
+export function twingInclude(env: TwingEnvironment, context: Map<any, any>, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
     let alreadySandboxed = false;
     let sandbox: TwingExtensionSandbox = null;
 
@@ -1684,7 +1701,7 @@ export function twingInclude(env: TwingEnvironment, context: Map<any, any>, temp
         }
     }
 
-    let result = null;
+    let result = '';
 
     try {
         result = env.resolveTemplate(template).render(variables);

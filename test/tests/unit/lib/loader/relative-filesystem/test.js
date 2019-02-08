@@ -255,9 +255,11 @@ tap.test('loader filesystem', function (test) {
         test.equals(exists, true);
         test.same(spy.callCount, 0);
 
-        exists = loader.exists('normal/index.html', null);
-
-        test.equals(exists, false);
+        test.equals(loader.exists('normal/index.html', null), false);
+        test.equals(loader.exists("foo\0.twig", source), false);
+        test.equals(loader.exists('@foo', source), false);
+        test.equals(loader.exists('foo', source), false);
+        test.equals(loader.exists('@foo/bar.twig', source), false);
 
         test.end();
     });

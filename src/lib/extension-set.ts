@@ -231,7 +231,7 @@ export class TwingExtensionSet {
             });
 
             if (count) {
-                let regExp = new RegExp('^' + pattern, 'g');
+                let regExp = new RegExp('^' + pattern + '$', 'g');
                 let match: RegExpExecArray = regExp.exec(name);
                 let matches = [];
 
@@ -310,7 +310,7 @@ export class TwingExtensionSet {
             });
 
             if (count) {
-                let regExp = new RegExp('^' + pattern, 'g');
+                let regExp = new RegExp('^' + pattern + '$', 'g');
                 let match: RegExpExecArray = regExp.exec(name);
                 let matches = [];
 
@@ -382,6 +382,35 @@ export class TwingExtensionSet {
 
         if (this.tests.has(name)) {
             return this.tests.get(name);
+        }
+
+        let test: TwingTest;
+        let pattern: string;
+
+        for ([pattern, test] of this.tests) {
+            let count: number = 0;
+
+            pattern = pattern.replace(/\*/g, function (match: string, value: string) {
+                count++;
+
+                return '(.*?)';
+            });
+
+            if (count) {
+                let regExp = new RegExp('^' + pattern + '$', 'g');
+                let match: RegExpExecArray = regExp.exec(name);
+                let matches = [];
+
+                if (match) {
+                    for (let i = 1; i <= count; i++) {
+                        matches.push(match[i]);
+                    }
+
+                    test.setArguments(matches);
+
+                    return test;
+                }
+            }
         }
 
         return null;

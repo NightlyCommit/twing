@@ -27,7 +27,7 @@ export abstract class TwingTemplate {
     static METHOD_CALL = 'method';
 
     protected parent: TwingTemplate | false = null;
-    protected parents: Map<TwingTemplate | string, TwingTemplate> = new Map();
+    protected parents: Map<TwingTemplate | TwingTemplateWrapper | string, TwingTemplate | TwingTemplateWrapper> = new Map();
     protected env: TwingEnvironment;
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
@@ -79,14 +79,14 @@ export abstract class TwingTemplate {
      *
      * @param context
      *
-     * @returns TwingTemplate|false The parent template or false if there is no parent
+     * @returns TwingTemplate|TwingTemplateWrapper|false The parent template or false if there is no parent
      */
     getParent(context: any = {}) {
         if (this.parent !== null) {
             return this.parent;
         }
 
-        let parent: TwingTemplate | string | false;
+        let parent: TwingTemplate | TwingTemplateWrapper | string | false;
 
         try {
             parent = this.doGetParent(context);
@@ -95,8 +95,8 @@ export abstract class TwingTemplate {
                 return false;
             }
 
-            if (parent instanceof TwingTemplate) {
-                this.parents.set(parent.getTemplateName(), parent);
+            if (parent instanceof TwingTemplate || parent instanceof TwingTemplateWrapper) {
+                this.parents.set(parent.getSourceContext().getName(), parent);
             }
 
             if (!this.parents.has(parent)) {
@@ -183,10 +183,10 @@ export abstract class TwingTemplate {
             parent.displayBlock(name, context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>, false);
         }
         else if (blocks.has(name)) {
-            throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getTemplateName());
+            throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getSourceContext());
         }
         else {
-            throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, -1, this.getTemplateName());
+            throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, -1, this.getSourceContext());
         }
     }
 
@@ -256,7 +256,7 @@ export abstract class TwingTemplate {
             return true;
         }
 
-        let parent = this.getParent(context);
+        let parent = this.getParent(context) as any;
 
         if (parent) {
             return parent.hasBlock(name, context);
@@ -293,11 +293,7 @@ export abstract class TwingTemplate {
                 return this.env.resolveTemplate(template, this.getSourceContext());
             }
 
-            if (template instanceof TwingTemplate) {
-                return template;
-            }
-
-            if (template instanceof TwingTemplateWrapper) {
+            if (template instanceof TwingTemplate || template instanceof TwingTemplateWrapper) {
                 return template;
             }
 
@@ -377,7 +373,7 @@ export abstract class TwingTemplate {
      */
     abstract doDisplay(context: {}, blocks: Map<string, Array<any>>): void;
 
-    protected doGetParent(context: any): TwingTemplate | string | false {
+    protected doGetParent(context: any): TwingTemplate | TwingTemplateWrapper | string | false {
         return false;
     }
 

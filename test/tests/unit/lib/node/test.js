@@ -3,7 +3,7 @@ const {TwingNode} = require('../../../../../build/index');
 const tap = require('tape');
 
 tap.test('token', function (test) {
-    test.test('should provide textual representation', function(test) {
+    test.test('should provide textual representation', function (test) {
         let node = new TwingNode(new Map([
             ['foo', new TwingNode(new Map(), new Map(), 2, 1, 'foo')]
         ]), new Map([
@@ -17,7 +17,7 @@ tap.test('token', function (test) {
         test.end();
     });
 
-    test.test('clone', function(test) {
+    test.test('clone', function (test) {
         let childNode = new TwingNode();
         let childAttribute = new TwingNode();
         let node = new TwingNode(new Map([[0, childNode]]), new Map([['foo', childAttribute]]));
@@ -34,17 +34,17 @@ tap.test('token', function (test) {
         test.end();
     });
 
-    test.test('getAttribute', function(test) {
+    test.test('getAttribute', function (test) {
         let node = new TwingNode();
 
-        test.throws(function(test) {
+        test.throws(function (test) {
             node.getAttribute('foo');
         }, new Error('Attribute "foo" does not exist for Node "TwingNode".'));
 
         test.end();
     });
 
-    test.test('removeAttribute', function(test) {
+    test.test('removeAttribute', function (test) {
         let node = new TwingNode(new Map(), new Map([['foo', new TwingNode()]]));
 
         node.removeAttribute('foo');
@@ -54,12 +54,20 @@ tap.test('token', function (test) {
         test.end();
     });
 
-    test.test('getNode', function(test) {
+    test.test('getNode', function (test) {
         let node = new TwingNode();
 
-        test.throws(function(test) {
+        test.throws(function (test) {
             node.getNode(0);
         }, new Error('Node "0" does not exist for Node "TwingNode".'));
+
+        test.end();
+    });
+
+    test.test('toString', function (test) {
+        let node = new TwingNode(new Map(), new Map([['foo', 'bar']]));
+
+        test.same(node.toString(), 'TwingNode(foo: \'bar\', line: 0, column: 0)');
 
         test.end();
     });

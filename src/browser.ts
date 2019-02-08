@@ -49,6 +49,7 @@ export {TwingNodeBlock} from "./lib/node/block";
 export {TwingNodeBody} from "./lib/node/body";
 export {TwingNodeCheckSecurity} from "./lib/node/check-security";
 export {TwingNodeDo} from "./lib/node/do";
+export {TwingNodeDeprecated} from "./lib/node/deprecated";
 export {TwingNodeEmbed} from "./lib/node/embed";
 export {TwingNodeExpressionArray} from "./lib/node/expression/array";
 export {TwingNodeExpressionAssignName} from "./lib/node/expression/assign-name";

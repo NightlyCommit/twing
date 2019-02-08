@@ -7,6 +7,7 @@ export enum TwingNodeType {
     BLOCK = 'block',
     BLOCK_REFERENCE = 'block_reference',
     BODY = 'body',
+    DEPRECATED = 'deprecated',
     DO = 'do',
     EXPRESSION_ARRAY = 'expression_array',
     EXPRESSION_ASSIGN_NAME = 'expression_assign_name',

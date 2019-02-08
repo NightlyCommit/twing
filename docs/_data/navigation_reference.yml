@@ -9,6 +9,9 @@ sections:
       block:
         title: block
         url: language-reference/tags/block.html
+      deprecated:
+        title: deprecated
+        url: language-reference/tags/deprecated.html
       do:
         title: do
         url: language-reference/tags/do.html

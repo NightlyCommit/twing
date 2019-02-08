@@ -380,13 +380,16 @@ export class TwingParser {
     filterBodyNodes(node: TwingNode, nested: boolean = false): TwingNode {
         // check that the body does not contain non-empty output nodes
         if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS)))
-        {
-            if (String(node).indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
-                throw new TwingErrorSyntax(
-                    `A template that extends another one cannot start with a byte order mark (BOM); it must be removed.`,
-                    node.getTemplateLine(),
-                    this.stream.getSourceContext());
+            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS))) {
+            let nodeData: string = node.getAttribute('data') as string;
+
+            if (nodeData.indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
+                let trailingData = nodeData.substring(3);
+
+                if (trailingData === '' || ctype_space(trailingData)) {
+                    // bypass empty nodes starting with a BOM
+                    return null;
+                }
             }
 
             throw new TwingErrorSyntax(

@@ -58,6 +58,7 @@ export {TwingNodeBlock} from "./lib/node/block";
 export {TwingNodeBody} from "./lib/node/body";
 export {TwingNodeCaptureInterface} from "./lib/node-capture-interface";
 export {TwingNodeCheckSecurity} from "./lib/node/check-security";
+export {TwingNodeDeprecated} from "./lib/node/deprecated";
 export {TwingNodeDo} from "./lib/node/do";
 export {TwingNodeEmbed} from "./lib/node/embed";
 export {TwingNodeExpressionArray} from "./lib/node/expression/array";

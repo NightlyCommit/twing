@@ -83,6 +83,15 @@ let getFilterBodyNodesData = function () {
     ];
 };
 
+let getFilterBodyNodesWithBOMData = function () {
+    return [
+        ' ',
+        "\t",
+        "\n",
+        "\n\t\n   ",
+    ];
+};
+
 tap.test('parser', function (test) {
     test.test('testUnknownTag', function (test) {
         let stream = new TwingTokenStream([
@@ -152,15 +161,15 @@ tap.test('parser', function (test) {
     test.test('testFilterBodyNodesWithBOM', function (test) {
         let parser = getParser();
 
-        let fixtures = [
-            new TwingNodeText(String.fromCharCode(0xEF, 0xBB, 0xBF), 1, 0),
-        ];
+        let bomData = String.fromCharCode(0xEF, 0xBB, 0xBF);
 
         test.throws(function () {
-            fixtures.forEach(function (fixture) {
-                parser.filterBodyNodes(fixture);
-            });
-        }, /A template that extends another one cannot start with a byte order mark \(BOM\); it must be removed at line 1\./);
+            parser.filterBodyNodes(new TwingNodeText(bomData + 'not empty', 1, 0));
+        }, /A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag at line 1\?/);
+
+        for (let emptyNode of getFilterBodyNodesWithBOMData()) {
+            test.same(null, parser.filterBodyNodes(new TwingNodeText(bomData + emptyNode, 1, 0)));
+        }
 
         test.end();
     });
@@ -203,8 +212,7 @@ tap.test('parser', function (test) {
             let ast = twing.parse(twing.tokenize(new TwingSource('{% from _self import foo %}\n\n{% macro foo() %}\n{{ foo }}\n{% endmacro %}', 'index')));
 
             test.ok(ast);
-        }
-        catch (err) {
+        } catch (err) {
             test.fail(err);
         }
 

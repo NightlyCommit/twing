@@ -380,6 +380,18 @@ tap.test('loader filesystem', function (test) {
         test.equals(loader.exists('@foo/bar'), false);
         test.equals(loader.exists('@foo/bar'), false);
 
+        loader = new TwingLoaderFilesystem([]);
+
+        test.equals(loader.exists("foo\0.twig"), false);
+        test.equals(loader.exists('@foo'), false);
+        test.equals(loader.exists('foo'), false);
+        test.equals(loader.exists('@foo/bar.twig'), false);
+
+        loader.addPath(nodePath.join(fixturesPath, 'normal'));
+        test.equals(loader.exists('index.html'), true);
+        loader.addPath(nodePath.join(fixturesPath, 'normal'), 'foo');
+        test.equals(loader.exists('@foo/index.html'), true);
+
         test.end();
     });
 
