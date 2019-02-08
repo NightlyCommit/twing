@@ -1,3 +1,7 @@
+2.2.0
+
+ * #299 Add support for Twig 2.6.3
+
 2.1.4
 
  * #308 Source map for spaceless tag is still faulty in some case
