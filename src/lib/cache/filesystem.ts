@@ -5,7 +5,9 @@ import {TwingEnvironment} from "../environment";
 let fs = require('fs-extra');
 let path = require('path');
 let tmp = require('tmp');
-let crypto = require('crypto');
+
+const sha256 = require('crypto-js/sha256');
+const hex = require('crypto-js/enc-hex');
 
 /**
  * Implements a cache on the filesystem.
@@ -29,7 +31,7 @@ export class TwingCacheFilesystem implements TwingCacheInterface {
     }
 
     generateKey(name: string, className: string) {
-        let hash: string = crypto.createHash('sha256').update(className).digest('hex');
+        let hash: string = hex.stringify(sha256(className));
 
         return path.join(
             this.directory,

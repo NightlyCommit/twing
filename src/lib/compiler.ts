@@ -5,7 +5,8 @@ import {ksort} from "./helper/ksort";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
-const crypto = require('crypto');
+const sha256 = require('crypto-js/sha256');
+const hex = require('crypto-js/enc-hex');
 
 export class TwingCompiler {
     private lastLine: number;
@@ -302,6 +303,6 @@ export class TwingCompiler {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('TwingCompiler::getVarName' + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${hex.stringify(sha256('TwingCompiler::getVarName' + this.varNameSalt++))}`;
     }
 }

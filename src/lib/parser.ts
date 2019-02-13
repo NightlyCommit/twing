@@ -20,7 +20,8 @@ import {push} from "./helper/push";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 const mt_rand = require('locutus/php/math/mt_rand');
-const crypto = require('crypto');
+const sha256 = require('crypto-js/sha256');
+const hex = require('crypto-js/enc-hex');
 
 class TwingParserStackEntry {
     stream: TwingTokenStream;
@@ -65,7 +66,7 @@ export class TwingParser {
     }
 
     getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${crypto.createHash('sha256').update('TwingParser::getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++).digest('hex')}`;
+        return `${prefix}${hex.stringify(sha256('TwingParser::getVarName' + this.stream.getSourceContext().getCode() + this.varNameSalt++))}`;
     }
 
     parse(stream: TwingTokenStream, test: Array<any> = null, dropNeedle: boolean = false): TwingNodeModule {
