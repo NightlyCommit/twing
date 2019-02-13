@@ -58,7 +58,8 @@ import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-all
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
 
 const path = require('path');
-const crypto = require('crypto');
+const sha256 = require('crypto-js/sha256');
+const hex = require('crypto-js/enc-hex');
 
 /**
  *  * Available options:
@@ -363,7 +364,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     getTemplateClass(name: string, index: number = null, from: TwingSource = null) {
         let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
-        return this.templateClassPrefix + crypto.createHash('sha256').update(key).digest('hex') + (index === null ? '' : '_' + index);
+        return this.templateClassPrefix + hex.stringify(sha256(key)) + (index === null ? '' : '_' + index);
     }
 
     /**
@@ -535,7 +536,7 @@ return module.exports;
      */
     createTemplate(template: string) {
         let result: TwingTemplate;
-        let name = `__string_template__${crypto.createHash('sha256').update(template).digest('hex')}`;
+        let name = `__string_template__${hex.stringify(sha256(template))}`;
         let current = this.getLoader();
 
         let loader = new TwingLoaderChain([

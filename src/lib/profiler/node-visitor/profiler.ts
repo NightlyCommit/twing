@@ -7,7 +7,8 @@ import {TwingNodeBody} from "../../node/body";
 import {TwingProfilerNodeEnterProfile} from "../node/enter-profile";
 import {TwingProfilerNodeLeaveProfile} from "../node/leave-profile";
 
-const crypto = require('crypto');
+const sha256 = require('crypto-js/sha256');
+const hex = require('crypto-js/enc-hex');
 
 export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     private extensionName: string;
@@ -72,7 +73,7 @@ export class TwingProfilerNodeVisitorProfiler extends TwingBaseNodeVisitor {
     }
 
     private getVarName(): string {
-        return `__internal_${crypto.createHash('sha256').update(this.extensionName).digest('hex')}`;
+        return `__internal_${hex.stringify(sha256(this.extensionName))}`;
     }
 
     getPriority() {
