@@ -1,3 +1,7 @@
+2.2.1
+
+ * #314 Twing 2.2.0 not working in browser
+
 2.2.0
 
  * #299 Add support for Twig 2.6.3
