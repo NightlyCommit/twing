@@ -20,7 +20,8 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
     getData() {
         return {
-            foo: new TwingMarkup('foo', 'UTF-8')
+            foo: new TwingMarkup('foo', 'UTF-8'),
+            map: new Map([['message', 'Hello, world!']])
         };
     }
 };
