@@ -96,7 +96,7 @@ export type TwingEnvironmentOptions = {
     debug?: boolean;
     charset?: string;
     base_template_class?: string;
-    cache?: TwingCacheInterface | false;
+    cache?: TwingCacheInterface | false | string;
     auto_reload?: boolean;
     strict_variables?: boolean;
     autoescape?: string | boolean | Function;
