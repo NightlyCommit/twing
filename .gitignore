@@ -2,6 +2,7 @@
 .nyc_output
 build
 coverage
+coverage.lcov
 docs/.bundle
 docs/_site
 docs/vendor
