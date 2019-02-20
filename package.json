@@ -24,7 +24,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "rimraf build",
+    "clean": "rimraf build && rimraf test/tests/types/build",
     "precover": "rimraf coverage .nyc_output",
     "prebuild": "npm run clean",
     "postbuild": "replace-in-file '__VERSION__' $npm_package_version build/**/*",
