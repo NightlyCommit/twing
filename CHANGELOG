@@ -1,3 +1,9 @@
+2.2.2
+
+ * #225 [RCF] npm found 3 vulnerabilities (2 low, 1 moderate)
+ * #313 TwingEnvironmentOptions.cache typing is incorrect
+ * #316 `json_encode` cannot serialize Map
+
 2.2.1
 
  * #314 Twing 2.2.0 not working in browser
