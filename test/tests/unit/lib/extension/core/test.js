@@ -12,6 +12,7 @@ const {
     TwingNodeExpression,
     TwingNode,
     TwingLoaderArray,
+    TwingLoaderRelativeFilesystem,
     TwingEnvironment,
     TwingExtensionSandbox,
     TwingSandboxSecurityPolicy,
@@ -32,6 +33,7 @@ const tap = require('tape');
 const range = require('locutus/php/array/range');
 const getrandmax = require('locutus/php/math/getrandmax');
 const sinon = require('sinon');
+const path = require('path');
 
 let getFilter = function (name) {
     let extension = new TwingExtensionCore.TwingExtensionCore();
@@ -450,7 +452,7 @@ tap.test('TwingExtensionCore', function (test) {
         let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
         twing.setCharset('ISO-8859-1');
 
-        let text = iconv('UTF-8', 'ISO-8859-1', new Buffer('Äé'));
+        let text = iconv('UTF-8', 'ISO-8859-1', Buffer.from('Äé'));
 
         for (let i = 0; i < 30; i++) {
             let rand = TwingExtensionCore.twingRandom(twing, text);
@@ -816,7 +818,7 @@ tap.test('TwingExtensionCore', function (test) {
             env.addExtension(sandbox);
 
             test.throws(function() {
-                twingInclude(env, new Map(), 'foo', {}, true, false, true)
+                twingInclude(env, new Map(), null, 'foo', {}, true, false, true)
             }, new TwingErrorLoader('Template "foo" is not defined.'));
 
 
@@ -826,7 +828,15 @@ tap.test('TwingExtensionCore', function (test) {
 
             env.addExtension(sandbox);
 
-            test.same(twingInclude(env, new Map(), 'foo', {}, true, false, true), 'bar');
+            test.same(twingInclude(env, new Map(), null,'foo', {}, true, false, true), 'bar');
+
+            test.test('supports being called with a source', function (test) {
+                env = new TwingEnvironment(new TwingLoaderRelativeFilesystem());
+
+                test.same(twingInclude(env, new Map(), new TwingSource('code', 'name', path.resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig'), 'foo');
+
+                test.end();
+            });
 
             test.end();
         });

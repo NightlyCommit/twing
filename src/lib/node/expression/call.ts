@@ -255,6 +255,10 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             parameters.shift();
         }
 
+        if (this.hasAttribute('needs_source') && this.getAttribute('needs_source')) {
+            parameters.shift();
+        }
+
         if (this.hasAttribute('arguments') && this.getAttribute('arguments')) {
             for (let v of this.getAttribute('arguments')) {
                 parameters.shift();
