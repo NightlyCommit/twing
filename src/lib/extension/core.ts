@@ -315,6 +315,7 @@ export class TwingExtensionCore extends TwingExtension {
             [i++, new TwingFunction('include', twingInclude, {
                 needs_context: true,
                 needs_environment: true,
+                needs_source: true,
                 is_safe: ['all']
             })],
             [i++, new TwingFunction('source', twingSource, {
@@ -1673,6 +1674,7 @@ export function twingTestIterable(value: any) {
  *
  * @param {TwingEnvironment} env
  * @param {Map<*,*>} context
+ * @param {TwingSource} source
  * @param {string|Array<string>} template The template to render or an array of templates to try consecutively
  * @param variables The variables to pass to the template
  * @param {boolean} withContext
@@ -1681,7 +1683,7 @@ export function twingTestIterable(value: any) {
  *
  * @returns {string} The rendered template
  */
-export function twingInclude(env: TwingEnvironment, context: Map<any, any>, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
+export function twingInclude(env: TwingEnvironment, context: Map<any, any>, source: TwingSource, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
     let alreadySandboxed = false;
     let sandbox: TwingExtensionSandbox = null;
 
@@ -1704,7 +1706,7 @@ export function twingInclude(env: TwingEnvironment, context: Map<any, any>, temp
     let result = '';
 
     try {
-        result = env.resolveTemplate(template).render(variables);
+        result = env.resolveTemplate(template, source).render(variables);
     }
     catch (e) {
         if (e instanceof TwingErrorLoader) {
