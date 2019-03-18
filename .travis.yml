@@ -4,15 +4,16 @@ node_js:
   - 7
   - 8
   - 9
+  - 10
 jobs:
   include:
     - stage: test & cover
-      node_js: 10
+      node_js: 11
       script:
         - npm run cover
         - npm run coverage
     - stage: test in web browser
-      node_js: 10
+      node_js: 11
       script:
         - npm run test:browser
       addons:
@@ -24,11 +25,11 @@ jobs:
         - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         - npm install
     - stage: test types
-      node_js: 10
+      node_js: 11
       script:
       - npm run test:types
     - stage: test documentation
-      node_js: 10
+      node_js: 11
       script:
         - npm run test:docs
       install:
