@@ -1,3 +1,8 @@
+2.2.3
+
+ * #323 include function doesn't support relative filesystem loader
+ * #322 Test suite fails with node.js 11
+
 2.2.2
 
  * #225 [RCF] npm found 3 vulnerabilities (2 low, 1 moderate)

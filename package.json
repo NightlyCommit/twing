@@ -10,7 +10,7 @@
     "twig-engine",
     "typescript"
   ],
-  "version": "2.2.2",
+  "version": "2.2.3",
   "homepage": "https://github.com/ericmorand/twing",
   "license": "BSD-2-Clause",
   "repository": {
