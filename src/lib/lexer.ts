@@ -237,7 +237,8 @@ export class TwingLexer {
                     this.lineno = parseInt(match[1]);
                 }
                 else {
-                    this.pushToken(TwingToken.BLOCK_START_TYPE);
+                    let trimWhitespaces = position[2] === this.options.whitespace_trim
+                    this.pushToken(TwingToken.BLOCK_START_TYPE, null, trimWhitespaces);
                     this.moveCoordinates(position[0]);
                     this.pushState(TwingLexer.STATE_BLOCK);
                     this.currentVarBlockLine = this.lineno;
@@ -257,7 +258,8 @@ export class TwingLexer {
         let match: RegExpExecArray;
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_block.exec(string)) !== null)) {
-            this.pushToken(TwingToken.BLOCK_END_TYPE);
+            let trimWhitespaces = match[0].trim()[0] === this.options.whitespace_trim;
+            this.pushToken(TwingToken.BLOCK_END_TYPE, null, trimWhitespaces);
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
 
@@ -545,12 +547,12 @@ export class TwingLexer {
         return new RegExp(patterns.join('|'));
     };
 
-    private pushToken(type: number, value: any = null) {
+    private pushToken(type: number, value: any = null, trimWhitespaces: boolean = false) {
         if ((TwingToken.TEXT_TYPE === type) && (value.length < 1)) {
             return;
         }
 
-        this.tokens.push(new TwingToken(type, value, this.lineno, this.columnno));
+        this.tokens.push(new TwingToken(type, value, this.lineno, this.columnno, trimWhitespaces));
     }
 
     private pushState(state: number) {
