@@ -18,12 +18,14 @@ export class TwingToken {
     private type: number;
     private lineno: number;
     private columnno: number;
+    private trimWhitespaces: boolean;
 
-    constructor(type: number, value: string, lineno: number, columnno: number) {
+    constructor(type: number, value: string, lineno: number, columnno: number, trimWhitespaces: boolean) {
         this.type = type;
         this.value = value;
         this.lineno = lineno;
         this.columnno = columnno;
+        this.trimWhitespaces = trimWhitespaces;
     }
 
     /**
@@ -170,6 +172,10 @@ export class TwingToken {
 
     public getValue() {
         return this.value;
+    }
+
+    public getTrimWhitespaces() {
+        return this.trimWhitespaces;
     }
 
     toString() {
