@@ -477,6 +477,43 @@ bla
             test.end();
         });
 
+        test.test('with whitespace trim', function (test) {
+            let template = '{%- bla -%}';
+
+            let lexer = createLexer();
+            let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+            test.test('"{%-"', function (test) {
+                let token = stream.expect(TwingToken.BLOCK_START_TYPE);
+                testToken(test, token, null, 1, 1);
+                test.true(token.getTrimWhitespaces());
+
+                test.end();
+            });
+
+            test.test('"bla"', function (test) {
+                testToken(test, stream.expect(TwingToken.NAME_TYPE), 'bla', 1, 5);
+
+                test.end();
+            });
+
+            test.test('" -%}"', function (test) {
+                let token = stream.expect(TwingToken.BLOCK_END_TYPE);
+                testToken(test, token, null, 1, 8);
+                test.true(token.getTrimWhitespaces());
+
+                test.end();
+            });
+
+            test.test('EOF', function (test) {
+                testToken(test, stream.getCurrent(), null, 1, 12, TwingToken.EOF_TYPE);
+
+                test.end();
+            });
+
+            test.end();
+        });
+
         test.end();
     });
 
