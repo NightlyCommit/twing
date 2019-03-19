@@ -237,7 +237,7 @@ export class TwingLexer {
                     this.lineno = parseInt(match[1]);
                 }
                 else {
-                    let trimWhitespaces = position[2] === this.options.whitespace_trim
+                    let trimWhitespaces = position[2] === this.options.whitespace_trim;
                     this.pushToken(TwingToken.BLOCK_START_TYPE, null, trimWhitespaces);
                     this.moveCoordinates(position[0]);
                     this.pushState(TwingLexer.STATE_BLOCK);
@@ -245,7 +245,8 @@ export class TwingLexer {
                 }
                 break;
             case this.options.tag_variable[0]:
-                this.pushToken(TwingToken.VAR_START_TYPE);
+                let trimWhitespaces = position[2] === this.options.whitespace_trim;
+                this.pushToken(TwingToken.VAR_START_TYPE, null, trimWhitespaces);
                 this.moveCoordinates(position[0]);
                 this.pushState(TwingLexer.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
@@ -275,8 +276,9 @@ export class TwingLexer {
 
         if ((this.brackets.length < 1) && ((match = this.regexes.lex_var.exec(this.code.substring(this.cursor))) !== null)) {
             let text = this.handleLeadingLineFeeds(match[0]);
+            let trimWhitespaces = match[0].trim()[0] === this.options.whitespace_trim;
 
-            this.pushToken(TwingToken.VAR_END_TYPE);
+            this.pushToken(TwingToken.VAR_END_TYPE, null, trimWhitespaces);
             this.moveCursor(text);
             this.moveCoordinates(text);
             this.popState();
