@@ -418,7 +418,9 @@ bla
             let stream = lexer.tokenize(new TwingSource(template, 'index'));
 
             test.test('"{%\\n"', function (test) {
-                testToken(test, stream.expect(TwingToken.BLOCK_START_TYPE), null, 1, 1);
+                let token = stream.expect(TwingToken.BLOCK_START_TYPE);
+                testToken(test, token, null, 1, 1);
+                test.false(token.getTrimWhitespaces());
 
                 test.end();
             });
@@ -430,7 +432,9 @@ bla
             });
 
             test.test('"\\n%}"', function (test) {
-                testToken(test, stream.expect(TwingToken.BLOCK_END_TYPE), null, 2, 4);
+                let token = stream.expect(TwingToken.BLOCK_END_TYPE);
+                testToken(test, token, null, 2, 4);
+                test.false(token.getTrimWhitespaces());
 
                 test.end();
             });
