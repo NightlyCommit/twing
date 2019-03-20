@@ -32,6 +32,7 @@ export class TwingLexer {
     static STATE_VAR = 2;
     static STATE_STRING = 3;
     static STATE_INTERPOLATION = 4;
+    static STATE_COMMENT = 5;
 
     static REGEX_NAME = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/;
     static REGEX_NUMBER = /^[0-9]+(?:\.[0-9]+)?/;
@@ -42,7 +43,7 @@ export class TwingLexer {
 
     private brackets: Array<{ value: string, line: number }>;
     private code: string;
-    private currentVarBlockLine: number;
+    private currentVarBlockCommentLine: number;
     private cursor: number;
     private end: number;
     private env: TwingEnvironment;
@@ -161,6 +162,9 @@ export class TwingLexer {
                 case TwingLexer.STATE_INTERPOLATION:
                     this.lexInterpolation();
                     break;
+                case TwingLexer.STATE_COMMENT:
+                    this.lexComment();
+                    break;
             }
         }
 
@@ -217,8 +221,10 @@ export class TwingLexer {
 
         switch (position[1]) {
             case this.options.tag_comment[0]:
-                this.moveCoordinates(textContent + position[0]);
-                this.lexComment();
+                this.pushToken(TwingToken.COMMENT_START_TYPE);
+                this.moveCoordinates(position[0]);
+                this.pushState(TwingLexer.STATE_COMMENT);
+                this.currentVarBlockCommentLine = this.lineno;
                 break;
             case this.options.tag_block[0]:
                 // raw data?
@@ -239,14 +245,14 @@ export class TwingLexer {
                     this.pushToken(TwingToken.BLOCK_START_TYPE);
                     this.moveCoordinates(position[0]);
                     this.pushState(TwingLexer.STATE_BLOCK);
-                    this.currentVarBlockLine = this.lineno;
+                    this.currentVarBlockCommentLine = this.lineno;
                 }
                 break;
             case this.options.tag_variable[0]:
                 this.pushToken(TwingToken.VAR_START_TYPE);
                 this.moveCoordinates(position[0]);
                 this.pushState(TwingLexer.STATE_VAR);
-                this.currentVarBlockLine = this.lineno;
+                this.currentVarBlockCommentLine = this.lineno;
                 break;
         }
     }
@@ -294,7 +300,8 @@ export class TwingLexer {
             this.moveCoordinates(match[0]);
 
             if (this.cursor >= this.end) {
-                throw new TwingErrorSyntax(`Unclosed "${this.state === TwingLexer.STATE_BLOCK ? 'block' : 'variable'}".`, this.currentVarBlockLine, this.source);
+                const type = this.state === TwingLexer.STATE_BLOCK ? 'block' : this.state === TwingLexer.STATE_VAR ? 'variable' : 'comment';
+                throw new TwingErrorSyntax(`Unclosed "${type}".`, this.currentVarBlockCommentLine, this.source);
             }
         }
 
@@ -404,16 +411,17 @@ export class TwingLexer {
     }
 
     private lexComment() {
-        let match = this.regexes.lex_comment.exec(this.code.substring(this.cursor));
+        let match: RegExpExecArray;
 
-        if (!match) {
-            throw new TwingErrorSyntax('Unclosed comment.', this.lineno, this.source);
+        if ((this.brackets.length < 1) && (match = this.regexes.lex_comment.exec(this.code.substring(this.cursor))) !== null) {
+            this.pushToken(TwingToken.COMMENT_END_TYPE);
+            this.moveCursor(match[0]);
+            this.moveCoordinates(match[0]);
+            this.popState();
         }
-
-        let text = this.code.substr(this.cursor, match.index) + match[0];
-
-        this.moveCursor(text);
-        this.moveCoordinates(text);
+        else {
+            this.lexExpression();
+        }
     }
 
     private lexString() {
