@@ -12,6 +12,8 @@ export class TwingToken {
     static PUNCTUATION_TYPE = 9;
     static INTERPOLATION_START_TYPE = 10;
     static INTERPOLATION_END_TYPE = 11;
+    static COMMENT_START_TYPE = 12;
+    static COMMENT_END_TYPE = 13;
     private value: string;
     private type: number;
     private lineno: number;
@@ -75,6 +77,12 @@ export class TwingToken {
             case TwingToken.INTERPOLATION_END_TYPE:
                 name = 'INTERPOLATION_END_TYPE';
                 break;
+            case TwingToken.COMMENT_START_TYPE:
+                name = 'COMMENT_START_TYPE';
+                break;
+            case TwingToken.COMMENT_END_TYPE:
+                name = 'COMMENT_END_TYPE';
+                break;
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);
         }
@@ -117,6 +125,10 @@ export class TwingToken {
                 return 'begin of string interpolation';
             case TwingToken.INTERPOLATION_END_TYPE:
                 return 'end of string interpolation';
+            case TwingToken.COMMENT_START_TYPE:
+                return 'begin of comment';
+            case TwingToken.COMMENT_END_TYPE:
+                return 'end of comment';
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);
         }

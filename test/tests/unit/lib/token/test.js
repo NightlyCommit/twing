@@ -17,6 +17,8 @@ tap.test('token', function (test) {
         test.same(TwingToken.typeToString(TwingToken.TEXT_TYPE), 'TwingToken.TEXT_TYPE');
         test.same(TwingToken.typeToString(TwingToken.VAR_END_TYPE), 'TwingToken.VAR_END_TYPE');
         test.same(TwingToken.typeToString(TwingToken.VAR_START_TYPE), 'TwingToken.VAR_START_TYPE');
+        test.same(TwingToken.typeToString(TwingToken.COMMENT_START_TYPE), 'TwingToken.COMMENT_START_TYPE');
+        test.same(TwingToken.typeToString(TwingToken.COMMENT_END_TYPE), 'TwingToken.COMMENT_END_TYPE');
 
         test.same(TwingToken.typeToString(TwingToken.BLOCK_END_TYPE, true), 'BLOCK_END_TYPE');
         test.same(TwingToken.typeToString(TwingToken.BLOCK_START_TYPE, true), 'BLOCK_START_TYPE');
@@ -31,6 +33,8 @@ tap.test('token', function (test) {
         test.same(TwingToken.typeToString(TwingToken.TEXT_TYPE, true), 'TEXT_TYPE');
         test.same(TwingToken.typeToString(TwingToken.VAR_END_TYPE, true), 'VAR_END_TYPE');
         test.same(TwingToken.typeToString(TwingToken.VAR_START_TYPE, true), 'VAR_START_TYPE');
+        test.same(TwingToken.typeToString(TwingToken.COMMENT_START_TYPE, true), 'COMMENT_START_TYPE');
+        test.same(TwingToken.typeToString(TwingToken.COMMENT_END_TYPE, true), 'COMMENT_END_TYPE');
 
         test.throws(function() {
             TwingToken.typeToString(-999);
@@ -53,6 +57,8 @@ tap.test('token', function (test) {
         test.same(TwingToken.typeToEnglish(TwingToken.TEXT_TYPE), 'text');
         test.same(TwingToken.typeToEnglish(TwingToken.VAR_END_TYPE), 'end of print statement');
         test.same(TwingToken.typeToEnglish(TwingToken.VAR_START_TYPE), 'begin of print statement');
+        test.same(TwingToken.typeToEnglish(TwingToken.COMMENT_START_TYPE), 'begin of comment');
+        test.same(TwingToken.typeToEnglish(TwingToken.COMMENT_END_TYPE), 'end of comment');
 
         test.throws(function() {
             TwingToken.typeToEnglish(-999);
