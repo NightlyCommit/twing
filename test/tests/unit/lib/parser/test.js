@@ -9,7 +9,8 @@ const {
     TwingNodeSet,
     TwingLoaderArray,
     TwingSource,
-    TwingErrorSyntax
+    TwingErrorSyntax,
+    TwingNodeType
 } = require('../../../../../build/index');
 
 const tap = require('tape');
@@ -313,6 +314,29 @@ tap.test('parser', function (test) {
         Reflect.set(parser, 'macros', new Map([['foo', 'bar']]));
 
         test.true(parser.hasMacro('foo'));
+
+        test.end();
+    });
+
+    test.test('supports comment tokens', function (test) {
+        let twing = new TwingEnvironment(null, {
+            autoescape: false,
+            optimizations: 0
+        });
+
+        let parser = new TwingParser(twing);
+
+        let node = parser.parse(new TwingTokenStream([
+            new TwingToken(TwingToken.COMMENT_START_TYPE, '', 1, 0),
+            new TwingToken(TwingToken.TEXT_TYPE, 'test', 1, 0),
+            new TwingToken(TwingToken.COMMENT_END_TYPE, '', 1, 0),
+            new TwingToken(TwingToken.EOF_TYPE, '', 1, 0),
+        ]));
+
+        let body = node.getNode('body');
+
+        test.same(body.getNode(0).getType(), TwingNodeType.COMMENT);
+        test.same(body.getNode(0).getAttribute('data'), 'test');
 
         test.end();
     });

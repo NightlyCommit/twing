@@ -217,7 +217,8 @@ export class TwingLexer {
 
         switch (position[1]) {
             case this.options.tag_comment[0]:
-                this.moveCoordinates(textContent + position[0]);
+                this.pushToken(TwingToken.COMMENT_START_TYPE);
+                this.moveCoordinates(position[0]);
                 this.lexComment();
                 break;
             case this.options.tag_block[0]:
@@ -410,10 +411,17 @@ export class TwingLexer {
             throw new TwingErrorSyntax('Unclosed comment.', this.lineno, this.source);
         }
 
-        let text = this.code.substr(this.cursor, match.index) + match[0];
+        let text = this.code.substr(this.cursor, match.index);
+
+        this.pushToken(TwingToken.TEXT_TYPE, text);
 
         this.moveCursor(text);
         this.moveCoordinates(text);
+
+        this.pushToken(TwingToken.COMMENT_END_TYPE);
+
+        this.moveCursor(match[0]);
+        this.moveCoordinates(match[0]);
     }
 
     private lexString() {
