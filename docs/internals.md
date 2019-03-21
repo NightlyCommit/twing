@@ -19,10 +19,11 @@ The rendering of a Twig template can be summarized into four key steps:
 
 ## The Lexer
 
-The lexer tokenizes a template source code into a token stream (each token is an instance of `TwingToken`, and the stream is an instance of `TwingTokenStream`). The default lexer recognizes 13 different token types:
+The lexer tokenizes a template source code into a token stream (each token is an instance of `TwingToken`, and the stream is an instance of `TwingTokenStream`). The default lexer recognizes 15 different token types:
 
 * `TwingToken.BLOCK_START_TYPE`, `TwingToken.BLOCK_END_TYPE`: Delimiters for blocks (`{% %}`)
 * `TwingToken.VAR_START_TYPE`, `TwingToken.VAR_END_TYPE`: Delimiters for variables (`{{ }}`)
+* `TwingToken.COMMENT_START_TYPE`, `TwingToken.COMMENT_END_TYPE`: Delimiters for comments (`{# #}`)
 * `TwingToken.TEXT_TYPE`: A text outside an expression;
 * `TwingToken.NAME_TYPE`: A name in an expression;
 * `TwingToken.NUMBER_TYPE`: A number in an expression;

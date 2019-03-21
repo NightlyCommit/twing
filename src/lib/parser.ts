@@ -17,6 +17,7 @@ import {TwingNodeMacro} from "./node/macro";
 import {TwingTokenParser} from "./token-parser";
 import {first} from "./helper/first";
 import {push} from "./helper/push";
+import {TwingNodeComment} from "./node/comment";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
 const mt_rand = require('locutus/php/math/mt_rand');
@@ -245,6 +246,13 @@ export class TwingParser {
                     if (node !== null) {
                         rv.set(i++, node);
                     }
+
+                    break;
+                case TwingToken.COMMENT_START_TYPE:
+                    this.stream.next();
+                    token = this.stream.expect(TwingToken.TEXT_TYPE);
+                    this.stream.expect(TwingToken.COMMENT_END_TYPE);
+                    rv.set(i++, new TwingNodeComment(token.getValue(), token.getLine(), token.getColumn()));
 
                     break;
                 default:
