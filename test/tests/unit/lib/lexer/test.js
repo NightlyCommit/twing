@@ -1097,6 +1097,26 @@ bla
             test.end();
         });
 
+        test.test('with whitespace trim', function (test) {
+            let template = '{#- foo -#}';
+
+            let lexer = createLexer();
+            let stream = lexer.tokenize(new TwingSource(template, 'index'));
+
+            let tokenCommentStartType;
+            let tokenCommentEndType;
+
+            testToken(test, tokenCommentStartType = stream.expect(TwingToken.COMMENT_START_TYPE), null, 1, 1);
+            testToken(test, stream.expect(TwingToken.TEXT_TYPE), ' foo ', 1, 4);
+            testToken(test, tokenCommentEndType = stream.expect(TwingToken.COMMENT_END_TYPE), null, 1, 9);
+            testToken(test, stream.getCurrent(), null, 1, 12, TwingToken.EOF_TYPE);
+
+            test.true(tokenCommentStartType.getTrimWhitespaces());
+            test.true(tokenCommentEndType.getTrimWhitespaces());
+
+            test.end();
+        });
+
         test.test('unclosed comment', function (test) {
             let template = '{#';
 

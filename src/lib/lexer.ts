@@ -216,11 +216,13 @@ export class TwingLexer {
         this.moveCursor(textContent + position[0]);
 
         switch (position[1]) {
-            case this.options.tag_comment[0]:
-                this.pushToken(TwingToken.COMMENT_START_TYPE);
+            case this.options.tag_comment[0]: {
+                let trimWhitespaces = position[2] === this.options.whitespace_trim;
+                this.pushToken(TwingToken.COMMENT_START_TYPE, null, trimWhitespaces);
                 this.moveCoordinates(position[0]);
                 this.lexComment();
                 break;
+            }
             case this.options.tag_block[0]:
                 // raw data?
                 let match: RegExpExecArray;
@@ -244,13 +246,14 @@ export class TwingLexer {
                     this.currentVarBlockLine = this.lineno;
                 }
                 break;
-            case this.options.tag_variable[0]:
+            case this.options.tag_variable[0]: {
                 let trimWhitespaces = position[2] === this.options.whitespace_trim;
                 this.pushToken(TwingToken.VAR_START_TYPE, null, trimWhitespaces);
                 this.moveCoordinates(position[0]);
                 this.pushState(TwingLexer.STATE_VAR);
                 this.currentVarBlockLine = this.lineno;
                 break;
+            }
         }
     }
 
@@ -422,7 +425,8 @@ export class TwingLexer {
         this.moveCursor(text);
         this.moveCoordinates(text);
 
-        this.pushToken(TwingToken.COMMENT_END_TYPE);
+        let trimWhitespaces = match[0].trim()[0] === this.options.whitespace_trim;
+        this.pushToken(TwingToken.COMMENT_END_TYPE, null, trimWhitespaces);
 
         this.moveCursor(match[0]);
         this.moveCoordinates(match[0]);
