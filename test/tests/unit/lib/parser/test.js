@@ -341,36 +341,5 @@ tap.test('parser', function (test) {
         test.end();
     });
 
-    test.test('block and endblock with whitespaces triming', function (test) {
-        let stream = new TwingTokenStream([
-            // `{%- block my_block -%}`
-            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1, 0, true),
-            new TwingToken(TwingToken.NAME_TYPE, 'block', 1, 0, false),
-            new TwingToken(TwingToken.NAME_TYPE, 'my_block', 1, 0, false),
-            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1, 0, true),
-
-            new TwingToken(TwingToken.TEXT_TYPE, 'the value of the block', 1, 0, false),
-
-            // `{%- endblock -%}`
-            new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1, 0, true),
-            new TwingToken(TwingToken.NAME_TYPE, 'endblock', 1, 0, false),
-            new TwingToken(TwingToken.BLOCK_END_TYPE, '', 1, 0, true),
-
-            new TwingToken(TwingToken.EOF_TYPE, '', 1, 0, false),
-        ]);
-
-        let parser = new TwingParser(testEnv);
-        let module = parser.parse(stream);
-        let blocks = module.getNode('blocks');
-        let block = blocks.getNode('my_block').getNode(0);
-
-        test.true(block.getAttribute('startTrimLeftWhitespaces'));
-        test.true(block.getAttribute('startTrimRightWhitespaces'));
-        test.true(block.getAttribute('endTrimLeftWhitespaces'));
-        test.true(block.getAttribute('endTrimRightWhitespaces'));
-
-        test.end();
-    });
-
     test.end();
 });
