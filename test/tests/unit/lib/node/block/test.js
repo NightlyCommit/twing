@@ -10,10 +10,14 @@ const tap = require('tape');
 tap.test('node/block', function (test) {
     test.test('constructor', function (test) {
         let body = new TwingNodeText('foo', 1, 1);
-        let node = new TwingNodeBlock('foo', body, 1, 1);
+        let node = new TwingNodeBlock('foo', body, 1, 1, null, false, true, false, true);
 
         test.same(node.getNode('body'), body);
         test.same(node.getAttribute('name'), 'foo');
+        test.same(node.getAttribute('startTrimLeftWhitespaces'), false);
+        test.same(node.getAttribute('startTrimRightWhitespaces'), true);
+        test.same(node.getAttribute('endTrimLeftWhitespaces'), false);
+        test.same(node.getAttribute('endTrimRightWhitespaces'), true);
         test.same(node.getType(), TwingNodeType.BLOCK);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);

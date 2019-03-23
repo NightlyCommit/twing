@@ -24,6 +24,8 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         let lineno = token.getLine();
         let columnno = token.getColumn();
         let stream = this.parser.getStream();
+        let startLeftBlockToken = stream.look(-2); // `{%` from `{% block ... %}`
+        let startRightBlockToken = stream.look(1); // `%}` from `{% block ... %}`
         let name = stream.expect(TwingToken.NAME_TYPE).getValue();
 
         let safeName = name;
@@ -36,7 +38,17 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().getLine(), stream.getSourceContext());
         }
 
-        let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno, columnno);
+        let block = new TwingNodeBlock(
+            safeName,
+            new TwingNode(new Map()),
+            lineno,
+            columnno,
+            null,
+            startLeftBlockToken.getTrimWhitespaces(),
+            startRightBlockToken.getTrimWhitespaces(),
+            false, // TODO: find a way to access `{%- endblock -%}`
+            false,
+        );
 
         this.parser.setBlock(name, block);
         this.parser.pushLocalScope();
