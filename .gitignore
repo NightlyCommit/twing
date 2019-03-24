@@ -4,6 +4,7 @@ build
 coverage
 docs/.bundle
 docs/_site
+docs/assets/twing.min.js
 docs/vendor
 node_modules
 tmp

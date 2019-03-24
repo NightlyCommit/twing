@@ -35,7 +35,7 @@
     "postpack": "rimraf lib dist browser.* index.*",
     "test": "npm run fastest:all",
     "test:browser": "npm run fastest:integration:browser",
-    "test:docs": "cd docs && bundle exec jekyll build",
+    "test:docs": "npm run predocs && cd docs && bundle exec jekyll build",
     "test:types": "tsc --project test/tests/types",
     "fastest:all": "tape 'test/tests/**/test.js' | tap-bail | tap-spec",
     "fastest:integration": "tape test/tests/integration/**/test.js | tap-bail | tap-spec",
@@ -45,7 +45,8 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "tsc --project .",
     "bundle": "browserify build/browser.js -g uglifyify -s Twing -o build/dist/lib.min.js",
-    "docs": "cd docs && bundle exec jekyll serve",
+    "predocs": "npm run bundle && cp build/dist/lib.min.js docs/assets/twing.min.js",
+    "docs": "npm run predocs && cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
   "dependencies": {
