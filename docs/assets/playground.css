@@ -1,0 +1,11 @@
+.playground {
+    display: flex;
+}
+
+.playground .left-col {
+    flex: 1;
+}
+
+.playground .right-col {
+    flex: 1;
+}
