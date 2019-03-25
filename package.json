@@ -45,7 +45,7 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "tsc --project .",
     "bundle": "browserify build/browser.js -g uglifyify -s Twing -o build/dist/lib.min.js",
-    "predocs": "npm run bundle && cp build/dist/lib.min.js docs/assets/twing.min.js",
+    "predocs": "npm run build && npm run bundle && cp build/dist/lib.min.js docs/assets/twing.min.js",
     "docs": "npm run predocs && cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
