@@ -86,6 +86,10 @@ class Playground {
             const tokens = this.twing.tokenize(source);
             const ast = this.twing.parse(tokens);
 
+            console.clear();
+            console.log('Tokens', tokens);
+            console.log('AST', ast);
+
             updateCm(this.cmOutputTokens, tokens);
             updateCm(this.cmOutputAST, ast);
         } catch (error) {
