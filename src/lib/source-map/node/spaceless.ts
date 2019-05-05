@@ -1,5 +1,6 @@
 import {SourceNode} from "source-map";
 import {TwingSourceMapNode} from "../node";
+import {TwingSource} from "../../source";
 
 export class TwingSourceMapNodeSpaceless extends TwingSourceMapNode {
     /**
@@ -7,9 +8,9 @@ export class TwingSourceMapNodeSpaceless extends TwingSourceMapNode {
      *
      * @param {number} line 0-based
      * @param {number} column 0-based
-     * @param {string} source
+     * @param {TwingSource} source
      */
-    constructor(line: number, column: number, source: string) {
+    constructor(line: number, column: number, source: TwingSource) {
         super(line, column, source, 'spaceless');
     }
 

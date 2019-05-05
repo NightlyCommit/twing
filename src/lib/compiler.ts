@@ -238,7 +238,7 @@ export class TwingCompiler {
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
-                .raw('this.getSourceMapSource(), ')
+                .raw('this.getSourceContext(), ')
             ;
 
             if (ctor) {

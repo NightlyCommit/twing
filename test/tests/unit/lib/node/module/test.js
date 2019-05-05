@@ -76,10 +76,6 @@ tap.test('node/module', function (test) {
             return \`foo.twig\`;
         }
 
-        getSourceMapSource() {
-            return this.env.getLoader().resolve(\`foo.twig\`);
-        }
-
         getDebugInfo() {
             return new Map([[20, {"line": 1, "column": 1}]]);
         }
@@ -142,10 +138,6 @@ tap.test('node/module', function (test) {
 
         getTemplateName() {
             return \`foo.twig\`;
-        }
-
-        getSourceMapSource() {
-            return this.env.getLoader().resolve(\`foo.twig\`);
         }
 
         isTraitable() {
@@ -230,10 +222,6 @@ tap.test('node/module', function (test) {
 
         getTemplateName() {
             return \`foo.twig\`;
-        }
-
-        getSourceMapSource() {
-            return this.env.getLoader().resolve(\`foo.twig\`);
         }
 
         isTraitable() {

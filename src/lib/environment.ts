@@ -1057,17 +1057,19 @@ return module.exports;
      * @param {number} line 0-based
      * @param {number} column 1-based
      * @param {string} name
-     * @param {string} source
+     * @param {TwingSource} source
      * @param {TwingSourceMapNodeConstructor} ctor
      */
-    enterSourceMapBlock(line: number, column: number, name: string, source: string, ctor: TwingSourceMapNodeConstructor) {
+    enterSourceMapBlock(line: number, column: number, name: string, source: TwingSource, ctor: TwingSourceMapNodeConstructor) {
         TwingOutputBuffering.obStart();
 
-        source = path.relative('.', source);
+        let sourcePath = path.relative('.', source.getPath());
 
         if (typeof this.sourceMap === 'string') {
-            source = path.join(this.sourceMap, source);
+            sourcePath = path.join(this.sourceMap, sourcePath);
         }
+
+        source = new TwingSource(source.getCode(), source.getName(), sourcePath);
 
         let node = new ctor(line, column - 1, source, name);
 
