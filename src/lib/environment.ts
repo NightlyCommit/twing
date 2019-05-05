@@ -135,6 +135,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
     private templateRuntime: any;
+    private autoescape: string | boolean | Function;
 
     /**
      * Constructor.
@@ -167,6 +168,7 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.setCache(options.cache);
         this.extensionSet = new TwingExtensionSet();
         this.sourceMap = options.source_map;
+        this.autoescape = options.autoescape;
 
         this.addExtension(new TwingExtensionCore());
         this.addExtension(new TwingExtensionEscaper(options.autoescape));
@@ -1049,7 +1051,8 @@ return module.exports;
             this.debug,
             this.baseTemplateClass,
             this.strictVariables,
-            this.sourceMap
+            this.sourceMap,
+            typeof this.autoescape === 'function' ? 'function' : this.autoescape
         ].join(':');
     }
 
