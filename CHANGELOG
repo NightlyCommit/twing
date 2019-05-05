@@ -1,3 +1,8 @@
+2.2.4
+
+ * #334 Changing autoescape option doesn't invalidate the cache
+ * #298 Add support for sourceContents
+
 2.2.3
 
  * #323 include function doesn't support relative filesystem loader
