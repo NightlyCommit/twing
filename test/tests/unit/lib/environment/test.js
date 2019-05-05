@@ -29,6 +29,7 @@ const tap = require('tape');
 const sinon = require('sinon');
 const tmp = require('tmp');
 const {join} = require('path');
+const {readFileSync} = require('fs');
 
 function escapingStrategyCallback(name) {
     return name;
@@ -1017,6 +1018,10 @@ tap.test('environment', function (test) {
                     name: mapping.name
                 });
             });
+
+            let sourceContent = consumer.sourceContentFor(indexSource, true);
+
+            test.same(sourceContent, readFileSync(indexSource, 'UTF-8'));
 
             test.same(
                 mappings,

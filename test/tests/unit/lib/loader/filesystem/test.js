@@ -395,5 +395,13 @@ tap.test('loader filesystem', function (test) {
         test.end();
     });
 
+    test.test('resolve', function (test) {
+        let loader = new TwingLoaderFilesystem(fixturesPath);
+
+        test.equals(loader.resolve('named/index.html'), nodePath.resolve(nodePath.join(fixturesPath, 'named/index.html')));
+
+        test.end();
+    });
+
     test.end();
 });

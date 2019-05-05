@@ -86,8 +86,6 @@ export class TwingNodeModule extends TwingNode {
 
         this.compileGetTemplateName(compiler);
 
-        this.compileGetSourceMapSource(compiler);
-
         this.compileIsTraitable(compiler);
 
         this.compileDebugInfo(compiler);
@@ -355,18 +353,6 @@ export class TwingNodeModule extends TwingNode {
         ;
     }
 
-    protected compileGetSourceMapSource(compiler: TwingCompiler) {
-        compiler
-            .write("getSourceMapSource() {\n")
-            .indent()
-            .write('return this.env.getLoader().resolve(')
-            .repr(this.source.getName())
-            .raw(');\n')
-            .outdent()
-            .write("}\n\n")
-        ;
-    }
-
     protected compileIsTraitable(compiler: TwingCompiler) {
         // A template can be used as a trait if:
         //   * it has no parent
@@ -449,7 +435,7 @@ export class TwingNodeModule extends TwingNode {
             .write("getSourceContext() {\n")
             .indent()
             .write('return new Runtime.TwingSource(')
-            .string(compiler.getEnvironment().isDebug() ? this.source.getCode() : '')
+            .string(compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ? this.source.getCode() : '')
             .raw(', ')
             .string(this.source.getName())
             .raw(', ')
