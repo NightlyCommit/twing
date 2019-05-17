@@ -1,3 +1,7 @@
+2.2.5
+
+ * #341 Syntax errors don't show the location where the error occured
+
 2.2.4
 
  * #334 Changing autoescape option doesn't invalidate the cache
