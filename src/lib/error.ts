@@ -122,10 +122,6 @@ export class TwingError extends Error {
     private updateRepr() {
         this.message = this.rawMessage;
 
-        if (this.sourcePath && (this.lineno > 0)) {
-            return;
-        }
-
         let dot = false;
 
         if (this.message.substr(-1) === '.') {
