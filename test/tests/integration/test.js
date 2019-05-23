@@ -1,4 +1,4 @@
-const {TwingEnvironmentNode: TwingEnvironment} = require('../../../build/lib/environment/node');
+const {TwingEnvironmentNode: TwingEnvironment} = require('../../../build/environment/node');
 
 let nh = require('node-hook');
 

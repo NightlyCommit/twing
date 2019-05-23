@@ -1,6 +1,6 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
-const {TwingTemplate} = require('../../../../../../build/lib/template');
-const {TwingOutputBuffering} = require('../../../../../../build/lib/output-buffering');
+const {TwingTemplate} = require('../../../../../../build/template');
+const {TwingOutputBuffering} = require('../../../../../../build/output-buffering');
 
 class CustomTemplate extends TwingTemplate {
     display(context, blocks) {
