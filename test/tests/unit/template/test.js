@@ -11,18 +11,23 @@ const test = require('tape');
 const sinon = require('sinon');
 
 class TwingTestTemplateTemplate extends TwingTemplate {
-    constructor() {
+    constructor(strictVariables = true) {
         super(new TwingEnvironment(new TwingLoaderArray({
             foo: '{% block foo %}foo{% endblock %}'
-        })));
-    }
-
-    getTemplateName() {
-        return 'foo';
+        }), {
+            strict_variables: strictVariables
+        }));
     }
 
     doDisplay(context, blocks) {
         TwingOutputBuffering.echo('foo');
+    }
+
+    /**
+     * @return Function
+     */
+    getPublicGetAttribute() {
+        return this.getAttribute.bind(this);
     }
 }
 
@@ -58,7 +63,11 @@ test('template', function (test) {
     test.test('getSourceContext', function (test) {
         let template = new TwingTestTemplateTemplate();
 
-        test.same(template.getSourceContext(), new TwingSource('', template.getTemplateName()));
+        Reflect.set(template, 'sourceCode', '');
+        Reflect.set(template, 'sourceName', 'foo');
+        Reflect.set(template, 'sourcePath', '');
+
+        test.same(template.getSourceContext(), new TwingSource('', 'foo', ''));
 
         test.end();
     });
@@ -94,6 +103,10 @@ test('template', function (test) {
         let template = new TwingTestTemplateTemplate();
         let stub = sinon.stub(template, 'getParent');
 
+        Reflect.set(template, 'sourceCode', '');
+        Reflect.set(template, 'sourceName', 'foo');
+        Reflect.set(template, 'sourcePath', '');
+
         stub.returns(false);
 
         test.throws(function () {
@@ -106,6 +119,10 @@ test('template', function (test) {
     test.test('displayBlock', function (test) {
         let template = new TwingTestTemplateTemplate();
         let stub = sinon.stub(template, 'getParent');
+
+        Reflect.set(template, 'sourceCode', '');
+        Reflect.set(template, 'sourceName', 'foo');
+        Reflect.set(template, 'sourcePath', '');
 
         stub.returns(false);
 
@@ -178,6 +195,10 @@ test('template', function (test) {
     test.test('displayWithErrorHandling', function (test) {
         let template = new TwingTestTemplateTemplate();
 
+        Reflect.set(template, 'sourceCode', '');
+        Reflect.set(template, 'sourceName', 'foo');
+        Reflect.set(template, 'sourcePath', '');
+
         TwingOutputBuffering.obStart();
         template.displayWithErrorHandling({});
         let content = TwingOutputBuffering.obGetContents();
@@ -195,7 +216,7 @@ test('template', function (test) {
                 test.fail();
             }
             catch (e) {
-                test.same(e.constructor.name, 'TwingErrorRuntime');
+                test.same(e.name, 'TwingErrorRuntime');
                 test.same(e.message, 'An exception has been thrown during the rendering of a template ("foo error") in "foo".');
             }
 
@@ -272,6 +293,141 @@ test('template', function (test) {
         template.traceableHasBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call hasBlock once');
+
+        test.end();
+    });
+
+    test.test('getAttribute', function (test) {
+        class Foo {
+            constructor() {
+                this.oof = 'oof';
+            }
+
+            foo() {
+                return 'foo';
+            }
+
+            getFoo() {
+                return 'getFoo';
+            }
+
+            getBar() {
+                return 'getBar';
+            }
+
+            isBar() {
+                return 'isBar';
+            }
+
+            hasBar() {
+                return 'hasBar';
+            }
+
+            isOof() {
+                return 'isOof';
+            }
+
+            hasFooBar() {
+                return 'hasFooBar';
+            }
+
+            __call() {
+
+            }
+        }
+
+        class TwingTestExtensionCoreTemplate extends TwingTemplate {
+
+        }
+
+        let template = new TwingTestTemplateTemplate();
+
+        let source = new TwingSource('', '');
+
+        let getAttribute = template.getPublicGetAttribute();
+        
+        test.test('should support method calls', function (test) {
+            let foo = new Foo();
+
+            // object property
+            test.same(getAttribute(new Foo(), 'oof', TwingTemplate.ANY_CALL, [], true), true);
+            test.same(getAttribute(new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
+
+            test.same(getAttribute(foo, 'foo'), 'foo', 'should resolve methods by their name');
+            test.same(getAttribute(foo, 'bar'), 'getBar', 'should resolve get{name} if {name} doesn\'t exist');
+            test.same(getAttribute(foo, 'Oof'), 'isOof', 'should resolve is{name} if {name} and get{name} don\'t exist');
+            test.same(getAttribute(foo, 'fooBar'), 'hasFooBar', 'should resolve has{name} if {name}, get{name} and is{name} don\'t exist');
+
+            test.same(getAttribute(foo, 'getfoo'), 'getFoo', 'should resolve method in a case-insensitive way');
+            test.same(getAttribute(foo, 'GeTfOo'), 'getFoo', 'should resolve method in a case-insensitive way');
+
+            // !METHOD_CALL + boolean item
+            test.same(getAttribute([2, 3], false), 2);
+            test.same(getAttribute([2, 3], true), 3);
+
+            // !METHOD_CALL + float item
+            test.same(getAttribute([2, 3], 0.1), 2);
+            test.same(getAttribute([2, 3], 1.1), 3);
+
+            test.throws(function () {
+                console.warn(getAttribute([], 0));
+            }, new TwingErrorRuntime('Index "0" is out of bounds as the array is empty.', -1, source));
+
+            test.throws(function () {
+                console.warn(getAttribute([1], 1));
+            }, new TwingErrorRuntime('Index "1" is out of bounds for array [1].', -1, source));
+
+            test.throws(function () {
+                console.warn(getAttribute(new Map(), 'foo'));
+            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a object variable ("[object Map]").', -1, source));
+
+            test.throws(function () {
+                getAttribute(null, 'foo', [], TwingTemplate.ARRAY_CALL);
+            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a null variable.', -1, source));
+
+            test.throws(function () {
+                getAttribute(5, 'foo', [], TwingTemplate.ARRAY_CALL);
+            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a number variable ("5").', -1, source));
+
+            test.throws(function () {
+                getAttribute(null, 'foo', [], TwingTemplate.ANY_CALL);
+            }, new TwingErrorRuntime('Impossible to access an attribute ("foo") on a null variable.', -1, source));
+
+            // METHOD_CALL
+            test.equals(getAttribute(5, 'foo', [], TwingTemplate.METHOD_CALL, true), false);
+            test.equals(getAttribute(5, 'foo', [], TwingTemplate.METHOD_CALL, false, true), undefined);
+
+            test.throws(function () {
+                getAttribute(null, 'foo', [], TwingTemplate.METHOD_CALL);
+            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a null variable.', -1, source));
+
+            test.throws(function () {
+                getAttribute(5, 'foo', [], TwingTemplate.METHOD_CALL);
+            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a number variable ("5").', -1, source));
+
+            test.throws(function () {
+                getAttribute([], 'foo', [], TwingTemplate.METHOD_CALL);
+            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on an array.', -1, source));
+
+            test.throws(function () {
+                getAttribute(new TwingTestExtensionCoreTemplate(template.env), 'foo');
+            }, new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.', -1));
+
+            test.throws(function () {
+                getAttribute(new Foo(), 'ooof', TwingTemplate.ANY_CALL, [], false, false);
+            }, new TwingErrorRuntime('Neither the property "ooof" nor one of the methods ooof()" or "getooof()"/"isooof()"/"hasooof()" exist and have public access in class "Foo".', -1, source));
+
+            test.end();
+        });
+
+        test.test('supports strict variables set to false', function(test) {
+            let template = new TwingTestTemplateTemplate(false);
+            let getAttribute = template.getPublicGetAttribute();
+
+            test.same(getAttribute(new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
+
+            test.end();
+        });
 
         test.end();
     });

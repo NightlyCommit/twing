@@ -699,21 +699,6 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('baseTemplateClass', function (test) {
-        let env = new TwingEnvironment(new TwingTestMockLoader(), {
-            base_template_class: 'Foo'
-        });
-
-        let templateClass = env.getTemplateClass('foo');
-
-        env.setBaseTemplateClass('Bar');
-
-        test.same(env.getBaseTemplateClass(), 'Bar');
-        test.notSame(env.getTemplateClass('foo'), templateClass);
-
-        test.end();
-    });
-
     test.test('debug', function (test) {
         let env = new TwingEnvironment(new TwingTestMockLoader(), {
             debug: false

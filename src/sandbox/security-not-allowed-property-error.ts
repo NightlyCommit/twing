@@ -9,8 +9,10 @@ export class TwingSandboxSecurityNotAllowedPropertyError extends TwingSandboxSec
     private className: string;
     private propertyName: string
 
-    constructor(message: string, className: string, propertyName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, className: string, propertyName: string, lineno: number, filename: string = null) {
         super(message, lineno, filename);
+
+        this.name = 'TwingSandboxSecurityNotAllowedPropertyError';
         this.className = className;
         this.propertyName = propertyName;
     }

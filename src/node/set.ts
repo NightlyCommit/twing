@@ -71,7 +71,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
                     .write('(() => {\n')
                     .indent()
                     .write('let tmp;\n')
-                    .write("Runtime.obStart();\n")
+                    .write("this.startOutputBuffering();\n")
                     .subcompile(this.getNode('values'))
                 ;
             }
@@ -93,7 +93,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
 
             if (this.getAttribute('capture')) {
                 compiler
-                    .raw("((tmp = Runtime.obGetClean()) === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));\n")
+                    .raw("((tmp = this.getAndCleanOutputBuffer()) === '') ? '' : this.createMarkup(tmp, this.env.getCharset()));\n")
                     .outdent()
                     .write('})();')
                 ;
@@ -105,7 +105,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
                 compiler
                     .raw("((tmp = ")
                     .subcompile(this.getNode('values'))
-                    .raw(") === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));\n")
+                    .raw(") === '') ? '' : this.createMarkup(tmp, this.env.getCharset()));\n")
                     .outdent()
                     .write('})();')
                 ;

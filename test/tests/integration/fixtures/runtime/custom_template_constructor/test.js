@@ -1,36 +1,25 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 const {TwingTemplate} = require('../../../../../../build/template');
-const {TwingOutputBuffering} = require('../../../../../../build/output-buffering');
 
 class CustomTemplate extends TwingTemplate {
     display(context, blocks) {
-        TwingOutputBuffering.echo('<!-- CUSTOM HEADER -->\n');
+        this.echo('<!-- CUSTOM HEADER -->\n');
 
         super.display(context, blocks);
 
-        TwingOutputBuffering.echo('\n<!-- CUSTOM FOOTER -->');
+        this.echo('\n<!-- CUSTOM FOOTER -->');
     }
 }
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'runtime with custom template class';
+        return 'environment with custom template constructor';
     }
 
     setTwing(env) {
-        let runtime = env.getTemplateRuntime();
-
-        runtime.CustomTemplate = CustomTemplate;
-
-        env.setTemplateRuntime(runtime);
+        env.setTemplateConstructor(CustomTemplate);
 
         super.setTwing(env);
-    }
-
-    getConfig() {
-        return {
-            base_template_class: 'CustomTemplate'
-        }
     }
 
     getTemplates() {

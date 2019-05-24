@@ -1,3 +1,3 @@
-export function isCountable(thing: any) {
+export function isCountable(thing: any): boolean {
     return (typeof thing === 'object');
 }

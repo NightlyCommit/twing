@@ -32,10 +32,10 @@ tap.test('node/with', function (test) {
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
-    throw new Runtime.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.', 1, this.source);
+    this.throwRuntimeError('Variables passed to the "with" tag must be a hash.', 1, this.getSourceContext());
 }
-context.set('_parent', Runtime.clone(context));
-context = Runtime.merge(context, Runtime.iteratorToMap(__internal_fooVar));
+context.set('_parent', this.cloneMap(context));
+context = this.merge(context, this.iteratorToMap(__internal_fooVar));
 (context.has(\`foo\`) ? context.get(\`foo\`) : null)context = context.get('_parent');
 `);
 

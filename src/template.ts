@@ -16,10 +16,28 @@ import {TwingNodeBlock} from "./node/block";
 import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
 import {TwingTemplateWrapper} from "./template-wrapper";
-import {TwingOutputBuffering} from './output-buffering';
+import {echo, flush, obEndClean, obGetClean, obGetContents, obStart, TwingOutputBuffering} from './output-buffering';
 import {iteratorToMap} from "./helper/iterator-to-map";
-import {merge as twingMerge} from "./helper/merge";
+import {merge, merge as twingMerge} from "./helper/merge";
 import {TwingExtensionInterface} from "./extension-interface";
+import {cloneMap} from "./helper/clone-map";
+import {compare} from "./helper/compare";
+import {count} from "./helper/count";
+import {each} from "./helper/each";
+import {isCountable} from "./helper/is-countable";
+import {isMap} from "./helper/is-map";
+import {isIn} from "./helper/is-in";
+import {isTraversable} from "./helper/is-traversable";
+import {twingFunctionConstant} from "./core/functions/constant";
+import {examineObject} from "./helper/examine-object";
+import {TwingMarkup} from "./markup";
+import {twingFunctionRange} from "./core/functions/range";
+
+const isPlainObject = require('is-plain-object');
+const isBool = require('locutus/php/var/is_bool');
+const isFloat = require('locutus/php/var/is_float');
+const isObject = require('isobject');
+const regexParser = require('regex-parser');
 
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
@@ -36,6 +54,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     protected extensions: Map<string, TwingExtensionInterface> = new Map();
+
+    private sourceCode: string;
+    private sourceName: string;
+    private sourcePath: string;
+    private source: TwingSource;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
@@ -54,7 +77,9 @@ export abstract class TwingTemplate {
      *
      * @returns {string} The template name
      */
-    abstract getTemplateName(): string;
+    getTemplateName(): string {
+        return this.sourceName;
+    };
 
     /**
      * Returns debug information about the template.
@@ -71,7 +96,11 @@ export abstract class TwingTemplate {
      * @return TwingSource
      */
     getSourceContext(): TwingSource {
-        return new TwingSource('', this.getTemplateName());
+        if (!this.source && this.sourceName) {
+            this.source = new TwingSource(this.sourceCode, this.sourceName, this.sourcePath);
+        }
+
+        return this.source;
     }
 
     /**
@@ -395,9 +424,11 @@ export abstract class TwingTemplate {
     }
 
     public traceableMethod(method: Function, lineno: number, source: TwingSource) {
+        let self = this;
+
         return function () {
             try {
-                return method.apply(null, arguments);
+                return method.apply(self, arguments);
             }
             catch (e) {
                 if (e instanceof TwingError) {
@@ -416,22 +447,472 @@ export abstract class TwingTemplate {
     };
 
     public traceableDisplayBlock(lineno: number, source: TwingSource) {
-        return this.traceableMethod(this.displayBlock.bind(this), lineno, source);
+        return this.traceableMethod(this.displayBlock, lineno, source);
     };
 
     public traceableDisplayParentBlock(lineno: number, source: TwingSource) {
-        return this.traceableMethod(this.displayParentBlock.bind(this), lineno, source);
+        return this.traceableMethod(this.displayParentBlock, lineno, source);
     };
 
     public traceableRenderBlock(lineno: number, source: TwingSource) {
-        return this.traceableMethod(this.renderBlock.bind(this), lineno, source);
+        return this.traceableMethod(this.renderBlock, lineno, source);
     }
 
     public traceableRenderParentBlock(lineno: number, source: TwingSource) {
-        return this.traceableMethod(this.renderParentBlock.bind(this), lineno, source);
+        return this.traceableMethod(this.renderParentBlock, lineno, source);
     }
 
     public traceableHasBlock(lineno: number, source: TwingSource) {
-        return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
+        return this.traceableMethod(this.hasBlock, lineno, source);
+    }
+
+    /**
+     * Clone a map.
+     *
+     * @param {Map<K, V>} map
+     * @returns {Map<K, V>}
+     */
+    protected cloneMap<K, V>(map: Map<K, V>): Map<K, V> {
+        return cloneMap(map);
+    }
+
+    /**
+     * Compare by conforming to PHP loose comparisons rules.
+     *
+     * @param {*} firstOperand
+     * @param {*} secondOperand
+     * @return boolean
+     */
+    protected compare(firstOperand: any, secondOperand: any): boolean {
+        return compare(firstOperand, secondOperand);
+    }
+
+    /**
+     * Count all elements in an object.
+     *
+     * @param {*} countable
+     * @returns {number}
+     */
+    protected count(countable: any): number {
+        return count(countable);
+    }
+
+    /**
+     * @param {string} string
+     * @param {string} charset
+     *
+     * @return TwingMarkup
+     */
+    protected createMarkup(string: string, charset: string): TwingMarkup {
+        return new TwingMarkup(string, charset);
+    }
+
+    /**
+     * @param {string} string
+     *
+     * @return RegExp
+     */
+    protected createRegex(string: string): RegExp {
+        return regexParser(string);
+    }
+
+    /**
+     * @param {V} low
+     * @param {V} high
+     * @param {number} step
+     *
+     * @return Map<number, V>
+     */
+    protected createRange<V>(low: V, high: V, step: number): Map<number, V> {
+        return twingFunctionRange(low, high, step);
+    }
+
+    /**
+     * @param {*} value
+     *
+     * @return string | void
+     */
+    protected echo(value: any): string | void {
+        return echo(value);
+    }
+
+    /**
+     * Executes the provided function once for each element of an iterable.
+     *
+     * @param {*} it An iterable
+     * @param {Function} cb Function to execute for each element, taking a key and a value as arguments
+     * @return void
+     */
+    protected each(it: any, cb: Function): void {
+        return each(it, cb);
+    }
+
+    /**
+     * @return boolean
+     */
+    protected endAndCleanOutputBuffer(): boolean {
+        return obEndClean();
+    }
+
+    /**
+     * @param {*} seq
+     * @return *
+     */
+    protected ensureTraversable(seq: any): any {
+        if (isTraversable(seq) || isPlainObject(seq)) {
+            return seq;
+        }
+
+        return [];
+    }
+
+    /**
+     * @return boolean
+     */
+    protected flush(): boolean {
+        return flush();
+    }
+
+    /**
+     * @return string | false
+     */
+    protected getAndCleanOutputBuffer(): string | false {
+        return obGetClean();
+    }
+
+    /**
+     * Returns the attribute value for a given array/object.
+     *
+     * @param {*} object The object or array from where to get the item
+     * @param {*} item The item to get from the array or object
+     * @param {Array<*>} _arguments An array of arguments to pass if the item is an object method
+     * @param {string} type The type of attribute (@see Twig_Template constants)
+     * @param {boolean} isDefinedTest Whether this is only a defined check
+     * @param {boolean} ignoreStrictCheck Whether to ignore the strict attribute check or not
+     * @param {boolean} sandboxed
+     *
+     * @return mixed The attribute value, or a boolean when isDefinedTest is true, or null when the attribute is not set and ignoreStrictCheck is true
+     *
+     * @throw TwingErrorRuntime if the attribute does not exist and Twing is running in strict mode and isDefinedTest is false
+     */
+    protected getAttribute(object: any, item: any, _arguments: Array<any> = [], type: string = TwingTemplate.ANY_CALL, isDefinedTest: boolean = false, ignoreStrictCheck: boolean = false, sandboxed: boolean = false): any {
+        let env = this.env;
+        let message: string;
+
+        // ANY_CALL or ARRAY_CALL
+        if (type !== TwingTemplate.METHOD_CALL) {
+            let arrayItem;
+
+            if (isBool(item)) {
+                arrayItem = item ? 1 : 0;
+            }
+            else if (isFloat(item)) {
+                arrayItem = parseInt(item);
+            }
+            else {
+                arrayItem = item;
+            }
+
+            if (object) {
+                if (Array.isArray(object) && (typeof object[arrayItem] !== 'undefined')) {
+                    if (isDefinedTest) {
+                        return true;
+                    }
+
+                    return object[arrayItem];
+                }
+                else if (isMap(object) && object.has(arrayItem)) {
+                    if (isDefinedTest) {
+                        return true;
+                    }
+
+                    return object.get(item);
+                }
+                else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
+                    if (isDefinedTest) {
+                        return true;
+                    }
+
+                    return Reflect.get(object, item);
+                }
+            }
+
+            if ((type === TwingTemplate.ARRAY_CALL) || (Array.isArray(object)) || (object instanceof Map) || (object === null) || (typeof object !== 'object')) {
+                if (isDefinedTest) {
+                    return false;
+                }
+
+                if (ignoreStrictCheck || !env.isStrictVariables()) {
+                    return;
+                }
+
+                if (Array.isArray(object)) {
+                    // object is an array
+                    if (object.length < 1) {
+                        message = `Index "${arrayItem}" is out of bounds as the array is empty.`;
+                    }
+                    else {
+                        message = `Index "${arrayItem}" is out of bounds for array [${object}].`;
+
+                    }
+                }
+                else if (isMap(object)) {
+                    // object is a map
+                    message = `Impossible to access a key ("${item}") on a ${typeof object} variable ("${object.toString()}").`;
+                }
+                else if (type === TwingTemplate.ARRAY_CALL) {
+                    // object is another kind of object
+                    if (object === null) {
+                        message = `Impossible to access a key ("${item}") on a null variable.`;
+                    }
+                    else {
+                        message = `Impossible to access a key ("${item}") on a ${typeof object} variable ("${object.toString()}").`;
+                    }
+                }
+                else if (object === null) {
+                    // object is null
+                    message = `Impossible to access an attribute ("${item}") on a null variable.`;
+                }
+                else {
+                    // object is a primitive
+                    message = `Impossible to access an attribute ("${item}") on a ${typeof object} variable ("${object}").`;
+                }
+
+                throw new TwingErrorRuntime(message);
+            }
+        }
+
+        // ANY_CALL or METHOD_CALL
+        if ((object === null) || (!isObject(object))) {
+            // object is a primitive
+            if (isDefinedTest) {
+                return false;
+            }
+
+            if (ignoreStrictCheck || !env.isStrictVariables()) {
+                return;
+            }
+
+            if (object === null) {
+                message = `Impossible to invoke a method ("${item}") on a null variable.`;
+            }
+            else if (Array.isArray(object)) {
+                message = `Impossible to invoke a method ("${item}") on an array.`;
+            }
+            else {
+                message = `Impossible to invoke a method ("${item}") on a ${typeof object} variable ("${object}").`;
+            }
+
+            throw new TwingErrorRuntime(message);
+        }
+
+        if (object instanceof TwingTemplate) {
+            throw new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.');
+        }
+
+        // object property
+        if (type !== TwingTemplate.METHOD_CALL) {
+            if (Reflect.has(object, item) && (typeof object[item] !== 'function')) {
+                if (isDefinedTest) {
+                    return true;
+                }
+
+                if (sandboxed) {
+                    env.checkPropertyAllowed(object, item);
+                }
+
+                return object[item];
+            }
+        }
+
+        let cache = new Map();
+        let class_ = object.constructor.name;
+        let classCache: Map<string, string> = null;
+
+        // object method
+        // precedence: getXxx() > isXxx() > hasXxx()
+        if (!classCache) {
+            let methods: Array<string> = [];
+
+            for (let property of examineObject(object)) {
+                let candidate = object[property];
+
+                if (typeof candidate === 'function') {
+                    methods.push(property);
+                }
+            }
+
+            methods.sort();
+
+            let lcMethods: Array<string> = methods.map((method) => {
+                return method.toLowerCase();
+            });
+
+            classCache = new Map();
+
+            for (let i = 0; i < methods.length; i++) {
+                let method: string = methods[i];
+                let lcName: string = lcMethods[i];
+
+                classCache.set(method, method);
+                classCache.set(lcName, method);
+
+                let name: string;
+
+                if (lcName[0] === 'g' && lcName.indexOf('get') === 0) {
+                    name = method.substr(3);
+                    lcName = lcName.substr(3);
+                }
+                else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
+                    name = method.substr(2);
+                    lcName = lcName.substr(2);
+                }
+                else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
+                    name = method.substr(3);
+                    lcName = lcName.substr(3);
+
+                    if (lcMethods.includes('is' + lcName)) {
+                        continue;
+                    }
+                }
+                else {
+                    continue;
+                }
+
+                // skip get() and is() methods (in which case, name is empty)
+                if (name) {
+                    if (!classCache.has(name)) {
+                        classCache.set(name, method);
+                    }
+
+                    if (!classCache.has(lcName)) {
+                        classCache.set(lcName, method);
+                    }
+                }
+            }
+
+            if (class_ !== 'Object') {
+                cache.set(class_, classCache);
+            }
+        }
+
+        let itemAsString: string = item as string;
+        let method: string = null;
+        let lcItem: string;
+
+        if (classCache.has(item)) {
+            method = classCache.get(item);
+        }
+        else if (classCache.has(lcItem = itemAsString.toLowerCase())) {
+            method = classCache.get(lcItem);
+        }
+        else {
+            if (isDefinedTest) {
+                return false;
+            }
+
+            if (ignoreStrictCheck || !env.isStrictVariables()) {
+                return;
+            }
+
+            throw new TwingErrorRuntime(`Neither the property "${item}" nor one of the methods ${item}()" or "get${item}()"/"is${item}()"/"has${item}()" exist and have public access in class "${object.constructor.name}".`);
+        }
+
+        if (isDefinedTest) {
+            return true;
+        }
+
+        if (sandboxed) {
+            env.checkMethodAllowed(object, method);
+        }
+
+        return Reflect.get(object, method).apply(object, _arguments);
+    }
+
+    /**
+     * @param {string} constant
+     * @param {*} object
+     *
+     * @return *
+     */
+    protected getConstant(constant: string, object: any): any {
+        return twingFunctionConstant(this.env, constant, object);
+    }
+
+    /**
+     * @return string | false
+     */
+    protected getOutputBufferContent(): string | false {
+        return obGetContents();
+    }
+
+    /**
+     * @param {*} thing
+     * @return boolean
+     */
+    protected isCountable(thing: any): boolean {
+        return isCountable(thing);
+    }
+
+    /**
+     * @param {*} value
+     * @param {*} compare
+     * @return boolean
+     */
+    protected isIn(value: any, compare: any): boolean {
+        return isIn(value, compare);
+    }
+
+    /**
+     * @param {*} candidate
+     * @return boolean
+     */
+    protected isMap(candidate: any): boolean {
+        return isMap(candidate);
+    }
+
+    /**
+     * @param {*} candidate
+     * @return boolean
+     */
+    protected isPlainObject(candidate: any): boolean {
+        return isPlainObject(candidate);
+    }
+
+    /**
+     * Converts input to Map.
+     *
+     * @param {*} iterator
+     * @return {Map<any, any>}
+     */
+    protected iteratorToMap(iterator: any): Map<any, any> {
+        return iteratorToMap(iterator);
+    }
+
+    /**
+     * @param {Array<V> | Map<K, V>} iterable1
+     * @param {Array<V> | Map<K, V>} iterable2
+     *
+     * @return Array<V> | Map<K, V>
+     */
+    protected merge<K, V>(iterable1: Array<V> | Map<K, V>, iterable2: Array<V> | Map<K, V>): Array<V> | Map<K, V> {
+        return merge(iterable1, iterable2);
+    }
+
+    /**
+     * @return boolean
+     */
+    protected startOutputBuffering(): boolean {
+        return obStart();
+    }
+
+    /**
+     * @param {string} message
+     * @param {number} lineno
+     * @param {string} source
+     * @return void
+     */
+    protected throwRuntimeError(message: string, lineno: number, source: string): void {
+        throw(new TwingErrorRuntime(message, lineno, source));
     }
 }

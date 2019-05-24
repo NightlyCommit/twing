@@ -74,7 +74,7 @@ this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), null, 1).display(context);
             let node = new TwingNodeInclude(expr, vars, false, false, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-this.loadTemplate(\`foo.twig\`, null, 1).display(Runtime.merge(context, new Map([[\`foo\`, true]])));
+this.loadTemplate(\`foo.twig\`, null, 1).display(this.merge(context, new Map([[\`foo\`, true]])));
 `);
             test.end();
         });
@@ -124,7 +124,7 @@ try {
     this.loadTemplate(\`foo.twig\`, null, 1).display(new Map([[\`foo\`, true]]));
 }
 catch (e) {
-    if (e instanceof Runtime.TwingErrorLoader) {
+    if (e.name === 'TwingErrorLoader') {
         // ignore missing template
     }
     else {

@@ -47,7 +47,7 @@ tap.test('node/if', function (test) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 `);
             test.end();
@@ -68,10 +68,10 @@ if (true) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else if (false) {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -90,10 +90,10 @@ else if (false) {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -116,16 +116,16 @@ else {
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
-    Runtime.echo(\`a\`);
+    this.echo(\`a\`);
 }
 else if ((context.has(\`b\`) ? context.get(\`b\`) : null)) {
-    Runtime.echo(\`b\`);
+    this.echo(\`b\`);
 }
 else if ((context.has(\`c\`) ? context.get(\`c\`) : null)) {
-    Runtime.echo(\`c\`);
+    this.echo(\`c\`);
 }
 else {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();

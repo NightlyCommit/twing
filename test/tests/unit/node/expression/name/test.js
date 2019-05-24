@@ -29,7 +29,7 @@ tap.test('node/expression/name', function (test) {
         let compiler1 = new TwingTestMockCompiler(new TwingTestEnvironmentStub(loader, {strict_variables: false}));
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { throw new Runtime.TwingErrorRuntime('Variable \`foo\` does not exist.', 1, this.source); })())`);
+(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { this.throwRuntimeError('Variable \`foo\` does not exist.', 1, this.getSourceContext()); })())`);
         test.same(compiler1.compile(node).getSource(), `// line 1, column 1
 (context.has(\`foo\`) ? context.get(\`foo\`) : null)`);
         test.same(compiler.compile(self).getSource(), `// line 1, column 1

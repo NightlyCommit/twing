@@ -1,5 +1,5 @@
-import {range} from "../../helper/range";
+const locutusRange = require('locutus/php/array/range');
 
-export function twingFunctionRange(low: any, high: any, step: number): Map<number, any> {
-    return range(low, high, step);
+export function twingFunctionRange<V>(low: V, high: V, step: number): Map<number, V> {
+    return locutusRange(low, high, step);
 }

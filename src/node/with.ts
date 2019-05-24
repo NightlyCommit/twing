@@ -29,9 +29,9 @@ export class TwingNodeWith extends TwingNode {
                 .raw(";\n")
                 .write(`if (typeof (${varsName}) !== 'object') {\n`)
                 .indent()
-                .write('throw new Runtime.TwingErrorRuntime(\'Variables passed to the "with" tag must be a hash.\', ')
+                .write('this.throwRuntimeError(\'Variables passed to the "with" tag must be a hash.\', ')
                 .repr(this.getTemplateLine())
-                .raw(", this.source);\n")
+                .raw(", this.getSourceContext());\n")
                 .outdent()
                 .write("}\n")
             ;
@@ -40,13 +40,13 @@ export class TwingNodeWith extends TwingNode {
                 compiler.write("context = new Map([['_parent', context]]);\n");
             }
             else {
-                compiler.write("context.set('_parent', Runtime.clone(context));\n");
+                compiler.write("context.set('_parent', this.cloneMap(context));\n");
             }
 
-            compiler.write(`context = Runtime.merge(context, Runtime.iteratorToMap(${varsName}));\n`);
+            compiler.write(`context = this.merge(context, this.iteratorToMap(${varsName}));\n`);
         }
         else {
-            compiler.write("context.set('_parent', Runtime.clone(context));\n");
+            compiler.write("context.set('_parent', this.cloneMap(context));\n");
         }
 
         compiler

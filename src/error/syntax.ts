@@ -1,8 +1,15 @@
 import {TwingError} from "../error";
+import {TwingSource} from "../source";
 
 const Levenshtein = require('levenshtein');
 
 export class TwingErrorSyntax extends TwingError {
+    constructor(message: string, lineno: number = -1, source: TwingSource | string | null = null, previous?: Error) {
+        super(message, lineno, source, previous);
+
+        this.name = 'TwingErrorSyntax';
+    }
+
     /**
      * Tweaks the error message to include suggestions.
      *

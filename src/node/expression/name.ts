@@ -64,11 +64,11 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
                     .string(name)
                     .raw(') ? context.get(')
                     .string(name)
-                    .raw(') : (() => { throw new Runtime.TwingErrorRuntime(\'Variable ')
+                    .raw(') : (() => { this.throwRuntimeError(\'Variable ')
                     .string(name)
                     .raw(' does not exist.\', ')
                     .repr(this.lineno)
-                    .raw(', this.source); })()')
+                    .raw(', this.getSourceContext()); })()')
                     .raw(')')
                 ;
             }

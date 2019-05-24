@@ -23,7 +23,7 @@ tap.test('node/expression/binary/matches', function (test) {
         let node = new TwingNodeExpressionBinaryMatches(left, right, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), 'Runtime.regexParser(2).test(1)');
+        test.same(compiler.compile(node).getSource(), 'this.createRegex(2).test(1)');
 
         test.end();
     });
