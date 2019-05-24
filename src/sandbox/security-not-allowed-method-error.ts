@@ -4,8 +4,10 @@ export class TwingSandboxSecurityNotAllowedMethodError extends TwingSandboxSecur
     private className: string;
     private methodName: string;
 
-    constructor(message: string, className: string, methodName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, className: string, methodName: string, lineno: number, filename: string = null) {
         super(message, lineno, filename);
+
+        this.name = 'TwingSandboxSecurityNotAllowedMethodError';
         this.className = className;
         this.methodName = methodName;
     }

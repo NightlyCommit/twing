@@ -12,7 +12,7 @@ tap.test('node/embed', function (test) {
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-this.loadTemplate(\`foo\`, null, 1, 1).display(Runtime.merge(context, \`bar\`));
+this.loadTemplate(\`foo\`, null, 1, 1).display(this.merge(context, \`bar\`));
 `);
 
         test.end();

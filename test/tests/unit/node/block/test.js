@@ -27,7 +27,7 @@ tap.test('node/block', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 block_foo(context, blocks = new Map()) {
-    Runtime.echo(\`foo\`);
+    this.echo(\`foo\`);
 }
 
 `);

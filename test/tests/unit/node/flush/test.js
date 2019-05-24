@@ -20,7 +20,7 @@ tap.test('node/flush', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.flush();
+this.flush();
 `);
 
         test.end();

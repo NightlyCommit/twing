@@ -32,7 +32,7 @@ tap.test('node/autoescape', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.echo(\`foo\`);
+this.echo(\`foo\`);
 `);
 
         test.end();

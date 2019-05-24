@@ -56,7 +56,7 @@ tap.test('node/expression/test', function (test) {
                 [0, new TwingNodeExpressionConstant('foo', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'anonymous\').traceableCallable(1, this.source)(...[\`foo\`, \`foo\`])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'anonymous\').traceableCallable(1, this.getSourceContext())(...[\`foo\`, \`foo\`])');
 
             test.end();
         });
@@ -66,13 +66,13 @@ tap.test('node/expression/test', function (test) {
 
             let node = createTest(string, 'barbar');
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`])');
 
             node = createTest(string, 'barbar', new Map([
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, null, null, [\`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, null, null, [\`bar\`]])');
 
             node = createTest(string, 'barbar', new Map([
                 [0, new TwingNodeExpressionConstant('1', 1, 1)],
@@ -81,7 +81,7 @@ tap.test('node/expression/test', function (test) {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, \`1\`, \`2\`, [\`3\`, \`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, \`1\`, \`2\`, [\`3\`, \`bar\`]])');
 
             test.end();
         });

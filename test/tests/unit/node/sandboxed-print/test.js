@@ -23,7 +23,7 @@ tap.test('node/sandboxed-print', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.echo(this.env.ensureToStringAllowed(\`foo\`));
+this.echo(this.env.ensureToStringAllowed(\`foo\`));
 `);
 
         test.end();

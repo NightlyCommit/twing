@@ -40,7 +40,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             compiler
                 .raw('(() => {let ' + var_ + ' = ')
                 .subcompile(this.getNode('node'))
-                .raw('; return Runtime.isMap(')
+                .raw('; return this.isMap(')
                 .raw(var_)
                 .raw(') ? (')
                 .raw(var_)
@@ -52,7 +52,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
                 .subcompile(this.getNode('attribute'))
                 .raw(') : null) : (Array.isArray(')
                 .raw(var_)
-                .raw(') || Runtime.isPlainObject(')
+                .raw(') || this.isPlainObject(')
                 .raw(var_)
                 .raw(') ? ')
                 .raw(var_)
@@ -64,7 +64,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             return;
         }
 
-        compiler.raw(`this.traceableMethod(Runtime.getAttribute, ${this.getTemplateLine()}, this.source)(this.env, `);
+        compiler.raw(`this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.getSourceContext())(`);
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);

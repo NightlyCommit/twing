@@ -8,7 +8,7 @@
 export interface TwingSandboxSecurityPolicyInterface {
     TwingSandboxSecurityPolicyInterfaceImpl: TwingSandboxSecurityPolicyInterface;
 
-    checkSecurity(tags: Array<string>, filters: Array<string>, functions: Array<string>): void;
+    checkSecurity(tags: Map<string, number>, filters: Map<string, number>, functions: Map<string, number>): void;
 
     checkMethodAllowed(obj: any, method: string): void;
 

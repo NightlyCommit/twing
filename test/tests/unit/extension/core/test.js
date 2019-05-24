@@ -1,5 +1,4 @@
 const {TwingExtensionCore} = require('../../../../../build/extension/core');
-const {twingFunctionGetAttribute} = require('../../../../../build/core/functions/get-attribute');
 const {twingDateConverter} = require('../../../../../build/core/filters/date');
 const {iconv} = require('../../../../../build/helper/iconv');
 const {formatDateTime} = require('../../../../../build/helper/format-date-time');
@@ -69,44 +68,6 @@ let getTest = function (name) {
     }
 };
 
-class Foo {
-    constructor() {
-        this.oof = 'oof';
-    }
-
-    foo() {
-        return 'foo';
-    }
-
-    getFoo() {
-        return 'getFoo';
-    }
-
-    getBar() {
-        return 'getBar';
-    }
-
-    isBar() {
-        return 'isBar';
-    }
-
-    hasBar() {
-        return 'hasBar';
-    }
-
-    isOof() {
-        return 'isOof';
-    }
-
-    hasFooBar() {
-        return 'hasFooBar';
-    }
-
-    __call() {
-
-    }
-}
-
 function foo_escaper_for_test(env, string, charset) {
     return (string ? string : '') + charset;
 }
@@ -132,10 +93,6 @@ class CoreTestIterator {
     rewind() {
         this.position = 0;
     }
-}
-
-class TwingTestExtensionCoreTemplate extends TwingTemplate {
-
 }
 
 tap.test('TwingExtensionCore', function (test) {
@@ -286,97 +243,6 @@ tap.test('TwingExtensionCore', function (test) {
 
             test.same(callable(['a'], ['b']), ['a', 'b']);
             test.same(callable(new Map([[0, 'a']]), ['b']), new Map([[0, 'a'], [1, 'b']]));
-
-            test.end();
-        });
-
-        test.end();
-    });
-
-    test.test('twingFunctionGetAttribute', function (test) {
-        let env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-            strict_variables: true
-        });
-
-        let source = new TwingSource('', '');
-
-        test.test('should support method calls', function (test) {
-            let foo = new Foo();
-
-            // object property
-            test.same(twingFunctionGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], true), true);
-            test.same(twingFunctionGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
-
-            test.same(twingFunctionGetAttribute(env, foo, 'foo'), 'foo', 'should resolve methods by their name');
-            test.same(twingFunctionGetAttribute(env, foo, 'bar'), 'getBar', 'should resolve get{name} if {name} doesn\'t exist');
-            test.same(twingFunctionGetAttribute(env, foo, 'Oof'), 'isOof', 'should resolve is{name} if {name} and get{name} don\'t exist');
-            test.same(twingFunctionGetAttribute(env, foo, 'fooBar'), 'hasFooBar', 'should resolve has{name} if {name}, get{name} and is{name} don\'t exist');
-
-            test.same(twingFunctionGetAttribute(env, foo, 'getfoo'), 'getFoo', 'should resolve method in a case-insensitive way');
-            test.same(twingFunctionGetAttribute(env, foo, 'GeTfOo'), 'getFoo', 'should resolve method in a case-insensitive way');
-
-            // !METHOD_CALL + boolean item
-            test.same(twingFunctionGetAttribute(env, [2, 3], false), 2);
-            test.same(twingFunctionGetAttribute(env, [2, 3], true), 3);
-
-            // !METHOD_CALL + float item
-            test.same(twingFunctionGetAttribute(env, [2, 3], 0.1), 2);
-            test.same(twingFunctionGetAttribute(env, [2, 3], 1.1), 3);
-
-            test.throws(function () {
-                console.warn(twingFunctionGetAttribute(env, [], 0));
-            }, new TwingErrorRuntime('Index "0" is out of bounds as the array is empty.', -1, source));
-
-            test.throws(function () {
-                console.warn(twingFunctionGetAttribute(env, [1], 1));
-            }, new TwingErrorRuntime('Index "1" is out of bounds for array [1].', -1, source));
-
-            test.throws(function () {
-                console.warn(twingFunctionGetAttribute(env, new Map(), 'foo'));
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a object variable ("[object Map]").', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, null, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, 5, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, null, 'foo', [], TwingTemplate.ANY_CALL);
-            }, new TwingErrorRuntime('Impossible to access an attribute ("foo") on a null variable.', -1, source));
-
-            // METHOD_CALL
-            test.equals(twingFunctionGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, true), false);
-            test.equals(twingFunctionGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, false, true), undefined);
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, null, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, [], 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on an array.', -1, source));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, new TwingTestExtensionCoreTemplate(env), 'foo');
-            }, new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.', -1));
-
-            test.throws(function () {
-                twingFunctionGetAttribute(env, new Foo(), 'ooof', TwingTemplate.ANY_CALL, [], false, false);
-            }, new TwingErrorRuntime('Neither the property "ooof" nor one of the methods ooof()" or "getooof()"/"isooof()"/"hasooof()" exist and have public access in class "Foo".', -1, source));
-
-            // no strict_variables
-            env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-                strict_variables: false
-            });
-
-            test.same(twingFunctionGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
 
             test.end();
         });

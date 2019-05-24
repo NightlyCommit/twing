@@ -3,8 +3,9 @@
  *
  * @param {*} it An iterable
  * @param {Function} cb Function to execute for each element, taking a key and a value as arguments
+ * @return void
  */
-export function each(it: any, cb: Function) {
+export function each(it: any, cb: Function): void {
     if (it.entries) {
         for (let [k, v] of it.entries()) {
             cb(k, v);

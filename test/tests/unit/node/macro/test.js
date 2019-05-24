@@ -50,18 +50,18 @@ macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
     let result;
     let error;
 
-    Runtime.obStart();
+    this.startOutputBuffering();
     try {
-        Runtime.echo(\`foo\`);
+        this.echo(\`foo\`);
 
-        let tmp = Runtime.obGetContents();
-        result = (tmp === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());
+        let tmp = this.getOutputBufferContent();
+        result = (tmp === '') ? '' : this.createMarkup(tmp, this.env.getCharset());
     }
     catch (e) {
         error = e;
     }
 
-    Runtime.obEndClean();
+    this.endAndCleanOutputBuffer();
 
     if (error) {
         throw error;

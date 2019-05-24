@@ -8,8 +8,10 @@ import {TwingSandboxSecurityError} from "./security-error";
 export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
     private filterName: string;
 
-    constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, functionName: string, lineno: number, filename: string = null) {
         super(message, lineno, filename);
+
+        this.name = 'TwingSandboxSecurityNotAllowedFilterError';
         this.filterName = functionName;
     }
 

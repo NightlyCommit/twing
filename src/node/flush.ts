@@ -12,7 +12,7 @@ export class TwingNodeFlush extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("Runtime.flush();\n")
+            .write("this.flush();\n")
         ;
     }
 }

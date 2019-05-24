@@ -55,15 +55,15 @@ export class TwingNodeFor extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("context.set('_parent', Runtime.clone(context));\n\n")
+            .write("context.set('_parent', this.cloneMap(context));\n\n")
             .write('(() => {\n')
             .indent()
-            .write('let c = Runtime.ensureTraversable(')
+            .write('let c = this.ensureTraversable(')
             .subcompile(this.getNode('seq'))
             .raw(");\n\n")
             .write('if (c === context) {\n')
             .indent()
-            .write("context.set('_seq', Runtime.clone(context));\n")
+            .write("context.set('_seq', this.cloneMap(context));\n")
             .outdent()
             .write("}\n")
             .write("else {\n")
@@ -91,9 +91,9 @@ export class TwingNodeFor extends TwingNode {
 
             if (!this.getAttribute('ifexpr')) {
                 compiler
-                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Runtime.isCountable(context.get('_seq')))) {\n")
+                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && this.isCountable(context.get('_seq')))) {\n")
                     .indent()
-                    .write("let length = Runtime.count(context.get('_seq'));\n")
+                    .write("let length = this.count(context.get('_seq'));\n")
                     .write("let loop = context.get('loop');\n")
                     .write("loop.set('revindex0', length - 1);\n")
                     .write("loop.set('revindex', length);\n")
@@ -110,7 +110,7 @@ export class TwingNodeFor extends TwingNode {
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
         compiler
-            .write("Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {\n")
+            .write("this.each.bind(this)(context.get('_seq'), (__key__, __value__) => {\n")
             .indent()
             .write('context.set(')
             .subcompile(this.getNode('key_target'), true)

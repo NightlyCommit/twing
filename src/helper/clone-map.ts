@@ -1,10 +1,10 @@
 /**
  * Clone a map.
  *
- * @param {Map<*, *>} map
- * @returns {Map<*, *>}
+ * @param {Map<K, V>} map
+ * @returns {Map<K, V>}
  */
-export function clone(map: Map<any, any>) {
+export function cloneMap<K, V>(map: Map<K, V>): Map<K, V> {
     let result = new Map();
 
     for (let [key, value] of map) {

@@ -76,9 +76,9 @@ context.set(\`foo\`, \`foo\`);
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 (() => {
     let tmp;
-    Runtime.obStart();
-    Runtime.echo(\`foo\`);
-    context.set(\`foo\`, ((tmp = Runtime.obGetClean()) === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));
+    this.startOutputBuffering();
+    this.echo(\`foo\`);
+    context.set(\`foo\`, ((tmp = this.getAndCleanOutputBuffer()) === '') ? '' : this.createMarkup(tmp, this.env.getCharset()));
 })();
 `);
 
@@ -98,7 +98,7 @@ context.set(\`foo\`, \`foo\`);
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
 (() => {
     let tmp;
-    context.set(\`foo\`, ((tmp = \`foo\`) === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));
+    context.set(\`foo\`, ((tmp = \`foo\`) === '') ? '' : this.createMarkup(tmp, this.env.getCharset()));
 })();
 `);
 

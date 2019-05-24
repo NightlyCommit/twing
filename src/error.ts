@@ -25,7 +25,7 @@ export class TwingError extends Error {
     constructor(message: string, lineno: number = -1, source: TwingSource | Object | null = null, previous?: Error) {
         super(message);
 
-        this.name = this.constructor.name;
+        this.name = 'TwingError';
         this.previous = previous;
 
         if (previous) {
@@ -34,23 +34,23 @@ export class TwingError extends Error {
 
         this.rawMessage = message;
 
-        let name: string | Object;
+        let sourceName: string | Object;
 
         if (source === null) {
-            name = null;
+            sourceName = null;
         }
         else if (!(source instanceof TwingSource)) {
-            name = source;
+            sourceName = source;
         }
         else {
-            name = source.getName();
+            sourceName = source.getName();
 
             this.sourceCode = source.getCode();
             this.sourcePath = source.getPath();
         }
 
         this.lineno = lineno;
-        this.sourceName = name;
+        this.sourceName = sourceName;
 
         this.updateRepr();
     }

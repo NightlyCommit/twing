@@ -29,7 +29,7 @@ tap.test('node/sandboxed', function (test) {
     if (!alreadySandboxed) {
         this.env.enableSandbox();
     }
-    Runtime.echo(\`foo\`);
+    this.echo(\`foo\`);
     if (!alreadySandboxed) {
         this.env.disableSandbox();
     }
