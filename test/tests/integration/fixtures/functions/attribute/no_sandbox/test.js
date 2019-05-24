@@ -16,8 +16,4 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getExpected() {
         return require('../expected.html');
     }
-
-    getExtensions() {
-        return super.getExtensions(false);
-    }
 };

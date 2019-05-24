@@ -1,6 +1,6 @@
-const {TwingCompiler} = require("../../build");
-const TwingTestMockEnvironment = require("./environment");
-const TwingTestMockLoader = require("./loader");
+const {TwingCompiler} = require('../../build/compiler');
+const TwingTestMockEnvironment = require('./environment');
+const TwingTestMockLoader = require('./loader');
 
 module.exports = class extends TwingCompiler {
     constructor(env = null) {

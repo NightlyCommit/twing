@@ -17,9 +17,8 @@
     "type": "git",
     "url": "git://github.com/ericmorand/twing"
   },
-  "main": "index.js",
-  "browser": "browser.js",
-  "types": "index.d.ts",
+  "main": "environment/node.js",
+  "browser": "environment/browser.js",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -58,7 +57,7 @@
     "iconv-lite": "^0.4.19",
     "is-integer": "^1.0.7",
     "is-number": "^5.0.0",
-    "is-plain-object": "^2.0.4",
+    "is-plain-object": "^3.0.0",
     "isobject": "^3.0.1",
     "levenshtein": "^1.0.5",
     "locutus": "^2.0.9",
@@ -79,6 +78,7 @@
     "@types/luxon": "^1.4.0",
     "@types/node": "^9.3.0",
     "@types/sinon": "^4.3.0",
+    "@types/tape": "^4.2.33",
     "@types/tmp": "0.0.33",
     "browserify": "^16.2.3",
     "coveralls": "^3.0.0",

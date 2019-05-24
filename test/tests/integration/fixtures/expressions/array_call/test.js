@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return 'Twing supports method calls';
+        return 'Twing supports array calls';
     }
 
     getTemplates() {
