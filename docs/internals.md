@@ -125,54 +125,41 @@ You can manually compile a node tree to JavaScript code with the `compile()` met
 let javaScript = twing.compile(nodes);
 ````
 
-The generated template for a `Hello {{ name }}` template reads as follows (the actual output can differ depending on the version of Twing you are using):
+The generated template for a `Hello {{ name }}` template reads as follows:
 
 ````javascript
-module.exports = (Runtime) => {
-    let templates = {};
+module.exports = (TemplateConstructor) => {
+    return {
+        /* index */
+        main: class extends TemplateConstructor {
+            constructor(env) {
+                super(env);
     
-
-    /* index */
-    templates.__TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 = class __TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 extends Runtime.TwingTemplate {
-        constructor(env) {
-            super(env);
-
-            this.source = this.getSourceContext();
-
-            this.parent = false;
-
-            this.blocks = new Map([
-            ]);
-        }
-
-        doDisplay(context, blocks = new Map()) {
-            // line 1, column 1
-            Runtime.echo(`Hello `);
-            Runtime.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
-        }
-
-        getTemplateName() {
-            return `index`;
-        }
-
-        getSourceMapSource() {
-            return this.env.getLoader().resolve(`index`);
-        }
-
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[20, {"line": 1, "column": 1}]]);
-        }
-
-        getSourceContext() {
-            return new Runtime.TwingSource(``, `index`, ``);
+                this.sourceCode = ``;
+                this.sourceName = `index`;
+                this.sourcePath = ``;
+    
+                this.parent = false;
+    
+                this.blocks = new Map([
+                ]);
+            }
+    
+            doDisplay(context, blocks = new Map()) {
+                // line 1, column 1
+                Runtime.echo(`Hello `);
+                Runtime.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
+            }
+    
+            isTraitable() {
+                return false;
+            }
+    
+            getDebugInfo() {
+                return new Map([[18, {"line": 1, "column": 1}]]);
+            }
         }
     };
-
-    return templates;
 };
 ````
 

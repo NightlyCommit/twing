@@ -48,35 +48,32 @@ tap.test('node/module', function (test) {
             let node = new TwingNodeModule(body, parent, blocks, macros, traits, [], source);
 
             test.same(compiler.compile(node).getSource(), `module.exports = (TemplateConstructor) => {
-    let templates = {};
-    
+    return {
+        /* foo.twig */
+        main: class extends TemplateConstructor {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class extends TemplateConstructor {
-        constructor(env) {
-            super(env);
+                this.sourceCode = \`\`;
+                this.sourceName = \`foo.twig\`;
+                this.sourcePath = \`\`;
 
-            this.sourceCode = \`\`;
-            this.sourceName = \`foo.twig\`;
-            this.sourcePath = \`\`;
+                this.parent = false;
 
-            this.parent = false;
+                this.blocks = new Map([
+                ]);
+            }
 
-            this.blocks = new Map([
-            ]);
-        }
+            doDisplay(context, blocks = new Map()) {
+                // line 1, column 1
+                this.echo(\`foo\`);
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 1, column 1
-            this.echo(\`foo\`);
-        }
-
-        getDebugInfo() {
-            return new Map([[22, {"line": 1, "column": 1}]]);
+            getDebugInfo() {
+                return new Map([[20, {"line": 1, "column": 1}]]);
+            }
         }
     };
-
-    return templates;
 };`);
 
             test.end();
@@ -100,45 +97,42 @@ tap.test('node/module', function (test) {
             let node = new TwingNodeModule(body, extends_, blocks, macros, traits, [], source);
 
             test.same(compiler.compile(node).getSource(), `module.exports = (TemplateConstructor) => {
-    let templates = {};
-    
+    return {
+        /* foo.twig */
+        main: class extends TemplateConstructor {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class extends TemplateConstructor {
-        constructor(env) {
-            super(env);
+                this.sourceCode = \`\`;
+                this.sourceName = \`foo.twig\`;
+                this.sourcePath = \`\`;
 
-            this.sourceCode = \`\`;
-            this.sourceName = \`foo.twig\`;
-            this.sourcePath = \`\`;
+                // line 1, column 1
+                this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
+                this.blocks = new Map([
+                ]);
+            }
 
-            // line 1, column 1
-            this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
-            this.blocks = new Map([
-            ]);
-        }
+            doGetParent(context) {
+                return \`layout.twig\`;
+            }
 
-        doGetParent(context) {
-            return \`layout.twig\`;
-        }
+            doDisplay(context, blocks = new Map()) {
+                // line 2, column 1
+                context.set(\`macro\`, this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2));
+                // line 1, column 1
+                this.parent.display(context, this.merge(this.blocks, blocks));
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 2, column 1
-            context.set(\`macro\`, this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2));
-            // line 1, column 1
-            this.parent.display(context, this.merge(this.blocks, blocks));
-        }
+            isTraitable() {
+                return false;
+            }
 
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[28, {"line": 1, "column": 1}], [26, {"line": 2, "column": 1}], [15, {"line": 1, "column": 1}]]);
+            getDebugInfo() {
+                return new Map([[26, {"line": 1, "column": 1}], [24, {"line": 2, "column": 1}], [13, {"line": 1, "column": 1}]]);
+            }
         }
     };
-
-    return templates;
 };`);
 
             test.end();
@@ -179,44 +173,41 @@ tap.test('node/module', function (test) {
             compiler = new TwingTestMockCompiler(twing);
 
             test.same(compiler.compile(node).getSource(), `module.exports = (TemplateConstructor) => {
-    let templates = {};
-    
+    return {
+        /* foo.twig */
+        main: class extends TemplateConstructor {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class extends TemplateConstructor {
-        constructor(env) {
-            super(env);
+                this.sourceCode = \`{{ foo }}\`;
+                this.sourceName = \`foo.twig\`;
+                this.sourcePath = \`\`;
 
-            this.sourceCode = \`{{ foo }}\`;
-            this.sourceName = \`foo.twig\`;
-            this.sourcePath = \`\`;
+                this.blocks = new Map([
+                ]);
+            }
 
-            this.blocks = new Map([
-            ]);
-        }
+            doGetParent(context) {
+                // line 2, column 1
+                return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
+            }
 
-        doGetParent(context) {
-            // line 2, column 1
-            return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
-        }
+            doDisplay(context, blocks = new Map()) {
+                // line 4, column 1
+                context.set(\`foo\`, \`foo\`);
+                // line 2, column 1
+                this.getParent(context).display(context, this.merge(this.blocks, blocks));
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 4, column 1
-            context.set(\`foo\`, \`foo\`);
-            // line 2, column 1
-            this.getParent(context).display(context, this.merge(this.blocks, blocks));
-        }
+            isTraitable() {
+                return false;
+            }
 
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[27, {"line": 2, "column": 1}], [25, {"line": 4, "column": 1}], [20, {"line": 2, "column": 1}]]);
+            getDebugInfo() {
+                return new Map([[25, {"line": 2, "column": 1}], [23, {"line": 4, "column": 1}], [18, {"line": 2, "column": 1}]]);
+            }
         }
     };
-
-    return templates;
 };`);
 
             test.end();

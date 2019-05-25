@@ -11,6 +11,10 @@ tap.test('cache filesystem', function (test) {
     let cache = new TwingCacheFilesystem(fixturesPath);
 
     test.test('load', function (test) {
+        let load = cache.load('not_found');
+
+        test.same(load(), {});
+
         test.test('should bypass require cache', function (test) {
             let load1 = cache.load(joinPaths(fixturesPath, 'template.js'));
             let load2 = cache.load(joinPaths(fixturesPath, 'template.js'));

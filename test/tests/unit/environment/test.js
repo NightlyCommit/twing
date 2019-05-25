@@ -340,7 +340,7 @@ tap.test('environment', function (test) {
         let loader = new TwingLoaderArray({index: '{{ foo }}'});
         let twing = new TwingEnvironment(loader, options);
 
-        let key = cache.generateKey('index', twing.getTemplateClass('index'));
+        let key = cache.generateKey('index', twing.getTemplateHash('index'));
         cache.write(key, twing.compileSource(new TwingSource('{{ foo }}', 'index')));
 
         // check that extensions won't be initialized when rendering a template that is already in the cache
@@ -391,16 +391,16 @@ tap.test('environment', function (test) {
         let loader = getMockLoader(templateName, templateContent);
         let twing = new TwingTestMockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
-        let generateKeyStub = sinon.stub(cache, 'generateKey').returns('key');
-        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(0);
+        let generateKeySpy = sinon.spy(cache, 'generateKey');
+        let getTimestampSpy = sinon.spy(cache, 'getTimestamp');
         let writeSpy = sinon.spy(cache, 'write');
         let loadSpy = sinon.spy(cache, 'load');
         let isFreshStub = sinon.stub(loader, 'isFresh').returns(true);
 
         twing.loadTemplate(templateName);
 
-        test.same(generateKeyStub.callCount, 1, 'generateKey should be called once');
-        test.same(getTimestampStub.callCount, 1, 'getTimestamp should be called once');
+        test.same(generateKeySpy.callCount, 1, 'generateKey should be called once');
+        test.same(getTimestampSpy.callCount, 1, 'getTimestamp should be called once');
         test.same(isFreshStub.callCount, 1, 'isFresh should be called once');
         test.same(writeSpy.callCount, 0, 'write should not be called');
         test.true(loadSpy.callCount >= 1, 'load should be called at least once');
@@ -704,13 +704,13 @@ tap.test('environment', function (test) {
             debug: false
         });
 
-        let templateClass = env.getTemplateClass('foo');
+        let templateHash = env.getTemplateHash('foo');
 
         test.test('enable', function (test) {
             env.enableDebug();
 
             test.true(env.isDebug());
-            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.notSame(env.getTemplateHash('foo'), templateHash);
             test.end();
         });
 
@@ -718,7 +718,7 @@ tap.test('environment', function (test) {
             env.disableDebug();
 
             test.false(env.isDebug());
-            test.same(env.getTemplateClass('foo'), templateClass);
+            test.same(env.getTemplateHash('foo'), templateHash);
             test.end();
         });
 
@@ -753,13 +753,13 @@ tap.test('environment', function (test) {
             strict_variables: false
         });
 
-        let templateClass = env.getTemplateClass('foo');
+        let templateHash = env.getTemplateHash('foo');
 
         test.test('enable', function (test) {
             env.enableStrictVariables();
 
             test.true(env.isStrictVariables());
-            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.notSame(env.getTemplateHash('foo'), templateHash);
             test.end();
         });
 
@@ -767,7 +767,7 @@ tap.test('environment', function (test) {
             env.disableStrictVariables();
 
             test.false(env.isStrictVariables());
-            test.same(env.getTemplateClass('foo'), templateClass);
+            test.same(env.getTemplateHash('foo'), templateHash);
             test.end();
         });
 
@@ -1344,14 +1344,14 @@ tap.test('environment', function (test) {
             }
 
             class CustomCache extends TwingCacheNull {
-                generateKey(name, className) {
-                    return className;
+                generateKey(name, hash) {
+                    return hash;
                 }
 
                 load(key) {
                     let obj = {};
 
-                    obj[key] = CustomTemplate;
+                    obj['main'] = CustomTemplate;
 
                     return () => {
                         return obj;

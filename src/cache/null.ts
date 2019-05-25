@@ -14,7 +14,7 @@ export class TwingCacheNull implements TwingCacheInterface {
         this.TwingCacheInterfaceImpl = this;
     }
 
-    generateKey(name: string, className: string): string {
+    generateKey(name: string, hash: string): string {
         return '';
     }
 

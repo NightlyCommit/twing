@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return '"embed" tag';
+        return '"embed" tag with complex dynamic parent';
     }
 
     getTemplates() {

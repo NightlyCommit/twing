@@ -6,9 +6,6 @@ let fs = require('fs-extra');
 let path = require('path');
 let tmp = require('tmp');
 
-const sha256 = require('crypto-js/sha256');
-const hex = require('crypto-js/enc-hex');
-
 /**
  * Implements a cache on the filesystem.
  *
@@ -30,9 +27,7 @@ export class TwingCacheFilesystem implements TwingCacheInterface {
         this.TwingCacheInterfaceImpl = this;
     }
 
-    generateKey(name: string, className: string) {
-        let hash: string = hex.stringify(sha256(className));
-
+    generateKey(name: string, hash: string) {
         return path.join(
             this.directory,
             hash[0] + hash[1],

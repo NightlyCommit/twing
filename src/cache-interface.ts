@@ -7,14 +7,14 @@ export interface TwingCacheInterface {
     TwingCacheInterfaceImpl: TwingCacheInterface,
 
     /**
-     * Generates a cache key for the given template class name.
+     * Generates a cache key for the given template.
      *
      * @param {string} name The template name
-     * @param {string} className The template class name
+     * @param {string} hash The template hash
      *
      * @return string
      */
-    generateKey(name: string, className: string): string;
+    generateKey(name: string, hash: string): string;
 
     /**
      * Writes the compiled template to cache.
