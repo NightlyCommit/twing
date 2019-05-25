@@ -5,7 +5,7 @@ module.exports = class TwingTestMockCache {
         this.TwingCacheInterfaceImpl = this;
     }
 
-    generateKey(name, className) {
+    generateKey(name, hash) {
         return 'key'
     }
 
@@ -16,7 +16,7 @@ module.exports = class TwingTestMockCache {
     load(key) {
         let templates = {};
 
-        templates['__TwingTemplate_foo'] = TwingTestMockTemplate;
+        templates['main'] = TwingTestMockTemplate;
 
         return () => {
             return templates;

@@ -287,25 +287,45 @@ export abstract class TwingEnvironment extends EventEmitter {
     }
 
     /**
-     * Gets the template class associated with the given string.
+     * Gets the main template key.
      *
-     * The generated template class is based on the following parameters:
+     * @return string The template key
+     */
+    getMainTemplateKey(): string {
+        return 'main';
+    }
+
+    /**
+     * Gets the embedded template key associated with the given index.
+     *
+     * @param {number|null} index The embededd template index
+     *
+     * @return string The template key
+     */
+    getEmbeddedTemplateKey(index: number) {
+        return 'embed_' + index;
+    }
+
+    /**
+     * Gets the template hash associated with the given string.
+     *
+     * The generated template hash is based on the following parameters:
      *
      *  * The cache key for the given template;
      *  * The currently enabled extensions;
      *  * Twing version;
      *  * Options with what environment was created.
      *
-     * @param {string} name The name for which to calculate the template class name
+     * @param {string} name The name for which to calculate the template hash
      * @param {number|null} index The index if it is an embedded template
      * @param {TwingSource} from The source that initiated the template loading
      *
-     * @return string The template class name
+     * @return string The template hash
      */
-    getTemplateClass(name: string, index: number = null, from: TwingSource = null) {
+    getTemplateHash(name: string, index: number = null, from: TwingSource = null) {
         let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
-        return 'Template_' + hex.stringify(sha256(key)) + (index === null ? '' : '_' + index);
+        return hex.stringify(sha256(key)) + (index === null ? '' : '_' + index);
     }
 
     /**
@@ -368,9 +388,6 @@ export abstract class TwingEnvironment extends EventEmitter {
     /**
      * Loads a template internal representation.
      *
-     * This method is for internal use only and should never be called
-     * directly.
-     *
      * @param {string} name  The template name
      * @param {number} index The index if it is an embedded template
      * @param {TwingSource} from The source that initiated the template loading
@@ -387,19 +404,25 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.emit('template', name, from);
 
         let templateConstructor = this.getTemplateConstructor();
-        let cls = this.getTemplateClass(name, null, from);
-        let mainCls = cls;
+        let templateKey = index === null ? this.getMainTemplateKey() : this.getEmbeddedTemplateKey(index);
+
+        let templateHash: string;
+        let mainTemplateHash: string = this.getTemplateHash(name, null, from);
 
         if (index !== null) {
-            cls = `${cls}_${index}`;
+            templateHash = this.getTemplateHash(name, index, from);
+        } else {
+            templateHash = mainTemplateHash;
         }
 
-        if (this.loadedTemplates.has(cls)) {
-            return this.loadedTemplates.get(cls);
+        let loadedTemplatesKey = mainTemplateHash + templateKey;
+
+        if (this.loadedTemplates.has(loadedTemplatesKey)) {
+            return this.loadedTemplates.get(loadedTemplatesKey);
         }
 
         let cache = this.cache as TwingCacheInterface;
-        let key = cache.generateKey(name, mainCls);
+        let key = cache.generateKey(name, mainTemplateHash);
 
         let templates: { [s: string]: new(e: TwingEnvironment) => TwingTemplate } = {};
 
@@ -407,7 +430,7 @@ export abstract class TwingEnvironment extends EventEmitter {
             templates = cache.load(key)(templateConstructor);
         }
 
-        if (!templates[cls]) {
+        if (!templates[templateKey]) {
             let source = this.getLoader().getSourceContext(name, from);
             let content = this.compileSource(source);
 
@@ -415,7 +438,7 @@ export abstract class TwingEnvironment extends EventEmitter {
 
             templates = cache.load(key)(templateConstructor);
 
-            if (!templates[cls]) {
+            if (!templates[templateKey]) {
                 templates = new Function(`let module = {
     exports: undefined
 };
@@ -426,7 +449,7 @@ return module.exports;
 
 `)()(templateConstructor);
 
-                if (!templates[cls]) {
+                if (!templates[templateKey]) {
                     throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
                 }
             }
@@ -435,28 +458,27 @@ return module.exports;
         // to be removed in 3.0
         this.extensionSet.initRuntime(this);
 
-        if (this.loading.has(cls)) {
+        if (this.loading.has(templateHash)) {
             throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${join(merge(this.loading, new Map([[0, name]])) as Map<any, string>, ' -> ')}.`);
         }
 
         let mainTemplate: TwingTemplate;
 
-        this.loading.set(cls, name);
+        this.loading.set(templateHash, name);
 
         try {
             for (let key in templates) {
                 let Tpl = templates[key];
                 let template = new Tpl(this);
 
-                if (key === mainCls) {
-                    key = cls;
+                if (key === this.getMainTemplateKey()) {
                     mainTemplate = template;
                 }
 
-                this.loadedTemplates.set(key, template);
+                this.loadedTemplates.set(mainTemplateHash + key, template);
             }
         } finally {
-            this.loading.delete(cls);
+            this.loading.delete(templateHash);
         }
 
         return mainTemplate;
@@ -907,7 +929,7 @@ return module.exports;
             constructor = TwingSourceMapNode;
         }
 
-        return  constructor;
+        return constructor;
     }
 
     /**

@@ -48,23 +48,30 @@ export class TwingNodeModule extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        if (!this.getAttribute('index')) {
+        let index: number = this.getAttribute('index');
+
+        if (index === null) {
             compiler
                 .write('module.exports = (TemplateConstructor) => {\n')
                 .indent()
-                .write('let templates = {};\n')
+                .write('return {\n')
+                .indent()
             ;
         }
 
         this.compileTemplate(compiler);
 
-        for (let template of this.getAttribute('embedded_templates')) {
+        let embeddedTemplates: TwingNodeModule[] = this.getAttribute('embedded_templates');
+
+        for (let template of embeddedTemplates) {
             compiler.subcompile(template);
         }
 
-        if (!this.getAttribute('index')) {
+        if (index === null) {
             compiler
-                .write('return templates;\n')
+                .outdent()
+                .raw('\n')
+                .write('};\n')
                 .outdent()
                 .write('};')
             ;
@@ -107,8 +114,7 @@ export class TwingNodeModule extends TwingNode {
 
         if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             compiler.subcompile(parent);
-        }
-        else {
+        } else {
             compiler
                 .raw('this.loadTemplate(')
                 .subcompile(parent)
@@ -128,13 +134,16 @@ export class TwingNodeModule extends TwingNode {
     }
 
     protected compileClassHeader(compiler: TwingCompiler) {
-        let templateClass = compiler.getEnvironment().getTemplateClass(this.source.getName(), this.getAttribute('index'));
+        let index: number = this.getAttribute('index');
+        let templateKey = index === null ? compiler.getEnvironment().getMainTemplateKey() : compiler.getEnvironment().getEmbeddedTemplateKey(index);
+
+        if (index !== null) {
+            compiler.raw(',\n')
+        }
 
         compiler
-            .write("\n\n")
             .write('/* ' + this.source.getName() + ' */\n')
-            .write('templates.')
-            .raw(`${templateClass} = class extends TemplateConstructor {\n`)
+            .write(`${templateKey}: class extends TemplateConstructor {\n`)
             .indent();
     }
 
@@ -144,7 +153,7 @@ export class TwingNodeModule extends TwingNode {
             .indent()
             .subcompile(this.getNode('constructor_start'))
             .write('super(env);\n\n')
-            .write('this.sourceCode = ').string(`${compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ?  this.source.getCode() : ''}`).raw(';\n')
+            .write('this.sourceCode = ').string(`${compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ? this.source.getCode() : ''}`).raw(';\n')
             .write('this.sourceName = ').string(this.source.getName()).raw(';\n')
             .write('this.sourcePath = ').string(this.source.getPath()).raw(';\n\n')
         ;
@@ -152,8 +161,7 @@ export class TwingNodeModule extends TwingNode {
         // parent
         if (!this.hasNode('parent')) {
             compiler.write("this.parent = false;\n\n");
-        }
-        else {
+        } else {
             let parent = this.getNode('parent');
 
             if (parent && (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
@@ -233,8 +241,7 @@ export class TwingNodeModule extends TwingNode {
                         .write(`this.traits = this.merge(this.traits, _trait_${i}_blocks);\n`)
                     ;
                 }
-            }
-            else {
+            } else {
                 compiler
                     .write("this.traits = this.cloneMap(_trait_0_blocks);\n\n")
                 ;
@@ -244,8 +251,7 @@ export class TwingNodeModule extends TwingNode {
                 .write("this.blocks = this.merge(this.traits, new Map([\n")
                 .indent()
             ;
-        }
-        else {
+        } else {
             compiler
                 .write("this.blocks = new Map([\n")
             ;
@@ -353,8 +359,7 @@ export class TwingNodeModule extends TwingNode {
 
             if (this.getNode('body').getType() === TwingNodeType.BODY) {
                 nodes = this.getNode('body').getNode(0);
-            }
-            else {
+            } else {
                 nodes = this.getNode('body');
             }
 
@@ -407,8 +412,7 @@ export class TwingNodeModule extends TwingNode {
             .write("getDebugInfo() {\n")
             .indent()
             .write('return ')
-            // @see https://github.com/Microsoft/TypeScript/issues/11152
-            .repr(new Map(Array.from(compiler.getDebugInfo()).reverse() as Iterable<any>))
+            .repr(new Map(Array.from(compiler.getDebugInfo()).reverse()))
             .raw(';\n')
             .outdent()
             .write("}\n")
@@ -419,7 +423,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .subcompile(this.getNode('class_end'))
             .outdent()
-            .write('};\n\n')
+            .write('}')
         ;
     }
 }

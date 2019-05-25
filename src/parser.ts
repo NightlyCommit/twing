@@ -20,7 +20,6 @@ import {push} from "./helper/push";
 import {TwingNodeComment} from "./node/comment";
 
 const ctype_space = require('locutus/php/ctype/ctype_space');
-const mt_rand = require('locutus/php/math/mt_rand');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
 
@@ -61,6 +60,7 @@ export class TwingParser {
     private traits: Map<string, TwingNode>;
     private embeddedTemplates: Array<TwingNodeModule> = [];
     private varNameSalt: number = 0;
+    private embeddedTemplateIndex: number = 0;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
@@ -142,7 +142,6 @@ export class TwingParser {
         node = traverser.traverse(node) as TwingNodeModule;
 
         // restore previous stack so previous parse() call can resume working
-        let key: string;
         let stack = this.stack.pop();
 
         this.stream = stack.stream;
@@ -312,7 +311,7 @@ export class TwingParser {
     }
 
     embedTemplate(template: TwingNodeModule) {
-        template.setIndex(mt_rand());
+        template.setIndex(this.embeddedTemplateIndex++);
 
         this.embeddedTemplates.push(template);
     }
