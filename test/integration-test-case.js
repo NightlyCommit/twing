@@ -233,8 +233,6 @@ module.exports = class TwingTestIntegrationTestCaseBase {
                         test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
                     }
                 } catch (e) {
-                    console.warn(e);
-
                     test.fail(`should not throw an error (${e})`);
                 }
             } else {

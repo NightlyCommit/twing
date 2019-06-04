@@ -117,8 +117,6 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     protected validateName(name: string) {
         if (name.indexOf(`\0`) > -1) {
-            console.warn('NUL');
-
             throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
         }
     }

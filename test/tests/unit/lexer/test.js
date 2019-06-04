@@ -159,8 +159,6 @@ tap.test('lexer', function (test) {
             let lexer = createLexer();
             let stream = lexer.tokenize(new TwingSource(template, 'index'));
 
-            console.warn(stream);
-
             testToken(test, stream.expect(TwingTokenType.BLOCK_START), '{%', 1, 1);
             testToken(test, stream.expect(TwingTokenType.WHITESPACE), ' ', 1, 3);
             testToken(test, stream.expect(TwingTokenType.NAME), 'verbatim', 1, 4);

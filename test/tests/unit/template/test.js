@@ -370,15 +370,15 @@ test('template', function (test) {
             test.same(getAttribute([2, 3], 1.1), 3);
 
             test.throws(function () {
-                console.warn(getAttribute([], 0));
+                getAttribute([], 0);
             }, new TwingErrorRuntime('Index "0" is out of bounds as the array is empty.', -1, source));
 
             test.throws(function () {
-                console.warn(getAttribute([1], 1));
+                getAttribute([1], 1);
             }, new TwingErrorRuntime('Index "1" is out of bounds for array [1].', -1, source));
 
             test.throws(function () {
-                console.warn(getAttribute(new Map(), 'foo'));
+                getAttribute(new Map(), 'foo');
             }, new TwingErrorRuntime('Impossible to access a key ("foo") on a object variable ("[object Map]").', -1, source));
 
             test.throws(function () {

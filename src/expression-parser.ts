@@ -640,7 +640,15 @@ export class TwingExpressionParser {
         let targets = new Map();
 
         while (true) {
-            let token = stream.expect(TwingTokenType.NAME, null, 'Only variables can be assigned to');
+            let token = this.parser.getCurrentToken();
+
+            if (stream.test(TwingTokenType.OPERATOR) && TwingLexer.REGEX_NAME.exec(token.getContent())) {
+                // in this context, string operators are variable names
+                this.parser.getStream().next();
+            } else {
+                stream.expect(TwingTokenType.NAME, null, 'Only variables can be assigned to');
+            }
+
             let value = token.getContent();
 
             if (['true', 'false', 'none', 'null'].indexOf(value.toLowerCase()) > -1) {
