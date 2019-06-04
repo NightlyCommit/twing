@@ -640,7 +640,7 @@ return module.exports;
      */
     compileSource(source: TwingSource): string {
         try {
-            return this.compile(this.parse(this.tokenize(source)));
+            return this.compile(this.parse(this.tokenize(source).toAst()));
         } catch (e) {
             if (e instanceof TwingError) {
                 throw e;

@@ -10,7 +10,7 @@
  * </pre>
  */
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSet} from "../node/set";
@@ -25,10 +25,10 @@ export class TwingTokenParserSet extends TwingTokenParser {
         let capture = false;
         let values;
 
-        if (stream.nextIf(TwingToken.OPERATOR_TYPE, '=')) {
+        if (stream.nextIf(TwingTokenType.OPERATOR, '=')) {
             values = this.parser.getExpressionParser().parseMultitargetExpression();
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TwingTokenType.BLOCK_END);
 
             if (names.getNodes().size !== values.getNodes().size) {
                 throw new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', stream.getCurrent().getLine(), stream.getSourceContext());
@@ -41,18 +41,18 @@ export class TwingTokenParserSet extends TwingTokenParser {
                 throw new TwingErrorSyntax('When using set with a block, you cannot have a multi-target.', stream.getCurrent().getLine(), stream.getSourceContext());
             }
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TwingTokenType.BLOCK_END);
 
             values = this.parser.subparse([this, this.decideBlockEnd], true);
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TwingTokenType.BLOCK_END);
         }
 
         return new TwingNodeSet(capture, names, values, lineno, columnno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endset');
+        return token.test(TwingTokenType.NAME, 'endset');
     }
 
     getTag() {

@@ -1,17 +1,16 @@
 const {TwingTokenParser} = require('../build/token-parser');
 const {TwingNodePrint} = require('../build/node/print');
-const {TwingToken} = require('../build/token');
+const {TwingTokenType} = require('../build/token');
 const {TwingNodeExpressionConstant} = require('../build/node/expression/constant');
 const {TwingExtension} = require('../build/extension');
 const {TwingFilter} = require('../build/filter');
 const {TwingFunction} = require('../build/function');
 const {TwingTest} = require('../build/test');
-const {TwingSandboxSecurityPolicy} = require('../build/sandbox/security-policy');
 const {twingFilterEscape: escape} = require('../build/core/filters/escape');
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingTokenType.BLOCK_END);
 
         return new TwingNodePrint(new TwingNodeExpressionConstant('§', -1, -1), -1, -1);
     }

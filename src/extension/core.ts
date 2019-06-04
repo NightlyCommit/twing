@@ -116,6 +116,7 @@ import {twingFunctionMax} from "../core/functions/max";
 import {twingFunctionMin} from "../core/functions/min";
 import {twingFunctionRange} from "../core/functions/range";
 import {twingFunctionConstant} from "../core/functions/constant";
+import {TwingTokenParserVerbatim} from "../token-parser/verbatim";
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -275,7 +276,8 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingTokenParserWith(),
             new TwingTokenParserDeprecated(),
             new TwingTokenParserAutoEscape(),
-            new TwingTokenParserSandbox()
+            new TwingTokenParserSandbox(),
+            new TwingTokenParserVerbatim()
         ];
     }
 

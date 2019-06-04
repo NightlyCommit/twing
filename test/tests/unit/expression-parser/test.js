@@ -6,7 +6,7 @@ const {TwingNodeExpressionBinaryConcat} = require('../../../../build/node/expres
 const {TwingNodeExpressionHash} = require('../../../../build/node/expression/hash');
 const {TwingExpressionParser} = require('../../../../build/expression-parser');
 const {TwingParser} = require('../../../../build/parser');
-const {TwingToken} = require('../../../../build/token');
+const {TwingToken, TwingTokenType} = require('../../../../build/token');
 const {TwingTokenStream} = require('../../../../build/token-stream');
 const {TwingErrorSyntax} = require('../../../../build/error/syntax');
 const {TwingSource} = require('../../../../build/source');
@@ -14,6 +14,7 @@ const {TwingFilter} = require('../../../../build/filter');
 const {TwingFunction} = require('../../../../build/function');
 const {TwingTest} = require('../../../../build/test');
 const {TwingExtension} = require('../../../../build/extension');
+const {TwingNodeType} = require('../../../../build/node');
 
 const TwingTestMockEnvironment = require('../../../mock/environment');
 const TwingTestMockLoader = require('../../../mock/loader');
@@ -28,7 +29,7 @@ class TwingTestExpressionParserExtension extends TwingExtension {
             new Map([
                 ['with-callable', {
                     callable: (parser, expr) => {
-                        return new TwingNodeExpressionConstant('3');
+                        return new TwingNodeExpressionConstant('3', 1, 1);
                     },
                     precedence: 1
                 }]
@@ -79,6 +80,22 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     }
 }
 
+/**
+ * @param test
+ * @param {TwingNode} node
+ * @param expected
+ * @param message
+ */
+let testNode = (test, node, expected, message) => {
+    expected.setTemplateName('');
+
+    test.same(node, expected, message + ': ' + node.toString(false));
+
+    for (let [key, child] of node.getNodes()) {
+        testNode(test, child, expected.getNode(key), message);
+    }
+};
+
 tap.test('expression-parser', function (test) {
     test.test('canOnlyAssignToNames', function (test) {
         let templatesAndMessages = [
@@ -92,8 +109,8 @@ tap.test('expression-parser', function (test) {
             ['{% set NULL = "foo" %}', 'You cannot assign a value to "NULL".'],
             ['{% set 3 = "foo" %}', 'Only variables can be assigned to. Unexpected token "number" of value "3" ("name" expected).'],
             ['{% set 1 + 2 = "foo" %}', 'Only variables can be assigned to. Unexpected token "number" of value "1" ("name" expected).'],
-            ['{% set "bar" = "foo" %}', 'Only variables can be assigned to. Unexpected token "string" of value "bar" ("name" expected).'],
-            ['{% set %}{% endset %})', 'Only variables can be assigned to. Unexpected token "end of statement block" of value "null" ("name" expected).']
+            ['{% set "bar" = "foo" %}', 'Only variables can be assigned to. Unexpected token "opening quote" of value """ ("name" expected).'],
+            ['{% set %}{% endset %})', 'Only variables can be assigned to. Unexpected token "end of statement block" of value "%}" ("name" expected).']
         ];
 
         let loader = new TwingTestMockLoader();
@@ -103,9 +120,15 @@ tap.test('expression-parser', function (test) {
         for (let templateAndMessage of templatesAndMessages) {
             let source = new TwingSource(templateAndMessage[0], 'index');
 
-            test.throws(function () {
-                parser.parse(env.tokenize(source));
-            }, new TwingErrorSyntax(templateAndMessage[1], 1, source), 'should throw a TwingErrorSyntax')
+            try {
+                parser.parse(env.tokenize(source).toAst());
+
+                test.fail('Should throw a TwingErrorSyntax "' + templateAndMessage[1] + '"')
+            }
+            catch (e) {
+                test.same(e.name, 'TwingErrorSyntax', 'name is TwingErrorSyntax');
+                test.same(e.getRawMessage(), templateAndMessage[1], 'message is "' + templateAndMessage[1] + '"');
+            }
         }
 
         test.end();
@@ -120,7 +143,7 @@ tap.test('expression-parser', function (test) {
 
                 [2, new TwingNodeExpressionConstant(1, 1, 8)],
                 [3, new TwingNodeExpressionConstant(2, 1, 8)]
-            ]), 1, 5)
+            ]), 1, 4)
             ],
 
             // array with trailing ,
@@ -130,58 +153,7 @@ tap.test('expression-parser', function (test) {
 
                 [2, new TwingNodeExpressionConstant(1, 1, 8)],
                 [3, new TwingNodeExpressionConstant(2, 1, 8)]
-            ]), 1, 5)
-            ],
-
-            // simple hash
-            ['{{ {"a": "b", "b": "c"} }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1, 5)],
-                [1, new TwingNodeExpressionConstant('b', 1, 10)],
-
-                [2, new TwingNodeExpressionConstant('b', 1, 15)],
-                [3, new TwingNodeExpressionConstant('c', 1, 20)]
-            ]), 1, 5)
-            ],
-
-            // hash with trailing ,
-            ['{{ {"a": "b", "b": "c", } }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1, 5)],
-                [1, new TwingNodeExpressionConstant('b', 1, 10)],
-
-                [2, new TwingNodeExpressionConstant('b', 1, 15)],
-                [3, new TwingNodeExpressionConstant('c', 1, 20)]
-            ]), 1, 5)
-            ],
-
-            // hash in an array
-            ['{{ [1, {"a": "b", "b": "c"}] }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant(0, 1, 5)],
-                [1, new TwingNodeExpressionConstant(1, 1, 5)],
-
-                [2, new TwingNodeExpressionConstant(1, 1, 9)],
-                [3, new TwingNodeExpressionArray(new Map([
-                    [0, new TwingNodeExpressionConstant('a', 1, 9)],
-                    [1, new TwingNodeExpressionConstant('b', 1, 14)],
-
-                    [2, new TwingNodeExpressionConstant('b', 1, 19)],
-                    [3, new TwingNodeExpressionConstant('c', 1, 24)]
-                ]), 1, 9)]
-            ]), 1, 5)
-            ],
-
-            // array in a hash
-            ['{{ {"a": [1, 2], "b": "c"} }}', new TwingNodeExpressionArray(new Map([
-                [0, new TwingNodeExpressionConstant('a', 1, 5)],
-                [1, new TwingNodeExpressionArray(new Map([
-                    [0, new TwingNodeExpressionConstant(0, 1, 11)],
-                    [1, new TwingNodeExpressionConstant(1, 1, 11)],
-
-                    [2, new TwingNodeExpressionConstant(1, 1, 14)],
-                    [3, new TwingNodeExpressionConstant(2, 1, 14)]
-                ]), 1, 11)],
-                [2, new TwingNodeExpressionConstant('b', 1, 18)],
-                [3, new TwingNodeExpressionConstant('c', 1, 23)]
-            ]), 1, 5)
+            ]), 1, 4)
             ],
         ];
 
@@ -190,18 +162,96 @@ tap.test('expression-parser', function (test) {
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
-            let stream = env.tokenize(new TwingSource(templateAndNodes[0], ''));
+            let stream = env.tokenize(new TwingSource(templateAndNodes[0], '')).toAst();
 
             let actual = parser.parse(stream)
                 .getNode('body')
                 .getNode(0)
                 .getNode('expr');
 
-            let expected = templateAndNodes[1];
+            testNode(test, actual, templateAndNodes[1], templateAndNodes[0])
+        }
 
-            expected.setTemplateName('');
+        test.end();
+    });
 
-            test.same(actual, expected);
+    test.test('hashExpression', function (test) {
+        let templatesAndNodes = [
+            // simple hash
+            ['{{ {a: "b", b: "c"} }}', new TwingNodeExpressionArray(new Map([
+                [0, new TwingNodeExpressionConstant('a', 1, 5)],
+                [1, new TwingNodeExpressionConstant('b', 1, 9)],
+
+                [2, new TwingNodeExpressionConstant('b', 1, 13)],
+                [3, new TwingNodeExpressionConstant('c', 1, 17)]
+            ]), 1, 4)
+            ],
+
+            // simple hash with quoted keys
+            ['{{ {"a": "b", "b": "c"} }}', new TwingNodeExpressionArray(new Map([
+                [0, new TwingNodeExpressionConstant('a', 1, 6)],
+                [1, new TwingNodeExpressionConstant('b', 1, 11)],
+
+                [2, new TwingNodeExpressionConstant('b', 1, 16)],
+                [3, new TwingNodeExpressionConstant('c', 1, 21)]
+            ]), 1, 4)
+            ],
+
+            // hash with trailing ,
+            ['{{ {"a": "b", "b": "c", } }}', new TwingNodeExpressionArray(new Map([
+                [0, new TwingNodeExpressionConstant('a', 1, 6)],
+                [1, new TwingNodeExpressionConstant('b', 1, 11)],
+
+                [2, new TwingNodeExpressionConstant('b', 1, 16)],
+                [3, new TwingNodeExpressionConstant('c', 1, 21)]
+            ]), 1, 4)
+            ],
+
+            // hash in an array
+            ['{{ [1, {"a": "b", "b": "c"}] }}', new TwingNodeExpressionArray(new Map([
+                [0, new TwingNodeExpressionConstant(0, 1, 5)],
+                [1, new TwingNodeExpressionConstant(1, 1, 5)],
+
+                [2, new TwingNodeExpressionConstant(1, 1, 8)],
+                [3, new TwingNodeExpressionArray(new Map([
+                    [0, new TwingNodeExpressionConstant('a', 1, 10)],
+                    [1, new TwingNodeExpressionConstant('b', 1, 15)],
+
+                    [2, new TwingNodeExpressionConstant('b', 1, 20)],
+                    [3, new TwingNodeExpressionConstant('c', 1, 25)]
+                ]), 1, 8)]
+            ]), 1, 4)
+            ],
+
+            // array in a hash
+            ['{{ {"a": [1, 2], "b": "c"} }}', new TwingNodeExpressionArray(new Map([
+                [0, new TwingNodeExpressionConstant('a', 1, 6)],
+                [1, new TwingNodeExpressionArray(new Map([
+                    [0, new TwingNodeExpressionConstant(0, 1, 11)],
+                    [1, new TwingNodeExpressionConstant(1, 1, 11)],
+
+                    [2, new TwingNodeExpressionConstant(1, 1, 14)],
+                    [3, new TwingNodeExpressionConstant(2, 1, 14)]
+                ]), 1, 10)],
+                [2, new TwingNodeExpressionConstant('b', 1, 19)],
+                [3, new TwingNodeExpressionConstant('c', 1, 24)]
+            ]), 1, 4)
+            ],
+        ];
+
+        let loader = new TwingTestMockLoader();
+        let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false});
+        let parser = new TwingParser(env);
+
+        for (let templateAndNodes of templatesAndNodes) {
+            let stream = env.tokenize(new TwingSource(templateAndNodes[0], '')).toAst();
+
+            let actual = parser.parse(stream)
+                .getNode('body')
+                .getNode(0)
+                .getNode('expr');
+
+            testNode(test, actual, templateAndNodes[1], templateAndNodes[0]);
         }
 
         test.end();
@@ -244,23 +294,21 @@ tap.test('expression-parser', function (test) {
 
     test.test('stringExpression', function (test) {
         let templatesAndNodes = [
-            ['{{ "foo" }}', new TwingNodeExpressionConstant('foo', 1, 4)],
+            ['{{ "foo" }}', new TwingNodeExpressionConstant('foo', 1, 5)],
             ['{{ "foo #{bar}" }}', new TwingNodeExpressionBinaryConcat(
                 new TwingNodeExpressionConstant('foo ', 1, 5),
                 new TwingNodeExpressionName('bar', 1, 11),
-                1, 11
-            )
-            ],
+                1, 5
+            )],
             ['{{ "foo #{bar} baz" }}', new TwingNodeExpressionBinaryConcat(
                 new TwingNodeExpressionBinaryConcat(
                     new TwingNodeExpressionConstant('foo ', 1, 5),
                     new TwingNodeExpressionName('bar', 1, 11),
-                    1, 11
+                    1, 5
                 ),
                 new TwingNodeExpressionConstant(' baz', 1, 15),
-                1, 15
-            )
-            ],
+                1, 5
+            )],
             ['{{ "foo #{"foo #{bar} baz"} baz" }}', new TwingNodeExpressionBinaryConcat(
                 new TwingNodeExpressionBinaryConcat(
                     new TwingNodeExpressionConstant('foo ', 1, 5),
@@ -268,15 +316,16 @@ tap.test('expression-parser', function (test) {
                         new TwingNodeExpressionBinaryConcat(
                             new TwingNodeExpressionConstant('foo ', 1, 12),
                             new TwingNodeExpressionName('bar', 1, 18),
-                            1, 18
+                            1, 12
                         ),
                         new TwingNodeExpressionConstant(' baz', 1, 22),
-                        1, 22
+                        1, 12
                     ),
-                    1, 22
+                    1, 5
                 ),
-                new TwingNodeExpressionConstant(' baz', 1, 28), 1, 28)
-            ]
+                new TwingNodeExpressionConstant(' baz', 1, 28),
+                1, 5
+            )]
         ];
 
         let loader = new TwingTestMockLoader();
@@ -284,19 +333,16 @@ tap.test('expression-parser', function (test) {
         let parser = new TwingParser(env);
 
         for (let templateAndNodes of templatesAndNodes) {
-            let stream = env.tokenize(new TwingSource(templateAndNodes[0], ''));
+            let stream = env.tokenize(new TwingSource(templateAndNodes[0], '')).toAst();
 
             let actual = parser.parse(stream)
                 .getNode('body')
                 .getNode(0)
                 .getNode('expr');
 
-            let expected = templateAndNodes[1];
-
-            expected.setTemplateName('');
-
-            test.same(actual, expected);
+            testNode(test, actual, templateAndNodes[1], templateAndNodes[0])
         }
+
         test.end();
     });
 
@@ -304,7 +350,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foo.bar(name="Foo") }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -318,7 +364,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% from _self import foo %}{% macro foo() %}{% endmacro %}{{ foo(name="Foo") }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -332,7 +378,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{% macro foo("a") %}{% endmacro %}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -354,7 +400,7 @@ tap.test('expression-parser', function (test) {
 
         for (let template of templates) {
             let source = new TwingSource(template, 'index');
-            let stream = env.tokenize(source);
+            let stream = env.tokenize(source).toAst();
 
             test.throws(function () {
                 parser.parse(stream);
@@ -381,7 +427,7 @@ tap.test('expression-parser', function (test) {
 
         for (let template of templates) {
             let source = new TwingSource(template, 'index');
-            let stream = env.tokenize(source);
+            let stream = env.tokenize(source).toAst();
 
             test.ok(parser.parse(stream), 'should not throw an error');
         }
@@ -393,7 +439,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ cycl() }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -407,7 +453,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ foobar() }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -421,7 +467,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1|lowe }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -435,7 +481,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1|foobar }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -449,7 +495,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{  1 is nul }}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -463,7 +509,7 @@ tap.test('expression-parser', function (test) {
         let loader = new TwingTestMockLoader();
         let env = new TwingTestMockEnvironment(loader, {cache: false, autoescape: false, optimizations: 0});
         let source = new TwingSource('{{ 1 is foobar}}', 'index');
-        let stream = env.tokenize(source);
+        let stream = env.tokenize(source).toAst();
         let parser = new TwingParser(env);
 
         test.throws(function () {
@@ -479,10 +525,10 @@ tap.test('expression-parser', function (test) {
         env.addExtension(new TwingTestExpressionParserExtension());
 
         let stream = new TwingTokenStream([
-            new TwingToken(TwingToken.NUMBER_TYPE, '1', 1, 1),
-            new TwingToken(TwingToken.OPERATOR_TYPE, 'with-callable', 1, 1),
-            new TwingToken(TwingToken.NUMBER_TYPE, '2', 1, 1),
-            new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+            new TwingToken(TwingTokenType.NUMBER, '1', 1, 1),
+            new TwingToken(TwingTokenType.OPERATOR, 'with-callable', 1, 1),
+            new TwingToken(TwingTokenType.NUMBER, '2', 1, 1),
+            new TwingToken(TwingTokenType.VAR_END, null, 1, 1)
         ]);
 
         let parser = new TwingParser(env);
@@ -503,9 +549,9 @@ tap.test('expression-parser', function (test) {
         let parser = new TwingParser(env);
 
         let stream = new TwingTokenStream([
-            new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-            new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-            new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+            new TwingToken(TwingTokenType.PUNCTUATION, '(', 1, 1),
+            new TwingToken(TwingTokenType.PUNCTUATION, ')', 1, 1),
+            new TwingToken(TwingTokenType.VAR_END, null, 1, 1)
         ]);
 
         Reflect.set(parser, 'stream', stream);
@@ -524,9 +570,9 @@ tap.test('expression-parser', function (test) {
             let parser = new TwingParser(env);
 
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
-                new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+                new TwingToken(TwingTokenType.PUNCTUATION, '(', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, ')', 1, 1),
+                new TwingToken(TwingTokenType.VAR_END, null, 1, 1)
             ]);
 
             Reflect.set(parser, 'stream', stream);
@@ -536,7 +582,7 @@ tap.test('expression-parser', function (test) {
             let expressionParser = new TwingExpressionParser(parser, env);
 
             test.throws(function () {
-                expressionParser.getFunctionNode('parent', 1);
+                expressionParser.getFunctionNode('parent', 1, 1);
             }, new TwingErrorSyntax('Calling "parent" outside a block is forbidden.', 1, new TwingSource('', '')), 'should throw a TwingErrorSyntax');
 
             test.end();
@@ -559,9 +605,9 @@ tap.test('expression-parser', function (test) {
 
             for (let testCase of testCases) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
-                    new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
-                    new TwingToken(TwingToken.VAR_END_TYPE, null, 1)
+                    new TwingToken(TwingTokenType.PUNCTUATION, '(', 1, 1),
+                    new TwingToken(TwingTokenType.PUNCTUATION, ')', 1, 1),
+                    new TwingToken(TwingTokenType.VAR_END, null, 1, 1)
                 ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
 
                 Reflect.set(parser, 'stream', stream);
@@ -573,10 +619,10 @@ tap.test('expression-parser', function (test) {
                 process.stdout.write = (chunk) => {
                     process.stdout.write = originalWrite;
 
-                    test.same(chunk, testCase[2]);
+                    test.same(chunk, testCase[2], testCase[0] + (testCase[1] ? ' with named source' : ''));
                 };
 
-                expressionParser.getFunctionNode(testCase[0], 1);
+                expressionParser.getFunctionNode(testCase[0], 1, 1);
             }
 
             test.end();
@@ -590,14 +636,18 @@ tap.test('expression-parser', function (test) {
 
         test.test('with key as an expression', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
-                new TwingToken(TwingToken.STRING_TYPE, '1', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ':', 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '}', 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+                new TwingToken(TwingTokenType.PUNCTUATION, '{', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, '(', 1, 1),
+                new TwingToken(TwingTokenType.OPENING_QUOTE, '"', 1, 1),
+                new TwingToken(TwingTokenType.STRING, '1', 1, 1),
+                new TwingToken(TwingTokenType.CLOSING_QUOTE, '"', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, ')', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, ':', 1, 1),
+                new TwingToken(TwingTokenType.OPENING_QUOTE, '"', 1, 1),
+                new TwingToken(TwingTokenType.STRING, 'bar', 1, 1),
+                new TwingToken(TwingTokenType.CLOSING_QUOTE, '"', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, '}', 1, 1),
+                new TwingToken(TwingTokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -612,10 +662,10 @@ tap.test('expression-parser', function (test) {
             test.end();
         });
 
-        test.test('with key as an expression', function (test) {
+        test.test('with operator as a key', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1),
-                new TwingToken(TwingToken.OPERATOR_TYPE, 'foo', 1)
+                new TwingToken(TwingTokenType.PUNCTUATION, '{', 1, 1),
+                new TwingToken(TwingTokenType.OPERATOR, 'foo', 1, 2),
             ]);
 
             let parser = new TwingParser(env);
@@ -639,9 +689,9 @@ tap.test('expression-parser', function (test) {
 
         test.test('with dot syntax and non-name/number token', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '.', 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+                new TwingToken(TwingTokenType.PUNCTUATION, '.', 1, 1),
+                new TwingToken(TwingTokenType.STRING, 'bar', 1, 1),
+                new TwingToken(TwingTokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -651,7 +701,7 @@ tap.test('expression-parser', function (test) {
             let expressionParser = new TwingExpressionParser(parser, env);
 
             test.throws(function () {
-                expressionParser.parseSubscriptExpression(new TwingNodeExpressionConstant('foo'));
+                expressionParser.parseSubscriptExpression(new TwingNodeExpressionConstant('foo', 1, 1));
             }, new TwingErrorSyntax('Expected name or number.', 1, new TwingSource('', '')));
 
             test.end();
@@ -667,9 +717,9 @@ tap.test('expression-parser', function (test) {
 
         test.test('with not existing 2-words test', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'bar2', 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1)
+                new TwingToken(TwingTokenType.NAME, 'foo', 1, 1),
+                new TwingToken(TwingTokenType.NAME, 'bar2', 1, 1),
+                new TwingToken(TwingTokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -679,7 +729,7 @@ tap.test('expression-parser', function (test) {
             let expressionParser = new TwingExpressionParser(parser, env);
 
             test.throws(function () {
-                expressionParser.parseTestExpression(new TwingNodeExpressionConstant(1, 1));
+                expressionParser.parseTestExpression(new TwingNodeExpressionConstant(1, 1, 1));
             }, new TwingErrorSyntax('Unknown "foo bar2" test. Did you mean "foo bar"?', 1, new TwingSource('', '')));
 
             test.end();
@@ -693,11 +743,11 @@ tap.test('expression-parser', function (test) {
 
         test.test('with non-name named argument', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1),
-                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1),
-                new TwingToken(TwingToken.OPERATOR_TYPE, '=', 1),
-                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1)
+                new TwingToken(TwingTokenType.PUNCTUATION, '(', 1, 1),
+                new TwingToken(TwingTokenType.NUMBER, '5', 1, 1),
+                new TwingToken(TwingTokenType.OPERATOR, '=', 1, 1),
+                new TwingToken(TwingTokenType.NUMBER, '5', 1, 1),
+                new TwingToken(TwingTokenType.PUNCTUATION, ')', 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -736,8 +786,8 @@ tap.test('expression-parser', function (test) {
 
             for (let testCase of testCases) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.NAME_TYPE, testCase[0], 1),
-                    new TwingToken(TwingToken.EOF_TYPE, null, 1)
+                    new TwingToken(TwingTokenType.NAME, testCase[0], 1, 1),
+                    new TwingToken(TwingTokenType.EOF, null, 1, 1)
                 ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
 
                 Reflect.set(parser, 'stream', stream);
@@ -749,14 +799,39 @@ tap.test('expression-parser', function (test) {
                 process.stdout.write = (chunk) => {
                     process.stdout.write = originalWrite;
 
-                    test.same(chunk, testCase[2]);
+                    test.same(chunk, testCase[2], testCase[0] + (testCase[1] ? ' with named source' : ''));
                 };
 
-                expressionParser.parseFilterExpressionRaw(new TwingNodeExpressionConstant(1, 1), testCase[0]);
+                expressionParser.parseFilterExpressionRaw(new TwingNodeExpressionConstant(1, 1, 1), testCase[0]);
             }
 
             test.end();
         });
+
+        test.end();
+    });
+
+
+    test.test('empty string is parsed as empty constant node', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+        let parser = new TwingParser(env);
+
+        let stream = new TwingTokenStream([
+            new TwingToken(TwingTokenType.OPENING_QUOTE, '"', 1, 2),
+            new TwingToken(TwingTokenType.CLOSING_QUOTE, '"', 1, 3),
+            new TwingToken(TwingTokenType.EOF, '', 1, 5),
+        ]);
+
+        Reflect.set(parser, 'stream', stream);
+
+        let expressionParser = new TwingExpressionParser(parser, env);
+
+        let node = expressionParser.parseExpression();
+
+        test.same(node.getType(), TwingNodeType.EXPRESSION_CONSTANT);
+        test.same(node.getAttribute('value'), '');
+        test.same(node.getTemplateLine(), 1);
+        test.same(node.getTemplateColumn(), 3);
 
         test.end();
     });

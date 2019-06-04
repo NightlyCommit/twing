@@ -11,7 +11,7 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 
 export class TwingTokenParserExtends extends TwingTokenParser {
@@ -28,7 +28,7 @@ export class TwingTokenParserExtends extends TwingTokenParser {
 
         this.parser.setParent(this.parser.getExpressionParser().parseExpression());
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         return null;
     }

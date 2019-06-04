@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSandbox} from "../node/sandbox";
 import {TwingNode, TwingNodeType} from "../node";
@@ -10,11 +10,11 @@ export class TwingTokenParserSandbox extends TwingTokenParser {
     parse(token: TwingToken) {
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         // in a sandbox tag, only include tags are allowed
         if (body.getType() !== TwingNodeType.INCLUDE) {
@@ -31,7 +31,7 @@ export class TwingTokenParserSandbox extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endsandbox');
+        return token.test(TwingTokenType.NAME, 'endsandbox');
     }
 
     getTag() {

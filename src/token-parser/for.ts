@@ -11,7 +11,7 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingNodeExpressionGetAttr} from "../node/expression/get-attr";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenStream} from "../token-stream";
@@ -25,29 +25,29 @@ export class TwingTokenParserFor extends TwingTokenParser {
         let stream = this.parser.getStream();
         let targets = this.parser.getExpressionParser().parseAssignmentExpression();
 
-        stream.expect(TwingToken.OPERATOR_TYPE, 'in');
+        stream.expect(TwingTokenType.OPERATOR, 'in');
 
         let seq = this.parser.getExpressionParser().parseExpression();
 
         let ifexpr = null;
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'if')) {
+        if (stream.nextIf(TwingTokenType.NAME, 'if')) {
             ifexpr = this.parser.getExpressionParser().parseExpression();
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         let body = this.parser.subparse([this, this.decideForFork]);
         let elseToken;
 
-        if (stream.next().getValue() == 'else') {
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+        if (stream.next().getContent() == 'else') {
+            stream.expect(TwingTokenType.BLOCK_END);
             elseToken = this.parser.subparse([this, this.decideForEnd], true);
         } else {
             elseToken = null;
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         let keyTarget;
         let valueTarget;
@@ -74,11 +74,11 @@ export class TwingTokenParserFor extends TwingTokenParser {
     }
 
     decideForFork(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, ['else', 'endfor']);
+        return token.test(TwingTokenType.NAME, ['else', 'endfor']);
     }
 
     decideForEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endfor');
+        return token.test(TwingTokenType.NAME, 'endfor');
     }
 
     // the loop variable cannot be used in the condition

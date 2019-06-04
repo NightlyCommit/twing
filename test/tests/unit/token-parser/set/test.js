@@ -1,9 +1,7 @@
 const {TwingTokenParserSet} = require('../../../../../build/token-parser/set');
 const {TwingTokenStream} = require('../../../../../build/token-stream');
-const {TwingToken} = require('../../../../../build/token');
+const {TwingToken, TwingTokenType} = require('../../../../../build/token');
 const {TwingNode} = require('../../../../../build/node');
-const {TwingErrorSyntax} = require('../../../../../build/error/syntax');
-const {TwingSource} = require('../../../../../build/source');
 
 const TwingTestMockBuilderParser = require('../../../../mock-builder/parser');
 
@@ -15,9 +13,9 @@ tap.test('token-parser/set', function (test) {
         test.test('when direct assignment', function (test) {
             test.test('when different number of variables and assignments', function (test) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.OPERATOR_TYPE, '=', 1, 1),
-                    new TwingToken(TwingToken.BLOCK_END_TYPE, null, 1, 1),
-                    new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                    new TwingToken(TwingTokenType.OPERATOR, '=', 1, 1),
+                    new TwingToken(TwingTokenType.BLOCK_END, null, 1, 1),
+                    new TwingToken(TwingTokenType.EOF, null, 1, 1)
                 ]);
 
                 let tokenParser = new TwingTokenParserSet();
@@ -29,9 +27,14 @@ tap.test('token-parser/set', function (test) {
                 sinon.stub(expressionParser, 'parseAssignmentExpression').returns(new TwingNode(new Map([[0, 'foo']])));
                 sinon.stub(expressionParser, 'parseMultitargetExpression').returns(new TwingNode(new Map([[0, 'oof'], [1, 'bar']])));
 
-                test.throws(function () {
-                    tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'set', 1, 1))
-                }, new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', 1, new TwingSource('', '')));
+                try {
+                    tokenParser.parse(new TwingToken(TwingTokenType.NAME, 'set', 1, 1));
+
+                    test.fail('should throw an error');
+                }
+                catch (e) {
+                    test.same(e.getRawMessage(), 'When using set, you must have the same number of variables and assignments.')
+                }
 
                 test.end();
             });
@@ -42,8 +45,8 @@ tap.test('token-parser/set', function (test) {
         test.test('when capture', function (test) {
             test.test('when multiple targets', function (test) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.BLOCK_END_TYPE, null, 1, 1),
-                    new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                    new TwingToken(TwingTokenType.BLOCK_END, null, 1, 1),
+                    new TwingToken(TwingTokenType.EOF, null, 1, 1)
                 ]);
 
                 let tokenParser = new TwingTokenParserSet();
@@ -54,9 +57,14 @@ tap.test('token-parser/set', function (test) {
 
                 sinon.stub(expressionParser, 'parseAssignmentExpression').returns(new TwingNode(new Map([[0, 'foo'], [1, 'bar']])));
 
-                test.throws(function () {
-                    tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'set', 1, 1))
-                }, new TwingErrorSyntax('When using set with a block, you cannot have a multi-target.', 1, new TwingSource('', '')));
+                try {
+                    tokenParser.parse(new TwingToken(TwingTokenType.NAME, 'set', 1, 1));
+
+                    test.fail('should throw an error');
+                }
+                catch (e) {
+                    test.same(e.getRawMessage(), 'When using set with a block, you cannot have a multi-target.')
+                }
 
                 test.end();
             });

@@ -3,7 +3,7 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeAutoEscape} from "../node/auto-escape";
 
@@ -14,7 +14,7 @@ export class TwingTokenParserAutoEscape extends TwingTokenParser {
         let stream = this.parser.getStream();
         let value: string;
 
-        if (stream.test(TwingToken.BLOCK_END_TYPE)) {
+        if (stream.test(TwingTokenType.BLOCK_END)) {
             value = 'html';
         }
         else {
@@ -27,17 +27,17 @@ export class TwingTokenParserAutoEscape extends TwingTokenParser {
             value = expr.getAttribute('value');
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         return new TwingNodeAutoEscape(value, body, lineno, columnno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endautoescape');
+        return token.test(TwingTokenType.NAME, 'endautoescape');
     }
 
     getTag() {

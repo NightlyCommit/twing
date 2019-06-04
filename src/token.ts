@@ -1,27 +1,36 @@
-export class TwingToken {
-    static EOF_TYPE = -1;
-    static TEXT_TYPE = 0;
-    static BLOCK_START_TYPE = 1;
-    static VAR_START_TYPE = 2;
-    static BLOCK_END_TYPE = 3;
-    static VAR_END_TYPE = 4;
-    static NAME_TYPE = 5;
-    static NUMBER_TYPE = 6;
-    static STRING_TYPE = 7;
-    static OPERATOR_TYPE = 8;
-    static PUNCTUATION_TYPE = 9;
-    static INTERPOLATION_START_TYPE = 10;
-    static INTERPOLATION_END_TYPE = 11;
-    static COMMENT_START_TYPE = 12;
-    static COMMENT_END_TYPE = 13;
-    private value: string;
-    private type: number;
-    private lineno: number;
-    private columnno: number;
+export enum TwingTokenType {
+    EOF = 'EOF',
+    TEXT = 'TEXT',
+    BLOCK_START = 'BLOCK_START',
+    BLOCK_END = 'BLOCK_END',
+    VAR_START = 'VAR_START',
+    VAR_END = 'VAR_END',
+    NAME = 'NAME',
+    NUMBER = 'NUMBER',
+    STRING = 'STRING',
+    OPERATOR = 'OPERATOR',
+    PUNCTUATION = 'PUNCTUATION',
+    INTERPOLATION_START = 'INTERPOLATION_START',
+    INTERPOLATION_END = 'INTERPOLATION_END',
+    COMMENT_START = 'COMMENT_START',
+    COMMENT_END = 'COMMENT_END',
+    WHITESPACE = 'WHITESPACE',
+    OPENING_QUOTE = 'OPENING_QUOTE',
+    CLOSING_QUOTE = 'CLOSING_QUOTE',
+    WHITESPACE_CONTROL_MODIFIER_TRIMMING = 'WHITESPACE_CONTROL_MODIFIER_TRIMMING',
+    WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING = 'WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING'
+}
 
-    constructor(type: number, value: string, lineno: number, columnno: number) {
+export class TwingToken {
+    readonly type: TwingTokenType;
+    readonly tag: string;
+    readonly content: string;
+    readonly lineno: number;
+    readonly columnno: number;
+
+    constructor(type: TwingTokenType, content: string, lineno: number, columnno: number) {
         this.type = type;
-        this.value = value;
+        this.content = content;
         this.lineno = lineno;
         this.columnno = columnno;
     }
@@ -29,65 +38,18 @@ export class TwingToken {
     /**
      * Returns the constant representation (internal) of a given type.
      *
-     * @param {int} type The type as an integer
+     * @param {TwingTokenType} type The type
      * @param {boolean} short Whether to return a short representation or not
      *
      * @returns {string} The string representation
      */
-    static typeToString(type: number, short: boolean = false) {
-        let name: string;
-
-        switch (type) {
-            case TwingToken.EOF_TYPE:
-                name = 'EOF_TYPE';
-                break;
-            case TwingToken.TEXT_TYPE:
-                name = 'TEXT_TYPE';
-                break;
-            case TwingToken.BLOCK_START_TYPE:
-                name = 'BLOCK_START_TYPE';
-                break;
-            case TwingToken.VAR_START_TYPE:
-                name = 'VAR_START_TYPE';
-                break;
-            case TwingToken.BLOCK_END_TYPE:
-                name = 'BLOCK_END_TYPE';
-                break;
-            case TwingToken.VAR_END_TYPE:
-                name = 'VAR_END_TYPE';
-                break;
-            case TwingToken.NAME_TYPE:
-                name = 'NAME_TYPE';
-                break;
-            case TwingToken.NUMBER_TYPE:
-                name = 'NUMBER_TYPE';
-                break;
-            case TwingToken.STRING_TYPE:
-                name = 'STRING_TYPE';
-                break;
-            case TwingToken.OPERATOR_TYPE:
-                name = 'OPERATOR_TYPE';
-                break;
-            case TwingToken.PUNCTUATION_TYPE:
-                name = 'PUNCTUATION_TYPE';
-                break;
-            case TwingToken.INTERPOLATION_START_TYPE:
-                name = 'INTERPOLATION_START_TYPE';
-                break;
-            case TwingToken.INTERPOLATION_END_TYPE:
-                name = 'INTERPOLATION_END_TYPE';
-                break;
-            case TwingToken.COMMENT_START_TYPE:
-                name = 'COMMENT_START_TYPE';
-                break;
-            case TwingToken.COMMENT_END_TYPE:
-                name = 'COMMENT_END_TYPE';
-                break;
-            default:
-                throw new Error(`Token of type "${type}" does not exist.`);
+    static typeToString(type: TwingTokenType, short: boolean = false) {
+        if (TwingTokenType[type]) {
+            return short ? type : 'TwingTokenType.' + type;
         }
-
-        return short ? name : 'TwingToken.' + name;
+        else {
+            throw new Error(`Token of type "${type}" does not exist.`);
+        }
     }
 
     /**
@@ -97,57 +59,62 @@ export class TwingToken {
      *
      * @returns {string} The string representation
      */
-    static typeToEnglish(type: number): string {
+    static typeToEnglish(type: string): string {
         switch (type) {
-            case TwingToken.EOF_TYPE:
+            case TwingTokenType.EOF:
                 return 'end of template';
-            case TwingToken.TEXT_TYPE:
+            case TwingTokenType.TEXT:
                 return 'text';
-            case TwingToken.BLOCK_START_TYPE:
+            case TwingTokenType.BLOCK_START:
                 return 'begin of statement block';
-            case TwingToken.VAR_START_TYPE:
+            case TwingTokenType.VAR_START:
                 return 'begin of print statement';
-            case TwingToken.BLOCK_END_TYPE:
+            case TwingTokenType.BLOCK_END:
                 return 'end of statement block';
-            case TwingToken.VAR_END_TYPE:
+            case TwingTokenType.VAR_END:
                 return 'end of print statement';
-            case TwingToken.NAME_TYPE:
+            case TwingTokenType.NAME:
                 return 'name';
-            case TwingToken.NUMBER_TYPE:
+            case TwingTokenType.NUMBER:
                 return 'number';
-            case TwingToken.STRING_TYPE:
+            case TwingTokenType.STRING:
                 return 'string';
-            case TwingToken.OPERATOR_TYPE:
+            case TwingTokenType.OPERATOR:
                 return 'operator';
-            case TwingToken.PUNCTUATION_TYPE:
+            case TwingTokenType.PUNCTUATION:
                 return 'punctuation';
-            case TwingToken.INTERPOLATION_START_TYPE:
+            case TwingTokenType.INTERPOLATION_START:
                 return 'begin of string interpolation';
-            case TwingToken.INTERPOLATION_END_TYPE:
+            case TwingTokenType.INTERPOLATION_END:
                 return 'end of string interpolation';
-            case TwingToken.COMMENT_START_TYPE:
+            case TwingTokenType.COMMENT_START:
                 return 'begin of comment statement';
-            case TwingToken.COMMENT_END_TYPE:
+            case TwingTokenType.COMMENT_END:
                 return 'end of comment statement';
+            case TwingTokenType.WHITESPACE:
+                return 'whitespace';
+            case TwingTokenType.OPENING_QUOTE:
+                return 'opening quote';
+            case TwingTokenType.CLOSING_QUOTE:
+                return 'closing quote';
+            case TwingTokenType.WHITESPACE_CONTROL_MODIFIER_TRIMMING:
+                return 'trimming whitespace control modifier';
+            case TwingTokenType.WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING:
+                return 'line trimming whitespace control modifier';
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);
         }
     }
 
     /**
-     * Tests the current token for a type and/or a value.
+     * Tests the current token for a type and/or a content.
      *
-     * Parameters may be:
-     *  * just type
-     *  * type and value (or array of possible values)
-     *  * just value (or array of possible values) (NAME_TYPE is used as type)
-     *
-     * @param {number} type
-     * @param {string|Array<string>} values
+     * @param {TwingTokenType} type
+     * @param {string|Array<string>} contents
      * @returns {boolean}
      */
-    public test(type: number, values: Array<string> | string | number = null) {
-        return (this.type === type) && (values === null || (Array.isArray(values) && values.includes(this.value)) || this.value == values);
+    public test(type: TwingTokenType, contents: Array<string> | string | number = null) {
+        return (this.type === type) && (contents === null || (Array.isArray(contents) && contents.includes(this.content)) || this.content == contents);
     }
 
     /**
@@ -164,15 +131,24 @@ export class TwingToken {
         return this.columnno;
     }
 
-    public getType() {
+    public getType(): TwingTokenType {
         return this.type;
     }
 
-    public getValue() {
-        return this.value;
+    public getContent() {
+        return this.content;
     }
 
     toString() {
-        return `${TwingToken.typeToString(this.type, true)}(${this.value ? this.value : ''})`;
+        return `${TwingToken.typeToString(this.type, true)}(${this.content ? this.content : ''})`;
+    }
+
+    /**
+     * Serialize the token to a Twig string
+     *
+     * @return string
+     */
+    serialize() {
+        return this.content;
     }
 }

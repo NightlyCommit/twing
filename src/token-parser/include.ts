@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingNodeInclude} from "../node/include";
 import {TwingNodeExpression} from "../node/expression";
 
@@ -25,25 +25,25 @@ export class TwingTokenParserInclude extends TwingTokenParser {
 
         let ignoreMissing = false;
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'ignore')) {
-            stream.expect(TwingToken.NAME_TYPE, 'missing');
+        if (stream.nextIf(TwingTokenType.NAME, 'ignore')) {
+            stream.expect(TwingTokenType.NAME, 'missing');
 
             ignoreMissing = true;
         }
 
         let variables = null;
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
+        if (stream.nextIf(TwingTokenType.NAME, 'with')) {
             variables = this.parser.getExpressionParser().parseExpression();
         }
 
         let only = false;
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'only')) {
+        if (stream.nextIf(TwingTokenType.NAME, 'only')) {
             only = true;
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         return {
             variables: variables,

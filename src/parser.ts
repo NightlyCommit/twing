@@ -6,7 +6,7 @@ import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExpressionParser} from "./expression-parser";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingNode, TwingNodeType} from "./node";
-import {TwingToken} from "./token";
+import {TwingToken, TwingTokenType} from "./token";
 import {TwingNodeText} from "./node/text";
 import {TwingNodePrint} from "./node/print";
 import {TwingNodeExpression} from "./node/expression";
@@ -120,8 +120,7 @@ export class TwingParser {
             if (this.parent !== null && (body = this.filterBodyNodes(body)) === null) {
                 body = new TwingNode();
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingErrorSyntax) {
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.stream.getSourceContext());
@@ -176,24 +175,25 @@ export class TwingParser {
 
         while (!this.stream.isEOF()) {
             switch (this.getCurrentToken().getType()) {
-                case TwingToken.TEXT_TYPE:
+                case TwingTokenType.TEXT:
                     token = this.stream.next();
-                    rv.set(i++, new TwingNodeText(token.getValue(), token.getLine(), token.getColumn()));
+                    rv.set(i++, new TwingNodeText(token.getContent(), token.getLine(), token.getColumn()));
 
                     break;
-                case TwingToken.VAR_START_TYPE:
+                case TwingTokenType.VAR_START:
                     token = this.stream.next();
                     let expression = this.expressionParser.parseExpression();
 
-                    this.stream.expect(TwingToken.VAR_END_TYPE);
+
+                    this.stream.expect(TwingTokenType.VAR_END);
                     rv.set(i++, new TwingNodePrint(expression, token.getLine(), token.getColumn()));
 
                     break;
-                case TwingToken.BLOCK_START_TYPE:
+                case TwingTokenType.BLOCK_START:
                     this.stream.next();
                     token = this.getCurrentToken();
 
-                    if (token.getType() !== TwingToken.NAME_TYPE) {
+                    if (token.getType() !== TwingTokenType.NAME) {
                         throw new TwingErrorSyntax('A block must start with a tag name.', token.getLine(), this.stream.getSourceContext());
                     }
 
@@ -209,12 +209,12 @@ export class TwingParser {
                         return new TwingNode(rv, new Map(), lineno);
                     }
 
-                    if (!this.handlers.has(token.getValue())) {
+                    if (!this.handlers.has(token.getContent())) {
                         let e;
 
                         if (test !== null) {
                             e = new TwingErrorSyntax(
-                                `Unexpected "${token.getValue()}" tag`,
+                                `Unexpected "${token.getContent()}" tag`,
                                 token.getLine(),
                                 this.stream.getSourceContext()
                             );
@@ -222,15 +222,14 @@ export class TwingParser {
                             if (Array.isArray(test) && (test.length > 1) && (test[0] instanceof TwingTokenParser)) {
                                 e.appendMessage(` (expecting closing tag for the "${test[0].getTag()}" tag defined near line ${lineno}).`);
                             }
-                        }
-                        else {
+                        } else {
                             e = new TwingErrorSyntax(
-                                `Unknown "${token.getValue()}" tag.`,
+                                `Unknown "${token.getContent()}" tag.`,
                                 token.getLine(),
                                 this.stream.getSourceContext()
                             );
 
-                            e.addSuggestions(token.getValue(), Array.from(this.env.getTags().keys()));
+                            e.addSuggestions(token.getContent(), Array.from(this.env.getTags().keys()));
                         }
 
                         throw e;
@@ -238,7 +237,7 @@ export class TwingParser {
 
                     this.stream.next();
 
-                    let subparser = this.handlers.get(token.getValue());
+                    let subparser = this.handlers.get(token.getContent());
 
                     let node = subparser.parse(token);
 
@@ -247,11 +246,11 @@ export class TwingParser {
                     }
 
                     break;
-                case TwingToken.COMMENT_START_TYPE:
+                case TwingTokenType.COMMENT_START:
                     this.stream.next();
-                    token = this.stream.expect(TwingToken.TEXT_TYPE);
-                    this.stream.expect(TwingToken.COMMENT_END_TYPE);
-                    rv.set(i++, new TwingNodeComment(token.getValue(), token.getLine(), token.getColumn()));
+                    token = this.stream.expect(TwingTokenType.TEXT);
+                    this.stream.expect(TwingTokenType.COMMENT_END);
+                    rv.set(i++, new TwingNodeComment(token.getContent(), token.getLine(), token.getColumn()));
 
                     break;
                 default:

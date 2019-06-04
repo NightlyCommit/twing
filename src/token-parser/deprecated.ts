@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingNodeDeprecated} from "../node/deprecated";
 
 /**
@@ -17,7 +17,7 @@ export class TwingTokenParserDeprecated extends TwingTokenParser {
     parse(token: TwingToken) {
         let expr = this.parser.getExpressionParser().parseExpression();
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TwingTokenType.BLOCK_END);
 
         return new TwingNodeDeprecated(expr, token.getLine(), token.getColumn(), this.getTag());
     }

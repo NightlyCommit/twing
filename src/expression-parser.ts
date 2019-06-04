@@ -1,6 +1,6 @@
 import {TwingParser} from "./parser";
 import {TwingNodeExpression} from "./node/expression";
-import {TwingToken} from "./token";
+import {TwingToken, TwingTokenType} from "./token";
 import {TwingNode, TwingNodeType} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
 import {TwingErrorSyntax} from "./error/syntax";
@@ -55,21 +55,18 @@ export class TwingExpressionParser {
         let expr = this.getPrimary();
         let token = this.parser.getCurrentToken();
 
-        while (this.isBinary(token) && this.binaryOperators.get(token.getValue()).precedence >= precedence) {
-            let op = this.binaryOperators.get(token.getValue());
+        while (this.isBinary(token) && this.binaryOperators.get(token.getContent()).precedence >= precedence) {
+            let op = this.binaryOperators.get(token.getContent());
 
             this.parser.getStream().next();
 
-            if (token.getValue() === 'is not') {
+            if (token.getContent() === 'is not') {
                 expr = this.parseNotTestExpression(expr);
-            }
-            else if (token.getValue() === 'is') {
+            } else if (token.getContent() === 'is') {
                 expr = this.parseTestExpression(expr);
-            }
-            else if (op.callable) {
+            } else if (op.callable) {
                 expr = op.callable.call(this.parser, expr);
-            }
-            else {
+            } else {
                 let expr1 = this.parseExpression(op.associativity === TwingExpressionParser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence);
                 let opFactory = op.factory;
 
@@ -90,16 +87,15 @@ export class TwingExpressionParser {
         let token = this.parser.getCurrentToken();
 
         if (this.isUnary(token)) {
-            let operator = this.unaryOperators.get(token.getValue());
+            let operator = this.unaryOperators.get(token.getContent());
             this.parser.getStream().next();
             let expr = this.parseExpression(operator.precedence);
 
             return this.parsePostfixExpression(operator.factory(expr, token.getLine()));
-        }
-        else if (token.test(TwingToken.PUNCTUATION_TYPE, '(')) {
+        } else if (token.test(TwingTokenType.PUNCTUATION, '(')) {
             this.parser.getStream().next();
             let expr = this.parseExpression();
-            this.parser.getStream().expect(TwingToken.PUNCTUATION_TYPE, ')', 'An opened parenthesis is not properly closed');
+            this.parser.getStream().expect(TwingTokenType.PUNCTUATION, ')', 'An opened parenthesis is not properly closed');
 
             return this.parsePostfixExpression(expr);
         }
@@ -112,10 +108,13 @@ export class TwingExpressionParser {
         let node: TwingNodeExpression;
 
         switch (token.getType()) {
-            case TwingToken.NAME_TYPE:
+            case TwingTokenType.WHITESPACE:
+                this.parser.getStream().next();
+                break;
+            case TwingTokenType.NAME:
                 this.parser.getStream().next();
 
-                switch (token.getValue()) {
+                switch (token.getContent()) {
                     case 'true':
                     case 'TRUE':
                         node = new TwingNodeExpressionConstant(true, token.getLine(), token.getColumn());
@@ -134,44 +133,42 @@ export class TwingExpressionParser {
                         break;
 
                     default:
-                        if ('(' === this.parser.getCurrentToken().getValue()) {
-                            node = this.getFunctionNode(token.getValue(), token.getLine(), token.getColumn());
-                        }
-                        else {
-                            node = new TwingNodeExpressionName(token.getValue(), token.getLine(), token.getColumn());
+                        if ('(' === this.parser.getCurrentToken().getContent()) {
+                            node = this.getFunctionNode(token.getContent(), token.getLine(), token.getColumn());
+                        } else {
+                            node = new TwingNodeExpressionName(token.getContent(), token.getLine(), token.getColumn());
                         }
                 }
                 break;
 
-            case TwingToken.NUMBER_TYPE:
+            case TwingTokenType.NUMBER:
                 this.parser.getStream().next();
-                node = new TwingNodeExpressionConstant(token.getValue(), token.getLine(), token.getColumn());
+                node = new TwingNodeExpressionConstant(Number(token.getContent()), token.getLine(), token.getColumn());
                 break;
 
-            case TwingToken.STRING_TYPE:
-            case TwingToken.INTERPOLATION_START_TYPE:
+            case TwingTokenType.OPENING_QUOTE:
+            case TwingTokenType.INTERPOLATION_START:
                 node = this.parseStringExpression();
                 break;
 
-            case TwingToken.OPERATOR_TYPE:
-                let match = TwingLexer.REGEX_NAME.exec(token.getValue());
+            case TwingTokenType.OPERATOR:
+                let match = TwingLexer.REGEX_NAME.exec(token.getContent());
 
-                if (match !== null && match[0] === token.getValue()) {
+                if (match !== null && match[0] === token.getContent()) {
                     // in this context, string operators are variable names
                     this.parser.getStream().next();
-                    node = new TwingNodeExpressionName(token.getValue(), token.getLine(), token.getColumn());
+                    node = new TwingNodeExpressionName(token.getContent(), token.getLine(), token.getColumn());
 
                     break;
-                }
-                else if (this.unaryOperators.has(token.getValue())) {
-                    let op = this.unaryOperators.get(token.getValue());
+                } else if (this.unaryOperators.has(token.getContent())) {
+                    let op = this.unaryOperators.get(token.getContent());
                     //
                     // ref = new ReflectionClass(class);
                     // negClass = 'Twig_Node_Expression_Unary_Neg';
                     // posClass = 'Twig_Node_Expression_Unary_Pos';
                     //
                     // if (!(in_array(ref.getTemplateName(), array(negClass, posClass)) || ref.isSubclassOf(negClass) || ref.isSubclassOf(posClass))) {
-                    //     throw new Twig_Error_Syntax(sprintf('Unexpected unary operator "%s".', token.getValue()), token.getLine(), this.parser.getStream().getSourceContext());
+                    //     throw new Twig_Error_Syntax(sprintf('Unexpected unary operator "%s".', token.getContent()), token.getLine(), this.parser.getStream().getSourceContext());
                     // }
                     //
                     this.parser.getStream().next();
@@ -179,21 +176,19 @@ export class TwingExpressionParser {
                     let expr = this.parsePrimaryExpression();
 
                     node = op.factory(expr, token.getLine());
+
                     break;
                 }
-
             default:
-                if (token.test(TwingToken.PUNCTUATION_TYPE, '[')) {
+                if (token.test(TwingTokenType.PUNCTUATION, '[')) {
                     node = this.parseArrayExpression();
-                }
-                else if (token.test(TwingToken.PUNCTUATION_TYPE, '{')) {
+                } else if (token.test(TwingTokenType.PUNCTUATION, '{')) {
                     node = this.parseHashExpression();
-                }
-                else if (token.test(TwingToken.OPERATOR_TYPE, '=') && (this.parser.getStream().look(-1).getValue() === '==' || this.parser.getStream().look(-1).getValue() === '!=')) {
-                    throw new TwingErrorSyntax(`Unexpected operator of value "${token.getValue()}". Did you try to use "===" or "!==" for strict comparison? Use "is same as(value)" instead.`, token.getLine(), this.parser.getStream().getSourceContext());
-                }
-                else {
-                    throw new TwingErrorSyntax(`Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getValue()}".`, token.getLine(), this.parser.getStream().getSourceContext());
+                } else if (token.test(TwingTokenType.OPERATOR, '=') && (this.parser.getStream().look(-1).getContent() === '==' || this.parser.getStream().look(-1).getContent() === '!=')) {
+                    throw new TwingErrorSyntax(`Unexpected operator of value "${token.getContent()}". Did you try to use "===" or "!==" for strict comparison? Use "is same as(value)" instead.`, token.getLine(), this.parser.getStream().getSourceContext());
+                } else {
+
+                    throw new TwingErrorSyntax(`Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getContent()}".`, token.getLine(), this.parser.getStream().getSourceContext());
                 }
         }
 
@@ -257,30 +252,38 @@ export class TwingExpressionParser {
     parseStringExpression(): TwingNodeExpression {
         let stream = this.parser.getStream();
 
-        let nodes = [];
+        let nodes: TwingNode[] = [];
+
         // a string cannot be followed by another string in a single expression
-        let nextCanBeString = true;
-        let token;
+        let nextCanBeString: boolean = true;
+        let token: TwingToken;
+
+        stream.expect(TwingTokenType.OPENING_QUOTE);
 
         while (true) {
-            if (nextCanBeString && (token = stream.nextIf(TwingToken.STRING_TYPE))) {
-                nodes.push(new TwingNodeExpressionConstant(token.getValue(), token.getLine(), token.getColumn()));
+            if (nextCanBeString && (token = stream.nextIf(TwingTokenType.STRING))) {
+                nodes.push(new TwingNodeExpressionConstant(token.getContent(), token.getLine(), token.getColumn()));
                 nextCanBeString = false;
-            }
-            else if (stream.nextIf(TwingToken.INTERPOLATION_START_TYPE)) {
+            } else if (stream.nextIf(TwingTokenType.INTERPOLATION_START)) {
                 nodes.push(this.parseExpression());
-                stream.expect(TwingToken.INTERPOLATION_END_TYPE);
+                stream.expect(TwingTokenType.INTERPOLATION_END);
                 nextCanBeString = true;
-            }
-            else {
+            } else {
                 break;
             }
+        }
+
+        let closingQuote = stream.expect(TwingTokenType.CLOSING_QUOTE);
+
+        // empty string - i.e. an OPENING_QUOTE immediately followed by a CLOSING_QUOTE
+        if (nodes.length < 1) {
+            nodes.push(new TwingNodeExpressionConstant('', closingQuote.getLine(), closingQuote.getColumn()));
         }
 
         let expr = nodes.shift();
 
         nodes.forEach(function (node) {
-            expr = new TwingNodeExpressionBinaryConcat(expr, node, node.getTemplateLine(), node.getTemplateColumn());
+            expr = new TwingNodeExpressionBinaryConcat(expr, node, expr.getTemplateLine(), expr.getTemplateColumn());
         });
 
         return expr;
@@ -289,17 +292,17 @@ export class TwingExpressionParser {
     parseArrayExpression(): TwingNodeExpression {
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, '[', 'An array element was expected');
+        let punctuation = stream.expect(TwingTokenType.PUNCTUATION, '[', 'An array element was expected');
 
-        let node = new TwingNodeExpressionArray(new Map(), stream.getCurrent().getLine(), stream.getCurrent().getColumn());
+        let node = new TwingNodeExpressionArray(new Map(), punctuation.getLine(), punctuation.getColumn());
         let first = true;
 
-        while (!stream.test(TwingToken.PUNCTUATION_TYPE, ']')) {
+        while (!stream.test(TwingTokenType.PUNCTUATION, ']')) {
             if (!first) {
-                stream.expect(TwingToken.PUNCTUATION_TYPE, ',', 'An array element must be followed by a comma');
+                stream.expect(TwingTokenType.PUNCTUATION, ',', 'An array element must be followed by a comma');
 
                 // trailing ,?
-                if (stream.test(TwingToken.PUNCTUATION_TYPE, ']')) {
+                if (stream.test(TwingTokenType.PUNCTUATION, ']')) {
                     break;
                 }
             }
@@ -309,7 +312,7 @@ export class TwingExpressionParser {
             node.addElement(this.parseExpression());
         }
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, ']', 'An opened array is not properly closed');
+        stream.expect(TwingTokenType.PUNCTUATION, ']', 'An opened array is not properly closed');
 
         return node;
     }
@@ -317,17 +320,17 @@ export class TwingExpressionParser {
     parseHashExpression(): TwingNodeExpression {
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, '{', 'A hash element was expected');
+        let punctuation = stream.expect(TwingTokenType.PUNCTUATION, '{', 'A hash element was expected');
 
-        let node = new TwingNodeExpressionHash(new Map(), stream.getCurrent().getLine(), stream.getCurrent().getColumn());
+        let node = new TwingNodeExpressionHash(new Map(), punctuation.getLine(), punctuation.getColumn());
         let first = true;
 
-        while (!stream.test(TwingToken.PUNCTUATION_TYPE, '}')) {
+        while (!stream.test(TwingTokenType.PUNCTUATION, '}')) {
             if (!first) {
-                stream.expect(TwingToken.PUNCTUATION_TYPE, ',', 'A hash value must be followed by a comma');
+                stream.expect(TwingTokenType.PUNCTUATION, ',', 'A hash value must be followed by a comma');
 
                 // trailing ,?
-                if (stream.test(TwingToken.PUNCTUATION_TYPE, '}')) {
+                if (stream.test(TwingTokenType.PUNCTUATION, '}')) {
                     break;
                 }
             }
@@ -340,29 +343,37 @@ export class TwingExpressionParser {
             //  * a string -- 'a'
             //  * a name, which is equivalent to a string -- a
             //  * an expression, which must be enclosed in parentheses -- (1 + 2)
-            let token;
             let key;
+            let quoted: boolean = false;
 
-            if ((token = stream.nextIf(TwingToken.STRING_TYPE)) || (token = stream.nextIf(TwingToken.NAME_TYPE)) || (token = stream.nextIf(TwingToken.NUMBER_TYPE))) {
-                key = new TwingNodeExpressionConstant(token.getValue(), token.getLine(), token.getColumn());
+            let token = stream.nextIf(TwingTokenType.OPENING_QUOTE);
+
+            if (token) {
+                quoted = true;
             }
-            else if (stream.test(TwingToken.PUNCTUATION_TYPE, '(')) {
+
+            if ((token = stream.nextIf(TwingTokenType.STRING)) || (token = stream.nextIf(TwingTokenType.NAME)) || (token = stream.nextIf(TwingTokenType.NUMBER))) {
+                key = new TwingNodeExpressionConstant(token.getContent(), token.getLine(), token.getColumn());
+            } else if (stream.test(TwingTokenType.PUNCTUATION, '(')) {
                 key = this.parseExpression();
-            }
-            else {
+            } else {
                 let current = stream.getCurrent();
 
-                throw new TwingErrorSyntax(`A hash key must be a quoted string, a number, a name, or an expression enclosed in parentheses (unexpected token "${TwingToken.typeToEnglish(current.getType())}" of value "${current.getValue()}".`, current.getLine(), stream.getSourceContext());
+                throw new TwingErrorSyntax(`A hash key must be a quoted string, a number, a name, or an expression enclosed in parentheses (unexpected token "${TwingToken.typeToEnglish(current.getType())}" of value "${current.getContent()}".`, current.getLine(), stream.getSourceContext());
             }
 
-            stream.expect(TwingToken.PUNCTUATION_TYPE, ':', 'A hash key must be followed by a colon (:)');
+            if (quoted) {
+                stream.expect(TwingTokenType.CLOSING_QUOTE);
+            }
+
+            stream.expect(TwingTokenType.PUNCTUATION, ':', 'A hash key must be followed by a colon (:)');
 
             let value = this.parseExpression();
 
             node.addElement(value, key);
         }
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, '}', 'An opened hash is not properly closed');
+        stream.expect(TwingTokenType.PUNCTUATION, '}', 'An opened hash is not properly closed');
 
         return node;
     }
@@ -377,15 +388,15 @@ export class TwingExpressionParser {
 
         let type = TwingTemplate.ANY_CALL;
 
-        if (token.getValue() === '.') {
+        if (token.getContent() === '.') {
             token = stream.next();
 
-            let match = TwingLexer.REGEX_NAME.exec(token.getValue());
+            let match = TwingLexer.REGEX_NAME.exec(token.getContent());
 
-            if ((token.getType() === TwingToken.NAME_TYPE) || (token.getType() === TwingToken.NUMBER_TYPE) || (token.getType() === TwingToken.OPERATOR_TYPE && (match !== null))) {
-                arg = new TwingNodeExpressionConstant(token.getValue(), lineno, columnno);
+            if ((token.getType() === TwingTokenType.NAME) || (token.getType() === TwingTokenType.NUMBER) || (token.getType() === TwingTokenType.OPERATOR && (match !== null))) {
+                arg = new TwingNodeExpressionConstant(token.getContent(), lineno, columnno);
 
-                if (stream.test(TwingToken.PUNCTUATION_TYPE, '(')) {
+                if (stream.test(TwingTokenType.PUNCTUATION, '(')) {
                     type = TwingTemplate.METHOD_CALL;
 
                     let node = this.parseArguments();
@@ -394,8 +405,7 @@ export class TwingExpressionParser {
                         arguments_.addElement(n);
                     });
                 }
-            }
-            else {
+            } else {
                 throw new TwingErrorSyntax('Expected name or number.', lineno, stream.getSourceContext());
             }
 
@@ -414,32 +424,29 @@ export class TwingExpressionParser {
 
                 return node;
             }
-        }
-        else {
+        } else {
             type = TwingTemplate.ARRAY_CALL;
 
             // slice?
             let slice = false;
 
-            if (stream.test(TwingToken.PUNCTUATION_TYPE, ':')) {
+            if (stream.test(TwingTokenType.PUNCTUATION, ':')) {
                 slice = true;
                 arg = new TwingNodeExpressionConstant(0, token.getLine(), token.getColumn());
-            }
-            else {
+            } else {
                 arg = this.parseExpression();
             }
 
-            if (stream.nextIf(TwingToken.PUNCTUATION_TYPE, ':')) {
+            if (stream.nextIf(TwingTokenType.PUNCTUATION, ':')) {
                 slice = true;
             }
 
             if (slice) {
                 let length: TwingNodeExpression;
 
-                if (stream.test(TwingToken.PUNCTUATION_TYPE, ']')) {
+                if (stream.test(TwingTokenType.PUNCTUATION, ']')) {
                     length = new TwingNodeExpressionConstant(null, token.getLine(), token.getColumn());
-                }
-                else {
+                } else {
                     length = this.parseExpression();
                 }
 
@@ -447,12 +454,12 @@ export class TwingExpressionParser {
                 let filterArguments = new TwingNode(new Map([[0, arg], [1, length]]));
                 let filter = factory.call(this, node, new TwingNodeExpressionConstant('slice', token.getLine(), token.getColumn()), filterArguments, token.getLine(), token.getColumn());
 
-                stream.expect(TwingToken.PUNCTUATION_TYPE, ']');
+                stream.expect(TwingTokenType.PUNCTUATION, ']');
 
                 return filter;
             }
 
-            stream.expect(TwingToken.PUNCTUATION_TYPE, ']');
+            stream.expect(TwingTokenType.PUNCTUATION, ']');
         }
 
         return new TwingNodeExpressionGetAttr(node, arg, arguments_, type, lineno, columnno);
@@ -462,18 +469,15 @@ export class TwingExpressionParser {
         while (true) {
             let token = this.parser.getCurrentToken();
 
-            if (token.getType() === TwingToken.PUNCTUATION_TYPE) {
-                if ('.' == token.getValue() || '[' == token.getValue()) {
+            if (token.getType() === TwingTokenType.PUNCTUATION) {
+                if ('.' == token.getContent() || '[' == token.getContent()) {
                     node = this.parseSubscriptExpression(node);
-                }
-                else if ('|' == token.getValue()) {
+                } else if ('|' == token.getContent()) {
                     node = this.parseFilterExpression(node);
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -492,7 +496,7 @@ export class TwingExpressionParser {
 
         let testArguments = null;
 
-        if (stream.test(TwingToken.PUNCTUATION_TYPE, '(')) {
+        if (stream.test(TwingTokenType.PUNCTUATION, '(')) {
             testArguments = this.parser.getExpressionParser().parseArguments(true);
         }
 
@@ -507,17 +511,16 @@ export class TwingExpressionParser {
         let expr2;
         let expr3;
 
-        while (this.parser.getStream().nextIf(TwingToken.PUNCTUATION_TYPE, '?')) {
-            if (!this.parser.getStream().nextIf(TwingToken.PUNCTUATION_TYPE, ':')) {
+        while (this.parser.getStream().nextIf(TwingTokenType.PUNCTUATION, '?')) {
+            if (!this.parser.getStream().nextIf(TwingTokenType.PUNCTUATION, ':')) {
                 expr2 = this.parseExpression();
 
-                if (this.parser.getStream().nextIf(TwingToken.PUNCTUATION_TYPE, ':')) {
+                if (this.parser.getStream().nextIf(TwingTokenType.PUNCTUATION, ':')) {
                     expr3 = this.parseExpression();
                 } else {
                     expr3 = new TwingNodeExpressionConstant('', this.parser.getCurrentToken().getLine(), this.parser.getCurrentToken().getColumn());
                 }
-            }
-            else {
+            } else {
                 expr2 = expr;
                 expr3 = this.parseExpression();
             }
@@ -536,15 +539,14 @@ export class TwingExpressionParser {
 
     parseFilterExpressionRaw(node: TwingNodeExpression, tag: string = null): TwingNodeExpression {
         while (true) {
-            let token = this.parser.getStream().expect(TwingToken.NAME_TYPE);
+            let token = this.parser.getStream().expect(TwingTokenType.NAME);
 
-            let name = new TwingNodeExpressionConstant(token.getValue(), token.getLine(), token.getColumn());
+            let name = new TwingNodeExpressionConstant(token.getContent(), token.getLine(), token.getColumn());
             let methodArguments;
 
-            if (!this.parser.getStream().test(TwingToken.PUNCTUATION_TYPE, '(')) {
+            if (!this.parser.getStream().test(TwingTokenType.PUNCTUATION, '(')) {
                 methodArguments = new TwingNode();
-            }
-            else {
+            } else {
                 methodArguments = this.parseArguments(true);
             }
 
@@ -552,7 +554,7 @@ export class TwingExpressionParser {
 
             node = factory.call(this, node, name, methodArguments, token.getLine(), tag);
 
-            if (!this.parser.getStream().test(TwingToken.PUNCTUATION_TYPE, '|')) {
+            if (!this.parser.getStream().test(TwingTokenType.PUNCTUATION, '|')) {
                 break;
             }
 
@@ -578,25 +580,24 @@ export class TwingExpressionParser {
         let value: TwingNodeExpression;
         let token;
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, '(', 'A list of arguments must begin with an opening parenthesis');
+        stream.expect(TwingTokenType.PUNCTUATION, '(', 'A list of arguments must begin with an opening parenthesis');
 
-        while (!stream.test(TwingToken.PUNCTUATION_TYPE, ')')) {
+        while (!stream.test(TwingTokenType.PUNCTUATION, ')')) {
             if (parsedArguments.size > 0) {
-                stream.expect(TwingToken.PUNCTUATION_TYPE, ',', 'Arguments must be separated by a comma');
+                stream.expect(TwingTokenType.PUNCTUATION, ',', 'Arguments must be separated by a comma');
             }
 
             if (definition) {
-                token = stream.expect(TwingToken.NAME_TYPE, null, 'An argument must be a name');
+                token = stream.expect(TwingTokenType.NAME, null, 'An argument must be a name');
 
-                value = new TwingNodeExpressionName(token.getValue(), this.parser.getCurrentToken().getLine(), this.parser.getCurrentToken().getColumn());
-            }
-            else {
+                value = new TwingNodeExpressionName(token.getContent(), this.parser.getCurrentToken().getLine(), this.parser.getCurrentToken().getColumn());
+            } else {
                 value = this.parseExpression();
             }
 
             let name = null;
 
-            if (namedArguments && (token = stream.nextIf(TwingToken.OPERATOR_TYPE, '='))) {
+            if (namedArguments && (token = stream.nextIf(TwingTokenType.OPERATOR, '='))) {
                 if (value.getType() !== TwingNodeType.EXPRESSION_NAME) {
                     throw new TwingErrorSyntax(`A parameter name must be a string, "${value.constructor.name}" given.`, token.getLine(), stream.getSourceContext());
                 }
@@ -608,31 +609,28 @@ export class TwingExpressionParser {
                     if (!this.checkConstantExpression(value)) {
                         throw new TwingErrorSyntax(`A default value for an argument must be a constant (a boolean, a string, a number, or an array).`, token.getLine(), stream.getSourceContext());
                     }
-                }
-                else {
+                } else {
                     value = this.parseExpression();
                 }
             }
 
             if (definition) {
-                if (null === name) {
+                if (name === null) {
                     name = value.getAttribute('name');
                     value = new TwingNodeExpressionConstant(null, this.parser.getCurrentToken().getLine(), this.parser.getCurrentToken().getColumn());
                 }
 
                 parsedArguments.set(name, value);
-            }
-            else {
+            } else {
                 if (null === name) {
                     push(parsedArguments, value);
-                }
-                else {
+                } else {
                     parsedArguments.set(name, value);
                 }
             }
         }
 
-        stream.expect(TwingToken.PUNCTUATION_TYPE, ')', 'A list of arguments must be closed by a parenthesis');
+        stream.expect(TwingTokenType.PUNCTUATION, ')', 'A list of arguments must be closed by a parenthesis');
 
         return new TwingNode(parsedArguments);
     }
@@ -642,8 +640,8 @@ export class TwingExpressionParser {
         let targets = new Map();
 
         while (true) {
-            let token = stream.expect(TwingToken.NAME_TYPE, null, 'Only variables can be assigned to');
-            let value = token.getValue();
+            let token = stream.expect(TwingTokenType.NAME, null, 'Only variables can be assigned to');
+            let value = token.getContent();
 
             if (['true', 'false', 'none', 'null'].indexOf(value.toLowerCase()) > -1) {
                 throw new TwingErrorSyntax(`You cannot assign a value to "${value}".`, token.getLine(), stream.getSourceContext());
@@ -651,7 +649,7 @@ export class TwingExpressionParser {
 
             push(targets, new TwingNodeExpressionAssignName(value, token.getLine(), token.getColumn()));
 
-            if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
+            if (!stream.nextIf(TwingTokenType.PUNCTUATION, ',')) {
                 break;
             }
         }
@@ -665,7 +663,7 @@ export class TwingExpressionParser {
         while (true) {
             push(targets, this.parseExpression());
 
-            if (!this.parser.getStream().nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
+            if (!this.parser.getStream().nextIf(TwingTokenType.PUNCTUATION, ',')) {
                 break;
             }
         }
@@ -691,16 +689,16 @@ export class TwingExpressionParser {
     }
 
     private isUnary(token: TwingToken) {
-        return token.test(TwingToken.OPERATOR_TYPE) && this.unaryOperators.has(token.getValue());
+        return token.test(TwingTokenType.OPERATOR) && this.unaryOperators.has(token.getContent());
     }
 
     private isBinary(token: TwingToken) {
-        return token.test(TwingToken.OPERATOR_TYPE) && this.binaryOperators.has(token.getValue());
+        return token.test(TwingTokenType.OPERATOR) && this.binaryOperators.has(token.getContent());
     }
 
     private getTest(line: number): Array<any> {
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+        let name = stream.expect(TwingTokenType.NAME).getContent();
 
         let test = this.env.getTest(name);
 
@@ -708,9 +706,9 @@ export class TwingExpressionParser {
             return [name, test];
         }
 
-        if (stream.test(TwingToken.NAME_TYPE)) {
+        if (stream.test(TwingTokenType.NAME)) {
             // try 2-words tests
-            name = name + ' ' + this.parser.getCurrentToken().getValue();
+            name = name + ' ' + this.parser.getCurrentToken().getContent();
 
             let test = this.env.getTest(name);
 

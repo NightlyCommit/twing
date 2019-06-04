@@ -1,38 +1,48 @@
-const {TwingToken} = require('../../../../build/token');
+const {TwingToken, TwingTokenType} = require('../../../../build/token');
 
 const tap = require('tape');
 
 tap.test('token', function (test) {
     test.test('should support type to string representation', function (test) {
-        test.same(TwingToken.typeToString(TwingToken.BLOCK_END_TYPE), 'TwingToken.BLOCK_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.BLOCK_START_TYPE), 'TwingToken.BLOCK_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.EOF_TYPE), 'TwingToken.EOF_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.INTERPOLATION_END_TYPE), 'TwingToken.INTERPOLATION_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.INTERPOLATION_START_TYPE), 'TwingToken.INTERPOLATION_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.NAME_TYPE), 'TwingToken.NAME_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.NUMBER_TYPE), 'TwingToken.NUMBER_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.OPERATOR_TYPE), 'TwingToken.OPERATOR_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.PUNCTUATION_TYPE), 'TwingToken.PUNCTUATION_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.STRING_TYPE), 'TwingToken.STRING_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.TEXT_TYPE), 'TwingToken.TEXT_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.VAR_END_TYPE), 'TwingToken.VAR_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.VAR_START_TYPE), 'TwingToken.VAR_START_TYPE');
+        test.same(TwingToken.typeToString(TwingTokenType.BLOCK_END), 'TwingTokenType.BLOCK_END');
+        test.same(TwingToken.typeToString(TwingTokenType.BLOCK_START), 'TwingTokenType.BLOCK_START');
+        test.same(TwingToken.typeToString(TwingTokenType.EOF), 'TwingTokenType.EOF');
+        test.same(TwingToken.typeToString(TwingTokenType.INTERPOLATION_END), 'TwingTokenType.INTERPOLATION_END');
+        test.same(TwingToken.typeToString(TwingTokenType.INTERPOLATION_START), 'TwingTokenType.INTERPOLATION_START');
+        test.same(TwingToken.typeToString(TwingTokenType.NAME), 'TwingTokenType.NAME');
+        test.same(TwingToken.typeToString(TwingTokenType.NUMBER), 'TwingTokenType.NUMBER');
+        test.same(TwingToken.typeToString(TwingTokenType.OPERATOR), 'TwingTokenType.OPERATOR');
+        test.same(TwingToken.typeToString(TwingTokenType.PUNCTUATION), 'TwingTokenType.PUNCTUATION');
+        test.same(TwingToken.typeToString(TwingTokenType.STRING), 'TwingTokenType.STRING');
+        test.same(TwingToken.typeToString(TwingTokenType.TEXT), 'TwingTokenType.TEXT');
+        test.same(TwingToken.typeToString(TwingTokenType.VAR_END), 'TwingTokenType.VAR_END');
+        test.same(TwingToken.typeToString(TwingTokenType.VAR_START), 'TwingTokenType.VAR_START');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE), 'TwingTokenType.WHITESPACE');
+        test.same(TwingToken.typeToString(TwingTokenType.CLOSING_QUOTE), 'TwingTokenType.CLOSING_QUOTE');
+        test.same(TwingToken.typeToString(TwingTokenType.OPENING_QUOTE), 'TwingTokenType.OPENING_QUOTE');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_TRIMMING), 'TwingTokenType.WHITESPACE_CONTROL_MODIFIER_TRIMMING');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING), 'TwingTokenType.WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING');
 
-        test.same(TwingToken.typeToString(TwingToken.BLOCK_END_TYPE, true), 'BLOCK_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.BLOCK_START_TYPE, true), 'BLOCK_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.EOF_TYPE, true), 'EOF_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.INTERPOLATION_END_TYPE, true), 'INTERPOLATION_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.INTERPOLATION_START_TYPE, true), 'INTERPOLATION_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.NAME_TYPE, true), 'NAME_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.NUMBER_TYPE, true), 'NUMBER_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.OPERATOR_TYPE, true), 'OPERATOR_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.PUNCTUATION_TYPE, true), 'PUNCTUATION_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.STRING_TYPE, true), 'STRING_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.TEXT_TYPE, true), 'TEXT_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.VAR_END_TYPE, true), 'VAR_END_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.VAR_START_TYPE, true), 'VAR_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.COMMENT_START_TYPE, true), 'COMMENT_START_TYPE');
-        test.same(TwingToken.typeToString(TwingToken.COMMENT_END_TYPE, true), 'COMMENT_END_TYPE');
+        test.same(TwingToken.typeToString(TwingTokenType.BLOCK_END, true), 'BLOCK_END');
+        test.same(TwingToken.typeToString(TwingTokenType.BLOCK_START, true), 'BLOCK_START');
+        test.same(TwingToken.typeToString(TwingTokenType.EOF, true), 'EOF');
+        test.same(TwingToken.typeToString(TwingTokenType.INTERPOLATION_END, true), 'INTERPOLATION_END');
+        test.same(TwingToken.typeToString(TwingTokenType.INTERPOLATION_START, true), 'INTERPOLATION_START');
+        test.same(TwingToken.typeToString(TwingTokenType.NAME, true), 'NAME');
+        test.same(TwingToken.typeToString(TwingTokenType.NUMBER, true), 'NUMBER');
+        test.same(TwingToken.typeToString(TwingTokenType.OPERATOR, true), 'OPERATOR');
+        test.same(TwingToken.typeToString(TwingTokenType.PUNCTUATION, true), 'PUNCTUATION');
+        test.same(TwingToken.typeToString(TwingTokenType.STRING, true), 'STRING');
+        test.same(TwingToken.typeToString(TwingTokenType.TEXT, true), 'TEXT');
+        test.same(TwingToken.typeToString(TwingTokenType.VAR_END, true), 'VAR_END');
+        test.same(TwingToken.typeToString(TwingTokenType.VAR_START, true), 'VAR_START');
+        test.same(TwingToken.typeToString(TwingTokenType.COMMENT_START, true), 'COMMENT_START');
+        test.same(TwingToken.typeToString(TwingTokenType.COMMENT_END, true), 'COMMENT_END');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE, true), 'WHITESPACE');
+        test.same(TwingToken.typeToString(TwingTokenType.CLOSING_QUOTE, true), 'CLOSING_QUOTE');
+        test.same(TwingToken.typeToString(TwingTokenType.OPENING_QUOTE, true), 'OPENING_QUOTE');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_TRIMMING, true), 'WHITESPACE_CONTROL_MODIFIER_TRIMMING');
+        test.same(TwingToken.typeToString(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING, true), 'WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING');
 
         test.throws(function() {
             TwingToken.typeToString(-999);
@@ -42,25 +52,43 @@ tap.test('token', function (test) {
     });
 
     test.test('should support type to english representation', function (test) {
-        test.same(TwingToken.typeToEnglish(TwingToken.BLOCK_END_TYPE), 'end of statement block');
-        test.same(TwingToken.typeToEnglish(TwingToken.BLOCK_START_TYPE), 'begin of statement block');
-        test.same(TwingToken.typeToEnglish(TwingToken.EOF_TYPE), 'end of template');
-        test.same(TwingToken.typeToEnglish(TwingToken.INTERPOLATION_END_TYPE), 'end of string interpolation');
-        test.same(TwingToken.typeToEnglish(TwingToken.INTERPOLATION_START_TYPE), 'begin of string interpolation');
-        test.same(TwingToken.typeToEnglish(TwingToken.NAME_TYPE), 'name');
-        test.same(TwingToken.typeToEnglish(TwingToken.NUMBER_TYPE), 'number');
-        test.same(TwingToken.typeToEnglish(TwingToken.OPERATOR_TYPE), 'operator');
-        test.same(TwingToken.typeToEnglish(TwingToken.PUNCTUATION_TYPE), 'punctuation');
-        test.same(TwingToken.typeToEnglish(TwingToken.STRING_TYPE), 'string');
-        test.same(TwingToken.typeToEnglish(TwingToken.TEXT_TYPE), 'text');
-        test.same(TwingToken.typeToEnglish(TwingToken.VAR_END_TYPE), 'end of print statement');
-        test.same(TwingToken.typeToEnglish(TwingToken.VAR_START_TYPE), 'begin of print statement');
-        test.same(TwingToken.typeToEnglish(TwingToken.COMMENT_START_TYPE), 'begin of comment statement');
-        test.same(TwingToken.typeToEnglish(TwingToken.COMMENT_END_TYPE), 'end of comment statement');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.BLOCK_END), 'end of statement block');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.BLOCK_START), 'begin of statement block');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.EOF), 'end of template');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.INTERPOLATION_END), 'end of string interpolation');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.INTERPOLATION_START), 'begin of string interpolation');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.NAME), 'name');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.NUMBER), 'number');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.OPERATOR), 'operator');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.PUNCTUATION), 'punctuation');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.STRING), 'string');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.TEXT), 'text');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.VAR_END), 'end of print statement');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.VAR_START), 'begin of print statement');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.COMMENT_START), 'begin of comment statement');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.COMMENT_END), 'end of comment statement');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.WHITESPACE), 'whitespace');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.CLOSING_QUOTE), 'closing quote');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.OPENING_QUOTE), 'opening quote');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_TRIMMING), 'trimming whitespace control modifier');
+        test.same(TwingToken.typeToEnglish(TwingTokenType.WHITESPACE_CONTROL_MODIFIER_LINE_TRIMMING), 'line trimming whitespace control modifier');
 
         test.throws(function() {
-            TwingToken.typeToEnglish(-999);
+            TwingToken.typeToEnglish('999');
         }, new Error('Token of type "-999" does not exist.'));
+
+        test.end();
+    });
+
+    test.test('serialize', function (test) {
+        let token = new TwingToken(TwingTokenType.TEXT, '\nfoo\nbar\n', 1, 1);
+
+        let expected = `
+foo
+bar
+`;
+
+        test.same(token.serialize(), expected);
 
         test.end();
     });
