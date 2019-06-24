@@ -4,9 +4,9 @@ import {TwingNodeExpressionConstant} from "./constant";
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
 import {push} from "../../helper/push";
+import {ctypeDigit} from "../../helper/ctype_digit";
 
 let array_chunk = require('locutus/php/array/array_chunk');
-let ctype_digit = require('locutus/php/ctype/ctype_digit');
 
 export class TwingNodeExpressionArray extends TwingNodeExpression {
     private index: number;
@@ -21,7 +21,7 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
         for (let pair of this.getKeyValuePairs()) {
             let expression = pair.key;
 
-            if ((expression.getType() === TwingNodeType.EXPRESSION_CONSTANT) && (ctype_digit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
+            if ((expression.getType() === TwingNodeType.EXPRESSION_CONSTANT) && (ctypeDigit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
                 this.index = expression.getAttribute('value');
             }
         }

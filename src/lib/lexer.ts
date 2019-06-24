@@ -10,7 +10,6 @@ import {TwingErrorSyntax} from "./error/syntax";
 import {TwingEnvironment} from "./environment";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
-let ctype_alpha = require('locutus/php/ctype/ctype_alpha');
 let merge = require('merge');
 
 let safeCChars: Array<string> = ['b', 'f', 'n', 'r', 't', 'v', '0', '\'', '"', '\\'];
@@ -529,7 +528,7 @@ export class TwingLexer {
 
             // an operator that ends with a character must be followed by
             // a whitespace or a parenthesis
-            if (ctype_alpha(operator[length - 1])) {
+            if (new RegExp('[A-Za-z]').test(operator[length - 1])) {
                 pattern = preg_quote(operator, '/') + '(?=[\\s()])';
             }
             else {

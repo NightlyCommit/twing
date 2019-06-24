@@ -3,8 +3,7 @@ import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSandbox} from "../node/sandbox";
 import {TwingNode, TwingNodeType} from "../node";
-
-const ctype_space = require('locutus/php/ctype/ctype_space');
+import {ctypeSpace} from "../helper/ctype_space";
 
 export class TwingTokenParserSandbox extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -19,7 +18,7 @@ export class TwingTokenParserSandbox extends TwingTokenParser {
         // in a sandbox tag, only include tags are allowed
         if (body.getType() !== TwingNodeType.INCLUDE) {
             body.getNodes().forEach(function (node: TwingNode) {
-                if (!(node.getType() === TwingNodeType.TEXT && ctype_space(node.getAttribute('data')))) {
+                if (!(node.getType() === TwingNodeType.TEXT && ctypeSpace(node.getAttribute('data')))) {
                     if (node.getType() !== TwingNodeType.INCLUDE) {
                         throw new TwingErrorSyntax('Only "include" tags are allowed within a "sandbox" section.', node.getTemplateLine(), stream.getSourceContext());
                     }
