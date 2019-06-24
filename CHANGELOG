@@ -1,3 +1,8 @@
+2.2.6
+
+ * #352 twing fails to render if the the html tag has an attribute lang="de" - Cannot read property 'LC_CTYPE' of undefined
+ * #354 Twing crashes when template contains JS interpolation syntax
+
 2.2.5
 
  * #341 Syntax errors don't show the location where the error occured
