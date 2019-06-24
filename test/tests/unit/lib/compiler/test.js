@@ -29,6 +29,8 @@ tap.test('compiler', function (test) {
         test.same(compiler.compile(node).string('').getSource(), '\`\`', 'supports empty parameter');
         test.same(compiler.compile(node).string(null).getSource(), '\`\`', 'supports null parameter');
         test.same(compiler.compile(node).string(undefined).getSource(), '\`\`', 'supports undefined parameter');
+        test.same(compiler.compile(node).string('${foo}').getSource(), '\`\\${foo}\`', 'escape interpolation delimiter');
+        test.same(compiler.compile(node).string('${foo}${foo}').getSource(), '\`\\${foo}\\${foo}\`', 'escape interpolation delimiter globally');
 
         test.end();
     });
