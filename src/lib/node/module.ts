@@ -3,8 +3,6 @@ import {TwingSource} from "../source";
 
 import {TwingCompiler} from "../compiler";
 
-const ctype_space = require('locutus/php/ctype/ctype_space');
-
 /**
  * Represents a module node.
  */

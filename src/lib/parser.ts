@@ -18,8 +18,8 @@ import {TwingTokenParser} from "./token-parser";
 import {first} from "./helper/first";
 import {push} from "./helper/push";
 import {TwingNodeComment} from "./node/comment";
+import {ctypeSpace} from "./helper/ctype_space";
 
-const ctype_space = require('locutus/php/ctype/ctype_space');
 const mt_rand = require('locutus/php/math/mt_rand');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
@@ -388,14 +388,14 @@ export class TwingParser {
      */
     filterBodyNodes(node: TwingNode, nested: boolean = false): TwingNode {
         // check that the body does not contain non-empty output nodes
-        if ((node.getType() === TwingNodeType.TEXT && !ctype_space(node.getAttribute('data'))) ||
+        if ((node.getType() === TwingNodeType.TEXT && !ctypeSpace(node.getAttribute('data'))) ||
             ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS))) {
             let nodeData: string = node.getAttribute('data') as string;
 
             if (nodeData.indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 let trailingData = nodeData.substring(3);
 
-                if (trailingData === '' || ctype_space(trailingData)) {
+                if (trailingData === '' || ctypeSpace(trailingData)) {
                     // bypass empty nodes starting with a BOM
                     return null;
                 }
