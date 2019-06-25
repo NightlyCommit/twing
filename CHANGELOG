@@ -1,3 +1,8 @@
+2.2.7
+
+ * #358 package-lock.json prevents grabbing latest dependencies security patches
+ * #349 Variable wrongly interpreted as operator when used as assignment of a for tag
+
 2.2.6
 
  * #352 twing fails to render if the the html tag has an attribute lang="de" - Cannot read property 'LC_CTYPE' of undefined
@@ -5,7 +10,7 @@
 
 2.2.5
 
- * #341 Syntax errors don't show the location where the error occured
+ * #341 Syntax errors don't show the location where the error occurred
 
 2.2.4
 
