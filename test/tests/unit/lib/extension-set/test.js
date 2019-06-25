@@ -1,10 +1,10 @@
-const {
-    TwingExtensionSet,
-    TwingExtension,
-    TwingFunction,
-    TwingTest,
-    TwingFilter
-} = require("../../../../../build/index");
+const {TwingExtensionSet} = require('../../../../../build/lib/extension-set');
+const {TwingExtension} = require('../../../../../build/lib/extension');
+const {TwingFunction} = require('../../../../../build/lib/function');
+const {TwingTest} = require('../../../../../build/lib/test');
+const {TwingFilter} = require('../../../../../build/lib/filter');
+const {TwingTokenParserFilter} = require('../../../../../build/lib/token-parser/filter');
+const {TwingOperator, TwingOperatorType} = require('../../../../../build/lib/operator');
 
 const tap = require('tape');
 const sinon = require('sinon');
@@ -24,12 +24,8 @@ class TwingTestExtensionSetExtension extends TwingExtension {
 
     getOperators() {
         return [
-            new Map([
-                ['foo', {}]
-            ]),
-            new Map([
-                ['foo', {}]
-            ])
+            new TwingOperator('foo', TwingOperatorType.UNARY),
+            new TwingOperator('foo', TwingOperatorType.BINARY)
         ];
     }
 }
@@ -84,6 +80,19 @@ tap.test('extension-set', function (test) {
             test.end();
         });
 
+        test.test('already registered', function(test) {
+            let extensionSet = new TwingExtensionSet();
+            let parser = new TwingTokenParserFilter();
+
+            extensionSet.addTokenParser(parser);
+
+            test.throws(function() {
+                extensionSet.addTokenParser(new TwingTokenParserFilter());
+            }, new Error('Tag "filter" is already registered.'));
+
+            test.end();
+        });
+
         test.end();
     });
 
@@ -116,12 +125,36 @@ tap.test('extension-set', function (test) {
             test.end();
         });
 
+        test.test('already registered', function(test) {
+            let extensionSet = new TwingExtensionSet();
+            let test_ = new TwingTest('foo', () => {});
+
+            extensionSet.addTest(test_);
+
+            test.throws(function() {
+                extensionSet.addTest(new TwingTest('foo', () => {}));
+            }, new Error('Test "foo" is already registered.'));
+
+            test.end();
+        });
+
         test.end();
     });
 
     test.test('getTests', function(test) {
         let extensionSet = new TwingExtensionSet();
+
         extensionSet.getTests();
+
+        test.true(extensionSet.isInitialized());
+
+        test.end();
+    });
+
+    test.test('getSourceMapNodeConstructors', function(test) {
+        let extensionSet = new TwingExtensionSet();
+
+        extensionSet.getSourceMapNodeConstructors();
 
         test.true(extensionSet.isInitialized());
 
@@ -137,6 +170,19 @@ tap.test('extension-set', function (test) {
             test.throws(function() {
                 extensionSet.addFilter(new TwingFilter('foo', () => {}));
             }, new Error('Unable to add filter "foo" as extensions have already been initialized.'));
+
+            test.end();
+        });
+
+        test.test('already registered', function(test) {
+            let extensionSet = new TwingExtensionSet();
+            let filter = new TwingFilter('foo', () => {});
+
+            extensionSet.addFilter(filter);
+
+            test.throws(function() {
+                extensionSet.addFilter(new TwingFilter('foo', () => {}));
+            }, new Error('Filter "foo" is already registered.'));
 
             test.end();
         });
@@ -222,7 +268,7 @@ tap.test('extension-set', function (test) {
 
         extensionSet.addExtension(extension);
 
-        test.same(extensionSet.getUnaryOperators(), extension.getOperators()[0]);
+        test.same(extensionSet.getUnaryOperators(), new Map([['foo', extension.getOperators()[0]]]));
 
         test.end();
     });
@@ -251,6 +297,19 @@ tap.test('extension-set', function (test) {
                 extensionSet.addFunction(new TwingFunction('foo', () => {
                 }));
             }, new Error('Unable to add function "foo" as extensions have already been initialized.'));
+
+            test.end();
+        });
+
+        test.test('already registered', function(test) {
+            let extensionSet = new TwingExtensionSet();
+            let function_ = new TwingFunction('foo', () => {});
+
+            extensionSet.addFunction(function_);
+
+            test.throws(function() {
+                extensionSet.addFunction(new TwingFunction('foo', () => {}));
+            }, new Error('Function "foo" is already registered.'));
 
             test.end();
         });

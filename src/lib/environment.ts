@@ -1,14 +1,6 @@
 import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionSet} from "./extension-set";
-import {
-    twingArrayMerge,
-    twingConstant,
-    twingEnsureTraversable,
-    TwingExtensionCore,
-    twingGetAttribute,
-    twingInFilter
-} from "./extension/core";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingFilter} from "./filter";
 import {TwingLexer} from "./lexer";
@@ -20,92 +12,67 @@ import {TwingErrorLoader} from "./error/loader";
 import {TwingTest} from "./test";
 import {TwingFunction} from "./function";
 import {TwingErrorSyntax} from "./error/syntax";
-import {TwingExtensionEscaper} from "./extension/escaper";
 import {TwingTemplate} from "./template";
 import {TwingError} from "./error";
 import {TwingTemplateWrapper} from "./template-wrapper";
 import {TwingCacheInterface} from "./cache-interface";
 import {TwingLoaderArray} from "./loader/array";
 import {TwingLoaderChain} from "./loader/chain";
-import {TwingExtensionOptimizer} from "./extension/optimizer";
 import {TwingCompiler} from "./compiler";
-import {TwingNode} from "./node";
+import {TwingNode, TwingNodeType} from "./node";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
-import {merge as twingMerge, merge} from "./helper/merge";
-import {join} from "./helper/join";
-import {TwingOperator} from "./extension";
+import {merge as twingMerge, merge} from "./helpers/merge";
+import {join} from "./helpers/join";
+import {TwingOperator} from "./operator";
 import {EventEmitter} from 'events';
 import {echo, flush, obEndClean, obGetClean, obGetContents, obStart, TwingOutputBuffering} from "./output-buffering";
-import {clone} from "./helper/clone";
-import {compare} from "./helper/compare";
-import {count} from "./helper/count";
-import {each} from "./helper/each";
-import {isCountable} from "./helper/is-countable";
-import {isMap} from "./helper/is-map";
-import {isPlainObject} from "./helper/is-plain-object";
-import {iteratorToMap} from "./helper/iterator-to-map";
-import {regexParser} from "./helper/regex-parser";
+import {cloneMap} from "./helpers/clone-map";
+import {compare} from "./helpers/compare";
+import {count} from "./helpers/count";
+import {each} from "./helpers/each";
+import {isCountable} from "./helpers/is-countable";
+import {isMap} from "./helpers/is-map";
+import {iteratorToMap} from "./helpers/iterator-to-map";
 import {TwingMarkup} from "./markup";
-import {range} from "./helper/range";
+import {createRange} from "./helpers/create-range";
 import {TwingProfilerProfile} from "./profiler/profile";
 import {TwingSandboxSecurityError} from "./sandbox/security-error";
 import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
 import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
+import {TwingExtensionCore} from "./extension/core";
+import {TwingSandboxSecurityPolicy} from "./sandbox/security-policy";
+import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-interface";
+import {TwingEnvironmentOptions} from "./environment-options";
+import {arrayMerge} from "./helpers/array-merge";
+import {constant} from "./extension/core/functions/constant";
+import {isTraversable} from "./helpers/is-traversable";
+import {isIn} from "./helpers/is-in";
+import {getAttribute} from "./helpers/get-attribute";
 
+const regexParser = require('regex-parser');
+const isPlainObject = require('is-plain-object');
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
 
-/**
- *  * Available options:
- *
- *  * debug: When set to true, it automatically set "auto_reload" to true as
- *           well (default to false).
- *
- *  * charset: The charset used by the templates (default to UTF-8).
- *
- *  * base_template_class: The base template class to use for generated
- *                         templates (default to Twig_Template).
- *
- *  * cache: An absolute path where to store the compiled templates,
- *           a TwingCacheInterface implementation,
- *           or false to disable compilation cache (default).
- *
- *  * auto_reload: Whether to reload the template if the original source changed.
- *                 If you don't provide the auto_reload option, it will be
- *                 determined automatically based on the debug value.
- *
- *  * strict_variables: Whether to ignore invalid variables in templates
- *                      (default to false).
- *
- *  * autoescape: Whether to enable auto-escaping (default to html):
- *                  * false: disable auto-escaping
- *                  * html, js: set the autoescaping to one of the supported strategies
- *                  * name: set the autoescaping strategy based on the template name extension
- *                  * callback: a callback that returns an escaping strategy based on the template "name"
- *
- *  * optimizations: A flag that indicates which optimizations to apply
- *                   (default to -1 which means that all optimizations are enabled;
- *                   set it to 0 to disable).
- */
-export type TwingEnvironmentOptions = {
-    debug?: boolean;
-    charset?: string;
-    base_template_class?: string;
-    cache?: TwingCacheInterface | false | string;
-    auto_reload?: boolean;
-    strict_variables?: boolean;
-    autoescape?: string | boolean | Function;
-    optimizations?: number;
-    source_map?: boolean | string;
-}
-
 export const VERSION = '__VERSION__';
+
+/**
+ * @param {*} seq
+ * @return *
+ */
+const ensureTraversable = (seq: any): any => {
+    if (isTraversable(seq) || isPlainObject(seq)) {
+        return seq;
+    }
+
+    return [];
+};
 
 /**
  * Stores the Twing configuration.
@@ -136,6 +103,10 @@ export abstract class TwingEnvironment extends EventEmitter {
     private sourceMap: boolean | string;
     private templateRuntime: any;
     private autoescape: string | boolean | Function;
+    private coreExtension: TwingExtensionCore;
+    private sandboxedGlobally: boolean;
+    private sandboxed: boolean;
+    private sandboxPolicy: TwingSandboxSecurityPolicyInterface;
 
     /**
      * Constructor.
@@ -156,8 +127,9 @@ export abstract class TwingEnvironment extends EventEmitter {
             autoescape: 'html',
             cache: false,
             auto_reload: null,
-            optimizations: -1,
-            source_map: false
+            source_map: false,
+            sandbox_policy: new TwingSandboxSecurityPolicy([], [], new Map(), new Map(), []),
+            sandboxed: false
         }, options);
 
         this.debug = options.debug;
@@ -169,13 +141,14 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.extensionSet = new TwingExtensionSet();
         this.sourceMap = options.source_map;
         this.autoescape = options.autoescape;
+        this.sandboxed = false;
+        this.sandboxedGlobally = options.sandboxed;
+        this.sandboxPolicy = options.sandbox_policy;
 
-        this.addExtension(new TwingExtensionCore());
-        this.addExtension(new TwingExtensionEscaper(options.autoescape));
-        this.addExtension(new TwingExtensionOptimizer(options.optimizations));
+        this.setCoreExtension(new TwingExtensionCore(options.autoescape));
 
         this.setTemplateRuntime({
-            clone: clone,
+            clone: cloneMap,
             compare: compare,
             count: count,
             each: each,
@@ -187,11 +160,11 @@ export abstract class TwingEnvironment extends EventEmitter {
             regexParser: regexParser,
             TwingErrorLoader: TwingErrorLoader,
             TwingErrorRuntime: TwingErrorRuntime,
-            twingArrayMerge: twingArrayMerge,
-            twingConstant: twingConstant,
-            twingEnsureTraversable: twingEnsureTraversable,
-            twingGetAttribute: twingGetAttribute,
-            twingInFilter: twingInFilter,
+            twingArrayMerge: arrayMerge,
+            twingConstant: constant,
+            twingEnsureTraversable: ensureTraversable,
+            twingGetAttribute: getAttribute,
+            twingInFilter: isIn,
             TwingMarkup: TwingMarkup,
             echo: echo,
             flush: flush,
@@ -199,7 +172,7 @@ export abstract class TwingEnvironment extends EventEmitter {
             obGetClean: obGetClean,
             obGetContents: obGetContents,
             obStart: obStart,
-            range: range,
+            range: createRange,
             TwingSandboxSecurityError: TwingSandboxSecurityError,
             TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
             TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
@@ -208,6 +181,16 @@ export abstract class TwingEnvironment extends EventEmitter {
             TwingTemplate: TwingTemplate,
             TwingProfilerProfile: TwingProfilerProfile
         });
+    }
+
+    getCoreExtension(): TwingExtensionCore {
+        return this.coreExtension;
+    }
+
+    setCoreExtension(extension: TwingExtensionCore) {
+        this.addExtension(extension, 'TwingExtensionCore');
+
+        this.coreExtension = extension;
     }
 
     /**
@@ -684,7 +667,7 @@ return module.exports;
      */
     compileSource(source: TwingSource): string {
         try {
-            return this.compile(this.parse(this.tokenize(source)));
+            return this.compile(this.parse(this.tokenize(source).toAst()));
         }
         catch (e) {
             if (e instanceof TwingError) {
@@ -964,6 +947,28 @@ return module.exports;
     }
 
     /**
+     * @param nodeType
+     *
+     * @return TwingSourceMapNodeConstructor
+     */
+    getSourceMapNodeConstructor(nodeType: TwingNodeType) {
+        let constructor = this.extensionSet.getSourceMapNodeConstructor(nodeType);
+
+        if (!constructor) {
+            constructor = TwingSourceMapNode;
+        }
+
+        return constructor;
+    }
+
+    /**
+     * @return Map<TwingNodeType, TwingSourceMapNodeConstructor>
+     */
+    getSourceMapNodeConstructors(): Map<TwingNodeType, TwingSourceMapNodeConstructor> {
+        return this.extensionSet.getSourceMapNodeConstructors();
+    }
+
+    /**
      * Registers a Global.
      *
      * New globals can be added before compiling or rendering a template;
@@ -1105,5 +1110,47 @@ return module.exports;
         }
 
         return sourceMap;
+    }
+
+    enableSandbox() {
+        this.sandboxed = true;
+    }
+
+    disableSandbox() {
+        this.sandboxed = false;
+    }
+
+    isSandboxed() {
+        return this.sandboxedGlobally || this.sandboxed;
+    }
+
+    isSandboxedGlobally() {
+        return this.sandboxedGlobally;
+    }
+
+    checkSecurity(tags: Map<string, number>, filters: Map<string, number>, functions: Map<string, number>) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkSecurity(tags, filters, functions);
+        }
+    }
+
+    checkMethodAllowed(obj: any, method: string) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkMethodAllowed(obj, method);
+        }
+    }
+
+    checkPropertyAllowed(obj: any, method: string) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkPropertyAllowed(obj, method);
+        }
+    }
+
+    ensureToStringAllowed(obj: any) {
+        if (this.isSandboxed() && typeof obj === 'object') {
+            this.sandboxPolicy.checkMethodAllowed(obj, 'toString');
+        }
+
+        return obj;
     }
 }

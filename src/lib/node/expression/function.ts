@@ -4,7 +4,7 @@ import {TwingNodeExpressionCall} from "./call";
 import {TwingCompiler} from "../../compiler";
 
 export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
-    constructor(name: string, functionArguments: TwingNode, lineno: number) {
+    constructor(name: string, functionArguments: TwingNode, lineno: number, columnno: number) {
         let nodes = new Map([
             ['arguments', functionArguments]
         ]);
@@ -14,7 +14,7 @@ export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
         attributes.set('name', name);
         attributes.set('is_defined_test', false);
 
-        super(nodes, attributes, lineno);
+        super(nodes, attributes, lineno, columnno);
 
         this.type = TwingNodeType.EXPRESSION_FUNCTION;
     }

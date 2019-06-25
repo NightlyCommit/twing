@@ -1,28 +1,20 @@
-const TwingExtensionCore = require('../../../../../../build/lib/extension/core');
-const {
-    twingGetAttribute,
-    twingDateConverter
-} = require('../../../../../../build/lib/extension/core');
+const {TwingExtensionCore} = require('../../../../../../build/lib/extension/core');
+const {twingDateConverter} = require('../../../../../../build/lib/extension/core/filters/date');
+const {iconv} = require('../../../../../../build/lib/helpers/iconv');
+const {formatDateTime} = require('../../../../../../build/lib/helpers/format-date-time');
 
-const {
-    TwingSource,
-    TwingErrorRuntime,
-    TwingTest,
-    TwingNodeExpressionTestNull,
-    TwingNodeExpression,
-    TwingNode,
-    TwingLoaderArray,
-    TwingLoaderRelativeFilesystem,
-    TwingEnvironment,
-    TwingExtensionSandbox,
-    TwingSandboxSecurityPolicy,
-    TwingErrorLoader,
-    TwingNodeExpressionConstant,
-    TwingNodeExpressionArray,
-    TwingTemplate,
-    formatDateTime,
-    iconv
-} = require('../../../../../../build');
+const {TwingSource} = require('../../../../../../build/lib/source');
+const {TwingErrorRuntime} = require('../../../../../../build/lib/error/runtime');
+const {TwingTest} = require('../../../../../../build/lib/test');
+const {TwingNodeExpressionConstant} = require('../../../../../../build/lib/node/expression/constant');
+const {TwingNodeExpressionArray} = require('../../../../../../build/lib/node/expression/array');
+const {TwingNode} = require('../../../../../../build/lib/node');
+const {TwingLoaderArray} = require('../../../../../../build/lib/loader/array');
+const {TwingLoaderRelativeFilesystem} = require('../../../../../../build/lib/loader/relative-filesystem');
+const {TwingEnvironment} = require('../../../../../../build/lib/environment');
+const {TwingSandboxSecurityPolicy} = require('../../../../../../build/lib/sandbox/security-policy');
+const {TwingErrorLoader} = require('../../../../../../build/lib/error/loader');
+const {TwingTemplate} = require('../../../../../../build/lib/template');
 
 const TwingTestMockEnvironment = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');
@@ -36,11 +28,25 @@ const sinon = require('sinon');
 const path = require('path');
 
 let getFilter = function (name) {
-    let extension = new TwingExtensionCore.TwingExtensionCore();
+    let extension = new TwingExtensionCore();
 
-    for (let [index, filter] of extension.getFilters()) {
+    for (let filter of extension.getFilters()) {
         if (filter.getName() === name) {
             return filter;
+        }
+    }
+};
+
+/**
+ * @param name
+ * @returns {TwingFunction}
+ */
+let getFunction = function (name) {
+    let extension = new TwingExtensionCore();
+
+    for (let function_ of extension.getFunctions()) {
+        if (function_.getName() === name) {
+            return function_;
         }
     }
 };
@@ -51,7 +57,7 @@ let getFilter = function (name) {
  * @returns {TwingTest}
  */
 let getTest = function (name) {
-    let extension = new TwingExtensionCore.TwingExtensionCore();
+    let extension = new TwingExtensionCore();
 
     for (let test of extension.getTests()) {
         if (test.getName() === name) {
@@ -59,44 +65,6 @@ let getTest = function (name) {
         }
     }
 };
-
-class Foo {
-    constructor() {
-        this.oof = 'oof';
-    }
-
-    foo() {
-        return 'foo';
-    }
-
-    getFoo() {
-        return 'getFoo';
-    }
-
-    getBar() {
-        return 'getBar';
-    }
-
-    isBar() {
-        return 'isBar';
-    }
-
-    hasBar() {
-        return 'hasBar';
-    }
-
-    isOof() {
-        return 'isOof';
-    }
-
-    hasFooBar() {
-        return 'hasFooBar';
-    }
-
-    __call() {
-
-    }
-}
 
 function foo_escaper_for_test(env, string, charset) {
     return (string ? string : '') + charset;
@@ -123,10 +91,6 @@ class CoreTestIterator {
     rewind() {
         this.position = 0;
     }
-}
-
-class TwingTestExtensionCoreTemplate extends TwingTemplate {
-
 }
 
 tap.test('TwingExtensionCore', function (test) {
@@ -284,97 +248,6 @@ tap.test('TwingExtensionCore', function (test) {
         test.end();
     });
 
-    test.test('twingGetAttribute', function (test) {
-        let env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-            strict_variables: true
-        });
-
-        let source = new TwingSource('', '');
-
-        test.test('should support method calls', function (test) {
-            let foo = new Foo();
-
-            // object property
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], true), true);
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
-
-            test.same(twingGetAttribute(env, foo, 'foo'), 'foo', 'should resolve methods by their name');
-            test.same(twingGetAttribute(env, foo, 'bar'), 'getBar', 'should resolve get{name} if {name} doesn\'t exist');
-            test.same(twingGetAttribute(env, foo, 'Oof'), 'isOof', 'should resolve is{name} if {name} and get{name} don\'t exist');
-            test.same(twingGetAttribute(env, foo, 'fooBar'), 'hasFooBar', 'should resolve has{name} if {name}, get{name} and is{name} don\'t exist');
-
-            test.same(twingGetAttribute(env, foo, 'getfoo'), 'getFoo', 'should resolve method in a case-insensitive way');
-            test.same(twingGetAttribute(env, foo, 'GeTfOo'), 'getFoo', 'should resolve method in a case-insensitive way');
-
-            // !METHOD_CALL + boolean item
-            test.same(twingGetAttribute(env, [2, 3], false), 2);
-            test.same(twingGetAttribute(env, [2, 3], true), 3);
-
-            // !METHOD_CALL + float item
-            test.same(twingGetAttribute(env, [2, 3], 0.1), 2);
-            test.same(twingGetAttribute(env, [2, 3], 1.1), 3);
-
-            test.throws(function () {
-                console.warn(twingGetAttribute(env, [], 0));
-            }, new TwingErrorRuntime('Index "0" is out of bounds as the array is empty.', -1, source));
-
-            test.throws(function () {
-                console.warn(twingGetAttribute(env, [1], 1));
-            }, new TwingErrorRuntime('Index "1" is out of bounds for array [1].', -1, source));
-
-            test.throws(function () {
-                console.warn(twingGetAttribute(env, new Map(), 'foo'));
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a object variable ("[object Map]").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, 5, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.ANY_CALL);
-            }, new TwingErrorRuntime('Impossible to access an attribute ("foo") on a null variable.', -1, source));
-
-            // METHOD_CALL
-            test.equals(twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, true), false);
-            test.equals(twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, false, true), undefined);
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, [], 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on an array.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, new TwingTestExtensionCoreTemplate(env), 'foo');
-            }, new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.', -1));
-
-            test.throws(function () {
-                twingGetAttribute(env, new Foo(), 'ooof', TwingTemplate.ANY_CALL, [], false, false);
-            }, new TwingErrorRuntime('Neither the property "ooof" nor one of the methods ooof()" or "getooof()"/"isooof()"/"hasooof()" exist and have public access in class "Foo".', -1, source));
-
-            // no strict_variables
-            env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-                strict_variables: false
-            });
-
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
-
-            test.end();
-        });
-
-        test.end();
-    });
-
     test.test('randomFunction', function (test) {
         let randomFunctionTestData = [
             [ // array
@@ -408,10 +281,12 @@ tap.test('TwingExtensionCore', function (test) {
         ];
 
         let env = new TwingTestMockEnvironment(new TwingTestMockLoader());
+        let function_ = getFunction('random');
+        let callable = function_.getCallable();
 
         for (let data of randomFunctionTestData) {
             for (let i = 0; i < 100; i++) {
-                test.true(data[1].includes(TwingExtensionCore.twingRandom(env, data[0])));
+                test.true(data[1].includes(callable(env, data[0])));
             }
         }
 
@@ -421,8 +296,11 @@ tap.test('TwingExtensionCore', function (test) {
     test.test('randomFunctionWithoutParameter', function (test) {
         let max = getrandmax();
 
+        let function_ = getFunction('random');
+        let callable = function_.getCallable();
+
         for (let i = 0; i < 100; i++) {
-            let val = TwingExtensionCore.twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()));
+            let val = callable(new TwingTestMockEnvironment(new TwingTestMockLoader()));
             test.true((typeof val === 'number') && val >= 0 && val <= max);
         }
 
@@ -430,19 +308,25 @@ tap.test('TwingExtensionCore', function (test) {
     });
 
     test.test('randomFunctionReturnsAsIs', function (test) {
-        test.same(TwingExtensionCore.twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), ''), '');
-        test.same(TwingExtensionCore.twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader(), {
+        let function_ = getFunction('random');
+        let callable = function_.getCallable();
+
+        test.same(callable(new TwingTestMockEnvironment(new TwingTestMockLoader()), ''), '');
+        test.same(callable(new TwingTestMockEnvironment(new TwingTestMockLoader(), {
             charset: 'null'
         }), ''), '');
         let instance = {};
-        test.same(TwingExtensionCore.twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), instance), instance);
+        test.same(callable(new TwingTestMockEnvironment(new TwingTestMockLoader()), instance), instance);
 
         test.end();
     });
 
     test.test('randomFunctionOfEmptyArrayThrowsException', function (test) {
+        let function_ = getFunction('random');
+        let callable = function_.getCallable();
+
         test.throws(function () {
-            TwingExtensionCore.twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), []);
+            callable(new TwingTestMockEnvironment(new TwingTestMockLoader()), []);
         }, new TwingErrorRuntime('The random function cannot pick from an empty array.'));
 
         test.end();
@@ -454,8 +338,11 @@ tap.test('TwingExtensionCore', function (test) {
 
         let text = iconv('UTF-8', 'ISO-8859-1', Buffer.from('Äé'));
 
+        let function_ = getFunction('random');
+        let callable = function_.getCallable();
+
         for (let i = 0; i < 30; i++) {
-            let rand = TwingExtensionCore.twingRandom(twing, text);
+            let rand = callable(twing, text);
             test.true(['Ä', 'é'].includes(iconv('ISO-8859-1', 'UTF-8', rand).toString()));
         }
 
@@ -466,7 +353,10 @@ tap.test('TwingExtensionCore', function (test) {
         let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
         twing.setCharset('ISO-8859-1');
 
-        test.same(TwingExtensionCore.twingReverseFilter(twing, 'Äé'), 'éÄ');
+        let filter = getFilter('reverse');
+        let callable = filter.getCallable();
+
+        test.same(callable(twing, 'Äé'), 'éÄ');
 
         test.end();
     });
@@ -474,7 +364,10 @@ tap.test('TwingExtensionCore', function (test) {
     test.test('reverseFilterOnUTF8String', function (test) {
         let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
-        test.same(TwingExtensionCore.twingReverseFilter(twing, 'évènement'), 'tnemenèvé');
+        let filter = getFilter('reverse');
+        let callable = filter.getCallable();
+
+        test.same(callable(twing, 'évènement'), 'tnemenèvé');
 
         test.end();
     });
@@ -489,23 +382,29 @@ tap.test('TwingExtensionCore', function (test) {
         for (let customEscaperCase of customEscaperCases) {
             let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
-            twing.getExtension('TwingExtensionCore').setEscaper('foo', foo_escaper_for_test);
+            twing.getCoreExtension().setEscaper('foo', foo_escaper_for_test);
 
-            test.same(TwingExtensionCore.twingEscapeFilter(twing, customEscaperCase[1], customEscaperCase[2]), customEscaperCase[0]);
+            let filter = getFilter('escape');
+            let callable = filter.getCallable();
+
+            test.same(callable(twing, customEscaperCase[1], customEscaperCase[2]), customEscaperCase[0]);
         }
 
         test.end();
     });
 
     test.test('customUnknownEscaper', function (test) {
+        let filter = getFilter('escape');
+        let callable = filter.getCallable();
+
         test.throws(function () {
-            TwingExtensionCore.twingEscapeFilter(new TwingTestMockEnvironment(new TwingTestMockLoader()), 'foo', 'bar');
+            callable(new TwingTestMockEnvironment(new TwingTestMockLoader()), 'foo', 'bar');
         }, new TwingErrorRuntime('Invalid escaping strategy "bar" (valid ones: html, js, url, css, html_attr).'));
 
         test.end();
     });
 
-    test.test('twingFirst', function (test) {
+    test.test('twingFilterFirst', function (test) {
         let i = new Map([
             [1, 'a'],
             [2, 'b'],
@@ -520,16 +419,19 @@ tap.test('TwingExtensionCore', function (test) {
             ['a', new CoreTestIterator(i, [...i.keys()], true, 3)]
         ];
 
+        let filter = getFilter('first');
+        let callable = filter.getCallable();
+
         for (let twingFirstCase of twingFirstCases) {
             let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
-            test.same(TwingExtensionCore.twingFirst(twing, twingFirstCase[1]), twingFirstCase[0]);
+            test.same(callable(twing, twingFirstCase[1]), twingFirstCase[0]);
         }
 
         test.end();
     });
 
-    test.test('twingLast', function (test) {
+    test.test('twingFilterLast', function (test) {
         let i = new Map([
             [1, 'a'],
             [2, 'b'],
@@ -544,10 +446,13 @@ tap.test('TwingExtensionCore', function (test) {
             ['c', new CoreTestIterator(i, [...i.keys()], true, 3)]
         ];
 
+        let filter = getFilter('last');
+        let callable = filter.getCallable();
+
         for (let twingLastCase of twingLastCases) {
             let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
-            test.same(TwingExtensionCore.twingLast(twing, twingLastCase[1]), twingLastCase[0]);
+            test.same(callable(twing, twingLastCase[1]), twingLastCase[0]);
         }
 
         test.end();
@@ -568,38 +473,11 @@ tap.test('TwingExtensionCore', function (test) {
             [[], null]
         ];
 
+        let filter = getFilter('keys');
+        let callable = filter.getCallable();
+
         for (let arrayKeyCase of arrayKeyCases) {
-            test.same(TwingExtensionCore.twingGetArrayKeysFilter(arrayKeyCase[1]), arrayKeyCase[0]);
-        }
-
-        test.end();
-    });
-
-    test.test('inFilter', function (test) {
-        let map = new Map([
-            [0, 1],
-            [1, 2],
-            ['a', 3],
-            [2, 5],
-            [3, 6],
-            [4, 7]
-        ]);
-
-        let keys = [...map.keys()];
-
-        let inFilterCases = [
-            [true, 1, map],
-            [true, '3', map],
-            [true, '3', 'abc3def'],
-            [true, 1, new CoreTestIterator(map, keys, true, 1)],
-            [true, '3', new CoreTestIterator(map, keys, true, 3)],
-            [false, 4, map],
-            [false, 4, new CoreTestIterator(map, keys, true)],
-            [false, 1, 1]
-        ];
-
-        for (let inFilterCase of inFilterCases) {
-            test.same(TwingExtensionCore.twingInFilter(inFilterCase[1], inFilterCase[2]), inFilterCase[0]);
+            test.same(callable(arrayKeyCase[1]), arrayKeyCase[0]);
         }
 
         test.end();
@@ -627,10 +505,13 @@ tap.test('TwingExtensionCore', function (test) {
             ['de', 'abcdef', 3, 2]
         ];
 
+        let filter = getFilter('slice');
+        let callable = filter.getCallable();
+
         for (let sliceFilterCase of sliceFilterCases) {
             let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
 
-            let actual = TwingExtensionCore.twingSlice(twing, sliceFilterCase[1], sliceFilterCase[2], sliceFilterCase[3], sliceFilterCase[4]);
+            let actual = callable(twing, sliceFilterCase[1], sliceFilterCase[2], sliceFilterCase[3], sliceFilterCase[4]);
 
             test.same(actual, sliceFilterCase[0]);
         }
@@ -639,7 +520,7 @@ tap.test('TwingExtensionCore', function (test) {
     });
 
     test.test('dateFormat', function (test) {
-        let extension = new TwingExtensionCore.TwingExtensionCore();
+        let extension = new TwingExtensionCore();
 
         extension.setDateFormat();
 
@@ -649,7 +530,7 @@ tap.test('TwingExtensionCore', function (test) {
     });
 
     test.test('timezone', function (test) {
-        let extension = new TwingExtensionCore.TwingExtensionCore();
+        let extension = new TwingExtensionCore();
 
         extension.setTimezone('UTC+1');
 
@@ -658,23 +539,11 @@ tap.test('TwingExtensionCore', function (test) {
         test.end();
     });
 
-    test.test('tests', function (test) {
-        test.test('none', function (test) {
-            let twingTest = getTest('none');
-
-            test.true(twingTest.getNodeFactory()(new TwingNodeExpression(), 'foo', new TwingNode(), 1) instanceof TwingNodeExpressionTestNull);
-
-            test.end();
-        });
-
-        test.end();
-    });
-
     test.test('functions', function (test) {
-        test.test('twingCycle', function(test) {
-            let twingCycle = TwingExtensionCore.twingCycle;
+        test.test('twingFunctionCycle', function(test) {
+            let callable = getFunction('cycle').getCallable();
 
-            test.same(twingCycle('foo'), 'foo');
+            test.same(callable('foo'), 'foo');
 
             test.end();
         });
@@ -682,109 +551,104 @@ tap.test('TwingExtensionCore', function (test) {
         test.test('twingDateConverter', function(test) {
             let env = new TwingEnvironment(new TwingLoaderArray({}));
 
-            test.true(TwingExtensionCore.twingDateConverter(env, 'now') instanceof Luxon.DateTime);
+            let callable = getFunction('date').getCallable();
+
+            test.true(callable(env, 'now') instanceof Luxon.DateTime);
 
             test.throws(function() {
                 twingDateConverter(env, {});
             }, new TwingErrorRuntime('Failed to parse date "[object Object]".'));
 
-            test.same(TwingExtensionCore.twingDateConverter(env, '2010-01-28T15:00:00', false).valueOf(), 1264690800000);
+            test.same(callable(env, '2010-01-28T15:00:00', false).valueOf(), 1264690800000);
 
-            let dateTime = TwingExtensionCore.twingDateConverter(env, '2010-01-28T15:00:00');
+            let dateTime = callable(env, '2010-01-28T15:00:00');
 
             test.same(dateTime.format('H'), formatDateTime(dateTime, 'H'));
 
             test.end();
         });
 
-        test.test('twingSortFilter', function(test) {
-            let twingSortFilter = TwingExtensionCore.twingSortFilter;
+        test.test('twingFilterSort', function(test) {
+            let callable = getFilter('sort').getCallable();
 
             test.throws(function() {
-                twingSortFilter(5);
+                callable(5);
             }, new TwingErrorRuntime('The sort filter only works with iterables, got "number".'));
 
             test.end();
         });
 
         test.test('twingTrimFilter', function(test) {
-            let twingTrimFilter = TwingExtensionCore.twingTrimFilter;
+            let callable = getFilter('trim').getCallable();
 
             test.throws(function() {
-                twingTrimFilter('foo', '0', 'bar');
+                callable('foo', '0', 'bar');
             }, new TwingErrorRuntime('Trimming side must be "left", "right" or "both".'));
 
             test.end();
         });
 
-        test.test('twingReplaceFilter', function(test) {
-            let twingReplaceFilter = TwingExtensionCore.twingReplaceFilter;
+        test.test('twingFilterReplace', function(test) {
+            let callable = getFilter('replace').getCallable();
 
-            test.same(twingReplaceFilter('foo', null), 'foo');
+            test.same(callable('foo', null), 'foo');
 
             test.end();
         });
 
         test.test('twingRound', function(test) {
-            let twingRound = TwingExtensionCore.twingRound;
+            let callable = getFilter('round').getCallable();
 
             test.throws(function() {
-                twingRound(5, 0, 'foo');
+                callable(5, 0, 'foo');
             }, new TwingErrorRuntime('The round filter only supports the "common", "ceil", and "floor" methods.'));
 
             test.end();
         });
 
-        test.test('twingUrlencodeFilter', function(test) {
-            let twingUrlencodeFilter = TwingExtensionCore.twingUrlencodeFilter;
+        test.test('twingFilterUrlEncode', function(test) {
+            let callable = getFilter('url_encode').getCallable();
 
-            test.same(twingUrlencodeFilter(5), '');
-
-            test.end();
-        });
-
-        test.test('twingJoinFilter', function(test) {
-            let twingJoinFilter = TwingExtensionCore.twingJoinFilter;
-
-            test.same(twingJoinFilter(5, ''), '');
-            test.same(twingJoinFilter([true, false], ''), '1');
+            test.same(callable(5), '');
 
             test.end();
         });
 
-        test.test('twingDefaultFilter', function(test) {
-            let twingDefaultFilter = TwingExtensionCore.twingDefaultFilter;
+        test.test('twingFilterJoin', function(test) {
+            let callable = getFilter('join').getCallable();
 
-            test.same(twingDefaultFilter(null), '');
+            test.same(callable(5, ''), '');
+            test.same(callable([true, false], ''), '1');
 
             test.end();
         });
 
-        test.test('twingInFilter', function(test) {
-            let twingInFilter = TwingExtensionCore.twingInFilter;
+        test.test('twingFilterDefault', function(test) {
+            let callable = getFilter('default').getCallable();
 
-            test.same(twingInFilter(5, {foo: 1, bar: 5}), true);
+            test.same(callable(null), '');
 
             test.end();
         });
 
         test.test('twingEscapeFilter', function(test) {
             let env = new TwingEnvironment(new TwingLoaderArray({}));
-            let twingEscapeFilter = TwingExtensionCore.twingEscapeFilter;
 
-            test.same(twingEscapeFilter(env, 'foo', 'html', 'UTF-8'), 'foo');
-            test.same(twingEscapeFilter(env, 'foo', 'html', 'UTF-8'), 'foo');
+            let callable = getFilter('escape').getCallable();
+
+            test.same(callable(env, 'foo', 'html', 'UTF-8'), 'foo');
+            test.same(callable(env, 'foo', 'html', 'UTF-8'), 'foo');
 
             test.end();
         });
 
         test.test('twingEscapeFilterIsSafe', function(test) {
-            let twingEscapeFilterIsSafe = TwingExtensionCore.twingEscapeFilterIsSafe;
+            let extension = new TwingExtensionCore();
 
-            test.same(twingEscapeFilterIsSafe(new TwingNode(new Map([
+            test.same(extension.escapeFilterIsSafe(new TwingNode(new Map([
                 [0, new TwingNodeExpressionArray(new Map([
-                    [0, new TwingNodeExpressionConstant('foo', 1)]
-                ]), 1)]
+                    [0, new TwingNodeExpressionConstant('foo', 1, 1)]
+                ]), 1, 1)]
             ]))), []);
 
             test.end();
@@ -792,48 +656,45 @@ tap.test('TwingExtensionCore', function (test) {
 
         test.test('twingLengthFilter', function(test) {
             let env = new TwingEnvironment(new TwingLoaderArray({}));
-            let twingLengthFilter = TwingExtensionCore.twingLengthFilter;
+            let callable = getFilter('length').getCallable();
 
-            test.same(twingLengthFilter(env, 5), 1);
-            test.same(twingLengthFilter(env, 55), 2);
-            test.same(twingLengthFilter(env, new Map([[1, 1]])), 1);
-
-            test.end();
-        });
-
-        test.test('twingLowerFilter', function(test) {
-            let env = new TwingEnvironment(new TwingLoaderArray({}));
-            let twingLowerFilter = TwingExtensionCore.twingLowerFilter;
-
-            test.same(twingLowerFilter(env, 5), 5);
+            test.same(callable(env, 5), 1);
+            test.same(callable(env, 55), 2);
+            test.same(callable(env, new Map([[1, 1]])), 1);
 
             test.end();
         });
 
-        test.test('twingInclude', function(test) {
-            let twingInclude = TwingExtensionCore.twingInclude;
+        test.test('twingFilterLower', function(test) {
             let env = new TwingEnvironment(new TwingLoaderArray({}));
-            let sandbox = new TwingExtensionSandbox(new TwingSandboxSecurityPolicy());
+            let callable = getFilter('lower').getCallable();
 
-            env.addExtension(sandbox);
+            test.same(callable(env, 5), 5);
+
+            test.end();
+        });
+
+        test.test('twingFunctionInclude', function(test) {
+            let callable = getFunction('include').getCallable();
+
+            let env = new TwingEnvironment(new TwingLoaderArray({}), {
+                sandbox_policy: new TwingSandboxSecurityPolicy()
+            });
 
             test.throws(function() {
-                twingInclude(env, new Map(), null, 'foo', {}, true, false, true)
+                callable(env, new Map(), null, 'foo', {}, true, false, true)
             }, new TwingErrorLoader('Template "foo" is not defined.'));
 
+            env = new TwingEnvironment(new TwingLoaderArray({foo: 'bar'}), {
+                sandbox_policy: new TwingSandboxSecurityPolicy()
+            });
 
-            env = new TwingEnvironment(new TwingLoaderArray({foo: 'bar'}));
-            sandbox = new TwingExtensionSandbox(new TwingSandboxSecurityPolicy());
-            sandbox.enableSandbox();
-
-            env.addExtension(sandbox);
-
-            test.same(twingInclude(env, new Map(), null,'foo', {}, true, false, true), 'bar');
+            test.same(callable(env, new Map(), null,'foo', {}, true, false, true), 'bar');
 
             test.test('supports being called with a source', function (test) {
                 env = new TwingEnvironment(new TwingLoaderRelativeFilesystem());
 
-                test.same(twingInclude(env, new Map(), new TwingSource('code', 'name', path.resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig'), 'foo');
+                test.same(callable(env, new Map(), new TwingSource('code', 'name', path.resolve('test/tests/unit/extension/core/index.twig')), 'templates/foo.twig'), 'foo');
 
                 test.end();
             });
@@ -844,22 +705,64 @@ tap.test('TwingExtensionCore', function (test) {
         test.test('twingSource', function(test) {
             let loader = new TwingLoaderArray({});
             let env = new TwingEnvironment(loader);
-            let twingSource = TwingExtensionCore.twingSource;
+            let callable = getFunction('source').getCallable();
 
             test.throws(function() {
-                twingSource(env, 'foo');
+                callable(env, 'foo');
             }, new TwingErrorLoader('Template "foo" is not defined.'));
 
-            test.equals(twingSource(env, false, 'foo', true), null);
+            test.equals(callable(env, false, 'foo', true), null);
 
             sinon.stub(loader, 'getSourceContext').throws(new Error('foo'));
 
             test.throws(function() {
-                twingSource(env, 'foo');
+                callable(env, 'foo');
             }, new Error('foo'));
 
             test.end();
         });
+
+        test.test('twingFunctionDump', function (test) {
+            let callable = getFunction('dump').getCallable();
+
+            let Template = class extends TwingTemplate {
+
+            };
+
+            let env = new TwingEnvironment(null, {debug: false});
+            let context = {
+                foo: 'bar',
+                map: new Map([
+                    ['foo', 'bar']
+                ]),
+                tpl: new Template(env)
+            };
+
+            test.equals(callable(env, {}), null);
+
+            env = new TwingEnvironment(null, {debug: true});
+
+            test.equals(callable(env, context), `array(2) {
+    [foo] =>
+    string(3) "bar"
+    [map] =>
+    array(1) {
+            [foo] =>
+            string(3) "bar"
+    }
+}
+`, 'should print the whole context - minus template instances - when no vars is passed');
+
+            test.end();
+        });
+
+        test.end();
+    });
+
+    test.test('constructor', function (test) {
+        let extension = new TwingExtensionCore();
+
+        test.same(extension.getDefaultStrategy('foo'), 'html');
 
         test.end();
     });

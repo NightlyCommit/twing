@@ -2,20 +2,25 @@ import {TwingNodeExpressionConditional} from "./conditional";
 import {TwingNodeExpression} from "../expression";
 import {TwingNodeExpressionTestDefined} from "./test/defined";
 import {TwingNodeExpressionUnaryNot} from "./unary/not";
-import {TwingNodeExpressionTestNull} from "./test/null";
 import {TwingNode, TwingNodeType} from "../../node";
 import {TwingNodeExpressionBinaryAnd} from "./binary/and";
 import {TwingCompiler} from "../../compiler";
+import {TwingNodeExpressionTest} from "./test";
 
 export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
-    constructor(left: TwingNodeExpression, right: TwingNodeExpression, lineno: number, columno: number) {
+    constructor(nodes: [TwingNode, TwingNode], lineno: number, columno: number) {
+        let left = nodes[0];
+        let right = nodes[1];
+
         let test = new TwingNodeExpressionBinaryAnd(
-            new TwingNodeExpressionTestDefined(<TwingNodeExpression>left.clone(), 'defined', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
-            new TwingNodeExpressionUnaryNot(
-                new TwingNodeExpressionTestNull(left, 'null', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
-                left.getTemplateLine(),
-                left.getTemplateColumn()
-            ),
+            [
+                new TwingNodeExpressionTestDefined(<TwingNodeExpression>left.clone(), 'defined', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
+                new TwingNodeExpressionUnaryNot(
+                    new TwingNodeExpressionTest(left, 'null', new TwingNode(), left.getTemplateLine(), left.getTemplateColumn()),
+                    left.getTemplateLine(),
+                    left.getTemplateColumn()
+                )
+            ],
             left.getTemplateLine(),
             left.getTemplateColumn()
         );

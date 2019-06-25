@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 
 import {TwingNodeImport} from "../node/import";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
@@ -14,29 +14,29 @@ import {TwingNodeExpression} from "../node/expression";
  */
 export class TwingTokenParserFrom extends TwingTokenParser {
     parse(token: TwingToken) {
-        let macro = this.parser.getExpressionParser().parseExpression();
+        let macro = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.NAME_TYPE, 'import');
+        stream.expect(TwingTokenType.NAME, 'import');
 
         let targets = new Map();
 
         do {
-            let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+            let name = stream.expect(TwingTokenType.NAME).getContent();
             let alias = name;
 
-            if (stream.nextIf(TwingToken.NAME_TYPE, 'as')) {
-                alias = stream.expect(TwingToken.NAME_TYPE).getValue();
+            if (stream.nextIf(TwingTokenType.NAME, 'as')) {
+                alias = stream.expect(TwingTokenType.NAME).getContent();
             }
 
             targets.set(name, alias);
 
-            if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
+            if (!stream.nextIf(TwingTokenType.PUNCTUATION, ',')) {
                 break;
             }
         } while (true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.getLine(), token.getColumn()), token.getLine(), token.getColumn(), this.getTag());
 

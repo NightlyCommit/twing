@@ -4,13 +4,13 @@ import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
 
 export class TwingNodeExpressionParent extends TwingNodeExpression {
-    constructor(name: string, lineno: number) {
+    constructor(name: string, lineno: number, columnno: number) {
         let attributes = new Map();
 
         attributes.set('output', false);
         attributes.set('name', name);
 
-        super(new Map(), attributes, lineno);
+        super(new Map(), attributes, lineno, columnno);
 
         this.type = TwingNodeType.EXPRESSION_PARENT;
     }
@@ -27,14 +27,14 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
         if (this.getAttribute('output')) {
             compiler
                 .addDebugInfo(this)
-                .write(`this.traceableDisplayParentBlock(${this.getTemplateLine()}, this.source)(`)
+                .write(`this.traceableDisplayParentBlock(${this.getTemplateLine()}, this.getSourceContext())(`)
                 .string(name)
                 .raw(", context, blocks);\n")
             ;
         }
         else {
             compiler
-                .raw(`this.traceableRenderParentBlock(${this.getTemplateLine()}, this.source)(`)
+                .raw(`this.traceableRenderParentBlock(${this.getTemplateLine()}, this.getSourceContext())(`)
                 .string(name)
                 .raw(', context, blocks)')
             ;

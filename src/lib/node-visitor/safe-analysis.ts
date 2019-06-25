@@ -45,7 +45,7 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
             }
         });
 
-        return bucket ? bucket.value : null;
+        return bucket.value;
     }
 
     private setSafe(node: TwingNode, safe: Array<string>) {
@@ -105,7 +105,7 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
             if (filter) {
                 let safe = filter.getSafe(filterArgs);
 
-                if (!safe) {
+                if (safe.length < 1) {
                     safe = this.intersectSafe(this.getSafe(node.getNode('node')), filter.getPreservesSafety());
                 }
 

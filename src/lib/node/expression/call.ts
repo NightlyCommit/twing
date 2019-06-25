@@ -37,8 +37,8 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
             }
             else {
-                compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.source)(...`);
-            }``
+                compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.getSourceContext())(...`);
+            }
         }
 
         this.compileArguments(compiler);

@@ -40,7 +40,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             compiler
                 .raw('(() => {let ' + var_ + ' = ')
                 .subcompile(this.getNode('node'))
-                .raw('; return Runtime.isMap(')
+                .raw('; return this.isMap(')
                 .raw(var_)
                 .raw(') ? (')
                 .raw(var_)
@@ -52,7 +52,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
                 .subcompile(this.getNode('attribute'))
                 .raw(') : null) : (Array.isArray(')
                 .raw(var_)
-                .raw(') || Runtime.isPlainObject(')
+                .raw(') || this.isPlainObject(')
                 .raw(var_)
                 .raw(') ? ')
                 .raw(var_)
@@ -64,7 +64,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             return;
         }
 
-        compiler.raw(`this.traceableMethod(Runtime.twingGetAttribute, ${this.getTemplateLine()}, this.source)(this.env, `);
+        compiler.raw(`this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.getSourceContext())(`);
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);
@@ -74,38 +74,17 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
 
         compiler.raw(', ').subcompile(this.getNode('attribute'));
 
-        // only generate optional arguments when needed (to make generated code more readable)
-        let needFifth = env.hasExtension('TwingExtensionSandbox');
-        let needFourth = needFifth || this.getAttribute('ignore_strict_check');
-        let needThird = needFourth || this.getAttribute('is_defined_test');
-        let needSecond = needThird || this.getAttribute('type') !== TwingTemplate.ANY_CALL;
-        let needFirst = needSecond || this.hasNode('arguments');
-
-        if (needFirst) {
-            if (this.hasNode('arguments')) {
-                compiler.raw(', ').subcompile(this.getNode('arguments'));
-            }
-            else {
-                compiler.raw(', []');
-            }
+        if (this.hasNode('arguments')) {
+            compiler.raw(', ').subcompile(this.getNode('arguments'));
+        } else {
+            compiler.raw(', []');
         }
 
-        if (needSecond) {
-            compiler.raw(', ').repr(this.getAttribute('type'));
-        }
-
-        if (needThird) {
-            compiler.raw(', ').repr(this.getAttribute('is_defined_test'));
-        }
-
-        if (needFourth) {
-            compiler.raw(', ').repr(this.getAttribute('ignore_strict_check'));
-        }
-
-        if (needFifth) {
-            compiler.raw(', ').repr(env.hasExtension('TwingExtensionSandbox'));
-        }
-
-        compiler.raw(')');
+        compiler
+            .raw(', ').repr(this.getAttribute('type'))
+            .raw(', ').repr(this.getAttribute('is_defined_test'))
+            .raw(', ').repr(this.getAttribute('ignore_strict_check'))
+            .raw(', ').repr(env.isSandboxed())
+            .raw(')');
     };
 }

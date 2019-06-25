@@ -3,8 +3,8 @@ import {TwingNodeExpressionConstant} from "./constant";
 
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
-import {push} from "../../helper/push";
-import {ctypeDigit} from "../../helper/ctype_digit";
+import {push} from "../../helpers/push";
+import {ctypeDigit} from "../../helpers/ctype_digit";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 

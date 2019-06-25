@@ -1,7 +1,7 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 import {isNullOrUndefined} from "util";
-import {ksort} from "./helper/ksort";
+import {ksort} from "./helpers/ksort";
 
 const substr_count = require('locutus/php/strings/substr_count');
 const addcslashes = require('locutus/php/strings/addcslashes');
@@ -228,7 +228,7 @@ export class TwingCompiler {
      *
      * @returns TwingCompiler
      */
-    addSourceMapEnter(node: TwingNode, ctor: string = null) {
+    addSourceMapEnter(node: TwingNode) {
         if (this.getEnvironment().isSourceMap()) {
             this
                 .write('this.env.enterSourceMapBlock(')
@@ -241,12 +241,7 @@ export class TwingCompiler {
                 .raw('this.getSourceContext(), ')
             ;
 
-            if (ctor) {
-                this.raw(ctor);
-            }
-            else {
-                this.raw(`this.extensions.get('TwingExtensionCore').getSourceMapNodeConstructor('${node.getType()}')`);
-            }
+            this.raw(`this.env.getSourceMapNodeConstructor('${node.getType()}')`);
 
             this.raw(');\n');
         }

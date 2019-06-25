@@ -7,9 +7,8 @@ import {TwingEnvironment} from "./environment";
 import {TwingTemplate} from "./template";
 
 import {TwingSource} from "./source";
-import {iteratorToMap} from "./helper/iterator-to-map";
+import {iteratorToMap} from "./helpers/iterator-to-map";
 import {TwingOutputBuffering} from "./output-buffering";
-import {TwingErrorRuntime} from "./error/runtime";
 
 export class TwingTemplateWrapper {
     private env: TwingEnvironment;

@@ -11,7 +11,7 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 
 export class TwingTokenParserExtends extends TwingTokenParser {
@@ -26,9 +26,9 @@ export class TwingTokenParserExtends extends TwingTokenParser {
             throw new TwingErrorSyntax('Multiple extends tags are forbidden.', token.getLine(), stream.getSourceContext());
         }
 
-        this.parser.setParent(this.parser.getExpressionParser().parseExpression());
+        this.parser.setParent(this.parser.parseExpression());
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         return null;
     }

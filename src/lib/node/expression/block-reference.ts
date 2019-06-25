@@ -56,7 +56,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
             ;
         }
 
-        compiler.raw(`.${method}(${this.getTemplateLine()}, this.source)`);
+        compiler.raw(`.${method}(${this.getTemplateLine()}, this.getSourceContext())`);
 
         this.compileBlockArguments(compiler);
 

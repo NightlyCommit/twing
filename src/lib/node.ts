@@ -42,6 +42,7 @@ export enum TwingNodeType {
     SET = 'set',
     SPACELESS = 'spaceless',
     TEXT = 'text',
+    VERBATIM = 'verbatim',
     WITH = 'with'
 }
 
@@ -101,7 +102,7 @@ export class TwingNode {
         return result;
     }
 
-    toString() {
+    toString(withChildren: boolean = true) {
         let attributes = [];
 
         for (let [name, value] of this.attributes) {
@@ -122,7 +123,7 @@ export class TwingNode {
 
         let repr = [this.constructor.name + '(' + attributes.join(', ')];
 
-        if (this.nodes.size > 0) {
+        if (withChildren && this.nodes.size > 0) {
             for (let [name, node] of this.nodes) {
                 let len = ('' + name).length + 4;
                 let nodeRepr = [];
@@ -179,7 +180,7 @@ export class TwingNode {
      */
     getAttribute(name: string): any {
         if (!this.attributes.has(name)) {
-            throw new Error(`Attribute "${name}" does not exist for Node "${this.constructor.name}".`);
+            throw new Error(`Attribute "${name}" does not exist for Node "${this.type}".`);
         }
 
         return this.attributes.get(name);
@@ -209,7 +210,7 @@ export class TwingNode {
      */
     getNode(name: string | number): TwingNode {
         if (!this.nodes.has(name)) {
-            throw new Error(`Node "${name}" does not exist for Node "${this.constructor.name}".`);
+            throw new Error(`Node "${name}" does not exist for Node "${this.type}".`);
         }
 
         return this.nodes.get(name);

@@ -5,7 +5,7 @@ export class TwingNodeSandboxedPrint extends TwingNodePrint {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write('Runtime.echo(this.extensions.get(\'TwingExtensionSandbox\').ensureToStringAllowed(')
+            .write('this.echo(this.env.ensureToStringAllowed(')
             .subcompile(this.getNode('expr'))
             .raw("));\n")
         ;

@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
 
@@ -24,7 +24,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         let lineno = token.getLine();
         let columnno = token.getColumn();
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+        let name = stream.expect(TwingTokenType.NAME).getContent();
 
         let safeName = name;
 
@@ -44,13 +44,13 @@ export class TwingTokenParserBlock extends TwingTokenParser {
 
         let body;
 
-        if (stream.nextIf(TwingToken.BLOCK_END_TYPE)) {
+        if (stream.nextIf(TwingTokenType.BLOCK_END)) {
             body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-            let token = stream.nextIf(TwingToken.NAME_TYPE);
+            let token = stream.nextIf(TwingTokenType.NAME);
 
             if (token) {
-                let value = token.getValue();
+                let value = token.getContent();
 
                 if (value != name) {
                     throw new TwingErrorSyntax(`Expected endblock for block "${name}" (but "${value}" given).`, stream.getCurrent().getLine(), stream.getSourceContext());
@@ -60,12 +60,12 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         else {
             let nodes = new Map();
 
-            nodes.set(0, new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno, columnno));
+            nodes.set(0, new TwingNodePrint(this.parser.parseExpression(), lineno, columnno));
 
             body = new TwingNode(nodes);
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         block.setNode('body', body);
 
@@ -76,7 +76,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
     }
 
     decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endblock');
+        return token.test(TwingTokenType.NAME, 'endblock');
     }
 
     getTag() {

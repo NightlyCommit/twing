@@ -1,5 +1,5 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
+import {TwingToken, TwingTokenType} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNode, TwingNodeType} from "../node";
@@ -7,7 +7,7 @@ import {TwingNode, TwingNodeType} from "../node";
 
 export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
-        let template = this.parser.getExpressionParser().parseExpression();
+        let template = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
         if (template.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
@@ -16,24 +16,24 @@ export class TwingTokenParserUse extends TwingTokenParser {
 
         let targets = new Map();
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
+        if (stream.nextIf(TwingTokenType.NAME, 'with')) {
             do {
-                let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+                let name = stream.expect(TwingTokenType.NAME).getContent();
                 let alias = name;
 
-                if (stream.nextIf(TwingToken.NAME_TYPE, 'as')) {
-                    alias = stream.expect(TwingToken.NAME_TYPE).getValue();
+                if (stream.nextIf(TwingTokenType.NAME, 'as')) {
+                    alias = stream.expect(TwingTokenType.NAME).getContent();
                 }
 
                 targets.set(name, new TwingNodeExpressionConstant(alias, token.getLine(), token.getColumn()));
 
-                if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
+                if (!stream.nextIf(TwingTokenType.PUNCTUATION, ',')) {
                     break;
                 }
             } while (true);
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingTokenType.BLOCK_END);
 
         this.parser.addTrait(new TwingNode(new Map([['template', template], ['targets', new TwingNode(targets)]])));
 

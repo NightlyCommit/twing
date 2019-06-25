@@ -7,7 +7,6 @@ import {TwingNodeExpressionConstant} from "../node/expression/constant";
 
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
-import {TwingExtensionEscaper} from "../extension/escaper";
 
 export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
@@ -27,10 +26,9 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
 
     protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
-            if (env.hasExtension('TwingExtensionEscaper')) {
-                this.defaultStrategy = (env.getExtension('TwingExtensionEscaper') as TwingExtensionEscaper).getDefaultStrategy(node.getTemplateName());
-            }
+            let core = env.getCoreExtension();
 
+            this.defaultStrategy = core.getDefaultStrategy(node.getTemplateName());
             this.safeVars = [];
             this.blocks = new Map();
         }
@@ -81,6 +79,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         if (this.isSafeFor(type, expression, env)) {
             return node;
         }
+
 
         return new TwingNodePrint(this.getEscaperFilter(type, expression), node.getTemplateLine(), node.getTemplateColumn());
     }
@@ -143,11 +142,11 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         let nodes = new Map();
 
         let name = new TwingNodeExpressionConstant('escape', line, column);
-        let i: number = 0;
+        let i: number = -1;
 
-        nodes.set(i++, new TwingNodeExpressionConstant(type, line, column));
-        nodes.set(i++, new TwingNodeExpressionConstant(null, line, column));
-        nodes.set(i++, new TwingNodeExpressionConstant(true, line, column));
+        nodes.set(++i, new TwingNodeExpressionConstant(type, line, column));
+        nodes.set(++i, new TwingNodeExpressionConstant(null, line, column));
+        nodes.set(++i, new TwingNodeExpressionConstant(true, line, column));
 
         let nodeArgs = new TwingNode(nodes);
 
