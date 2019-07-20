@@ -10,6 +10,7 @@ import {TwingErrorSyntax} from "./error/syntax";
 import {TwingEnvironment} from "./environment";
 
 let preg_quote = require('locutus/php/pcre/preg_quote');
+let rtrim = require('locutus/php/strings/rtrim');
 let merge = require('merge');
 
 let safeCChars: Array<string> = ['b', 'f', 'n', 'r', 't', 'v', '0', '\'', '"', '\\'];
@@ -18,8 +19,7 @@ let stripcslashes = function (string: string) {
     return string.replace(/\\(.)/g, function (match, char) {
         if (safeCChars.includes(char)) {
             return new Function('return "' + match + '"')();
-        }
-        else {
+        } else {
             return char;
         }
     });
@@ -52,7 +52,9 @@ export class TwingLexer {
         tag_block: Array<string>,
         tag_comment: Array<string>,
         tag_variable: Array<string>,
-        whitespace_trim: string
+        whitespace_trim: string,
+        whitespace_line_trim: string,
+        whitespace_line_chars: string
     };
     private position: number;
     private positions: Array<RegExpExecArray>;
@@ -82,31 +84,80 @@ export class TwingLexer {
             tag_comment: ['{#', '#}'],
             tag_variable: ['{{', '}}'],
             whitespace_trim: '-',
+            whitespace_line_trim: '~',
+            whitespace_line_chars: ' \\t\\0\\x0B',
         }, options);
 
         this.regexes = {
             interpolation_end: new RegExp('^\\s*' + this.options.interpolation[1]),
             interpolation_start: new RegExp('^' + this.options.interpolation[0] + '\\s*'),
-            lex_block: new RegExp('^\\s*(?:' + this.options.whitespace_trim + this.options.tag_block[1] + '\\s*|^\\s*' + this.options.tag_block[1] + ')\\n?'),
+            lex_block: new RegExp('^\\s*' +
+                '(?:' +
+                this.options.whitespace_trim + this.options.tag_block[1] + '\\s*\\n?' +
+                '|' +
+                this.options.whitespace_line_trim + this.options.tag_block[1] + '[' + this.options.whitespace_line_chars + ']*' +
+                '|' +
+                this.options.tag_block[1] + '\\n?' +
+                ')'),
             lex_block_line: new RegExp('^\\s*line\\s+(\\d+)\\s*' + this.options.tag_block[1]),
-            lex_block_raw: new RegExp('^\\s*verbatim\\s*(?:' + this.options.whitespace_trim + this.options.tag_block[1] + '\\s*|\\s*' + this.options.tag_block[1] + ')'),
-            lex_comment: new RegExp('(?:' + this.options.whitespace_trim + this.options.tag_comment[1] + '\\s*|' + this.options.tag_comment[1] + ')\\n?'),
-            lex_raw_data: new RegExp('(' +
-                this.options.tag_block[0] + this.options.whitespace_trim
-                + '|' +
-                this.options.tag_block[0] + ')\\s*(?:endverbatim)\\s*(?:' +
-                this.options.whitespace_trim + this.options.tag_block[1] +
-                '\\s*|\\s*' +
+            lex_block_raw: new RegExp(
+                '^\\s*' +
+                'verbatim' +
+                '\\s*' +
+                '(?:' +
+                this.options.whitespace_trim + this.options.tag_block[1] + '\\s*' +
+                '|' +
+                this.options.whitespace_line_trim + this.options.tag_block[1] + '[' + this.options.whitespace_line_chars + ']*' +
+                '|' +
                 this.options.tag_block[1] +
                 ')'
             ),
-            lex_tokens_start: new RegExp('(' +
+            lex_comment: new RegExp(
+                '(?:' +
+                this.options.whitespace_trim + this.options.tag_comment[1] + '\\s*' +
+                '|' +
+                this.options.whitespace_line_trim + this.options.tag_comment[1] + '[' + this.options.whitespace_line_chars + ']*' +
+                '|' +
+                this.options.tag_comment[1] + '\\n?' +
+                ')'
+            ),
+            lex_raw_data: new RegExp(
+                this.options.tag_block[0] +
+                '(' +
+                this.options.whitespace_trim +
+                '|' +
+                this.options.whitespace_line_trim +
+                ')?\\s*' +
+                '(?:endverbatim)' +
+                '\\s*' +
+                '(?:' +
+                this.options.whitespace_trim + this.options.tag_block[1] + '\\s*' +
+                '|' +
+                this.options.whitespace_line_trim + this.options.tag_block[1] + '[' + this.options.whitespace_line_chars + ']*' +
+                '|' +
+                this.options.tag_block[1] +
+                ')'
+            ),
+            lex_tokens_start: new RegExp(
+                '(' +
                 this.options.tag_variable[0] + '|' +
                 this.options.tag_block[0] + '|' +
-                this.options.tag_comment[0] + ')(' +
-                this.options.whitespace_trim + ')?', 'g'
+                this.options.tag_comment[0] +
+                ')(' +
+                this.options.whitespace_trim +
+                '|' +
+                this.options.whitespace_line_trim +
+                ')?', 'g'
             ),
-            lex_var: new RegExp('^\\s*' + this.options.whitespace_trim + this.options.tag_variable[1] + '\\s*|^\\s*' + this.options.tag_variable[1]),
+            lex_var: new RegExp('^\\s*' +
+                '(?:' +
+                this.options.whitespace_trim + this.options.tag_variable[1] + '\\s*' +
+                '|' +
+                this.options.whitespace_line_trim + this.options.tag_variable[1] + '[' + this.options.whitespace_line_chars + ']*' +
+                '|' +
+                this.options.tag_variable[1] +
+                ')'
+            ),
             operator: this.getOperatorRegEx()
         }
     }
@@ -117,8 +168,7 @@ export class TwingLexer {
         // in PHP str_replace returns an empty string if called on a non-string object
         if (typeof source.getCode() !== 'string') {
             this.code = '';
-        }
-        else {
+        } else {
             this.code = source.getCode().replace(/\r\n|\r/g, '\n');
         }
 
@@ -207,7 +257,13 @@ export class TwingLexer {
         text = textContent = this.code.substr(this.cursor, position.index - this.cursor);
 
         if (this.positions[this.position][2]) {
-            text = text.trimRight();
+            if (this.positions[this.position][2] === this.options.whitespace_trim) {
+                // whitespace_trim detected ({%-, {{- or {#-)
+                text = rtrim(text);
+            } else {
+                // whitespace_line_trim detected ({%~, {{~ or {#~)
+                text = rtrim(text, this.options.whitespace_line_chars);
+            }
         }
 
         this.pushToken(TwingToken.TEXT_TYPE, text);
@@ -234,8 +290,7 @@ export class TwingLexer {
                     this.moveCursor(match[0]);
                     this.moveCoordinates(position[0] + match[0]);
                     this.lineno = parseInt(match[1]);
-                }
-                else {
+                } else {
                     this.pushToken(TwingToken.BLOCK_START_TYPE);
                     this.moveCoordinates(position[0]);
                     this.pushState(TwingLexer.STATE_BLOCK);
@@ -261,8 +316,7 @@ export class TwingLexer {
             this.moveCoordinates(match[0]);
 
             this.popState();
-        }
-        else {
+        } else {
             this.lexExpression();
         }
     }
@@ -277,8 +331,7 @@ export class TwingLexer {
             this.moveCursor(text);
             this.moveCoordinates(text);
             this.popState();
-        }
-        else {
+        } else {
             this.lexExpression();
         }
     }
@@ -301,8 +354,14 @@ export class TwingLexer {
         candidate = this.code.substring(this.cursor);
         punctuationCandidate = candidate.substr(0, 1);
 
+        // arrow function
+        if (this.code[this.cursor] === '=' && this.code[this.cursor + 1] === '>') {
+            this.pushToken(TwingToken.ARROW_TYPE, '=>');
+            this.moveCursor('=>');
+            this.moveCoordinates('=>');
+        }
         // operators
-        if ((match = this.regexes.operator.exec(candidate)) !== null) {
+        else if ((match = this.regexes.operator.exec(candidate)) !== null) {
             let tokenValue = match[0].replace(/\s+/, ' ');
 
             this.pushToken(TwingToken.OPERATOR_TYPE, tokenValue);
@@ -395,8 +454,15 @@ export class TwingLexer {
 
         this.moveCursor(text + match[0]);
 
-        if (match[1].indexOf(this.options.whitespace_trim) > -1) {
-            text = text.trimRight();
+        if (match[1]) {
+            if (match[1] === this.options.whitespace_trim) {
+                // whitespace_trim detected ({%-, {{- or {#-)
+                text = rtrim(text);
+            } else {
+                // whitespace_line_trim detected ({%~, {{~ or {#~)
+                // don't trim \r and \n
+                text = rtrim(text, " \t\0\x0B");
+            }
         }
 
         this.pushToken(TwingToken.TEXT_TYPE, text);
@@ -436,8 +502,7 @@ export class TwingLexer {
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
             this.pushState(TwingLexer.STATE_INTERPOLATION);
-        }
-        else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
+        } else if (((match = TwingLexer.REGEX_DQ_STRING_PART.exec(this.code.substring(this.cursor))) !== null) && (match[0].length > 0)) {
             this.pushToken(TwingToken.STRING_TYPE, stripcslashes(match[0]));
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
@@ -469,8 +534,7 @@ export class TwingLexer {
             this.moveCursor(match[0]);
             this.moveCoordinates(match[0]);
             this.popState();
-        }
-        else {
+        } else {
             this.lexExpression();
         }
     }
@@ -530,8 +594,7 @@ export class TwingLexer {
             // a whitespace or a parenthesis
             if (new RegExp('[A-Za-z]').test(operator[length - 1])) {
                 pattern = preg_quote(operator, '/') + '(?=[\\s()])';
-            }
-            else {
+            } else {
                 pattern = preg_quote(operator, '/');
             }
 

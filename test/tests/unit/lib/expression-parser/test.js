@@ -767,5 +767,80 @@ tap.test('expression-parser', function (test) {
         test.end();
     });
 
+    test.test('parseArrow', function (test) {
+        let env = new TwingEnvironment(new TwingTestMockLoader());
+
+        test.test('returns null when closing parenthesis is missing', function(test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
+                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            let expr = expressionParser.parseArrow();
+
+            test.same(expr, null);
+
+            test.end();
+        });
+
+        test.test('returns null when arrow is missing', function(test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
+                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
+                new TwingToken(TwingToken.STRING_TYPE, '=>', 1, 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            let expr = expressionParser.parseArrow();
+
+            test.same(expr, null);
+
+            test.end();
+        });
+
+        test.test('with non-name token', function (test) {
+            let stream = new TwingTokenStream([
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
+                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
+                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
+                new TwingToken(TwingToken.ARROW_TYPE, '=>', 1, 1),
+                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+            ]);
+
+            let parser = new TwingParser(env);
+
+            Reflect.set(parser, 'stream', stream);
+
+            let expressionParser = new TwingExpressionParser(parser, env);
+
+            try {
+                expressionParser.parseArrow();
+
+                test.fail('should throw an error');
+            }
+            catch (e) {
+                test.same(e.getMessage(), 'Unexpected token "string" of value "bar" at line 1.');
+            }
+
+            test.end();
+        });
+
+        test.end();
+    });
+
     test.end();
 });

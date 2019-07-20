@@ -27,14 +27,13 @@ tap.test('node/sandboxed', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 (() => {
-    let sandbox = this.extensions.get('TwingExtensionSandbox');
-    let alreadySandboxed = sandbox.isSandboxed();
+    let alreadySandboxed = this.sandbox.isSandboxed();
     if (!alreadySandboxed) {
-        sandbox.enableSandbox();
+        this.sandbox.enableSandbox();
     }
     Runtime.echo(\`foo\`);
     if (!alreadySandboxed) {
-        sandbox.disableSandbox();
+        this.sandbox.disableSandbox();
     }
 })();
 `);

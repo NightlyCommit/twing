@@ -21,7 +21,6 @@ tape.test('library', function (test) {
         'iteratorToArray',
         'iteratorToHash',
         'iteratorToMap',
-        'join',
         'jsonEncode',
         'ksort',
         'max',

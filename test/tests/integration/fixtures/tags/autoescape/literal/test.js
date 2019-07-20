@@ -19,7 +19,8 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
     getData() {
         return {
-            'var': '<br />'
+            'someVar': '<br />',
+            'someFalseVar': false
         };
     }
 };

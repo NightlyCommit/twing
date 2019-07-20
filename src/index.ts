@@ -196,7 +196,6 @@ export {clone} from "./lib/helper/clone";
 export {fill} from "./lib/helper/fill";
 export {first} from "./lib/helper/first";
 export {includes} from "./lib/helper/includes";
-export {join} from "./lib/helper/join";
 export {ksort} from "./lib/helper/ksort";
 export {merge} from "./lib/helper/merge";
 export {push} from "./lib/helper/push";

@@ -151,15 +151,21 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         ];
 
         if (includeSandbox) {
-            let policy = new TwingSandboxSecurityPolicy([], [], new Map(), new Map(), []);
-
-            extensions.push(new TwingExtensionSandbox(policy, false));
+            extensions.push(new TwingExtensionSandbox(new TwingSandboxSecurityPolicy([], this.getSandboxSecurityPolicyFilters(), new Map(), new Map(), this.getSandboxSecurityPolicyFunctions()), false));
         }
 
         extensions.push(new TwingExtensionStringLoader());
         extensions.push(new TwingTestExtension());
 
         return extensions;
+    }
+
+    getSandboxSecurityPolicyFilters() {
+        return [];
+    }
+
+    getSandboxSecurityPolicyFunctions() {
+        return [];
     }
 
     getDescription() {

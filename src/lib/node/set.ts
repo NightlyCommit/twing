@@ -44,80 +44,66 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
         compiler.addDebugInfo(this);
 
         if (this.getNode('names').getNodes().size > 1) {
-            let values = this.getNode('values');
+            compiler.write('[');
 
             for (let [idx, node] of this.getNode('names').getNodes()) {
-                if (idx) {
-                    compiler.raw(' ');
+                if (idx > 0) {
+                    compiler.raw(', ');
                 }
 
                 compiler
-                    .write('context.set(')
                     .subcompile(node)
-                    .raw(', ')
-                ;
-
-                let value = values.getNode(idx);
-
-                compiler
-                    .subcompile(value)
-                    .raw(');')
                 ;
             }
-        }
-        else {
+
+            compiler.raw(']');
+        } else {
             if (this.getAttribute('capture')) {
                 compiler
-                    .write('(() => {\n')
-                    .indent()
-                    .write('let tmp;\n')
                     .write("Runtime.obStart();\n")
                     .subcompile(this.getNode('values'))
                 ;
             }
-            else {
-                if (this.getAttribute('safe')) {
-                    compiler
-                        .write('(() => {\n')
-                        .indent()
-                        .write('let tmp;\n')
-                    ;
-                }
-            }
 
-            compiler
-                .write('context.set(')
-                .subcompile(this.getNode('names'), true)
-                .raw(', ')
-            ;
+            compiler.subcompile(this.getNode('names'), false);
 
             if (this.getAttribute('capture')) {
                 compiler
-                    .raw("((tmp = Runtime.obGetClean()) === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));\n")
-                    .outdent()
-                    .write('})();')
+                    .raw(" = (() => {let tmp = Runtime.obGetClean(); return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})()")
                 ;
             }
         }
 
         if (!this.getAttribute('capture')) {
-            if (this.getAttribute('safe')) {
-                compiler
-                    .raw("((tmp = ")
-                    .subcompile(this.getNode('values'))
-                    .raw(") === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset()));\n")
-                    .outdent()
-                    .write('})();')
-                ;
-            }
-            else if (this.getNode('names').getNodes().size === 1) {
-                compiler
-                    .subcompile(this.getNode('values'))
-                    .raw(');')
-                ;
+            compiler.raw(' = ');
+
+            if (this.getNode('names').getNodes().size > 1) {
+                compiler.raw('[');
+
+                for (let [idx, value] of this.getNode('values').getNodes()) {
+                    if (idx > 0) {
+                        compiler.raw(', ');
+                    }
+
+                    compiler
+                        .subcompile(value)
+                    ;
+                }
+
+                compiler.raw(']');
+            } else {
+                if (this.getAttribute('safe')) {
+                    compiler
+                        .raw("(() => {let tmp = ")
+                        .subcompile(this.getNode('values'))
+                        .raw("; return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})()")
+                    ;
+                } else {
+                    compiler.subcompile(this.getNode('values'));
+                }
             }
         }
 
-        compiler.raw("\n");
+        compiler.raw(';\n');
     }
 }

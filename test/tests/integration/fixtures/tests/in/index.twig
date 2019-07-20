@@ -71,3 +71,5 @@ TRUE
 {{ 5.5 in 125.5 ? 'TRUE' : 'FALSE' }}
 {{ 5.5 in '125.5' ? 'TRUE' : 'FALSE' }}
 {{ '5.5' in 125.5 ? 'TRUE' : 'FALSE' }}
+
+{{ safe in ['foo', 'bar'] ? 'TRUE' : 'FALSE' }}

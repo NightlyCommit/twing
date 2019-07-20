@@ -3,6 +3,9 @@ sections:
     title: tags
     url: language-reference/tags/index.html
     items:
+      apply:
+        title: apply
+        url: language-reference/tags/apply.html
       autoescape:
         title: autoescape
         url: language-reference/tags/autoescape.html
@@ -76,6 +79,9 @@ sections:
       capitalize:
         title: capitalize
         url: language-reference/filters/capitalize.html
+      column:
+        title: column
+        url: language-reference/filters/column.html
       convert_encoding:
         title: convert_encoding
         url: language-reference/filters/convert_encoding.html
@@ -91,6 +97,9 @@ sections:
       escape:
         title: escape
         url: language-reference/filters/escape.html
+      filter:
+        title: filter
+        url: language-reference/filters/filter.html
       first:
         title: first
         url: language-reference/filters/first.html
@@ -115,6 +124,9 @@ sections:
       lower:
         title: lower
         url: language-reference/filters/lower.html
+      map:
+        title: map
+        url: language-reference/filters/map.html
       merge:
         title: merge
         url: language-reference/filters/merge.html
@@ -127,6 +139,9 @@ sections:
       raw:
         title: raw
         url: language-reference/filters/raw.html
+      reduce:
+        title: reduce
+        url: language-reference/filters/reduce.html
       replace:
         title: replace
         url: language-reference/filters/replace.html
@@ -142,6 +157,9 @@ sections:
       sort:
         title: sort
         url: language-reference/filters/sort.html
+      spaceless:
+        title: spaceless
+        url: language-reference/filters/spaceless.html
       split:
         title: split
         url: language-reference/filters/split.html

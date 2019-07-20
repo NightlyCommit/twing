@@ -1,6 +1,8 @@
 `filter`
 ========
 
+> You should use the `apply` tag instead which does the same thing except that the wrapped template data is not scoped.
+
 {% raw %}
 
 Filter sections allow you to apply filters on a block of template data. Just wrap the code in the special `filter` section:

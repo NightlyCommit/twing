@@ -23,9 +23,8 @@ export class TwingNodeImport extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write('context.set(')
-            .subcompile(this.getNode('var'))
-            .raw(', ')
+            .subcompile(this.getNode('var'), false)
+            .raw(' = ')
         ;
 
         if (this.getNode('expr').getType() === TwingNodeType.EXPRESSION_NAME && this.getNode('expr').getAttribute('name') === '_self') {
@@ -43,6 +42,6 @@ export class TwingNodeImport extends TwingNode {
             ;
         }
 
-        compiler.raw(");\n");
+        compiler.raw(";\n");
     }
 }

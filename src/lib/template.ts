@@ -20,6 +20,9 @@ import {TwingOutputBuffering} from './output-buffering';
 import {iteratorToMap} from "./helper/iterator-to-map";
 import {merge as twingMerge} from "./helper/merge";
 import {TwingExtensionInterface} from "./extension-interface";
+import {TwingExtensionSandbox} from "./extension/sandbox";
+import {TwingContext} from "./context";
+import {isMap} from "./helper/is-map";
 
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
@@ -31,6 +34,7 @@ export abstract class TwingTemplate {
     protected env: TwingEnvironment;
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
+    protected sandbox: TwingExtensionSandbox;
 
     /**
      * @internal
@@ -102,8 +106,7 @@ export abstract class TwingTemplate {
             if (!this.parents.has(parent)) {
                 this.parents.set(parent, this.loadTemplate(parent as string) as TwingTemplate);
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingError) {
                 e.setSourceContext(null);
             }
@@ -136,11 +139,9 @@ export abstract class TwingTemplate {
 
         if (this.traits.has(name)) {
             (this.traits.get(name)[0] as TwingTemplate).displayBlock(name, context, blocks, false);
-        }
-        else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
+        } else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
             (<TwingTemplate>parent).displayBlock(name, context, blocks, false);
-        }
-        else {
+        } else {
             throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, -1, this.getSourceContext());
         }
     }
@@ -166,26 +167,21 @@ export abstract class TwingTemplate {
         if (useBlocks && blocks.has(name)) {
             template = blocks.get(name)[0];
             block = blocks.get(name)[1];
-        }
-        else if (this.blocks.has(name)) {
+        } else if (this.blocks.has(name)) {
             template = this.blocks.get(name)[0];
             block = this.blocks.get(name)[1];
-        }
-        else {
+        } else {
             template = null;
             block = null;
         }
 
         if (template !== null) {
             Reflect.get(template, block).call(template, context, blocks);
-        }
-        else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
+        } else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
             parent.displayBlock(name, context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>, false);
-        }
-        else if (blocks.has(name)) {
+        } else if (blocks.has(name)) {
             throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getSourceContext());
-        }
-        else {
+        } else {
             throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, -1, this.getSourceContext());
         }
     }
@@ -298,8 +294,7 @@ export abstract class TwingTemplate {
             }
 
             return this.env.loadTemplate(template as string, index, this.getSourceContext());
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
                     let source = this.getSourceContext();
@@ -339,11 +334,13 @@ export abstract class TwingTemplate {
             throw new TypeError('Argument 1 passed to TwingTemplate::display() must be an iterator, null given');
         }
 
-        if (!(context instanceof Map)) {
+        if (!isMap(context)) {
             context = iteratorToMap(context);
         }
 
-        this.displayWithErrorHandling(this.env.mergeGlobals(context), twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
+        context = new TwingContext(this.env.mergeGlobals(context));
+
+        this.displayWithErrorHandling(context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
     }
 
     render(context: any): string {
@@ -353,8 +350,7 @@ export abstract class TwingTemplate {
 
         try {
             this.display(context);
-        }
-        catch (e) {
+        } catch (e) {
             while (TwingOutputBuffering.obGetLevel() > level) {
                 TwingOutputBuffering.obEndClean();
             }
@@ -380,8 +376,7 @@ export abstract class TwingTemplate {
     protected displayWithErrorHandling(context: any, blocks: Map<string, Array<any>> = new Map()) {
         try {
             this.doDisplay(context, blocks);
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.getSourceContext());
@@ -398,15 +393,13 @@ export abstract class TwingTemplate {
         return function () {
             try {
                 return method.apply(null, arguments);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingError) {
                     if (e.getTemplateLine() === -1) {
                         e.setTemplateLine(lineno);
                         e.setSourceContext(source);
                     }
-                }
-                else {
+                } else {
                     e = new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, lineno, source, e);
                 }
 

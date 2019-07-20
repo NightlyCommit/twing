@@ -14,6 +14,7 @@ export class TwingToken {
     static INTERPOLATION_END_TYPE = 11;
     static COMMENT_START_TYPE = 12;
     static COMMENT_END_TYPE = 13;
+    static ARROW_TYPE = 14;
     private value: string;
     private type: number;
     private lineno: number;
@@ -83,6 +84,9 @@ export class TwingToken {
             case TwingToken.COMMENT_END_TYPE:
                 name = 'COMMENT_END_TYPE';
                 break;
+            case TwingToken.ARROW_TYPE:
+                name = 'ARROW_TYPE';
+                break;
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);
         }
@@ -129,6 +133,8 @@ export class TwingToken {
                 return 'begin of comment statement';
             case TwingToken.COMMENT_END_TYPE:
                 return 'end of comment statement';
+            case TwingToken.ARROW_TYPE:
+                return 'arrow function';
             default:
                 throw new Error(`Token of type "${type}" does not exist.`);
         }

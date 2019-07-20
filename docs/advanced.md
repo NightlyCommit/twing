@@ -348,6 +348,39 @@ If you want to pass a variable number of positional or named arguments to the te
 
 One of the most exciting features of a template engine like Twig is the possibility to define new language constructs. This is also the most complex feature as you need to understand how Twing's internals work.
 
+Most of the time though, a tag is not needed:
+
+* If your tag generates some output, use a **function** instead.
+
+* If your tag modifies some content and returns it, use a **filter** instead.
+
+  For instance, if you want to create a tag that converts a Markdown formatted text to HTML, create a `markdown` filter instead:
+
+  ```twig
+  {{ '**markdown** text'|markdown }}
+  ```
+  
+  If you want use this filter on large amounts of text, wrap it with the [apply][tag-apply] tag:
+
+  ```twig
+  {% apply markdown %}
+  Title
+  =====
+
+  Much better than creating a tag as you can **compose** filters.
+  {% endapply %}
+  ```
+
+* If your tag does not output anything, but only exists because of a side effect, create a **function** that returns nothing and call it via the [do][tag-do] tag.
+
+  For instance, if you want to create a tag that logs text, create a `log` function instead and call it via the [do][tag-do] tag:
+
+  ```twig
+  {% do log('Log some things') %}
+  ```
+
+If you still want to create a tag for a new language construct, great!
+
 Let's create a simple `set` tag that allows the definition of simple variables from within a template. The tag can be used like follows:
 
 ```twig
@@ -787,3 +820,5 @@ twing.addExtension(new MyCoreExtension());
 
 [back-url]: {{ site.baseurl }}{% link index.md %}
 [deprecation-warnings-url]: {{ site.baseurl }}{% link recipes.md %}#deprecation-warnings
+[tag-apply]: {{ site.baseurl }}{% link language-reference/tags/apply.md %}
+[tag-do]: {{ site.baseurl }}{% link language-reference/tags/do.md %}

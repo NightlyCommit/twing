@@ -130,12 +130,12 @@ Filters that accept arguments have parentheses around the arguments. This exampl
 {{ list|join(', ') }}
 ```
 
-To apply a filter on a section of code, wrap it in the [filter][tag-filter] tag:
+To apply a filter on a section of code, wrap it in the [apply][tag-apply] tag:
 
 ```twig
-{% filter upper %}
+{% apply upper %}
     This text becomes uppercase
-{% endfilter %}
+{% endapply %}
 ```
 
 Go to the [filters][filters] page to learn more about built-in filters.
@@ -647,19 +647,16 @@ String interpolation (`#{expression}`) allows any valid expression to appear wit
 
 The first newline after a template tag is removed automatically. Whitespace is not further modified by the template engine, so each whitespace (spaces, tabs, newlines etc.) is returned unchanged.
 
-Use the `spaceless` tag to remove whitespace *between HTML tags*:
+You can also control whitespace on a per tag level. By using the whitespace
+control modifiers on your tags, you can trim leading and or trailing whitespace.
 
-```twig
-{% spaceless %}
-    <div>
-        <strong>foo bar</strong>
-    </div>
-{% endspaceless %}
+Twig supports two modifiers:
 
-{# output will be <div><strong>foo bar</strong></div> #}
-```
+* *Whitespace trimming* via the `-` modifier: Removes all whitespace (including newlines);
 
-In addition to the spaceless tag you can also control whitespace on a per tag level. By using the whitespace control modifier on your tags, you can trim leading and or trailing whitespace:
+* *Line whitespace trimming* via the `~` modifier: Removes all whitespace (excluding newlines). Using this modifier on the right disables the default removal of the first newline.
+
+The modifiers can be used on either side of the tags like in `{%-` or `-%}` and they consume all whitespace for that side of the tag. It is possible to use the modifiers on one side of a tag or on both sides:
 
 ```twig
 {% set value = 'no spaces' %}
@@ -667,17 +664,31 @@ In addition to the spaceless tag you can also control whitespace on a per tag le
 {%- if true -%}
     {{- value -}}
 {%- endif -%}
-
 {# output 'no spaces' #}
+
+<li>
+    {{ value }}    </li>
+{# outputs '<li>\n    no spaces    </li>' #}
+
+<li>
+    {{- value }}    </li>
+{# outputs '<li>no spaces    </li>' #}
+
+<li>
+    {{~ value }}    </li>
+{# outputs '<li>\nno spaces    </li>' #}
 ```
 
-The above sample shows the default whitespace control modifier, and how you can use it to remove whitespace around tags. Trimming space will consume all whitespace for that side of the tag.  It is possible to use whitespace trimming on one side of a tag:
-
+> In addition to the whitespace modifiers, Twig also has a `spaceless` filter that removes whitespace **between HTML tags**:
+  
 ```twig
-{% set value = 'no spaces' %}
-<li>    {{- value }}    </li>
+{% filter spaceless %}
+  <div>
+      <strong>foo bar</strong>
+  </div>
+{% endfilter %}
 
-{# outputs '<li>no spaces    </li>' #}
+{# output will be <div><strong>foo bar</strong></div> #}
 ```
 
 {% endraw %}
@@ -706,5 +717,6 @@ The above sample shows the default whitespace control modifier, and how you can 
 [function-range]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.functions.items.range.url }}
 [test-sameas]: {{ site.baseurl }}/{{ site.data.navigation_reference.sections.tests.items.sameas.url }}
 [twigfiddle]: https://twigfiddle.com
+[tag-apply]: {{ site.baseurl }}{% link language-reference/tags/apply.md %}
 
 

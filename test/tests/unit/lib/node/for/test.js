@@ -83,8 +83,8 @@ context.set('_parent', Runtime.clone(context));
 })();
 
 Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set(\`key\`, __key__);
-    context.set(\`item\`, __value__);
+    context.proxy[\`key\`] = __key__;
+    context.proxy[\`item\`] = __value__;
     Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 });
 (() => {
@@ -153,8 +153,8 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('last', (length === 1));
 }
 Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set(\`k\`, __key__);
-    context.set(\`v\`, __value__);
+    context.proxy[\`k\`] = __key__;
+    context.proxy[\`v\`] = __value__;
     Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     (() => {
         let loop = context.get('loop');
@@ -226,8 +226,8 @@ context.set('loop', new Map([
   ['first', true]
 ]));
 Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set(\`k\`, __key__);
-    context.set(\`v\`, __value__);
+    context.proxy[\`k\`] = __key__;
+    context.proxy[\`v\`] = __value__;
     if (true) {
         Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
         (() => {
@@ -305,8 +305,8 @@ if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'objec
     loop.set('last', (length === 1));
 }
 Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
-    context.set(\`k\`, __key__);
-    context.set(\`v\`, __value__);
+    context.proxy[\`k\`] = __key__;
+    context.proxy[\`v\`] = __value__;
     Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     context.set('_iterated',  true);
     (() => {

@@ -139,6 +139,18 @@ tap.test('loader chain', function (test) {
         test.end();
     });
 
+    test.test('getLoaders', function (test) {
+        let loaders = [
+            new TwingLoaderArray({'foo': 'bar'})
+        ];
+
+        let loader = new TwingLoaderChain(loaders);
+
+        test.same(loader.getLoaders(), loaders);
+
+        test.end();
+    });
+
     test.test('exists', function (test) {
         let loader1 = new TwingLoaderArray({});
         sinon.stub(loader1, 'exists').returns(false);

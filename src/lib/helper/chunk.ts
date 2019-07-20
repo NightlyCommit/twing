@@ -8,12 +8,12 @@ import {each} from "./each";
  * @param {boolean} preserveKeys
  * @returns {Array<Map<any, any>>}
  */
-export function chunk(thing: any, size: number, preserveKeys: boolean = false): Array<Map<any, any>> {
+export function chunk(hash: any, size: number, preserveKeys: boolean = false): Array<Map<any, any>> {
     let result: Array<Map<any, any>> = [];
     let count = 0;
     let currentMap: Map<any, any>;
 
-    each(thing, (key: any, value: any) => {
+    each(hash, (key: any, value: any) => {
         if (!currentMap) {
             currentMap = new Map();
 

@@ -29,6 +29,13 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         this.hasSourceCache = new Map();
     }
 
+    /**
+     * @return TwingLoaderInterface[]
+     */
+    getLoaders(): TwingLoaderInterface[] {
+        return this.loaders;
+    }
+
     getSourceContext(name: string, from: TwingSource): TwingSource {
         let exceptions = [];
 
@@ -39,8 +46,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
             try {
                 return loader.getSourceContext(name, from);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     exceptions.push(e.message);
                 }
@@ -78,8 +84,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
             try {
                 return loader.getCacheKey(name, from);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     exceptions.push(loader.constructor.name + ': ' + e.message);
                 }
@@ -99,8 +104,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
             try {
                 return loader.isFresh(name, time, from);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     exceptions.push(loader.constructor.name + ': ' + e.message);
                 }
@@ -120,8 +124,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
 
             try {
                 return loader.resolve(name, from);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     exceptions.push(loader.constructor.name + ': ' + e.message);
                 }
