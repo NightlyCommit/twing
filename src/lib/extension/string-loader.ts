@@ -20,9 +20,10 @@ export class TwingExtensionStringLoader extends TwingExtension {
  *
  * @param {TwingEnvironment} env A TwingEnvironment instance
  * @param {string} template A template as a string or object implementing toString()
+ * @param {string} name An optional name for the template to be used in error messages
  *
  * @returns TwingTemplate
  */
-export function twingTemplateFromString(env: TwingEnvironment, template: string): TwingTemplate {
-    return env.createTemplate(template);
+export function twingTemplateFromString(env: TwingEnvironment, template: string, name: string = null): TwingTemplate {
+    return env.createTemplate(template, name);
 }

@@ -109,8 +109,7 @@ export class TwingNodeModule extends TwingNode {
 
         if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             compiler.subcompile(parent);
-        }
-        else {
+        } else {
             compiler
                 .raw('this.loadTemplate(')
                 .subcompile(parent)
@@ -153,22 +152,6 @@ export class TwingNodeModule extends TwingNode {
         // parent
         if (!this.hasNode('parent')) {
             compiler.write("this.parent = false;\n\n");
-        }
-        else {
-            let parent = this.getNode('parent');
-
-            if (parent && (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
-                compiler
-                    .addDebugInfo(parent)
-                    .write('this.parent = this.loadTemplate(')
-                    .subcompile(parent)
-                    .raw(', ')
-                    .repr(this.source.getName())
-                    .raw(', ')
-                    .repr(parent.getTemplateLine())
-                    .raw(");\n")
-                ;
-            }
         }
 
         let countTraits = this.getNode('traits').getNodes().size;
@@ -234,8 +217,7 @@ export class TwingNodeModule extends TwingNode {
                         .write(`this.traits = Runtime.merge(this.traits, _trait_${i}_blocks);\n`)
                     ;
                 }
-            }
-            else {
+            } else {
                 compiler
                     .write("this.traits = Runtime.clone(_trait_0_blocks);\n\n")
                 ;
@@ -245,8 +227,7 @@ export class TwingNodeModule extends TwingNode {
                 .write("this.blocks = Runtime.merge(this.traits, new Map([\n")
                 .indent()
             ;
-        }
-        else {
+        } else {
             compiler
                 .write("this.blocks = new Map([\n")
             ;
@@ -297,8 +278,8 @@ export class TwingNodeModule extends TwingNode {
         compiler.raw(';\n');
 
         compiler
-            .outdent()
             .subcompile(this.getNode('constructor_end'))
+            .outdent()
             .write('}\n\n')
         ;
     }
@@ -318,11 +299,20 @@ export class TwingNodeModule extends TwingNode {
 
         if (this.hasNode('parent')) {
             let parent = this.getNode('parent');
-            compiler
-                .addDebugInfo(parent)
-            ;
+
+            compiler.addDebugInfo(parent);
 
             if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
+                compiler
+                    .write('this.parent = this.loadTemplate(')
+                    .subcompile(parent)
+                    .raw(', ')
+                    .repr(this.source.getName())
+                    .raw(', ')
+                    .repr(parent.getTemplateLine())
+                    .raw(");\n")
+                ;
+
                 compiler.write('this.parent');
             } else {
                 compiler.write('this.getParent(context)');
@@ -366,8 +356,7 @@ export class TwingNodeModule extends TwingNode {
 
             if (this.getNode('body').getType() === TwingNodeType.BODY) {
                 nodes = this.getNode('body').getNode(0);
-            }
-            else {
+            } else {
                 nodes = this.getNode('body');
             }
 

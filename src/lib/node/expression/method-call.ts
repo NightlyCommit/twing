@@ -23,9 +23,8 @@ export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('context.get(')
-            .subcompile(this.getNode('node'), true)
-            .raw(').')
+            .subcompile(this.getNode('node'))
+            .raw('.')
             .raw(this.getAttribute('method'))
             .raw('(')
         ;

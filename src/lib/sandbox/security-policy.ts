@@ -67,7 +67,7 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
 
         functions.forEach(function (function_) {
             if (!self.allowedFunctions.includes(function_)) {
-                throw new TwingSandboxSecurityNotAllowedFunctionError(`Filter "${function_}" is not allowed.`, function_);
+                throw new TwingSandboxSecurityNotAllowedFunctionError(`Function "${function_}" is not allowed.`, function_);
             }
         });
     }
@@ -78,10 +78,11 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
         }
 
         let allowed = false;
-        method = method.toLowerCase();
+        let checkableMethod = method.toLowerCase();
+
         for (let [class_, methods] of this.allowedMethods) {
             if (obj instanceof class_) {
-                allowed = methods.includes(method);
+                allowed = methods.includes(checkableMethod);
 
                 break;
             }

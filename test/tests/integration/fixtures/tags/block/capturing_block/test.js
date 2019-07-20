@@ -20,4 +20,10 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     getData() {
         return {};
     }
+
+    getExpectedDeprecationMessages() {
+        return [
+            'The "spaceless" tag is deprecated since Twig 2.7, use the "spaceless" filter instead.'
+        ];
+    }
 };

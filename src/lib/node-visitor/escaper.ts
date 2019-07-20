@@ -4,10 +4,14 @@ import {TwingEnvironment} from "../environment";
 import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
 import {TwingNodeTraverser} from "../node-traverser";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
+import {TwingNodeExpression} from "../node/expression";
 
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
+import {TwingNodeDo} from "../node/do";
 import {TwingExtensionEscaper} from "../extension/escaper";
+import {TwingNodeExpressionConditional} from "../node/expression/conditional";
+import {TwingNodeInlinePrint} from "../node/inline-print";
 
 export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
@@ -33,14 +37,11 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
 
             this.safeVars = [];
             this.blocks = new Map();
-        }
-        else if (node.getType() === TwingNodeType.AUTO_ESCAPE) {
+        } else if (node.getType() === TwingNodeType.AUTO_ESCAPE) {
             this.statusStack.push(node.getAttribute('value'));
-        }
-        else if (node.getType() === TwingNodeType.BLOCK) {
-            this.statusStack.push(this.blocks.has(node.getAttribute('name')) ? this.blocks.get(node.getAttribute('name')) : this.needEscaping(env));
-        }
-        else if (node.getType() === TwingNodeType.IMPORT) {
+        } else if (node.getType() === TwingNodeType.BLOCK) {
+            this.statusStack.push(this.blocks.has(node.getAttribute('name')) ? this.blocks.get(node.getAttribute('name')) : this.needEscaping());
+        } else if (node.getType() === TwingNodeType.IMPORT) {
             this.safeVars.push(node.getNode('var').getAttribute('name'));
         }
 
@@ -48,34 +49,74 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        // @see https://github.com/Microsoft/TypeScript/issues/10422
         if (node.getType() === TwingNodeType.MODULE) {
             this.defaultStrategy = false;
             this.safeVars = [];
             this.blocks = new Map();
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+        } else if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
             return this.preEscapeFilterNode(node as TwingNodeExpressionFilter, env);
-        }
-        else if (node.getType() === TwingNodeType.PRINT) {
-            return this.escapePrintNode(node as any, env, this.needEscaping(env));
+        } else if (node.getType() === TwingNodeType.PRINT) {
+            let type = this.needEscaping();
+
+            if (type !== false) {
+                let expression: TwingNodeExpression = node.getNode('expr');
+
+                if (expression.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expression, env, type)) {
+                    return new TwingNodeDo(this.unwrapConditional(expression, env, type), expression.getTemplateLine(), expression.getTemplateColumn());
+                }
+
+                return this.escapePrintNode(node as any, env, type);
+            }
         }
 
         if (node.getType() === TwingNodeType.AUTO_ESCAPE || node.getType() === TwingNodeType.BLOCK) {
             this.statusStack.pop();
-        }
-        else if (node.getType() === TwingNodeType.BLOCK_REFERENCE) {
-            this.blocks.set(node.getAttribute('name'), this.needEscaping(env));
+        } else if (node.getType() === TwingNodeType.BLOCK_REFERENCE) {
+            this.blocks.set(node.getAttribute('name'), this.needEscaping());
         }
 
         return node;
     }
 
-    private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: any) {
-        if (!type) {
+    private shouldUnwrapConditional(expression: TwingNodeExpressionConditional, env: TwingEnvironment, type: any) {
+        let expr2Safe = this.isSafeFor(type, expression.getNode('expr2'), env);
+        let expr3Safe = this.isSafeFor(type, expression.getNode('expr3'), env);
+
+        return expr2Safe !== expr3Safe;
+    }
+
+    private unwrapConditional(expression: TwingNodeExpressionConditional, env: TwingEnvironment, type: any): TwingNodeExpressionConditional {
+        // convert "echo a ? b : c" to "a ? echo b : echo c" recursively
+        let expr2: TwingNodeExpression = expression.getNode('expr2');
+
+        if (expr2.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expr2, env, type)) {
+            expr2 = this.unwrapConditional(expr2, env, type);
+        } else {
+            expr2 = this.escapeInlinePrintNode(new TwingNodeInlinePrint(expr2, expr2.getTemplateLine(), expr2.getTemplateColumn()), env, type);
+        }
+
+        let expr3: TwingNodeExpression = expression.getNode('expr3');
+
+        if (expr3.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expr3, env, type)) {
+            expr3 = this.unwrapConditional(expr3, env, type);
+        } else {
+            expr3 = this.escapeInlinePrintNode(new TwingNodeInlinePrint(expr3, expr3.getTemplateLine(), expr3.getTemplateColumn()), env, type);
+        }
+
+        return new TwingNodeExpressionConditional(expression.getNode('expr1'), expr2, expr3, expression.getTemplateLine(), expression.getTemplateColumn());
+    }
+
+    private escapeInlinePrintNode(node: TwingNodeInlinePrint, env: TwingEnvironment, type: any): TwingNode {
+        let expression: TwingNode = node.getNode('node');
+
+        if (this.isSafeFor(type, expression, env)) {
             return node;
         }
 
+        return new TwingNodeInlinePrint(this.getEscaperFilter(type, expression), node.getTemplateLine(), node.getTemplateColumn());
+    }
+
+    private escapePrintNode(node: TwingNodePrint, env: TwingEnvironment, type: any) {
         let expression = node.getNode('expr');
 
         if (this.isSafeFor(type, expression, env)) {
@@ -124,11 +165,9 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     /**
-     *
-     * @param {TwingEnvironment} env
      * @returns string | Function | false
      */
-    private needEscaping(env: TwingEnvironment) {
+    private needEscaping() {
         if (this.statusStack.length) {
             return this.statusStack[this.statusStack.length - 1];
         }

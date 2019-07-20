@@ -94,6 +94,7 @@ import {TwingSource} from "../source";
 import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "../source-map/node";
 import {TwingTokenParserDeprecated} from "../token-parser/deprecated";
+import {TwingTokenParserApply} from "../token-parser/apply";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -228,7 +229,8 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingTokenParserDo(),
             new TwingTokenParserEmbed(),
             new TwingTokenParserWith(),
-            new TwingTokenParserDeprecated()
+            new TwingTokenParserDeprecated(),
+            new TwingTokenParserApply()
         ];
     }
 
@@ -266,6 +268,9 @@ export class TwingExtensionCore extends TwingExtension {
                 pre_escape: 'html',
                 is_safe: ['html']
             })],
+            [i++, new TwingFilter('spaceless', twingSpacelessFilter, {
+                is_safe: ['html']
+            })],
 
             // array helpers
             [i++, new TwingFilter('join', twingJoinFilter)],
@@ -273,6 +278,10 @@ export class TwingExtensionCore extends TwingExtension {
             [i++, new TwingFilter('sort', twingSortFilter)],
             [i++, new TwingFilter('merge', twingArrayMerge)],
             [i++, new TwingFilter('batch', twingArrayBatch)],
+            [i++, new TwingFilter('column', twingColumnFilter)],
+            [i++, new TwingFilter('filter', twingFilterFilter)],
+            [i++, new TwingFilter('map', twingFilterMap)],
+            [i++, new TwingFilter('reduce', twingFilterReduce)],
 
             // string/array filters
             [i++, new TwingFilter('reverse', twingReverseFilter, {needs_environment: true})],
@@ -632,18 +641,32 @@ export function twingCycle(values: Array<any>, position: number) {
  *
  * @param {TwingEnvironment} env
  * @param {*} values The values to pick a random item from
- *
+ * @param {number} max Maximum value used when values is an integer
  * @throws TwingErrorRuntime when values is an empty array (does not apply to an empty string which is returned as is)
  *
  * @returns {*} A random value from the given sequence
  */
-export function twingRandom(env: TwingEnvironment, values: any = null): any {
+export function twingRandom(env: TwingEnvironment, values: any = null, max: number = null): any {
     if (values === null) {
-        return mt_rand();
+        return max === null ? mt_rand() : mt_rand(0, max);
     }
 
     if (typeof values === 'number') {
-        return values < 0 ? mt_rand(values, 0) : mt_rand(0, values);
+        let min: number;
+
+        if (max === null) {
+            if (values < 0) {
+                max = 0;
+                min = values;
+            } else {
+                max = values;
+                min = 0;
+            }
+        } else {
+            min = values;
+        }
+
+        return mt_rand(min, max);
     }
 
     if (typeof values === 'string') {
@@ -669,8 +692,7 @@ export function twingRandom(env: TwingEnvironment, values: any = null): any {
                 return iconv('UTF-8', charset, Buffer.from(value));
             });
         }
-    }
-    else if (isTraversable(values)) {
+    } else if (isTraversable(values)) {
         values = iteratorToArray(values);
     }
 
@@ -791,15 +813,12 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
 
     if (!date) {
         result = DateTime.local();
-    }
-    else if (date instanceof Date) {
+    } else if (date instanceof Date) {
         result = DateTime.fromJSDate(date);
-    }
-    else if (typeof date === 'string') {
+    } else if (typeof date === 'string') {
         if (date === 'now') {
             result = DateTime.local();
-        }
-        else {
+        } else {
             result = DateTime.fromISO(date, {setZone: true});
 
             if (!result.isValid) {
@@ -812,13 +831,11 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
 
             if (result.isValid) {
                 parsedUtcOffset = result.offset;
-            }
-            else {
+            } else {
                 result = relativeDate(date);
             }
         }
-    }
-    else if (typeof date === 'number') {
+    } else if (typeof date === 'number') {
         // date is PHP timestamp - i.e. in seconds
         let ts = date as number * 1000;
 
@@ -834,8 +851,7 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
 
     if (timezone !== false) {
         result = result.setZone(timezone);
-    }
-    else {
+    } else {
         if (parsedUtcOffset) {
             // explicit UTC offset
             result = result.setZone(`UTC+${parsedUtcOffset / 60}`);
@@ -860,8 +876,7 @@ export function twingDateConverter(env: TwingEnvironment, date: Date | DateTime 
 export function twingReplaceFilter(str: string, from: any) {
     if (isTraversable(from)) {
         from = iteratorToHash(from);
-    }
-    else if (typeof from !== 'object') {
+    } else if (typeof from !== 'object') {
         throw new TwingErrorRuntime(`The "replace" filter expects an hash or "Iterable" as replace values, got "${typeof from}".`);
     }
 
@@ -1179,8 +1194,7 @@ export function twingGetArrayKeysFilter(array: Array<any>) {
 
     if (isNullOrUndefined(array)) {
         traversable = new Map();
-    }
-    else {
+    } else {
         traversable = iteratorToMap(array);
     }
 
@@ -1201,8 +1215,7 @@ export function twingReverseFilter(env: TwingEnvironment, item: any, preserveKey
         let esrever = require('esrever');
 
         return esrever.reverse(item);
-    }
-    else {
+    } else {
         return reverse(iteratorToMap(item as Map<any, any>), preserveKeys);
     }
 }
@@ -1232,6 +1245,10 @@ export function twingSortFilter(array: Array<any>) {
 export function twingInFilter(value: any, compare: any): boolean {
     let result = false;
 
+    if (value instanceof TwingMarkup) {
+        value = value.toString();
+    }
+
     if (Array.isArray(compare)) {
         for (let item of compare) {
             if (compareHelper(item, value)) {
@@ -1239,19 +1256,16 @@ export function twingInFilter(value: any, compare: any): boolean {
                 break;
             }
         }
-    }
-    else if (typeof compare === 'string' && (typeof value === 'string' || typeof value === 'number')) {
+    } else if (typeof compare === 'string' && (typeof value === 'string' || typeof value === 'number')) {
         result = (value === '' || compare.includes('' + value));
-    }
-    else if (isTraversable(compare)) {
+    } else if (isTraversable(compare)) {
         for (let item of iteratorToArray(compare)) {
             if (compareHelper(item, value)) {
                 result = true;
                 break;
             }
         }
-    }
-    else if (typeof compare === 'object') {
+    } else if (typeof compare === 'object') {
         for (let key in compare) {
             if (compareHelper(compare[key], value)) {
                 result = true;
@@ -1292,6 +1306,15 @@ export function twingTrimFilter(string: string, characterMask: string = null, si
 }
 
 /**
+ * Removes whitespaces between HTML tags.
+ *
+ * @return string
+ */
+export function twingSpacelessFilter(content: string | TwingMarkup) {
+    return content.toString().replace(/>\s+</g, '><').trim();
+}
+
+/**
  * Escapes a string.
  *
  * @param {TwingEnvironment} env
@@ -1310,8 +1333,7 @@ export function twingEscapeFilter(env: TwingEnvironment, string: any, strategy: 
     if (typeof string !== 'string') {
         if (string && (typeof string === 'object') && Reflect.has(string, 'toString')) {
             string = '' + string;
-        }
-        else if (['html', 'js', 'css', 'html_attr', 'url'].includes(strategy)) {
+        } else if (['html', 'js', 'css', 'html_attr', 'url'].includes(strategy)) {
             return string;
         }
     }
@@ -1510,8 +1532,7 @@ export function twingEscapeFilterIsSafe(filterArgs: TwingNode) {
         });
 
         return result;
-    }
-    else {
+    } else {
         return ['html'];
     }
 }
@@ -1552,13 +1573,17 @@ export function twingLengthFilter(env: TwingEnvironment, thing: any) {
  * Converts a string to uppercase.
  *
  * @param {TwingEnvironment} env
- * @param {string} string A string
+ * @param {string | TwingMarkup} string A string
  *
  * @returns {string} The uppercased string
  */
-export function twingUpperFilter(env: TwingEnvironment, string: string) {
+export function twingUpperFilter(env: TwingEnvironment, string: string | TwingMarkup) {
     // todo: use charset
-    return (typeof string === 'string') ? string.toUpperCase() : string;
+    if (typeof string !== 'string') {
+        string = string.toString();
+    }
+
+    return string.toUpperCase();
 }
 
 /**
@@ -1578,14 +1603,14 @@ export function twingLowerFilter(env: TwingEnvironment, string: string) {
  * Returns a titlecased string.
  *
  * @param {TwingEnvironment} env
- * @param {string} string A string
+ * @param {string | TwingMarkup} string A string
  *
  * @returns {string} The titlecased string
  */
-export function twingTitleStringFilter(env: TwingEnvironment, string: string) {
+export function twingTitleStringFilter(env: TwingEnvironment, string: string | TwingMarkup) {
     const ucwords = require('locutus/php/strings/ucwords');
 
-    return ucwords(string.toLowerCase());
+    return ucwords(string.toString().toLowerCase());
 }
 
 /**
@@ -1703,23 +1728,21 @@ export function twingInclude(env: TwingEnvironment, context: Map<any, any>, sour
         }
     }
 
-    let result = '';
+    let loaded = null;
 
     try {
-        result = env.resolveTemplate(template, source).render(variables);
-    }
-    catch (e) {
+        loaded = env.resolveTemplate(template, source);
+    } catch (e) {
         if (e instanceof TwingErrorLoader) {
             if (!ignoreMissing) {
-                if (isSandboxed && !alreadySandboxed) {
+                if (sandbox && !alreadySandboxed) {
                     sandbox.disableSandbox();
                 }
 
                 throw e;
             }
-        }
-        else {
-            if (isSandboxed && !alreadySandboxed) {
+        } else {
+            if (sandbox && !alreadySandboxed) {
                 sandbox.disableSandbox();
             }
 
@@ -1727,8 +1750,14 @@ export function twingInclude(env: TwingEnvironment, context: Map<any, any>, sour
         }
     }
 
-    if (isSandboxed && !alreadySandboxed) {
-        sandbox.disableSandbox();
+    let result;
+
+    try {
+        result = loaded ? loaded.render(variables) : '';
+    } finally {
+        if (sandbox && !alreadySandboxed) {
+            sandbox.disableSandbox();
+        }
     }
 
     return result;
@@ -1749,14 +1778,12 @@ export function twingSource(env: TwingEnvironment, source: TwingSource, name: st
 
     try {
         return loader.getSourceContext(name, source).getCode();
-    }
-    catch (e) {
+    } catch (e) {
         if (e instanceof TwingErrorLoader) {
             if (!ignoreMissing) {
                 throw e;
             }
-        }
-        else {
+        } else {
             throw e;
         }
     }
@@ -1784,8 +1811,7 @@ export function twingConstant(env: TwingEnvironment, constant: string, object: a
         let className = object.constructor.name;
 
         bucket = globals.get(className);
-    }
-    else {
+    } else {
         bucket = globals;
     }
 
@@ -1797,24 +1823,23 @@ export function twingConstant(env: TwingEnvironment, constant: string, object: a
  *
  * @param {Array} items An array of items
  * @param {number} size  The size of the batch
- * @param fill A value used to fill missing items
+ * @param {any} fill A value used to fill missing items
+ * @param {boolean} preserveKeys
  *
  * @returns Array<any>
  */
-export function twingArrayBatch(items: Array<any>, size: number, fill: any = null): Array<Map<any, any>> {
+export function twingArrayBatch(items: Array<any>, size: number, fill: any = null, preserveKeys: boolean = true): Array<Map<any, any>> {
     if (isNullOrUndefined(items)) {
         return [];
     }
 
-    let chunks: Array<Map<any, any>> = chunk(items, size, true);
+    let chunks: Array<Map<any, any>> = chunk(items, size, preserveKeys);
 
     if (fill !== null && chunks.length) {
         let last = chunks.length - 1;
-        let fillCount = size - chunks[last].size;
+        let lastChunk: Map<any, any> = chunks[last];
 
-        if (fillCount) {
-            twingFill(chunks[last], 0, fillCount, fill);
-        }
+        twingFill(lastChunk, size, fill);
     }
 
     return chunks;
@@ -1847,11 +1872,9 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 
         if (isBool(item)) {
             arrayItem = item ? 1 : 0;
-        }
-        else if (isFloat(item)) {
+        } else if (isFloat(item)) {
             arrayItem = parseInt(item);
-        }
-        else {
+        } else {
             arrayItem = item;
         }
 
@@ -1862,15 +1885,13 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
                 }
 
                 return object[arrayItem];
-            }
-            else if (isMap(object) && object.has(arrayItem)) {
+            } else if (isMap(object) && object.has(arrayItem)) {
                 if (isDefinedTest) {
                     return true;
                 }
 
                 return object.get(item);
-            }
-            else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
+            } else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
                 if (isDefinedTest) {
                     return true;
                 }
@@ -1892,30 +1913,24 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
                 // object is an array
                 if (object.length < 1) {
                     message = `Index "${arrayItem}" is out of bounds as the array is empty.`;
-                }
-                else {
+                } else {
                     message = `Index "${arrayItem}" is out of bounds for array [${object}].`;
 
                 }
-            }
-            else if (isMap(object)) {
+            } else if (isMap(object)) {
                 // object is a map
                 message = `Impossible to access a key ("${item}") on a ${typeof object} variable ("${object.toString()}").`;
-            }
-            else if (type === TwingTemplate.ARRAY_CALL) {
+            } else if (type === TwingTemplate.ARRAY_CALL) {
                 // object is another kind of object
                 if (object === null) {
                     message = `Impossible to access a key ("${item}") on a null variable.`;
-                }
-                else {
+                } else {
                     message = `Impossible to access a key ("${item}") on a ${typeof object} variable ("${object.toString()}").`;
                 }
-            }
-            else if (object === null) {
+            } else if (object === null) {
                 // object is null
                 message = `Impossible to access an attribute ("${item}") on a null variable.`;
-            }
-            else {
+            } else {
                 // object is a primitive
                 message = `Impossible to access an attribute ("${item}") on a ${typeof object} variable ("${object}").`;
             }
@@ -1937,11 +1952,9 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 
         if (object === null) {
             message = `Impossible to invoke a method ("${item}") on a null variable.`;
-        }
-        else if (Array.isArray(object)) {
+        } else if (Array.isArray(object)) {
             message = `Impossible to invoke a method ("${item}") on an array.`;
-        }
-        else {
+        } else {
             message = `Impossible to invoke a method ("${item}") on a ${typeof object} variable ("${object}").`;
         }
 
@@ -2011,20 +2024,17 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
             if (lcName[0] === 'g' && lcName.indexOf('get') === 0) {
                 name = method.substr(3);
                 lcName = lcName.substr(3);
-            }
-            else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
+            } else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
                 name = method.substr(2);
                 lcName = lcName.substr(2);
-            }
-            else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
+            } else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
                 name = method.substr(3);
                 lcName = lcName.substr(3);
 
                 if (lcMethods.includes('is' + lcName)) {
                     continue;
                 }
-            }
-            else {
+            } else {
                 continue;
             }
 
@@ -2051,11 +2061,9 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 
     if (classCache.has(item)) {
         method = classCache.get(item);
-    }
-    else if (classCache.has(lcItem = itemAsString.toLowerCase())) {
+    } else if (classCache.has(lcItem = itemAsString.toLowerCase())) {
         method = classCache.get(lcItem);
-    }
-    else {
+    } else {
         if (isDefinedTest) {
             return false;
         }
@@ -2083,4 +2091,82 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 /* istanbul ignore next */
 export namespace twingGetAttribute {
     export let cache: Map<string, Map<string, string>>;
+}
+
+/**
+ * Return the values from a single column in the input array.
+ *
+ * <pre>
+ *  {% set items = [{ 'fruit' : 'apple'}, {'fruit' : 'orange' }] %}
+ *
+ *  {% set fruits = items|column('fruit') %}
+ *
+ *  {# fruits now contains ['apple', 'orange'] #}
+ * </pre>
+ *
+ * @param {*} thing An iterable
+ * @param {*} columnKey The column key
+ *
+ * @return Array<any> The array of values
+ */
+export function twingColumnFilter(thing: any, columnKey: any) {
+    let map: Map<any, any>;
+
+    if (!isTraversable(thing) || isPlainObject(thing)) {
+        throw new TwingErrorRuntime(`The column filter only works with arrays or "Traversable", got "${typeof thing}" as first argument.`);
+    } else {
+        map = iteratorToMap(thing);
+    }
+
+    let result: any[] = [];
+
+    for (let value of map.values()) {
+        let valueAsMap: Map<any, any> = iteratorToMap(value);
+
+        for (let [key, value] of valueAsMap) {
+            if (key === columnKey) {
+                result.push(value);
+            }
+        }
+    }
+
+    return result;
+}
+
+export function twingFilterFilter(map: any, callback: Function) {
+    let result: Map<any, any> = new Map();
+
+    map = iteratorToMap(map);
+
+    for (let [k, v] of map) {
+        if (callback(v)) {
+            result.set(k, v);
+        }
+    }
+
+    return result;
+}
+
+export function twingFilterMap(map: any, callback: Function) {
+    let result: Map<any, any> = new Map();
+
+    map = iteratorToMap(map);
+
+    for (let [k, v] of map) {
+        v = callback(v);
+
+        result.set(k, v);
+    }
+
+    return result;
+}
+
+export function twingFilterReduce(map: any, callback: Function, initial: any = null): string {
+    map = iteratorToMap(map);
+
+    let values: any[] = Array.from(map.values());
+
+    return values.reduce((previousValue: any, currentValue: any): any => {
+        return callback(previousValue, currentValue);
+    }, initial);
 }

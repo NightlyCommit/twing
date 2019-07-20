@@ -16,6 +16,8 @@ import {TwingNodeSpaceless} from "../node/spaceless";
 
 export class TwingTokenParserSpaceless extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
+        console.error('The "spaceless" tag is deprecated since Twig 2.7, use the "spaceless" filter instead.');
+
         let lineno = token.getLine();
         let columnno = token.getColumn();
 

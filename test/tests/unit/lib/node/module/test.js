@@ -119,20 +119,20 @@ tap.test('node/module', function (test) {
 
             this.source = this.getSourceContext();
 
-            // line 1, column 1
-            this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
             this.blocks = new Map([
             ]);
         }
 
         doGetParent(context) {
+            // line 1, column 1
             return \`layout.twig\`;
         }
 
         doDisplay(context, blocks = new Map()) {
             // line 2, column 1
-            context.set(\`macro\`, this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2));
+            context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
             // line 1, column 1
+            this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
             this.parent.display(context, Runtime.merge(this.blocks, blocks));
         }
 
@@ -145,7 +145,7 @@ tap.test('node/module', function (test) {
         }
 
         getDebugInfo() {
-            return new Map([[26, {"line": 1, "column": 1}], [24, {"line": 2, "column": 1}], [13, {"line": 1, "column": 1}]]);
+            return new Map([[25, {"line": 1, "column": 1}], [23, {"line": 2, "column": 1}], [18, {"line": 1, "column": 1}]]);
         }
 
         getSourceContext() {
@@ -215,7 +215,7 @@ tap.test('node/module', function (test) {
 
         doDisplay(context, blocks = new Map()) {
             // line 4, column 1
-            context.set(\`foo\`, \`foo\`);
+            context.proxy[\`foo\`] = \`foo\`;
             // line 2, column 1
             this.getParent(context).display(context, Runtime.merge(this.blocks, blocks));
         }

@@ -1,6 +1,8 @@
 `spaceless`
 ===========
 
+> Use the [spaceless][spaceless-filter-url] filter instead.
+
 {% raw %}
 
 Use the `spaceless` tag to remove whitespace *between HTML tags*, not whitespace within HTML tags or whitespace in plain text:
@@ -21,4 +23,5 @@ Use the `spaceless` tag to remove whitespace *between HTML tags*, not whitespace
 
 [back]({{ site.baseurl }}{% link language-reference/tags/index.md %})
 
+[spaceless-filter-url]: {{ site.baseurl }}{% link language-reference/filters/spaceless.md %}
 [whitespace-control-url]: {{ site.baseurl }}{% link templates.md %}#whitespace-control

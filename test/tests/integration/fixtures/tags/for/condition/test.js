@@ -30,4 +30,10 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
             strict_variables: false
         }
     }
+
+    getExpectedDeprecationMessages() {
+        return [
+            'Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).'
+        ];
+    }
 };

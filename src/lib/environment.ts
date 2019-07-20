@@ -35,7 +35,6 @@ import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
 import {merge as twingMerge, merge} from "./helper/merge";
-import {join} from "./helper/join";
 import {TwingOperator} from "./extension";
 import {EventEmitter} from 'events';
 import {echo, flush, obEndClean, obGetClean, obGetContents, obStart, TwingOutputBuffering} from "./output-buffering";
@@ -56,6 +55,7 @@ import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
 import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
+import {TwingContext} from "./context";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
@@ -131,7 +131,6 @@ export abstract class TwingEnvironment extends EventEmitter {
     private runtimeLoaders: Array<TwingRuntimeLoaderInterface> = [];
     private runtimes: Map<string, any> = new Map();
     private optionsHash: string;
-    private loading: Map<string, string> = new Map();
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
     private templateRuntime: any;
@@ -206,7 +205,8 @@ export abstract class TwingEnvironment extends EventEmitter {
             TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
             TwingSource: TwingSource,
             TwingTemplate: TwingTemplate,
-            TwingProfilerProfile: TwingProfilerProfile
+            TwingProfilerProfile: TwingProfilerProfile,
+            TwingContext: TwingContext
         });
     }
 
@@ -324,15 +324,12 @@ export abstract class TwingEnvironment extends EventEmitter {
         if (typeof cache === 'string') {
             this.originalCache = cache;
             this.cache = this.cacheFromString(cache);
-        }
-        else if (cache === false) {
+        } else if (cache === false) {
             this.originalCache = cache;
             this.cache = new TwingCacheNull();
-        }
-        else if (cache.TwingCacheInterfaceImpl) {
+        } else if (cache.TwingCacheInterfaceImpl) {
             this.originalCache = this.cache = cache;
-        }
-        else {
+        } else {
             throw new Error(`Cache can only be a string, false or a TwingCacheInterface implementation.`);
         }
     }
@@ -496,29 +493,18 @@ return module.exports;
         // to be removed in 3.0
         this.extensionSet.initRuntime(this);
 
-        if (this.loading.has(cls)) {
-            throw new TwingErrorRuntime(`Circular reference detected for Twig template "${name}", path: ${join(twingMerge(this.loading, new Map([[0, name]])) as Map<any, string>, ' -> ')}.`);
-        }
-
         let mainTemplate: TwingTemplate;
 
-        this.loading.set(cls, name);
+        for (let key in templates) {
+            let Tpl = templates[key];
+            let template = new Tpl(this);
 
-        try {
-            for (let key in templates) {
-                let Tpl = templates[key];
-                let template = new Tpl(this);
-
-                if (key === mainCls) {
-                    key = cls;
-                    mainTemplate = template;
-                }
-
-                this.loadedTemplates.set(key, template);
+            if (key === mainCls) {
+                key = cls;
+                mainTemplate = template;
             }
-        }
-        finally {
-            this.loading.delete(cls);
+
+            this.loadedTemplates.set(key, template);
         }
 
         return mainTemplate;
@@ -530,30 +516,35 @@ return module.exports;
      * This method should not be used as a generic way to load templates.
      *
      * @param {string} template The template name
+     * @param {string} name An optional name for the template to be used in error messages
      *
      * @returns {TwingTemplate} A template instance representing the given template name
      *
      * @throws TwingErrorLoader When the template cannot be found
      * @throws TwingErrorSyntax When an error occurred during compilation
      */
-    createTemplate(template: string) {
+    createTemplate(template: string, name: string = null) {
         let result: TwingTemplate;
-        let name = `__string_template__${hex.stringify(sha256(template))}`;
+
+        let hash: string = hex.stringify(sha256(template));
+
+        if (name !== null) {
+            name = `${name} (string template ${hash})`;
+        }
+        else {
+            name = `__string_template__${hash}`;
+        }
+
         let current = this.getLoader();
 
         let loader = new TwingLoaderChain([
-            new TwingLoaderArray(new Map([[name, template]])),
             current,
+            new TwingLoaderArray(new Map([[name, template]])),
         ]);
 
         this.setLoader(loader);
 
-        try {
-            result = this.loadTemplate(name);
-        }
-        finally {
-            this.setLoader(current);
-        }
+        result = this.loadTemplate(name);
 
         return result;
     }
@@ -590,8 +581,7 @@ return module.exports;
 
         if (!Array.isArray(names)) {
             namesArray = [names];
-        }
-        else {
+        } else {
             namesArray = names;
         }
 
@@ -608,12 +598,10 @@ return module.exports;
 
             try {
                 return self.loadTemplate(name, null, source);
-            }
-            catch (e) {
+            } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     error = e;
-                }
-                else {
+                } else {
                     throw e;
                 }
             }
@@ -685,12 +673,10 @@ return module.exports;
     compileSource(source: TwingSource): string {
         try {
             return this.compile(this.parse(this.tokenize(source)));
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingError) {
                 throw e;
-            }
-            else {
+            } else {
                 throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.message}").`, -1, source);
             }
         }
@@ -979,8 +965,7 @@ return module.exports;
 
         if (this.resolvedGlobals) {
             this.resolvedGlobals.set(name, value);
-        }
-        else {
+        } else {
             this.globals.set(name, value);
         }
     }

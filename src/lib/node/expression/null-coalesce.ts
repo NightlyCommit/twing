@@ -23,6 +23,7 @@ export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditio
         super(test, left, right, lineno, columno);
 
         this.type = TwingNodeType.EXPRESSION_NULL_COALESCE;
+        this.addType(TwingNodeType.EXPRESSION_NULL_COALESCE);
     }
 
     compile(compiler: TwingCompiler) {

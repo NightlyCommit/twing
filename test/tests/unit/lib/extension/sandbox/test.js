@@ -191,7 +191,7 @@ tap.test('TwingExtensionSandbox', function (test) {
         catch (e) {
             test.true(e instanceof TwingSandboxSecurityNotAllowedMethodError, 'Exception should be an instance of TwingSandboxSecurityNotAllowedMethodError');
             test.same(e.getClassName(), 'FooObject', 'Exception should be raised on the "FooObject" class');
-            test.same(e.getMethodName(), 'tostring', 'Exception should be raised on the "toString" method');
+            test.same(e.getMethodName(), 'toString', 'Exception should be raised on the "toString" method');
         }
 
         test.end();
@@ -208,7 +208,7 @@ tap.test('TwingExtensionSandbox', function (test) {
         catch (e) {
             test.true(e instanceof TwingSandboxSecurityNotAllowedMethodError, 'Exception should be an instance of TwingSandboxSecurityNotAllowedMethodError');
             test.same(e.getClassName(), 'FooObject', 'Exception should be raised on the "FooObject" class');
-            test.same(e.getMethodName(), 'tostring', 'Exception should be raised on the "toString" method');
+            test.same(e.getMethodName(), 'toString', 'Exception should be raised on the "toString" method');
         }
 
         test.end();

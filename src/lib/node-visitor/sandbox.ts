@@ -1,15 +1,15 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingEnvironment} from "../environment";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingNodeSandboxedPrint} from "../node/sandboxed-print";
-import {TwingNodeExpression} from "../node/expression";
 import {TwingNodeCheckSecurity} from "../node/check-security";
+import {TwingNodeCheckToString} from "../node/check-to-string";
 
 export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private inAModule: boolean = false;
     private tags: Map<string, TwingNode>;
     private filters: Map<string, TwingNode>;
     private functions: Map<string, TwingNode>;
+    private needsToStringWrap: boolean;
 
     constructor() {
         super();
@@ -25,8 +25,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             this.functions = new Map();
 
             return node;
-        }
-        else if (this.inAModule) {
+        } else if (this.inAModule) {
             // look for tags
             if (node.getNodeTag() && !(this.tags.has(node.getNodeTag()))) {
                 this.tags.set(node.getNodeTag(), node);
@@ -49,7 +48,27 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
 
             // wrap print to check toString() calls
             if (node.getType() === TwingNodeType.PRINT) {
-                return new TwingNodeSandboxedPrint(node.getNode('expr') as TwingNodeExpression, node.getTemplateLine(), node.getTemplateColumn(), node.getNodeTag());
+                this.needsToStringWrap = true;
+                this.wrapNode(node, 'expr');
+            }
+
+            if (node.getType() === TwingNodeType.SET && !node.getAttribute('capture')) {
+                this.needsToStringWrap = true;
+            }
+
+            // wrap outer nodes that can implicitly call toString()
+            if (this.needsToStringWrap) {
+                if (node.getType() === TwingNodeType.EXPRESSION_BINARY_CONCAT) {
+                    this.wrapNode(node, 'left');
+                    this.wrapNode(node, 'right');
+                }
+                if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+                    this.wrapNode(node, 'node');
+                    this.wrapArrayNode(node, 'arguments');
+                }
+                if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION) {
+                    this.wrapArrayNode(node, 'arguments');
+                }
             }
         }
 
@@ -66,10 +85,30 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             nodes.set(i++, new TwingNodeCheckSecurity(this.filters, this.tags, this.functions));
             nodes.set(i++, node.getNode('display_start'));
 
-            node.setNode('display_start', new TwingNode(nodes));
+            node.setNode('constructor_end', new TwingNode(nodes));
+        } else if (this.inAModule) {
+            if (node.getType() === TwingNodeType.PRINT || node.getType() === TwingNodeType.SET) {
+                this.needsToStringWrap = false;
+            }
         }
 
         return node;
+    }
+
+    private wrapNode(node: TwingNode, name: string) {
+        let expr = node.getNode(name);
+
+        if (expr.getType() === TwingNodeType.EXPRESSION_NAME || expr.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
+            node.setNode(name, new TwingNodeCheckToString(expr));
+        }
+    }
+
+    private wrapArrayNode(node: TwingNode, name: string) {
+        let args = node.getNode(name);
+
+        for (let [name] of args.getNodes()) {
+            this.wrapNode(args, name as string);
+        }
     }
 
     getPriority(): number {

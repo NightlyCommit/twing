@@ -20,7 +20,7 @@ tap.test('node/expression/assign-name', function (test) {
 
         let node = new TwingNodeExpressionAssignName('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), '\`foo\`');
+        test.same(compiler.compile(node).getSource(), 'context.proxy[\`foo\`]');
         test.end();
     });
 

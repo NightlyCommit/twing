@@ -43,11 +43,11 @@ tap.test('node/macro', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
-    let context = this.env.mergeGlobals(new Map([
+    let context = new Runtime.TwingContext(this.env.mergeGlobals(new Map([
         [\`foo\`, __foo__],
         [\`bar\`, __bar__],
         [\`varargs\`, __varargs__]
-    ]));
+    ])));
 
     let blocks = new Map();
     let result;

@@ -14,6 +14,7 @@ export class TwingNodeExpressionConditional extends TwingNodeExpression {
         super(nodes, new Map(), lineno, columnno);
 
         this.type = TwingNodeType.EXPRESSION_CONDITIONAL;
+        this.addType(TwingNodeType.EXPRESSION_CONDITIONAL);
     }
 
     compile(compiler: TwingCompiler) {

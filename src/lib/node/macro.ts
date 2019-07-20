@@ -59,7 +59,7 @@ export class TwingNodeMacro extends TwingNode {
         ;
 
         compiler
-            .write("let context = this.env.mergeGlobals(new Map([\n")
+            .write("let context = new Runtime.TwingContext(this.env.mergeGlobals(new Map([\n")
             .indent()
         ;
 
@@ -92,7 +92,7 @@ export class TwingNodeMacro extends TwingNode {
         compiler
             .raw("\__varargs__]\n")
             .outdent()
-            .write("]));\n\n")
+            .write("])));\n\n")
             .write("let blocks = new Map();\n")
             .write('let result;\n')
             .write('let error;\n\n')

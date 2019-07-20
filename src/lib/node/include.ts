@@ -24,28 +24,25 @@ export class TwingNodeInclude extends TwingNode {
 
         if (this.getAttribute('ignore_missing')) {
             compiler
-                .write("try {\n")
+                .write('(() => {\n')
                 .indent()
+                .write('let template = null;\n')
+                .write('try {\n')
+                .indent()
+                .write('template = ')
             ;
-        }
 
-        this.addGetTemplate(compiler);
+            this.addGetTemplate(compiler);
 
-        compiler.raw('.display(');
-
-        this.addTemplateArguments(compiler);
-
-        compiler.raw(");\n");
-
-        if (this.getAttribute('ignore_missing')) {
             compiler
+                .raw(';\n')
                 .outdent()
-                .write("}\n")
-                .write("catch (e) {\n")
+                .write('}\n')
+                .write('catch (e) {\n')
                 .indent()
                 .write('if (e instanceof Runtime.TwingErrorLoader) {\n')
                 .indent()
-                .write("// ignore missing template\n")
+                .write('// ignore missing template\n')
                 .outdent()
                 .write('}\n')
                 .write('else {\n')
@@ -54,8 +51,26 @@ export class TwingNodeInclude extends TwingNode {
                 .outdent()
                 .write('}\n')
                 .outdent()
-                .write("}\n\n")
+                .write('}\n')
+                .write('if (template) {\n')
+                .indent()
+                .write('template.display(')
             ;
+
+            this.addTemplateArguments(compiler);
+
+            compiler
+                .raw(');\n')
+                .outdent()
+                .write('}\n')
+                .outdent()
+                .write('})();\n')
+        }
+        else {
+            this.addGetTemplate(compiler);
+            compiler.raw('.display(');
+            this.addTemplateArguments(compiler);
+            compiler.raw(');\n');
         }
     }
 

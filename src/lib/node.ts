@@ -13,6 +13,7 @@ export enum TwingNodeType {
     EXPRESSION_ARRAY = 'expression_array',
     EXPRESSION_ASSIGN_NAME = 'expression_assign_name',
     EXPRESSION_BINARY = 'expression_binary',
+    EXPRESSION_BINARY_CONCAT = 'expression_binary_concat',
     EXPRESSION_BINARY_RANGE = 'expression_binary_range',
     EXPRESSION_BLOCK_REFERENCE = 'expression_block_reference',
     EXPRESSION_CONDITIONAL = 'expression_conditional',
@@ -24,6 +25,7 @@ export enum TwingNodeType {
     EXPRESSION_NAME = 'expression_name',
     EXPRESSION_NULL_COALESCE = 'expression_null_coalesce',
     EXPRESSION_PARENT = 'expression_parent',
+    EXPRESSION_TEMP_NAME = 'expression_temp_name',
     EXPRESSION_TEST = 'expression_test',
     EXPRESSION_UNARY = 'expression_unary',
     EXPRESSION_UNARY_NEG = 'expression_unary_neg',
@@ -33,6 +35,7 @@ export enum TwingNodeType {
     IF = 'if',
     IMPORT = 'import',
     INCLUDE = 'include',
+    INLINE_PRINT = 'inline_print',
     MACRO = 'macro',
     MODULE = 'module',
     PRINT = 'print',
@@ -53,6 +56,8 @@ export class TwingNode {
     protected tag: string;
     protected type: TwingNodeType;
     private name: string = null;
+    // todo: in Twing 3, replace this.type with this
+    private types: TwingNodeType[];
 
     /**
      * Constructor.
@@ -73,6 +78,7 @@ export class TwingNode {
         this.columnno = columnno;
         this.tag = tag;
         this.type = null;
+        this.types = [];
     }
 
     /**
@@ -109,8 +115,7 @@ export class TwingNode {
 
             if (value instanceof TwingNode) {
                 attributeRepr = '' + value.toString();
-            }
-            else {
+            } else {
                 attributeRepr = '' + var_export(value, true);
             }
 
@@ -135,16 +140,23 @@ export class TwingNode {
             }
 
             repr.push(')');
-        }
-        else {
+        } else {
             repr[0] += ')';
         }
 
         return repr.join('\n');
     }
 
-    getType() {
+    getType(): TwingNodeType {
         return this.type;
+    }
+
+    addType(type: TwingNodeType): void {
+        this.types.push(type);
+    }
+
+    is(type: TwingNodeType): boolean {
+        return this.types.includes(type);
     }
 
     compile(compiler: TwingCompiler): any {

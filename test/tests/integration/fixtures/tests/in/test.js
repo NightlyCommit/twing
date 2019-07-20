@@ -1,4 +1,5 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
+const {TwingMarkup} = require("../../../../../../build/lib/markup");
 
 class SplFileInfo {
     constructor(dirname) {
@@ -34,7 +35,8 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
             foo: {bar: 'bar'},
             dir_object: new SplFileInfo(__dirname),
             object: {},
-            resource: opendir(__dirname)
+            resource: opendir(__dirname),
+            safe: new TwingMarkup('foo', 'UTF-8')
         }
     }
 };

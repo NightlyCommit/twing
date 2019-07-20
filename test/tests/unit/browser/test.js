@@ -21,7 +21,6 @@ tap.test('browser library', function (test) {
         'iteratorToArray',
         'iteratorToHash',
         'iteratorToMap',
-        'join',
         'jsonEncode',
         'ksort',
         'max',

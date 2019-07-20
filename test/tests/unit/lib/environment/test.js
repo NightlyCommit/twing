@@ -657,33 +657,6 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('failLoadTemplateOnCircularReference', function (test) {
-        let twing = new TwingEnvironment(new TwingLoaderArray({'base.html.twig': '{% extends "base.html.twig" %}'}), {
-            cache: false
-        });
-
-        test.throws(function () {
-            twing.loadTemplate('base.html.twig');
-        }, new TwingErrorRuntime('Circular reference detected for Twig template "base.html.twig", path: base.html.twig -> base.html.twig.', 1, new TwingSource('', 'base.html.twig', '')));
-
-        test.end();
-    });
-
-    test.test('failLoadTemplateOnComplexCircularReference', function (test) {
-        let twing = new TwingEnvironment(new TwingLoaderArray({
-            'base1.html.twig': '{% extends "base2.html.twig" %}',
-            'base2.html.twig': '{% extends "base1.html.twig" %}'
-        }), {
-            cache: false
-        });
-
-        test.throws(function () {
-            twing.loadTemplate('base1.html.twig');
-        }, new TwingErrorRuntime('Circular reference detected for Twig template "base1.html.twig", path: base1.html.twig -> base2.html.twig -> base1.html.twig.', 1, new TwingSource('', 'base1.html.twig', '')));
-
-        test.end();
-    });
-
     test.test('baseTemplateClass', function (test) {
         let env = new TwingEnvironment(new TwingTestMockLoader(), {
             base_template_class: 'Foo'
@@ -1503,6 +1476,20 @@ BAROOF</FOO></foo>oof`);
 
             test.end();
         });
+
+        test.end();
+    });
+
+    test.test('createTemplate', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let template = env.createTemplate('foo');
+
+        test.same(template.getTemplateName(), '__string_template__2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae');
+
+        template = env.createTemplate('foo', 'foo.twig');
+
+        test.same(template.getTemplateName(), 'foo.twig (string template 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae)');
 
         test.end();
     });
