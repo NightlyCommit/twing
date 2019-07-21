@@ -1,7 +1,12 @@
+2.3.0
+
+ * #333 Add support for Twig 2.10
+
 2.2.7
 
  * #358 package-lock.json prevents grabbing latest dependencies security patches
  * #349 Variable wrongly interpreted as operator when used as assignment of a for tag
+ * #327 Comments are not part of the AST
 
 2.2.6
 
