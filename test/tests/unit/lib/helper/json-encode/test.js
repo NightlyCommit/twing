@@ -5,6 +5,8 @@ const tap = require('tape');
 tap.test('json-encode', function (test) {
     test.test('supports Map instances', function (test) {
         test.same(jsonEncode(new Map([['a', 1], ['b', '2']])), '{"a":1,"b":"2"}');
+        test.same(jsonEncode(new Map([[0, 1], [1, '2']])), '[1,"2"]');
+        test.same(jsonEncode(new Map([['0', 1], [1, '2']])), '[1,"2"]');
 
         test.end();
     });
@@ -17,6 +19,8 @@ tap.test('json-encode', function (test) {
 
     test.test('supports Object instances', function (test) {
         test.same(jsonEncode({a: 1, b: "2"}), '{"a":1,"b":"2"}');
+        test.same(jsonEncode({0: 1, 1: "2"}), '{"0":1,"1":"2"}');
+        test.same(jsonEncode({"0": 1, 1: "2"}), '{"0":1,"1":"2"}');
 
         test.end();
     });
