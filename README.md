@@ -56,9 +56,28 @@ Use [jsdelivr](https://www.jsdelivr.com/) CDN to include Twing in your HTML docu
 
 Once loaded by the browser, Twing is available under the global `Twing` variable.
 
-## Known issues
+## Twig specifications implementation
 
-You can find the list of known issues of Twing regarding Twig specifications implementation [here](http://ericmorand.github.io/twing/known_issues).
+Twing aims at implementing Twig specifications perfectly, without compromise. This is not an easy task due to the nature of Twig specifications: they don't exist officially and can only be deduced from the public documentation, the source code documentation and the test suite of the PHP reference implementation. It sometimes happens that something that was not part of either the documentations or the test suite suddenly becomes part of the specifications like the [`filter` tag](https://github.com/twigphp/Twig/issues/3091) or the [macros rework](https://github.com/twigphp/Twig/issues/3090) issues, putting Twing and all other non-reference implementations in the uncomfortable position of having to deal with a potential breaking change. Since Twig's team doesn't plan on releasing some official specifications for the language, we can't expect the problem to be solved anytime soon.
+
+Twing's strategy here is to stick strictly to Semantic Versioning rules and *never* introduce a breaking change into a minor version - its extensive test suite with 100% code coverage guarantees that. Twig teams's mistakes will be managed by either issuing a [known issue](#known-issues), if the mistake is trivial, or bumping to a new major version, if it is not.
+
+### Compatibility chart
+
+Here is the compatibility chart between minor versions of Twing and Twig specifications levels, along with a summary of notable features provided by each Twig specifications level. Note that Twig minor versions don't always provide new language-related features (because of Twig's team perpetuating the confusion between Twig and their reference implementation, TwigPHP).
+
+|Twing version|Twig specifications level|Notable features|
+|:---:|:---:|---|
+|2.3|2.10|`spaceless`, `column`, `filter`, `map` and `reduce` filters, `apply` tag, `line whitespace trimming` whitespace control modifier|
+|2.2|2.6|`deprecated` tag|
+|1.3|2.5|`spaceless` and `block`-related deprecations|
+|1.0|2.4|   |
+
+It is highly recommended to always use the latest version of Twing available as bug fixes will always target the latest version.
+
+### Known issues
+
+You can find the list of known issues of Twing regarding Twig specifications implementation [here](http://ericmorand.github.io/twing/known_issues). Note that known issues are guaranteed to be addressed in the next major version bump of Twing.
 
 ## More information
 
