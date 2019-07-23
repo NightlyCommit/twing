@@ -1,3 +1,8 @@
+2.3.2
+
+ * #371 Add a compatibility chart
+ * #369 Add a "known issues" section in the documentation
+
 2.3.1
 
  * #360 slice filter returns a map
