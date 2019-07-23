@@ -56,6 +56,10 @@ Use [jsdelivr](https://www.jsdelivr.com/) CDN to include Twing in your HTML docu
 
 Once loaded by the browser, Twing is available under the global `Twing` variable.
 
+## Known issues
+
+You can find the list of known issues of Twing regarding Twig specifications implementation [here](http://ericmorand.github.io/twing/known_issues).
+
 ## More information
 
 Read the [documentation](http://ericmorand.github.io/twing) for more information.
