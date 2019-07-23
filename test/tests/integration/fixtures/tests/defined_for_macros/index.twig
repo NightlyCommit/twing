@@ -1,0 +1,27 @@
+
+{% import _self as macros %}
+{% from _self import hello, bar %}
+
+{% if macros.hello is defined -%}
+    OK
+{% endif %}
+
+{% if macros.foo is not defined -%}
+    OK
+{% endif %}
+
+{% if hello is defined -%}
+    OK
+{% endif %}
+
+{% if bar is not defined -%}
+    OK
+{% endif %}
+
+{% if foo is not defined -%}
+    OK
+{% endif %}
+
+{% macro hello(name) %}
+    Hello {{ name }}
+{% endmacro %}

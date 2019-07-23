@@ -13,6 +13,7 @@ export class TwingNodeBlock extends TwingNode {
         compiler
             .write(`block_${this.getAttribute('name')}(context, blocks = new Map()) {\n`)
             .indent()
+            .write('let macros = this.macros.clone();\n')
         ;
 
         compiler

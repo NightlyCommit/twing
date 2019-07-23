@@ -10,6 +10,10 @@ export function isIn(value: any, compare: any): boolean {
         value = value.toString();
     }
 
+    if (compare instanceof TwingMarkup) {
+        compare = compare.toString();
+    }
+
     if (Array.isArray(compare)) {
         for (let item of compare) {
             if (compareHelper(item, value)) {

@@ -125,6 +125,7 @@ import {date as dateFunction} from "./core/functions/date";
 import {TwingSourceMapNodeFactorySpaceless} from "../source-map/node-factory/spaceless";
 import {TwingSourceMapNodeFactory} from "../source-map/node-factory";
 import {TwingNodeExpressionTestConstant} from "../node/expression/test/constant";
+import {TwingNodeVisitorMacroAutoImport} from "../node-visitor/macro-auto-import";
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -299,6 +300,7 @@ export class TwingExtensionCore extends TwingExtension {
     getNodeVisitors(): TwingBaseNodeVisitor[] {
         return [
             new TwingNodeVisitorEscaper(),
+            new TwingNodeVisitorMacroAutoImport(),
             new TwingNodeVisitorOptimizer(),
             new TwingNodeVisitorSandbox()
         ];

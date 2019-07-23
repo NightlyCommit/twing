@@ -18,7 +18,7 @@ const tap = require('tape');
 
 tap.test('node/module', function (test) {
     test.test('constructor', function (test) {
-        let body = new TwingNodeText('foo', 1, 1);
+        let body = new TwingNodeText('foo', 1, 1, null);
         let parent = new TwingNodeExpressionConstant('layout.twig', 1, 1);
         let blocks = new TwingNode();
         let macros = new TwingNode();
@@ -57,6 +57,8 @@ tap.test('node/module', function (test) {
                 super(env);
 
                 this.source = this.getSourceContext();
+                this.macros = new this.Context();
+                let macros = new this.Context();
 
                 this.parent = false;
 
@@ -65,6 +67,7 @@ tap.test('node/module', function (test) {
             }
 
             doDisplay(context, blocks = new Map()) {
+                let macros = this.macros.clone();
                 this.echo(\`foo\`);
             }
 
@@ -106,6 +109,8 @@ tap.test('node/module', function (test) {
                 super(env);
 
                 this.source = this.getSourceContext();
+                this.macros = new this.Context();
+                let macros = new this.Context();
 
                 this.blocks = new Map([
                 ]);
@@ -116,7 +121,8 @@ tap.test('node/module', function (test) {
             }
 
             doDisplay(context, blocks = new Map()) {
-                context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
+                let macros = this.macros.clone();
+                macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
                 this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
                 this.parent.display(context, this.merge(this.blocks, blocks));
             }
@@ -180,6 +186,8 @@ tap.test('node/module', function (test) {
                 super(env);
 
                 this.source = this.getSourceContext();
+                this.macros = new this.Context();
+                let macros = new this.Context();
 
                 this.blocks = new Map([
                 ]);
@@ -190,6 +198,7 @@ tap.test('node/module', function (test) {
             }
 
             doDisplay(context, blocks = new Map()) {
+                let macros = this.macros.clone();
                 context.proxy[\`foo\`] = \`foo\`;
                 this.getParent(context).display(context, this.merge(this.blocks, blocks));
             }

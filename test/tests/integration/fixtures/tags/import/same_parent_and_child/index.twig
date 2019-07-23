@@ -1,0 +1,12 @@
+
+{% extends "parent" %}
+
+{% macro anotherThing() -%}
+    Do it too
+{% endmacro %}
+
+{% import _self as macros %}
+{% block content %}
+    {{ parent() }}
+    {{ macros.anotherThing() }}
+{% endblock %}

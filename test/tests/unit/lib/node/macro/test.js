@@ -42,6 +42,7 @@ tap.test('node/macro', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
+    let macros = this.macros.clone();
     let context = new this.Context(this.env.mergeGlobals(new Map([
         [\`foo\`, __foo__],
         [\`bar\`, __bar__],

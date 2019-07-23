@@ -1,0 +1,12 @@
+
+{% from _self import input %}
+
+{% embed 'embed' %}
+    {% block foo %}
+        {{ input("username") }}
+    {% endblock %}
+{% endembed %}
+
+{% macro input(name) -%}
+    <input name="{{ name }}">
+{% endmacro %}

@@ -19,8 +19,8 @@ import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserFor extends TwingTokenParser {
     parse(token: Token) {
-        let lineno = token.line;
-        let columnno = token.column;
+        let line = token.line;
+        let column = token.column;
         let stream = this.parser.getStream();
         let targets = this.parser.parseAssignmentExpression();
 
@@ -28,12 +28,12 @@ export class TwingTokenParserFor extends TwingTokenParser {
 
         let seq = this.parser.parseExpression();
 
-        let ifexpr = null;
+        let ifExpr = null;
 
         if (stream.nextIf(TokenType.NAME, 'if')) {
-            console.warn('Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).');
+            console.warn(`Using an "if" condition on "for" tag in "${stream.getSourceContext().getName()}" at line ${line} is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).`);
 
-            ifexpr = this.parser.parseExpression();
+            ifExpr = this.parser.parseExpression();
         }
 
         stream.expect(TokenType.TAG_END);
@@ -60,18 +60,18 @@ export class TwingTokenParserFor extends TwingTokenParser {
             valueTarget = targets.getNode(1);
             valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine(), valueTarget.getTemplateColumn());
         } else {
-            keyTarget = new TwingNodeExpressionAssignName('_key', lineno, columnno);
+            keyTarget = new TwingNodeExpressionAssignName('_key', line, column);
 
             valueTarget = targets.getNode(0);
             valueTarget = new TwingNodeExpressionAssignName(valueTarget.getAttribute('name'), valueTarget.getTemplateLine(), valueTarget.getTemplateColumn());
         }
 
-        if (ifexpr) {
-            this.checkLoopUsageCondition(stream, ifexpr);
+        if (ifExpr) {
+            this.checkLoopUsageCondition(stream, ifExpr);
             this.checkLoopUsageBody(stream, body);
         }
 
-        return new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, elseToken, lineno, columnno, this.getTag());
+        return new TwingNodeFor(keyTarget, valueTarget, seq, ifExpr, body, elseToken, line, column, this.getTag());
     }
 
     decideForFork(token: Token) {

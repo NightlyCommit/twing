@@ -85,7 +85,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             nodes.set(i++, new TwingNodeCheckSecurity(this.filters, this.tags, this.functions));
             nodes.set(i++, node.getNode('display_start'));
 
-            node.setNode('constructor_end', new TwingNode(nodes));
+            node.getNode('constructor_end').setNode('_security_check', new TwingNode(nodes));
         } else if (this.inAModule) {
             if (node.getType() === TwingNodeType.PRINT || node.getType() === TwingNodeType.SET) {
                 this.needsToStringWrap = false;

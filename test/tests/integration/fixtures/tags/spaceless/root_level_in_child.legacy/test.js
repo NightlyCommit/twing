@@ -24,7 +24,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
     getExpectedDeprecationMessages() {
         return [
-            'The "spaceless" tag is deprecated since Twig 2.7, use the "spaceless" filter instead.',
+            'The "spaceless" tag in "index.twig" at line 3 is deprecated since Twig 2.7, use the "spaceless" filter instead.',
             'Using the spaceless tag at the root level of a child template in "index.twig" at line 3 is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.',
             'Nesting a block definition under a non-capturing node in "index.twig" at line 4 is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.'
         ];

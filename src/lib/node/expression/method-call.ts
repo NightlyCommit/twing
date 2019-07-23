@@ -15,6 +15,7 @@ export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
 
         attributes.set('method', method);
         attributes.set('safe', false);
+        attributes.set('is_defined_test', false);
 
         super(nodes, attributes, lineno, columnno);
 
@@ -22,25 +23,40 @@ export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler
-            .subcompile(this.getNode('node'))
-            .raw('.')
-            .raw(this.getAttribute('method'))
-            .raw('(')
-        ;
-        let first = true;
-
-        let argumentsNode = this.getNode('arguments') as TwingNodeExpressionArray;
-
-        for (let pair of argumentsNode.getKeyValuePairs()) {
-            if (!first) {
-                compiler.raw(', ');
-            }
-            first = false;
-
-            compiler.subcompile(pair['value']);
+        if (this.getAttribute('is_defined_test')) {
+            compiler
+                .raw('(typeof (macros.proxy[')
+                .repr(this.getNode('node').getAttribute('name'))
+                .raw('][')
+                .repr(this.getAttribute('method'))
+                .raw(']) === \'function\')')
+            ;
         }
+        else {
+            compiler
+                .raw('this.callMacro(macros.proxy[')
+                .repr(this.getNode('node').getAttribute('name'))
+                .raw('], ')
+                .repr(this.getAttribute('method'))
+                .raw(', [')
+            ;
+            let first = true;
 
-        compiler.raw(')');
+            let argumentsNode = this.getNode('arguments') as TwingNodeExpressionArray;
+
+            for (let pair of argumentsNode.getKeyValuePairs()) {
+                if (!first) {
+                    compiler.raw(', ');
+                }
+                first = false;
+
+                compiler.subcompile(pair['value']);
+            }
+
+            compiler
+                .raw('], ')
+                .repr(this.getTemplateLine())
+                .raw(', context, this.getSourceContext())');
+        }
     }
 }
