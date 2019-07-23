@@ -1,7 +1,6 @@
 Installation
 ============
 
-
 Install [npm][npm-url] and run the following command to get the latest version:
 
 ```bash

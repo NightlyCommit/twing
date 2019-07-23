@@ -23,3 +23,6 @@ docs:
   coding_standards:
     title: Coding standards
     url: coding_standards.html
+  known_issues:
+    title: Known issues
+    url: known_issues.html
