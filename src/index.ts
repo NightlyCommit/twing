@@ -49,6 +49,7 @@ export {TwingLexer} from "./lib/lexer";
 export {TwingLoaderArray} from "./lib/loader/array";
 export {TwingLoaderChain} from "./lib/loader/chain";
 export {TwingLoaderFilesystem} from "./lib/loader/filesystem";
+export {TwingLoaderNull} from "./lib/loader/null";
 export {TwingLoaderRelativeFilesystem} from "./lib/loader/relative-filesystem";
 export {TwingLoaderInterface} from "./lib/loader-interface";
 export {TwingMarkup} from "./lib/markup";

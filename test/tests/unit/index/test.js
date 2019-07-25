@@ -1,8 +1,10 @@
-const Twing = require('../../../../build/index');
+const nodeIndex = require('../../../../build/index');
+const browserIndex = require('../../../../build/browser');
 const tape = require('tape');
 
 tape.test('library', function (test) {
-    let expected = ['abs',
+    let expected = [
+        'abs',
         'asort',
         'chunk',
         'clone',
@@ -60,6 +62,7 @@ tape.test('library', function (test) {
         'TwingLoaderArray',
         'TwingLoaderChain',
         'TwingLoaderFilesystem',
+        'TwingLoaderNull',
         'TwingLoaderRelativeFilesystem',
         'TwingMarkup',
         'TwingNode',
@@ -197,13 +200,21 @@ tape.test('library', function (test) {
     ];
 
     for (let key of expected) {
-        test.true(Twing[key], `${key} is exported`);
+        test.true(nodeIndex[key], `${key} is exported by node index`);
+        test.true(browserIndex[key], `${key} is exported by browser index`);
     }
 
-    for (let key in Twing) {
-        test.true(expected.includes(key), `${key} is legit`);
+    for (let key in nodeIndex) {
+        test.true(expected.includes(key), `${key} is legit in node index`);
     }
 
+    for (let key in browserIndex) {
+        test.true(expected.includes(key), `${key} is legit in browser index`);
+    }
+
+    test.same(browserIndex.TwingLoaderFilesystem.name, 'TwingLoaderNull', 'browser export of TwingLoaderFilesystem is a noop');
+    test.same(browserIndex.TwingLoaderRelativeFilesystem.name, 'TwingLoaderNull', 'browser export of TwingLoaderRelativefilesystem is a noop');
+    test.same(browserIndex.TwingCacheFilesystem.name, 'TwingCacheNull', 'browser export of TwingCacheFilesystem is a noop');
 
     test.end();
 });
