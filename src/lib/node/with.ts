@@ -40,13 +40,13 @@ export class TwingNodeWith extends TwingNode {
                 compiler.write("context = new Map([['_parent', context]]);\n");
             }
             else {
-                compiler.write("context.set('_parent', Runtime.clone(context));\n");
+                compiler.write("context.set('_parent', context.clone());\n");
             }
 
-            compiler.write(`context = this.env.mergeGlobals(Runtime.merge(context, Runtime.iteratorToMap(${varsName})));\n`);
+            compiler.write(`context = new Runtime.TwingContext(this.env.mergeGlobals(Runtime.merge(context, Runtime.iteratorToMap(${varsName}))));\n`);
         }
         else {
-            compiler.write("context.set('_parent', Runtime.clone(context));\n");
+            compiler.write("context.set('_parent', context.clone());\n");
         }
 
         compiler

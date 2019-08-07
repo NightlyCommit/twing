@@ -36,8 +36,8 @@ let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
     throw new Runtime.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.', 1, this.source);
 }
-context.set('_parent', Runtime.clone(context));
-context = this.env.mergeGlobals(Runtime.merge(context, Runtime.iteratorToMap(__internal_fooVar)));
+context.set('_parent', context.clone());
+context = new Runtime.TwingContext(this.env.mergeGlobals(Runtime.merge(context, Runtime.iteratorToMap(__internal_fooVar))));
 (context.has(\`foo\`) ? context.get(\`foo\`) : null)context = context.get('_parent');
 `);
 

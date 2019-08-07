@@ -1,0 +1,7 @@
+{% for value in values -%}
+    {% with value -%}
+        {% with foo -%}
+            {{- i -}}
+        {%- endwith %}
+    {%- endwith %}
+{%- endfor %}
