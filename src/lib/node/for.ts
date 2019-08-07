@@ -55,7 +55,7 @@ export class TwingNodeFor extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .addDebugInfo(this)
-            .write("context.set('_parent', Runtime.clone(context));\n\n")
+            .write("context.set('_parent', context.clone());\n\n")
             .write('(() => {\n')
             .indent()
             .write('let c = Runtime.twingEnsureTraversable(')
@@ -63,7 +63,7 @@ export class TwingNodeFor extends TwingNode {
             .raw(");\n\n")
             .write('if (c === context) {\n')
             .indent()
-            .write("context.set('_seq', Runtime.clone(context));\n")
+            .write("context.set('_seq', context.clone());\n")
             .outdent()
             .write("}\n")
             .write("else {\n")

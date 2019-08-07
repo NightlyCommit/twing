@@ -69,13 +69,13 @@ tap.test('node/for', function (test) {
             node.setAttribute('with_loop', false);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', Runtime.clone(context));
+context.set('_parent', context.clone());
 
 (() => {
     let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
-        context.set('_seq', Runtime.clone(context));
+        context.set('_seq', context.clone());
     }
     else {
         context.set('_seq', c);
@@ -125,13 +125,13 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
             node.setAttribute('with_loop', true);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', Runtime.clone(context));
+context.set('_parent', context.clone());
 
 (() => {
     let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
-        context.set('_seq', Runtime.clone(context));
+        context.set('_seq', context.clone());
     }
     else {
         context.set('_seq', c);
@@ -206,13 +206,13 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
             node.setAttribute('with_loop', true);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', Runtime.clone(context));
+context.set('_parent', context.clone());
 
 (() => {
     let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
-        context.set('_seq', Runtime.clone(context));
+        context.set('_seq', context.clone());
     }
     else {
         context.set('_seq', c);
@@ -276,13 +276,13 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
             node.setAttribute('with_loop', true);
 
             test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', Runtime.clone(context));
+context.set('_parent', context.clone());
 
 (() => {
     let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
-        context.set('_seq', Runtime.clone(context));
+        context.set('_seq', context.clone());
     }
     else {
         context.set('_seq', c);

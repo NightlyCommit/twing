@@ -45,4 +45,14 @@ export class TwingContext<K, V> {
     delete(key: K): boolean {
         return this._container.delete(key);
     }
+
+    clone(): TwingContext<K, V> {
+        let clonedContainer: Map<K, V> = new Map();
+
+        for (let [key, value] of this._container) {
+            clonedContainer.set(key, value);
+        }
+
+        return new TwingContext<K, V>(clonedContainer);
+    }
 }
