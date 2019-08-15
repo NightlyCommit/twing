@@ -1,3 +1,8 @@
+2.3.4
+
+ * #378 Add a "Related projects" section to the README
+ * #376 Error thrown when for tag is used inside a with tag
+
 2.3.3
 
  * #373 Browser flavor lacks some exports
