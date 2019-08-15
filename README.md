@@ -83,6 +83,11 @@ You can find the list of known issues of Twing regarding Twig specifications imp
 
 Read the [documentation](http://ericmorand.github.io/twing) for more information.
 
+## Related projects
+
+* [gulp-twing](https://www.npmjs.com/package/gulp-twing): Compile Twig templates with gulp. Build upon Twing.
+* [twing-loader](https://www.npmjs.com/package/twing-loader): Webpack loader that compiles Twig templates using Twing.
+
 ## Contributing
 
 * Fork this repository
