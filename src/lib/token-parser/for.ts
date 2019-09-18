@@ -17,6 +17,8 @@ import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenStream} from "../token-stream";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeFor} from "../node/for";
+import {TwingNodeExpressionName} from "../node/expression/name";
+import {TwingNodeExpressionConstant} from '../node/expression/constant';
 
 export class TwingTokenParserFor extends TwingTokenParser {
     parse(token: TwingToken) {
@@ -87,7 +89,7 @@ export class TwingTokenParserFor extends TwingTokenParser {
     checkLoopUsageCondition(stream: TwingTokenStream, node: TwingNode) {
         let self = this;
 
-        if ((node.constructor.name === 'TwingNodeExpressionGetAttr') && (node.getNode('node').constructor.name === 'TwingNodeExpressionName') && (node.getNode('node').getAttribute('name') === 'loop')) {
+        if ((node instanceof TwingNodeExpressionGetAttr) && (node.getNode('node') instanceof TwingNodeExpressionName) && (node.getNode('node').getAttribute('name') === 'loop')) {
             throw new TwingErrorSyntax('The "loop" variable cannot be used in a looping condition.', node.getTemplateLine(), stream.getSourceContext());
         }
 
@@ -104,10 +106,10 @@ export class TwingTokenParserFor extends TwingTokenParser {
 
     // it does not catch all problems (for instance when a for is included into another or when the variable is used in an include)
     private checkLoopUsageBody(stream: TwingTokenStream, node: TwingNode) {
-        if ((node.constructor.name === 'TwingNodeExpressionGetAttr') && (node.getNode('node').constructor.name === 'TwingNodeExpressionName') && (node.getNode('node').getAttribute('name') === 'loop')) {
+        if ((node instanceof TwingNodeExpressionGetAttr) && (node.getNode('node') instanceof TwingNodeExpressionName) && (node.getNode('node').getAttribute('name') === 'loop')) {
             let attribute = node.getNode('attribute');
 
-            if ((attribute.constructor.name === 'TwingNodeExpressionConstant') && (['length', 'revindex0', 'revindex', 'last'].indexOf(attribute.getAttribute('value')) > -1)) {
+            if ((attribute instanceof TwingNodeExpressionConstant) && (['length', 'revindex0', 'revindex', 'last'].indexOf(attribute.getAttribute('value')) > -1)) {
                 throw new TwingErrorSyntax(`The "loop.${attribute.getAttribute('value')}" variable is not defined when looping with a condition.`, node.getTemplateLine(), stream.getSourceContext());
             }
         }
