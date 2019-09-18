@@ -63,6 +63,7 @@
     "levenshtein": "^1.0.5",
     "locutus": "^2.0.9",
     "luxon": "^1.4.1",
+    "@types/luxon": "^1.4.0",
     "merge": "^1.2.1",
     "object-hash": "^1.2.0",
     "pad": "^2.0.3",
