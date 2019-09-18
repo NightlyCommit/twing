@@ -169,9 +169,9 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.sourceMap = options.source_map;
         this.autoescape = options.autoescape;
 
-        this.addExtension(new TwingExtensionCore());
-        this.addExtension(new TwingExtensionEscaper(options.autoescape));
-        this.addExtension(new TwingExtensionOptimizer(options.optimizations));
+        this.addExtension(new TwingExtensionCore(), 'TwingExtensionCore');
+        this.addExtension(new TwingExtensionEscaper(options.autoescape), 'TwingExtensionEscaper');
+        this.addExtension(new TwingExtensionOptimizer(options.optimizations), 'TwingExtensionOptimizer');
 
         this.setTemplateRuntime({
             clone: clone,
