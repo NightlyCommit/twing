@@ -1,18 +1,16 @@
 import {isNullOrUndefined} from "util";
 
 export class TwingOutputHandler {
-    static readonly OUTPUT_HANDLER_STDFLAGS = 0x0070;
-
     private content: string;
-    private name: string;
     private level: number;
-    private flags: number;
 
+    /**
+     * @param level
+     * @param flags Unused, kept for backward compatibility
+     */
     constructor(level: number, flags: number) {
         this.content = '';
-        this.name = this.constructor.name;
         this.level = level;
-        this.flags = flags;
     }
 
     getContent() {
@@ -48,7 +46,7 @@ export class TwingOutputBuffering {
      * @returns {boolean}
      */
     static obStart() {
-        let handler = new TwingOutputHandler(TwingOutputBuffering.obGetLevel() + 1, TwingOutputHandler.OUTPUT_HANDLER_STDFLAGS);
+        let handler = new TwingOutputHandler(TwingOutputBuffering.obGetLevel() + 1, 0);
 
         TwingOutputBuffering.handlers.push(handler);
 

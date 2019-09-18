@@ -6,6 +6,7 @@ export class TwingSandboxSecurityNotAllowedTagError extends TwingSandboxSecurity
     constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
         this.tagName = functionName;
+        this.name = 'TwingSandboxSecurityNotAllowedTagError';
     }
 
     getTagName() {

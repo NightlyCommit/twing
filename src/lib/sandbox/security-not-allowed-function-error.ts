@@ -6,6 +6,7 @@ export class TwingSandboxSecurityNotAllowedFunctionError extends TwingSandboxSec
     constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
         this.functionName = functionName;
+        this.name = 'TwingSandboxSecurityNotAllowedFunctionError';
     }
 
     getFunctionName() {

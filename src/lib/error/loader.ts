@@ -19,5 +19,6 @@ export class TwingErrorLoader extends TwingError {
         super('', lineno, source);
 
         this.appendMessage(message);
+        this.name = 'TwingErrorLoader';
     }
 }
