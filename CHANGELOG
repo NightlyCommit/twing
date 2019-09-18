@@ -1,3 +1,8 @@
+2.3.5
+
+ * #381 Browser and Webpack (TypeScript)
+ * #380 Doesn't run without the types luxon
+
 2.3.4
 
  * #378 Add a "Related projects" section to the README
