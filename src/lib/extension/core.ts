@@ -1891,7 +1891,7 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
                 }
 
                 return object.get(item);
-            } else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
+            } else if (isPlainObject(object) && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
                 if (isDefinedTest) {
                     return true;
                 }
@@ -1983,75 +1983,61 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
         }
     }
 
-    if (typeof twingGetAttribute.cache == 'undefined') {
-        twingGetAttribute.cache = new Map();
-    }
-
-    let cache = twingGetAttribute.cache;
-    let class_ = object.constructor.name;
-    let classCache: Map<string, string> = cache.has(class_) ? cache.get(class_) : null;
-
     // object method
     // precedence: getXxx() > isXxx() > hasXxx()
-    if (!classCache) {
-        let methods: Array<string> = [];
+    let methods: Array<string> = [];
 
-        for (let property of examineObject(object)) {
-            let candidate = object[property];
+    for (let property of examineObject(object)) {
+        let candidate = object[property];
 
-            if (typeof candidate === 'function') {
-                methods.push(property);
-            }
+        if (typeof candidate === 'function') {
+            methods.push(property);
         }
+    }
 
-        methods.sort();
+    methods.sort();
 
-        let lcMethods: Array<string> = methods.map((method) => {
-            return method.toLowerCase();
-        });
+    let lcMethods: Array<string> = methods.map((method) => {
+        return method.toLowerCase();
+    });
 
-        classCache = new Map();
+    let candidates = new Map();
 
-        for (let i = 0; i < methods.length; i++) {
-            let method: string = methods[i];
-            let lcName: string = lcMethods[i];
+    for (let i = 0; i < methods.length; i++) {
+        let method: string = methods[i];
+        let lcName: string = lcMethods[i];
 
-            classCache.set(method, method);
-            classCache.set(lcName, method);
+        candidates.set(method, method);
+        candidates.set(lcName, method);
 
-            let name: string;
+        let name: string;
 
-            if (lcName[0] === 'g' && lcName.indexOf('get') === 0) {
-                name = method.substr(3);
-                lcName = lcName.substr(3);
-            } else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
-                name = method.substr(2);
-                lcName = lcName.substr(2);
-            } else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
-                name = method.substr(3);
-                lcName = lcName.substr(3);
+        if (lcName[0] === 'g' && lcName.indexOf('get') === 0) {
+            name = method.substr(3);
+            lcName = lcName.substr(3);
+        } else if (lcName[0] === 'i' && lcName.indexOf('is') === 0) {
+            name = method.substr(2);
+            lcName = lcName.substr(2);
+        } else if (lcName[0] === 'h' && lcName.indexOf('has') === 0) {
+            name = method.substr(3);
+            lcName = lcName.substr(3);
 
-                if (lcMethods.includes('is' + lcName)) {
-                    continue;
-                }
-            } else {
+            if (lcMethods.includes('is' + lcName)) {
                 continue;
             }
-
-            // skip get() and is() methods (in which case, name is empty)
-            if (name) {
-                if (!classCache.has(name)) {
-                    classCache.set(name, method);
-                }
-
-                if (!classCache.has(lcName)) {
-                    classCache.set(lcName, method);
-                }
-            }
+        } else {
+            continue;
         }
 
-        if (class_ !== 'Object') {
-            cache.set(class_, classCache);
+        // skip get() and is() methods (in which case, name is empty)
+        if (name) {
+            if (!candidates.has(name)) {
+                candidates.set(name, method);
+            }
+
+            if (!candidates.has(lcName)) {
+                candidates.set(lcName, method);
+            }
         }
     }
 
@@ -2059,10 +2045,10 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
     let method: string = null;
     let lcItem: string;
 
-    if (classCache.has(item)) {
-        method = classCache.get(item);
-    } else if (classCache.has(lcItem = itemAsString.toLowerCase())) {
-        method = classCache.get(lcItem);
+    if (candidates.has(item)) {
+        method = candidates.get(item);
+    } else if (candidates.has(lcItem = itemAsString.toLowerCase())) {
+        method = candidates.get(lcItem);
     } else {
         if (isDefinedTest) {
             return false;
@@ -2086,11 +2072,6 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
     }
 
     return Reflect.get(object, method).apply(object, _arguments);
-}
-
-/* istanbul ignore next */
-export namespace twingGetAttribute {
-    export let cache: Map<string, Map<string, string>>;
 }
 
 /**

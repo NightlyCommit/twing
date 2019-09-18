@@ -30,7 +30,7 @@ export class TwingExtensionProfiler extends TwingExtension {
     }
 
     getNodeVisitors() {
-        return [new TwingProfilerNodeVisitorProfiler(this.constructor.name)];
+        return [new TwingProfilerNodeVisitorProfiler('TwingExtensionProfiler')];
     }
 }
 

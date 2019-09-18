@@ -13,6 +13,7 @@ export class TwingSandboxSecurityNotAllowedPropertyError extends TwingSandboxSec
         super(message, lineno, filename);
         this.className = className;
         this.propertyName = propertyName;
+        this.name = 'TwingSandboxSecurityNotAllowedPropertyError';
     }
 
     getClassName() {

@@ -22,10 +22,12 @@ export class TwingError extends Error {
     private sourceCode: string = null;
     private previous: Error = null;
 
+    protected type: string;
+
     constructor(message: string, lineno: number = -1, source: TwingSource | Object | null = null, previous?: Error) {
         super(message);
 
-        this.name = this.constructor.name;
+        this.name = 'TwingError';
         this.previous = previous;
 
         if (previous) {

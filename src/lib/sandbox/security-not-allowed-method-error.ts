@@ -8,6 +8,7 @@ export class TwingSandboxSecurityNotAllowedMethodError extends TwingSandboxSecur
         super(message, lineno, filename);
         this.className = className;
         this.methodName = methodName;
+        this.name = 'TwingSandboxSecurityNotAllowedMethodError';
     }
 
     getClassName() {

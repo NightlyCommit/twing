@@ -11,6 +11,7 @@ export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecur
     constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
         this.filterName = functionName;
+        this.name = 'TwingSandboxSecurityNotAllowedFilterError';
     }
 
     getFilterName() {
