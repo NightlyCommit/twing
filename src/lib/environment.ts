@@ -18,8 +18,6 @@ import {TwingTemplate} from "./template";
 import {TwingError} from "./error";
 import {TwingTemplateWrapper} from "./template-wrapper";
 import {TwingCacheInterface} from "./cache-interface";
-import {TwingLoaderArray} from "./loader/array";
-import {TwingLoaderChain} from "./loader/chain";
 import {TwingExtensionOptimizer} from "./extension/optimizer";
 import {TwingCompiler} from "./compiler";
 import {TwingNode} from "./node";
@@ -38,7 +36,7 @@ const hex = require('crypto-js/enc-hex');
 
 type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
 
-export type TwingTemplateModule = (E: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
+export type TwingTemplatesModule = (E: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
 
 /**
  *  * Available options:
@@ -246,9 +244,9 @@ export abstract class TwingEnvironment extends EventEmitter {
         }
     }
 
-    abstract cacheFromString(cache: string): TwingCacheInterface;
+    protected abstract cacheFromString(cache: string): TwingCacheInterface;
 
-    getTemplateConstructor(): typeof TwingTemplate {
+    protected get templateConstructor(): typeof TwingTemplate {
         return TwingTemplate;
     }
 
@@ -268,7 +266,7 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @return string The template hash
      */
-    getTemplateHash(name: string, index: number = 0, from: TwingSource = null) {
+    protected getTemplateHash(name: string, index: number = 0, from: TwingSource = null) {
         let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
         return hex.stringify(sha256(key)) + (index === 0 ? '' : '_' + index);
@@ -332,6 +330,31 @@ export abstract class TwingEnvironment extends EventEmitter {
     }
 
     /**
+     * Register a template under an arbitrary name.
+     *
+     * @param {TwingTemplate} template The template to register
+     * @param {string} name The name of the template
+     */
+    protected registerTemplate(template: TwingTemplate, name: string): void {
+        this.loadedTemplates.set(name, template);
+    }
+
+    /**
+     * Register a templates module under an arbitrary name.
+     *
+     * @param {TwingTemplatesModule} module
+     * @param {string} name
+     */
+    registerTemplatesModule(module: TwingTemplatesModule, name: string) {
+        let templates = module(this.templateConstructor);
+
+        for (let [index, constructor] of templates) {
+            let template = new constructor(this);
+            this.registerTemplate(template, name + (index !== 0 ? '_' + index : ''));
+        }
+    }
+
+    /**
      * Loads a template internal representation.
      *
      * @param {string} name The template name
@@ -347,7 +370,13 @@ export abstract class TwingEnvironment extends EventEmitter {
     loadTemplate(name: string, index: number = 0, from: TwingSource = null): TwingTemplate {
         this.emit('template', name, from);
 
-        let mainTemplateHash = this.getTemplateHash(name, null, from);
+        let cacheKey: string = name + (index !== 0 ? '_' + index : '');
+
+        if (this.loadedTemplates.has(cacheKey)) {
+            return this.loadedTemplates.get(cacheKey);
+        }
+
+        let mainTemplateHash = this.getTemplateHash(name, 0, from);
         let templateHash = this.getTemplateHash(name, index, from);
 
         if (this.loadedTemplates.has(templateHash)) {
@@ -355,33 +384,28 @@ export abstract class TwingEnvironment extends EventEmitter {
         }
 
         let cache = this.cache as TwingCacheInterface;
-        let key = cache.generateKey(name, mainTemplateHash);
+
+        cacheKey = cache.generateKey(name, mainTemplateHash);
 
         let templates: Map<number, TwingTemplateConstructor> = new Map();
-        let templateConstructor = this.getTemplateConstructor();
+        let templateConstructor = this.templateConstructor;
 
-        if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key), from)) {
-            templates = cache.load(key)(templateConstructor);
+        if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(cacheKey), from)) {
+            templates = cache.load(cacheKey)(templateConstructor);
         }
 
         if (!templates.has(index)) {
             let source = this.getLoader().getSourceContext(name, from);
             let content = this.compileSource(source);
 
-            cache.write(key, content);
+            cache.write(cacheKey, content);
 
-            templates = cache.load(key)(templateConstructor);
+            templates = cache.load(cacheKey)(templateConstructor);
 
             if (!templates.has(index)) {
-                templates = new Function(`let module = {
-    exports: undefined
-};
+                let templatesModule = this.getTemplatesModule(content);
 
-${content}
-
-return module.exports;
-
-`)()(templateConstructor);
+                templates = templatesModule(templateConstructor);
 
                 if (!templates.has(index)) {
                     throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
@@ -398,7 +422,7 @@ return module.exports;
                 mainTemplate = template;
             }
 
-            this.loadedTemplates.set(this.getTemplateHash(name, index, from), template);
+            this.registerTemplate(template, this.getTemplateHash(name, index, from));
         }
 
         return mainTemplate;
@@ -417,9 +441,7 @@ return module.exports;
      * @throws TwingErrorLoader When the template cannot be found
      * @throws TwingErrorSyntax When an error occurred during compilation
      */
-    createTemplate(template: string, name: string = null) {
-        let result: TwingTemplate;
-
+    createTemplate(template: string, name: string = null): TwingTemplate {
         let hash: string = hex.stringify(sha256(template));
 
         if (name !== null) {
@@ -428,18 +450,11 @@ return module.exports;
             name = `__string_template__${hash}`;
         }
 
-        let current = this.getLoader();
+        let templatesModule = this.getTemplatesModule(this.compileSource(new TwingSource(template, name)));
 
-        let loader = new TwingLoaderChain([
-            current,
-            new TwingLoaderArray(new Map([[name, template]])),
-        ]);
+        this.registerTemplatesModule(templatesModule, name);
 
-        this.setLoader(loader);
-
-        result = this.loadTemplate(name);
-
-        return result;
+        return this.loadTemplate(name);
     }
 
     /**
@@ -548,11 +563,11 @@ return module.exports;
     }
 
     /**
-     * Compiles a node and returns its compiled templates.
+     * Compiles a module node.
      *
-     * @returns { Map<number, TwingTemplate> } The compiled templates
+     * @returns {string}
      */
-    compile(node: TwingNode): string {
+    compile(node: TwingNodeModule) {
         let compiler = new TwingCompiler(this);
 
         return compiler.compile(node).getSource();
@@ -573,6 +588,23 @@ return module.exports;
                 throw new TwingErrorSyntax(`An exception has been thrown during the compilation of a template ("${e.message}").`, -1, source);
             }
         }
+    }
+
+    /**
+     * @returns {TwingTemplatesModule}
+     */
+    private getTemplatesModule(content: string): TwingTemplatesModule {
+        let resolver = new Function(`let module = {
+    exports: undefined
+};
+
+${content}
+
+return module.exports;
+
+`);
+
+        return resolver();
     }
 
     setLoader(loader: TwingLoaderInterface) {

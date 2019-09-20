@@ -50,7 +50,7 @@ export abstract class TwingTemplate {
      */
     protected extensions: Map<string, TwingExtensionInterface> = new Map();
 
-    constructor(env: TwingEnvironment) {
+    protected constructor(env: TwingEnvironment) {
         this.env = env;
         this.extensions = env.getExtensions();
     }
@@ -68,15 +68,6 @@ export abstract class TwingTemplate {
      * @returns {string} The template name
      */
     abstract getTemplateName(): string;
-
-    /**
-     * Returns debug information about the template.
-     *
-     * @returns {Map<number, {line: number, column: number}>} Debug information
-     *
-     * @internal
-     */
-    abstract getDebugInfo(): Map<number, { line: number, column: number }>;
 
     /**
      * Returns information about the original template source code.
