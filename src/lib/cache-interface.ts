@@ -1,6 +1,6 @@
 /* istanbul ignore next */
 
-import {TwingTemplateModule} from "./environment";
+import {TwingTemplatesModule} from "./environment";
 
 export interface TwingCacheInterface {
     TwingCacheInterfaceImpl: TwingCacheInterface,
@@ -28,7 +28,7 @@ export interface TwingCacheInterface {
      *
      * @param {string} key The cache key
      */
-    load(key: string): TwingTemplateModule;
+    load(key: string): TwingTemplatesModule;
 
     /**
      * Returns the modification timestamp of a key.

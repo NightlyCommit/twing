@@ -1,5 +1,5 @@
 import {TwingCacheInterface} from "../cache-interface";
-import {TwingTemplateModule} from "../environment";
+import {TwingTemplatesModule} from "../environment";
 
 /**
  * Implements a no-cache strategy.
@@ -20,7 +20,7 @@ export class TwingCacheNull implements TwingCacheInterface {
     write(key: string, content: string) {
     }
 
-    load(key: string): TwingTemplateModule {
+    load(key: string): TwingTemplatesModule {
         return () => {
             return new Map();
         };

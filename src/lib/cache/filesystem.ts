@@ -1,5 +1,5 @@
 import {TwingCacheInterface} from "../cache-interface";
-import {TwingTemplateModule} from "../environment";
+import {TwingTemplatesModule} from "../environment";
 
 let fs = require('fs-extra');
 let path = require('path');
@@ -39,7 +39,7 @@ export class TwingCacheFilesystem implements TwingCacheInterface {
         );
     }
 
-    load(key: string): TwingTemplateModule {
+    load(key: string): TwingTemplatesModule {
         let result;
         let modulePath: string = path.resolve(key);
 

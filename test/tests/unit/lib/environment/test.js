@@ -1414,5 +1414,39 @@ BAROOF</FOO></foo>oof`);
         test.end();
     });
 
+    test.test('registerTemplatesModule', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            foo: ''
+        }));
+
+        let loaderSpy = sinon.spy(env.getLoader(), 'getSourceContext');
+        let cacheSpy = sinon.spy(env.getCache(false), 'generateKey');
+
+        env.registerTemplatesModule((c) => {
+            return new Map([
+                [0, class extends c {
+                    getTemplateName() {
+                        return 'main';
+                    }
+                }],
+                [1, class extends c {
+                    getTemplateName() {
+                        return 'embedded';
+                    }
+                }]
+            ])
+        }, 'foo');
+
+        let actualTemplate = env.loadTemplate('foo');
+        let actualEmbeddedTemplate = env.loadTemplate('foo', 1);
+
+        test.true(loaderSpy.notCalled, 'Loader should not be queried');
+        test.true(cacheSpy.notCalled, 'Cache should not be queried');
+        test.equal(actualTemplate.getTemplateName(), 'main', 'Main template should be loaded successfully');
+        test.equal(actualEmbeddedTemplate.getTemplateName(), 'embedded', 'Embedded template should be loaded successfully');
+
+        test.end();
+    });
+
     test.end();
 });
