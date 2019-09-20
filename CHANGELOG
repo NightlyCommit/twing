@@ -1,3 +1,7 @@
+2.3.6
+
+ * #385 Get rid of most constructor.name usage
+
 2.3.5
 
  * #381 Browser and Webpack (TypeScript)
