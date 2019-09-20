@@ -54,7 +54,6 @@ tape.test('library', function (test) {
         'TwingExtensionSet',
         'TwingExtensionStaging',
         'TwingExtensionStringLoader',
-        'TwingFactoryRuntimeLoader',
         'TwingFileExtensionEscapingStrategy',
         'TwingFilter',
         'TwingFunction',

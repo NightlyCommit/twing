@@ -18,7 +18,7 @@ export class TwingProfilerNodeEnterProfile extends TwingNode {
             .write(`let ${this.getAttribute('var_name')} = this.extensions.get(`,)
             .repr(this.getAttribute('extension_name'))
             .raw(");\n")
-            .write(`let ${this.getAttribute('var_name') + 'Prof'} = new Runtime.TwingProfilerProfile(this.getTemplateName(), `)
+            .write(`let ${this.getAttribute('var_name') + 'Prof'} = new this.ProfilerProfile(this.getTemplateName(), `)
             .repr(this.getAttribute('type'))
             .raw(', ')
             .repr(this.getAttribute('name'))

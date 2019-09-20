@@ -24,8 +24,7 @@ tap.test('node/do', function (test) {
         let node = new TwingNodeDo(expr, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-\`foo\`;
+        test.same(compiler.compile(node).getSource(), `\`foo\`;
 `);
 
         test.end();

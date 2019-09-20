@@ -50,42 +50,33 @@ tap.test('node/module', function (test) {
             let source = new TwingSource('{{ foo }}', 'foo.twig');
             let node = new TwingNodeModule(body, parent, blocks, macros, traits, [], source);
 
-            test.same(compiler.compile(node).getSource(), `module.exports = (Runtime) => {
-    let templates = {};
-    
+            test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
+    return new Map([
+        [0, class extends TwingTemplate {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class __TwingTemplate_foo extends Runtime.TwingTemplate {
-        constructor(env) {
-            super(env);
+                this.source = this.getSourceContext();
 
-            this.source = this.getSourceContext();
+                this.parent = false;
 
-            this.parent = false;
+                this.blocks = new Map([
+                ]);
+            }
 
-            this.blocks = new Map([
-            ]);
-        }
+            doDisplay(context, blocks = new Map()) {
+                this.echo(\`foo\`);
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 1, column 1
-            Runtime.echo(\`foo\`);
-        }
+            getTemplateName() {
+                return \`foo.twig\`;
+            }
 
-        getTemplateName() {
-            return \`foo.twig\`;
-        }
-
-        getDebugInfo() {
-            return new Map([[20, {"line": 1, "column": 1}]]);
-        }
-
-        getSourceContext() {
-            return new Runtime.TwingSource(\`\`, \`foo.twig\`, \`\`);
-        }
-    };
-
-    return templates;
+            getSourceContext() {
+                return new this.Source(\`\`, \`foo.twig\`, \`\`);
+            }
+        }],
+    ]);
 };`);
 
             test.end();
@@ -108,52 +99,41 @@ tap.test('node/module', function (test) {
 
             let node = new TwingNodeModule(body, extends_, blocks, macros, traits, [], source);
 
-            test.same(compiler.compile(node).getSource(), `module.exports = (Runtime) => {
-    let templates = {};
-    
+            test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
+    return new Map([
+        [0, class extends TwingTemplate {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class __TwingTemplate_foo extends Runtime.TwingTemplate {
-        constructor(env) {
-            super(env);
+                this.source = this.getSourceContext();
 
-            this.source = this.getSourceContext();
+                this.blocks = new Map([
+                ]);
+            }
 
-            this.blocks = new Map([
-            ]);
-        }
+            doGetParent(context) {
+                return \`layout.twig\`;
+            }
 
-        doGetParent(context) {
-            // line 1, column 1
-            return \`layout.twig\`;
-        }
+            doDisplay(context, blocks = new Map()) {
+                context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
+                this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
+                this.parent.display(context, this.merge(this.blocks, blocks));
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 2, column 1
-            context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
-            // line 1, column 1
-            this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
-            this.parent.display(context, Runtime.merge(this.blocks, blocks));
-        }
+            getTemplateName() {
+                return \`foo.twig\`;
+            }
 
-        getTemplateName() {
-            return \`foo.twig\`;
-        }
+            isTraitable() {
+                return false;
+            }
 
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[25, {"line": 1, "column": 1}], [23, {"line": 2, "column": 1}], [18, {"line": 1, "column": 1}]]);
-        }
-
-        getSourceContext() {
-            return new Runtime.TwingSource(\`\`, \`foo.twig\`, \`\`);
-        }
-    };
-
-    return templates;
+            getSourceContext() {
+                return new this.Source(\`\`, \`foo.twig\`, \`\`);
+            }
+        }],
+    ]);
 };`);
 
             test.end();
@@ -193,51 +173,40 @@ tap.test('node/module', function (test) {
 
             compiler = new TwingTestMockCompiler(twing);
 
-            test.same(compiler.compile(node).getSource(), `module.exports = (Runtime) => {
-    let templates = {};
-    
+            test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
+    return new Map([
+        [0, class extends TwingTemplate {
+            constructor(env) {
+                super(env);
 
-    /* foo.twig */
-    templates.__TwingTemplate_foo = class __TwingTemplate_foo extends Runtime.TwingTemplate {
-        constructor(env) {
-            super(env);
+                this.source = this.getSourceContext();
 
-            this.source = this.getSourceContext();
+                this.blocks = new Map([
+                ]);
+            }
 
-            this.blocks = new Map([
-            ]);
-        }
+            doGetParent(context) {
+                return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
+            }
 
-        doGetParent(context) {
-            // line 2, column 1
-            return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
-        }
+            doDisplay(context, blocks = new Map()) {
+                context.proxy[\`foo\`] = \`foo\`;
+                this.getParent(context).display(context, this.merge(this.blocks, blocks));
+            }
 
-        doDisplay(context, blocks = new Map()) {
-            // line 4, column 1
-            context.proxy[\`foo\`] = \`foo\`;
-            // line 2, column 1
-            this.getParent(context).display(context, Runtime.merge(this.blocks, blocks));
-        }
+            getTemplateName() {
+                return \`foo.twig\`;
+            }
 
-        getTemplateName() {
-            return \`foo.twig\`;
-        }
+            isTraitable() {
+                return false;
+            }
 
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[25, {"line": 2, "column": 1}], [23, {"line": 4, "column": 1}], [18, {"line": 2, "column": 1}]]);
-        }
-
-        getSourceContext() {
-            return new Runtime.TwingSource(\`{{ foo }}\`, \`foo.twig\`, \`\`);
-        }
-    };
-
-    return templates;
+            getSourceContext() {
+                return new this.Source(\`{{ foo }}\`, \`foo.twig\`, \`\`);
+            }
+        }],
+    ]);
 };`);
 
             test.end();

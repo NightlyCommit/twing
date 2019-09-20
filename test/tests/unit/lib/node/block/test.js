@@ -26,9 +26,8 @@ tap.test('node/block', function (test) {
         let node = new TwingNodeBlock('foo', body, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-block_foo(context, blocks = new Map()) {
-    Runtime.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `block_foo(context, blocks = new Map()) {
+    this.echo(\`foo\`);
 }
 
 `);

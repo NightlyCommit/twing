@@ -54,11 +54,10 @@ export class TwingNodeFor extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .write("context.set('_parent', context.clone());\n\n")
             .write('(() => {\n')
             .indent()
-            .write('let c = Runtime.twingEnsureTraversable(')
+            .write('let c = this.ensureTraversable(')
             .subcompile(this.getNode('seq'))
             .raw(");\n\n")
             .write('if (c === context) {\n')
@@ -91,9 +90,9 @@ export class TwingNodeFor extends TwingNode {
 
             if (!this.getAttribute('ifexpr')) {
                 compiler
-                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Runtime.isCountable(context.get('_seq')))) {\n")
+                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && this.isCountable(context.get('_seq')))) {\n")
                     .indent()
-                    .write("let length = Runtime.count(context.get('_seq'));\n")
+                    .write("let length = this.count(context.get('_seq'));\n")
                     .write("let loop = context.get('loop');\n")
                     .write("loop.set('revindex0', length - 1);\n")
                     .write("loop.set('revindex', length);\n")
@@ -110,7 +109,7 @@ export class TwingNodeFor extends TwingNode {
         this.loop.setAttribute('ifexpr', this.getAttribute('ifexpr'));
 
         compiler
-            .write("Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {\n")
+            .write("this.iterate(context.get('_seq'), (__key__, __value__) => {\n")
             .indent()
             .subcompile(this.getNode('key_target'), false)
             .raw(' = __key__;\n')

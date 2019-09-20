@@ -41,8 +41,6 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.addDebugInfo(this);
-
         if (this.getNode('names').getNodes().size > 1) {
             compiler.write('[');
 
@@ -60,7 +58,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
         } else {
             if (this.getAttribute('capture')) {
                 compiler
-                    .write("Runtime.obStart();\n")
+                    .write("this.startOutputBuffer();\n")
                     .subcompile(this.getNode('values'))
                 ;
             }
@@ -69,7 +67,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
 
             if (this.getAttribute('capture')) {
                 compiler
-                    .raw(" = (() => {let tmp = Runtime.obGetClean(); return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})()")
+                    .raw(" = (() => {let tmp = this.getAndCleanOutputBuffer(); return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})()")
                 ;
             }
         }
@@ -96,7 +94,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
                     compiler
                         .raw("(() => {let tmp = ")
                         .subcompile(this.getNode('values'))
-                        .raw("; return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})()")
+                        .raw("; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})()")
                     ;
                 } else {
                     compiler.subcompile(this.getNode('values'));

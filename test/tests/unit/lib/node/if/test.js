@@ -48,9 +48,8 @@ tap.test('node/if', function (test) {
             let else_ = null;
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+            test.same(compiler.compile(node).getSource(), `if (true) {
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 `);
             test.end();
@@ -69,12 +68,11 @@ if (true) {
 
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+            test.same(compiler.compile(node).getSource(), `if (true) {
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else if (false) {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -91,12 +89,11 @@ else if (false) {
 
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-if (true) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+            test.same(compiler.compile(node).getSource(), `if (true) {
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -117,18 +114,17 @@ else {
 
             let node = new TwingNodeIf(t, else_, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 0
-if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
-    Runtime.echo(\`a\`);
+            test.same(compiler.compile(node).getSource(), `if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
+    this.echo(\`a\`);
 }
 else if ((context.has(\`b\`) ? context.get(\`b\`) : null)) {
-    Runtime.echo(\`b\`);
+    this.echo(\`b\`);
 }
 else if ((context.has(\`c\`) ? context.get(\`c\`) : null)) {
-    Runtime.echo(\`c\`);
+    this.echo(\`c\`);
 }
 else {
-    Runtime.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();

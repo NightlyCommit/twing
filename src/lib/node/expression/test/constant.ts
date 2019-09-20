@@ -18,7 +18,7 @@ export class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
         compiler
             .raw('(')
             .subcompile(this.getNode('node'))
-            .raw(' === Runtime.twingConstant(this.env, ')
+            .raw(' === this.getConstant(this.env, ')
             .subcompile(this.getNode('arguments').getNode(0))
         ;
 

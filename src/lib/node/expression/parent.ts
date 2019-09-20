@@ -26,7 +26,6 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
 
         if (this.getAttribute('output')) {
             compiler
-                .addDebugInfo(this)
                 .write(`this.traceableDisplayParentBlock(${this.getTemplateLine()}, this.source)(`)
                 .string(name)
                 .raw(", context, blocks);\n")

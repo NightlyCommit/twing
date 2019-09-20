@@ -24,7 +24,7 @@ tap.test('node/expression/binary/not-in', function (test) {
         let node = new TwingNodeExpressionBinaryNotIn(left, right, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), '!Runtime.twingInFilter(1, 2)');
+        test.same(compiler.compile(node).getSource(), '!this.isIn(1, 2)');
 
         test.end();
     });

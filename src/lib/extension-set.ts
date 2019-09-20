@@ -14,7 +14,6 @@ const isObject = require('isobject');
 export class TwingExtensionSet {
     private extensions: Map<string, TwingExtensionInterface>;
     private initialized: boolean = false;
-    private runtimeInitialized: boolean = false;
     private staging: TwingExtensionStaging;
     private parsers: TwingTokenParserInterface[];
     private visitors: TwingNodeVisitorInterface[];
@@ -31,25 +30,6 @@ export class TwingExtensionSet {
         this.staging = new TwingExtensionStaging();
         this.extensions = new Map();
         this.parsers = [];
-    }
-
-    /**
-     * Initializes the runtime environment.
-     */
-    initRuntime(env: TwingEnvironment): void {
-        if (this.runtimeInitialized) {
-            return;
-        }
-
-        this.runtimeInitialized = true;
-
-        for (let [name, extension] of this.extensions) {
-            let candidate: any = extension;
-
-            if (candidate.TwingExtensionInitRuntimeInterfaceImpl) {
-                candidate.TwingExtensionInitRuntimeInterfaceImpl.initRuntime(env);
-            }
-        }
     }
 
     hasExtension(name: string) {
@@ -85,7 +65,7 @@ export class TwingExtensionSet {
     }
 
     isInitialized() {
-        return this.initialized || this.runtimeInitialized;
+        return this.initialized;
     }
 
     getNodeVisitors(): TwingNodeVisitorInterface[] {

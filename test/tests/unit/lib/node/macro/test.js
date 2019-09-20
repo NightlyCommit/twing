@@ -41,9 +41,8 @@ tap.test('node/macro', function (test) {
         let node = new TwingNodeMacro('foo', body, arguments_, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
-    let context = new Runtime.TwingContext(this.env.mergeGlobals(new Map([
+        test.same(compiler.compile(node).getSource(), `macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
+    let context = new this.Context(this.env.mergeGlobals(new Map([
         [\`foo\`, __foo__],
         [\`bar\`, __bar__],
         [\`varargs\`, __varargs__]
@@ -53,18 +52,18 @@ macro_foo(__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) {
     let result;
     let error;
 
-    Runtime.obStart();
+    this.startOutputBuffer();
     try {
-        Runtime.echo(\`foo\`);
+        this.echo(\`foo\`);
 
-        let tmp = Runtime.obGetContents();
-        result = (tmp === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());
+        let tmp = this.getOutputBufferContent();
+        result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());
     }
     catch (e) {
         error = e;
     }
 
-    Runtime.obEndClean();
+    this.endAndCleanOutputBuffer();
 
     if (error) {
         throw error;

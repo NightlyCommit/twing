@@ -24,7 +24,7 @@ tap.test('node/expression/binary/range', function (test) {
         let node = new TwingNodeExpressionBinaryRange(left, right, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), 'Runtime.range(1, 2)');
+        test.same(compiler.compile(node).getSource(), 'this.createRange(1, 2)');
 
         test.end();
     });

@@ -34,10 +34,9 @@ tap.test('node/spaceless', function (test) {
         let node = new TwingNodeSpaceless(body, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.obStart();
-Runtime.echo(\`<div>   <div>   foo   </div>   </div>\`);
-Runtime.echo(Runtime.obGetClean().replace(/>\\s+</g, '><').trim());
+        test.same(compiler.compile(node).getSource(), `this.startOutputBuffer();
+this.echo(\`<div>   <div>   foo   </div>   </div>\`);
+this.echo(this.getAndCleanOutputBuffer().replace(/>\\s+</g, '><').trim());
 `);
 
         test.end();

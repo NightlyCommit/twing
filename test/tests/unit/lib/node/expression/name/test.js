@@ -30,14 +30,10 @@ tap.test('node/expression/name', function (test) {
         let compiler = new TwingTestMockCompiler(new TwingTestEnvironmentStub(loader, {strict_variables: true}));
         let compiler1 = new TwingTestMockCompiler(new TwingTestEnvironmentStub(loader, {strict_variables: false}));
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { throw new Runtime.TwingErrorRuntime('Variable \`foo\` does not exist.', 1, this.source); })())`);
-        test.same(compiler1.compile(node).getSource(), `// line 1, column 1
-(context.has(\`foo\`) ? context.get(\`foo\`) : null)`);
-        test.same(compiler.compile(self).getSource(), `// line 1, column 1
-this.getTemplateName()`);
-        test.same(compiler.compile(context).getSource(), `// line 1, column 1
-context`);
+        test.same(compiler.compile(node).getSource(), `(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { throw new this.RuntimeError('Variable \`foo\` does not exist.', 1, this.source); })())`);
+        test.same(compiler1.compile(node).getSource(), `(context.has(\`foo\`) ? context.get(\`foo\`) : null)`);
+        test.same(compiler.compile(self).getSource(), `this.getTemplateName()`);
+        test.same(compiler.compile(context).getSource(), `context`);
 
         test.test('when "is_defined_test" is set to true', function(test) {
             test.test('and name is special', function(test) {
@@ -47,8 +43,7 @@ context`);
 
                 let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
-                test.same(compiler.compile(node).getSource(), `// line 1, column 1
-true`);
+                test.same(compiler.compile(node).getSource(), `true`);
 
                 test.end();
             });

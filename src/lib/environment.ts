@@ -1,14 +1,7 @@
 import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionSet} from "./extension-set";
-import {
-    twingArrayMerge,
-    twingConstant,
-    twingEnsureTraversable,
-    TwingExtensionCore,
-    twingGetAttribute,
-    twingInFilter
-} from "./extension/core";
+import {TwingExtensionCore} from "./extension/core";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingFilter} from "./filter";
 import {TwingLexer} from "./lexer";
@@ -33,33 +26,19 @@ import {TwingNode} from "./node";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
-import {TwingRuntimeLoaderInterface} from "./runtime-loader-interface";
-import {merge as twingMerge, merge} from "./helper/merge";
+import {merge as twingMerge} from "./helper/merge";
 import {TwingOperator} from "./extension";
 import {EventEmitter} from 'events';
-import {echo, flush, obEndClean, obGetClean, obGetContents, obStart, TwingOutputBuffering} from "./output-buffering";
-import {clone} from "./helper/clone";
-import {compare} from "./helper/compare";
-import {count} from "./helper/count";
-import {each} from "./helper/each";
-import {isCountable} from "./helper/is-countable";
-import {isMap} from "./helper/is-map";
-import {isPlainObject} from "./helper/is-plain-object";
-import {iteratorToMap} from "./helper/iterator-to-map";
-import {regexParser} from "./helper/regex-parser";
-import {TwingMarkup} from "./markup";
-import {range} from "./helper/range";
-import {TwingProfilerProfile} from "./profiler/profile";
-import {TwingSandboxSecurityError} from "./sandbox/security-error";
-import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
-import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
-import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
+import {TwingOutputBuffering} from "./output-buffering";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
-import {TwingContext} from "./context";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
+
+type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
+
+export type TwingTemplateModule = (E: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
 
 /**
  *  * Available options:
@@ -68,9 +47,6 @@ const hex = require('crypto-js/enc-hex');
  *           well (default to false).
  *
  *  * charset: The charset used by the templates (default to UTF-8).
- *
- *  * base_template_class: The base template class to use for generated
- *                         templates (default to Twig_Template).
  *
  *  * cache: An absolute path where to store the compiled templates,
  *           a TwingCacheInterface implementation,
@@ -96,7 +72,6 @@ const hex = require('crypto-js/enc-hex');
 export type TwingEnvironmentOptions = {
     debug?: boolean;
     charset?: string;
-    base_template_class?: string;
     cache?: TwingCacheInterface | false | string;
     auto_reload?: boolean;
     strict_variables?: boolean;
@@ -108,8 +83,6 @@ export type TwingEnvironmentOptions = {
 export const VERSION = '__VERSION__';
 
 /**
- * Stores the Twing configuration.
- *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export abstract class TwingEnvironment extends EventEmitter {
@@ -120,20 +93,15 @@ export abstract class TwingEnvironment extends EventEmitter {
     private cache: TwingCacheInterface;
     private lexer: TwingLexer;
     private parser: TwingParser;
-    private baseTemplateClass: string;
     private globals: Map<any, any> = new Map();
     private resolvedGlobals: any;
     private loadedTemplates: Map<string, TwingTemplate> = new Map();
     private strictVariables: boolean;
-    private templateClassPrefix = '__TwingTemplate_';
     private originalCache: TwingCacheInterface | string | false;
     private extensionSet: TwingExtensionSet = null;
-    private runtimeLoaders: Array<TwingRuntimeLoaderInterface> = [];
-    private runtimes: Map<string, any> = new Map();
     private optionsHash: string;
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
-    private templateRuntime: any;
     private autoescape: string | boolean | Function;
 
     /**
@@ -161,7 +129,6 @@ export abstract class TwingEnvironment extends EventEmitter {
 
         this.debug = options.debug;
         this.setCharset(options.charset);
-        this.baseTemplateClass = options.base_template_class;
         this.autoReload = options.auto_reload === null ? this.debug : options.auto_reload;
         this.strictVariables = options.strict_variables;
         this.setCache(options.cache);
@@ -172,61 +139,6 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.addExtension(new TwingExtensionCore(), 'TwingExtensionCore');
         this.addExtension(new TwingExtensionEscaper(options.autoescape), 'TwingExtensionEscaper');
         this.addExtension(new TwingExtensionOptimizer(options.optimizations), 'TwingExtensionOptimizer');
-
-        this.setTemplateRuntime({
-            clone: clone,
-            compare: compare,
-            count: count,
-            each: each,
-            isCountable: isCountable,
-            isMap: isMap,
-            isPlainObject: isPlainObject,
-            iteratorToMap: iteratorToMap,
-            merge: merge,
-            regexParser: regexParser,
-            TwingErrorLoader: TwingErrorLoader,
-            TwingErrorRuntime: TwingErrorRuntime,
-            twingArrayMerge: twingArrayMerge,
-            twingConstant: twingConstant,
-            twingEnsureTraversable: twingEnsureTraversable,
-            twingGetAttribute: twingGetAttribute,
-            twingInFilter: twingInFilter,
-            TwingMarkup: TwingMarkup,
-            echo: echo,
-            flush: flush,
-            obEndClean: obEndClean,
-            obGetClean: obGetClean,
-            obGetContents: obGetContents,
-            obStart: obStart,
-            range: range,
-            TwingSandboxSecurityError: TwingSandboxSecurityError,
-            TwingSandboxSecurityNotAllowedFilterError: TwingSandboxSecurityNotAllowedFilterError,
-            TwingSandboxSecurityNotAllowedFunctionError: TwingSandboxSecurityNotAllowedFunctionError,
-            TwingSandboxSecurityNotAllowedTagError: TwingSandboxSecurityNotAllowedTagError,
-            TwingSource: TwingSource,
-            TwingTemplate: TwingTemplate,
-            TwingProfilerProfile: TwingProfilerProfile,
-            TwingContext: TwingContext
-        });
-    }
-
-    /**
-     * Gets the base template class for compiled templates.
-     *
-     * @returns {string} The base template class name
-     */
-    getBaseTemplateClass() {
-        return this.baseTemplateClass;
-    }
-
-    /**
-     * Sets the base template class for compiled templates.
-     *
-     * @param {string} templateClass The base template class name
-     */
-    public setBaseTemplateClass(templateClass: string) {
-        this.baseTemplateClass = templateClass;
-        this.updateOptionsHash();
     }
 
     /**
@@ -336,12 +248,8 @@ export abstract class TwingEnvironment extends EventEmitter {
 
     abstract cacheFromString(cache: string): TwingCacheInterface;
 
-    setTemplateRuntime(runtime: any) {
-        this.templateRuntime = runtime;
-    }
-
-    getTemplateRuntime(): any {
-        return this.templateRuntime;
+    getTemplateConstructor(): typeof TwingTemplate {
+        return TwingTemplate;
     }
 
     /**
@@ -355,15 +263,15 @@ export abstract class TwingEnvironment extends EventEmitter {
      *  * Options with what environment was created.
      *
      * @param {string} name The name for which to calculate the template class name
-     * @param {number|null} index The index if it is an embedded template
+     * @param {number} index The index of the template
      * @param {TwingSource} from The source that initiated the template loading
      *
-     * @return string The template class name
+     * @return string The template hash
      */
-    getTemplateClass(name: string, index: number = null, from: TwingSource = null) {
+    getTemplateHash(name: string, index: number = 0, from: TwingSource = null) {
         let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
-        return this.templateClassPrefix + hex.stringify(sha256(key)) + (index === null ? '' : '_' + index);
+        return hex.stringify(sha256(key)) + (index === 0 ? '' : '_' + index);
     }
 
     /**
@@ -426,11 +334,8 @@ export abstract class TwingEnvironment extends EventEmitter {
     /**
      * Loads a template internal representation.
      *
-     * This method is for internal use only and should never be called
-     * directly.
-     *
-     * @param {string} name  The template name
-     * @param {number} index The index if it is an embedded template
+     * @param {string} name The template name
+     * @param {number} index The index of the template
      * @param {TwingSource} from The source that initiated the template loading
      *
      * @returns {TwingTemplate} A template instance representing the given template name
@@ -438,42 +343,36 @@ export abstract class TwingEnvironment extends EventEmitter {
      * @throws {TwingErrorLoader}  When the template cannot be found
      * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
      * @throws {TwingErrorSyntax}  When an error occurred during compilation
-     *
-     * @internal
      */
-    loadTemplate(name: string, index: number = null, from: TwingSource = null): TwingTemplate {
+    loadTemplate(name: string, index: number = 0, from: TwingSource = null): TwingTemplate {
         this.emit('template', name, from);
 
-        let cls = this.getTemplateClass(name, null, from);
-        let mainCls = cls;
+        let mainTemplateHash = this.getTemplateHash(name, null, from);
+        let templateHash = this.getTemplateHash(name, index, from);
 
-        if (index !== null) {
-            cls = `${cls}_${index}`;
-        }
-
-        if (this.loadedTemplates.has(cls)) {
-            return this.loadedTemplates.get(cls);
+        if (this.loadedTemplates.has(templateHash)) {
+            return this.loadedTemplates.get(templateHash);
         }
 
         let cache = this.cache as TwingCacheInterface;
-        let key = cache.generateKey(name, mainCls);
+        let key = cache.generateKey(name, mainTemplateHash);
 
-        let templates: { [s: string]: new(e: TwingEnvironment) => TwingTemplate } = {};
-        let runtime = this.getTemplateRuntime();
+        let templates: Map<number, TwingTemplateConstructor> = new Map();
+        let templateConstructor = this.getTemplateConstructor();
 
         if (!this.isAutoReload() || this.isTemplateFresh(name, cache.getTimestamp(key), from)) {
-            templates = cache.load(key)(runtime);
+            templates = cache.load(key)(templateConstructor);
         }
 
-        if (!templates[cls]) {
+        if (!templates.has(index)) {
             let source = this.getLoader().getSourceContext(name, from);
             let content = this.compileSource(source);
 
             cache.write(key, content);
 
-            templates = cache.load(key)(runtime);
+            templates = cache.load(key)(templateConstructor);
 
-            if (!templates[cls]) {
+            if (!templates.has(index)) {
                 templates = new Function(`let module = {
     exports: undefined
 };
@@ -482,29 +381,24 @@ ${content}
 
 return module.exports;
 
-`)()(runtime);
+`)()(templateConstructor);
 
-                if (!templates[cls]) {
+                if (!templates.has(index)) {
                     throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
                 }
             }
         }
 
-        // to be removed in 3.0
-        this.extensionSet.initRuntime(this);
-
         let mainTemplate: TwingTemplate;
 
-        for (let key in templates) {
-            let Tpl = templates[key];
-            let template = new Tpl(this);
+        for (let [index, constructor] of templates) {
+            let template = new constructor(this);
 
-            if (key === mainCls) {
-                key = cls;
+            if (index === 0) {
                 mainTemplate = template;
             }
 
-            this.loadedTemplates.set(key, template);
+            this.loadedTemplates.set(this.getTemplateHash(name, index, from), template);
         }
 
         return mainTemplate;
@@ -530,8 +424,7 @@ return module.exports;
 
         if (name !== null) {
             name = `${name} (string template ${hash})`;
-        }
-        else {
+        } else {
             name = `__string_template__${hash}`;
         }
 
@@ -597,7 +490,7 @@ return module.exports;
             }
 
             try {
-                return self.loadTemplate(name, null, source);
+                return self.loadTemplate(name, 0, source);
             } catch (e) {
                 if (e instanceof TwingErrorLoader) {
                     error = e;
@@ -724,13 +617,6 @@ return module.exports;
     }
 
     /**
-     * Adds a runtime loader.
-     */
-    addRuntimeLoader(loader: TwingRuntimeLoaderInterface) {
-        this.runtimeLoaders.push(loader);
-    }
-
-    /**
      * Gets an extension by name.
      *
      * @param {string} name
@@ -738,33 +624,6 @@ return module.exports;
      */
     getExtension(name: string) {
         return this.extensionSet.getExtension(name);
-    }
-
-    /**
-     * Returns the runtime implementation of a Twig element (filter/function/test).
-     *
-     * @param {string} class_ A runtime class name
-     *
-     * @returns {{}} The runtime implementation
-     *
-     * @throws TwingErrorRuntime When the runtime cannot be found
-     */
-    getRuntime(class_: string): any {
-        if (this.runtimes.has(class_)) {
-            return this.runtimes.get(class_);
-        }
-
-        for (let loader of this.runtimeLoaders) {
-            let runtime = loader.load(class_);
-
-            if (runtime !== null) {
-                this.runtimes.set(class_, runtime);
-
-                return runtime;
-            }
-        }
-
-        throw new TwingErrorRuntime(`Unable to load the "${class_}" runtime.`);
     }
 
     /**
@@ -960,7 +819,7 @@ return module.exports;
      */
     addGlobal(name: string, value: any) {
         if (this.extensionSet.isInitialized() && !this.getGlobals().has(name)) {
-            throw new Error(`Unable to add global "${name}" as the runtime or the extensions have already been initialized.`);
+            throw new Error(`Unable to add global "${name}" as the extensions have already been initialized.`);
         }
 
         if (this.resolvedGlobals) {
@@ -1034,7 +893,6 @@ return module.exports;
             this.extensionSet.getSignature(),
             VERSION,
             this.debug,
-            this.baseTemplateClass,
             this.strictVariables,
             this.sourceMap,
             typeof this.autoescape === 'function' ? 'function' : this.autoescape

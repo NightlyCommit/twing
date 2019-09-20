@@ -20,8 +20,7 @@ tap.test('node/block-reference', function (test) {
         let node = new TwingNodeBlockReference('foo', 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-this.traceableDisplayBlock(1, this.source)(\'foo\', context, blocks);
+        test.same(compiler.compile(node).getSource(), `this.traceableDisplayBlock(1, this.source)(\'foo\', context, blocks);
 `);
 
         test.end();

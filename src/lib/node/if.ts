@@ -18,7 +18,6 @@ export class TwingNodeIf extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.addDebugInfo(this);
         let count = this.getNode('tests').getNodes().size;
 
         for (let i = 0; i < count; i += 2) {

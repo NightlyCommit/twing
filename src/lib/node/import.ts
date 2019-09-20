@@ -22,7 +22,6 @@ export class TwingNodeImport extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .subcompile(this.getNode('var'), false)
             .raw(' = ')
         ;
