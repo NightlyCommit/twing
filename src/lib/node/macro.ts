@@ -30,7 +30,6 @@ export class TwingNodeMacro extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .write(`macro_${this.getAttribute('name')}(`)
         ;
 
@@ -59,7 +58,7 @@ export class TwingNodeMacro extends TwingNode {
         ;
 
         compiler
-            .write("let context = new Runtime.TwingContext(this.env.mergeGlobals(new Map([\n")
+            .write("let context = new this.Context(this.env.mergeGlobals(new Map([\n")
             .indent()
         ;
 
@@ -96,13 +95,13 @@ export class TwingNodeMacro extends TwingNode {
             .write("let blocks = new Map();\n")
             .write('let result;\n')
             .write('let error;\n\n')
-            .write("Runtime.obStart();\n")
+            .write("this.startOutputBuffer();\n")
             .write("try {\n")
             .indent()
             .subcompile(this.getNode('body'))
             .raw("\n")
-            .write('let tmp = Runtime.obGetContents();\n')
-            .write("result = (tmp === '') ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());\n")
+            .write('let tmp = this.getOutputBufferContent();\n')
+            .write("result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());\n")
             .outdent()
             .write("}\n")
             .write('catch (e) {\n')
@@ -110,7 +109,7 @@ export class TwingNodeMacro extends TwingNode {
             .write('error = e;\n')
             .outdent()
             .write('}\n\n')
-            .write("Runtime.obEndClean();\n\n")
+            .write("this.endAndCleanOutputBuffer();\n\n")
             .write('if (error) {\n')
             .indent()
             .write('throw error;\n')

@@ -14,9 +14,9 @@ module.exports = class TwingTestMockCache {
     }
 
     load(key) {
-        let templates = {};
-
-        templates['__TwingTemplate_foo'] = TwingTestMockTemplate;
+        let templates = new Map([
+            [0, TwingTestMockTemplate]
+        ]);
 
         return () => {
             return templates;

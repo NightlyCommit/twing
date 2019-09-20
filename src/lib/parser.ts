@@ -61,6 +61,7 @@ export class TwingParser {
     private traits: Map<string, TwingNode>;
     private embeddedTemplates: Array<TwingNodeModule> = [];
     private varNameSalt: number = 0;
+    private embeddedTemplateIndex: number = 1;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
@@ -312,7 +313,7 @@ export class TwingParser {
     }
 
     embedTemplate(template: TwingNodeModule) {
-        template.setIndex(mt_rand());
+        template.setIndex(this.embeddedTemplateIndex++);
 
         this.embeddedTemplates.push(template);
     }

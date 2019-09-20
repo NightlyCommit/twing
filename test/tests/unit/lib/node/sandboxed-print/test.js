@@ -24,8 +24,7 @@ tap.test('node/sandboxed-print', function (test) {
         let node = new TwingNodeSandboxedPrint(new TwingNodeExpressionConstant('foo', 1, 1), 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.echo(this.extensions.get('TwingExtensionSandbox').ensureToStringAllowed(\`foo\`));
+        test.same(compiler.compile(node).getSource(), `this.echo(this.extensions.get('TwingExtensionSandbox').ensureToStringAllowed(\`foo\`));
 `);
 
         test.end();

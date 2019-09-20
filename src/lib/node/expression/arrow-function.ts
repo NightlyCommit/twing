@@ -16,10 +16,8 @@ export class TwingNodeExpressionArrowFunction extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler
-            .addDebugInfo(this)
-            .raw('(')
-        ;
+        compiler.raw('(');
+
         let i: number = 0;
 
         for (let [k, name] of this.getNode('names').getNodes()) {

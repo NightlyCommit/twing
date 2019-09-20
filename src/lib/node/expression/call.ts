@@ -24,21 +24,14 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
     protected compileCallable(compiler: TwingCompiler) {
         let callable = this.getAttribute('callable');
 
-        if (typeof callable === 'string' && callable.indexOf('::') < 0) {
+        if (typeof callable === 'string') {
             compiler
                 .raw(callable)
                 .raw('(...')
             ;
         }
         else {
-            let [r, callable_] = this.reflectCallable(callable, compiler.getEnvironment());
-
-            if (r instanceof TwingReflectionMethod && typeof callable_[0] === 'string') {
-                compiler.raw(`this.env.getRuntime('${callable_[0]}').${callable_[1]}(...`);
-            }
-            else {
-                compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.source)(...`);
-            }``
+            compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.source)(...`);
         }
 
         this.compileArguments(compiler);
@@ -237,10 +230,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
     private getCallableParameters(callable: Function, isVariadic: boolean, env: TwingEnvironment): Array<TwingReflectionParameter> {
         let r = this.reflectCallable(callable, env)[0];
 
-        if (!r) {
-            return [];
-        }
-
         let parameters = r.getParameters();
 
         if (this.hasNode('node')) {
@@ -284,37 +273,13 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
     private reflectCallable(callable: Function | any, env: TwingEnvironment): [TwingReflectionMethod, any] {
         let r: TwingReflectionMethod;
         let name: string;
-        let pos: number;
 
-        if (Array.isArray(callable)) {
-            let runtime = env.getRuntime(callable[0]);
-
-            if (typeof runtime[callable[1]] !== 'function') {
-                return [null, []];
-            }
-
-            r = new TwingReflectionMethod(runtime[callable[1]], callable[1]);
-        }
-        else if (typeof callable === 'object' && Reflect.has(callable, '__invoke')) {
+        if (typeof callable === 'object' && Reflect.has(callable, '__invoke')) {
             name = `${callable.constructor.name}::__invoke`;
 
             callable = Reflect.get(callable, '__invoke');
 
             r = new TwingReflectionMethod(callable, name);
-        }
-        else if (typeof callable === 'string' && ((pos = callable.indexOf('::')) > -1)) {
-            let class_ = callable.substr(0, pos);
-            let method = callable.substr(pos + 2);
-
-            let runtime = env.getRuntime(class_);
-
-            if (typeof runtime[method] !== 'function') {
-                return [null, []];
-            }
-
-            r = new TwingReflectionMethod(runtime[method], callable);
-
-            callable = [class_, method];
         }
         else {
             r = new TwingReflectionMethod(callable, name);

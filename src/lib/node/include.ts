@@ -18,10 +18,6 @@ export class TwingNodeInclude extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler
-            .addDebugInfo(this)
-        ;
-
         if (this.getAttribute('ignore_missing')) {
             compiler
                 .write('(() => {\n')
@@ -40,7 +36,7 @@ export class TwingNodeInclude extends TwingNode {
                 .write('}\n')
                 .write('catch (e) {\n')
                 .indent()
-                .write('if (e instanceof Runtime.TwingErrorLoader) {\n')
+                .write('if (e instanceof this.LoaderError) {\n')
                 .indent()
                 .write('// ignore missing template\n')
                 .outdent()
@@ -92,7 +88,7 @@ export class TwingNodeInclude extends TwingNode {
         }
         else if (this.getAttribute('only') === false) {
             compiler
-                .raw('Runtime.merge(context, ')
+                .raw('this.merge(context, ')
                 .subcompile(this.getNode('variables'))
                 .raw(')')
             ;

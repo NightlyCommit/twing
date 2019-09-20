@@ -20,7 +20,7 @@ tap.test('profiler/node/enter-profile', function (test) {
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
         test.same(compiler.compile(node).getSource(), `let varName = this.extensions.get(\`extensionName\`);
-let varNameProf = new Runtime.TwingProfilerProfile(this.getTemplateName(), \`type\`, \`name\`);
+let varNameProf = new this.ProfilerProfile(this.getTemplateName(), \`type\`, \`name\`);
 varName.enter(varNameProf);
 
 `);

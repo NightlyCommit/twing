@@ -25,13 +25,12 @@ tap.test('node/sandboxed', function (test) {
         let node = new TwingNodeSandbox(body, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-(() => {
+        test.same(compiler.compile(node).getSource(), `(() => {
     let alreadySandboxed = this.sandbox.isSandboxed();
     if (!alreadySandboxed) {
         this.sandbox.enableSandbox();
     }
-    Runtime.echo(\`foo\`);
+    this.echo(\`foo\`);
     if (!alreadySandboxed) {
         this.sandbox.disableSandbox();
     }

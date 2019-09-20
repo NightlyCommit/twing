@@ -838,7 +838,6 @@ tap.test('TwingExtensionCore', function (test) {
                 twingInclude(env, new Map(), null, 'foo', {}, true, false, true)
             }, new TwingErrorLoader('Template "foo" is not defined.'));
 
-
             env = new TwingEnvironment(new TwingLoaderArray({foo: 'bar'}));
             sandbox = new TwingExtensionSandbox(new TwingSandboxSecurityPolicy());
             sandbox.enableSandbox();

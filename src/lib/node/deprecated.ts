@@ -15,8 +15,6 @@ export class TwingNodeDeprecated extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.addDebugInfo(this);
-
         let expr = this.getNode('expr');
 
         if (expr.getType() === TwingNodeType.EXPRESSION_CONSTANT) {

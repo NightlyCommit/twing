@@ -96,10 +96,6 @@ The following options are available:
 
   The charset used by the templates.
 
-* `base_template_class` *string* (defaults to `TwingTemplate`)
-
-  The base template class to use for generated templates.
-
 * `cache` *string* or `false`
 
   An absolute path where to store the compiled templates, or `false` to disable caching (which is the default).

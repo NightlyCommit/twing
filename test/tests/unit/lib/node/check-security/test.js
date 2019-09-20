@@ -25,16 +25,16 @@ try {
     );
 }
 catch (e) {
-    if (e instanceof Runtime.TwingSandboxSecurityError) {
+    if (e instanceof this.SandboxSecurityError) {
         e.setSourceContext(this.source);
 
-        if (e instanceof Runtime.TwingSandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
+        if (e instanceof this.SandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
             e.setTemplateLine(tags.get(e.getTagName()));
         }
-        else if (e instanceof Runtime.TwingSandboxSecurityNotAllowedFilterError && filters.has(e.getFilterName())) {
+        else if (e instanceof this.SandboxSecurityNotAllowedFilterError && filters.has(e.getFilterName())) {
             e.setTemplateLine(filters.get(e.getFilterName()));
         }
-        else if (e instanceof Runtime.TwingSandboxSecurityNotAllowedFunctionError && functions.has(e.getFunctionName())) {
+        else if (e instanceof this.SandboxSecurityNotAllowedFunctionError && functions.has(e.getFunctionName())) {
             e.setTemplateLine(functions.get(e.getFunctionName()));
         }
     }

@@ -11,7 +11,7 @@ export class TwingNodeExpressionBinaryRange extends TwingNodeExpressionBinary {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('Runtime.range(')
+            .raw('this.createRange(')
             .subcompile(this.getNode('left'))
             .raw(', ')
             .subcompile(this.getNode('right'))

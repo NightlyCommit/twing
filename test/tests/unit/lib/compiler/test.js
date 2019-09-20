@@ -1,5 +1,4 @@
 const {TwingNode, TwingNodeType} = require('../../../../../build/lib/node');
-const {TwingNodeText} = require('../../../../../build/lib/node/text');
 const {TwingCompiler} = require('../../../../../build/lib/compiler');
 const MockEnvironement = require('../../../../mock/environment');
 const MockLoader = require('../../../../mock/loader');

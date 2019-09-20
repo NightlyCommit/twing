@@ -27,8 +27,7 @@ tap.test('node/deprecated', function (test) {
 
             node.setTemplateName('bar');
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-console.error(\`foo\` + \` ("bar" at line 1)\`);
+            test.same(compiler.compile(node).getSource(), `console.error(\`foo\` + \` ("bar" at line 1)\`);
 `);
 
             test.end();
@@ -41,8 +40,7 @@ console.error(\`foo\` + \` ("bar" at line 1)\`);
 
             node.setTemplateName('bar');
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-let __internal_480b6d2e4b70b4ccce4936e035b2ead64f8213fee7b9a90a92d1f2d0fee68eaa = (context.has(\`foo\`) ? context.get(\`foo\`) : null);
+            test.same(compiler.compile(node).getSource(), `let __internal_480b6d2e4b70b4ccce4936e035b2ead64f8213fee7b9a90a92d1f2d0fee68eaa = (context.has(\`foo\`) ? context.get(\`foo\`) : null);
 console.error(__internal_480b6d2e4b70b4ccce4936e035b2ead64f8213fee7b9a90a92d1f2d0fee68eaa + \` ("bar" at line 1)\`);
 `);
 

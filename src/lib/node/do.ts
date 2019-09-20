@@ -21,7 +21,6 @@ export class TwingNodeDo extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .subcompile(this.getNode('expr'), true)
             .raw(";\n")
         ;

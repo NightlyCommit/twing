@@ -18,8 +18,7 @@ tap.test('node/expression/arrow-function', function (test) {
 
     test.test('compile', function (test) {
         let compiler = new TwingTestMockCompiler();
-        let expected = `// line 1, column 1
-($__a__, $__b__) => {context.proxy['a'] = $__a__; context.proxy['b'] = $__b__; return \`foo\`;}`;
+        let expected = `($__a__, $__b__) => {context.proxy['a'] = $__a__; context.proxy['b'] = $__b__; return \`foo\`;}`;
 
         let names = new TwingNode(new Map([
             [0 ,new TwingNodeExpressionAssignName('a', 1, 1)],

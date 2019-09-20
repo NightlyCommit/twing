@@ -1,28 +1,37 @@
 /**
  * Default base class for compiled templates.
  *
- * This class is an implementation detail of how template compilation currently
- * works, which might change. It should never be used directly. Use twig.load()
- * instead, which returns an instance of TwingTemplateWrapper.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @internal
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingSource} from "./source";
-
 import {TwingNodeBlock} from "./node/block";
 import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
 import {TwingTemplateWrapper} from "./template-wrapper";
-import {TwingOutputBuffering} from './output-buffering';
+import {flush, echo, obGetLevel, obStart, obEndClean, obGetClean, obGetContents} from './output-buffering';
 import {iteratorToMap} from "./helper/iterator-to-map";
-import {merge as twingMerge} from "./helper/merge";
+import {merge, merge as twingMerge} from "./helper/merge";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingExtensionSandbox} from "./extension/sandbox";
 import {TwingContext} from "./context";
 import {isMap} from "./helper/is-map";
+import {TwingErrorLoader} from "./error/loader";
+import {twingConstant, twingEnsureTraversable, twingGetAttribute, twingInFilter} from "./extension/core";
+import {clone} from "./helper/clone";
+import {TwingMarkup} from "./markup";
+import {TwingProfilerProfile} from "./profiler/profile";
+import {TwingSandboxSecurityError} from "./sandbox/security-error";
+import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
+import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
+import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
+import {compare} from "./helper/compare";
+import {count} from "./helper/count";
+import {range} from "./helper/range";
+import {isCountable} from "./helper/is-countable";
+import {isPlainObject} from "./helper/is-plain-object";
+import {each} from "./helper/each";
+import {regexParser} from "./helper/regex-parser";
 
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
@@ -201,11 +210,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     renderParentBlock(name: string, context: any, blocks: Map<string, Array<any>> = new Map()) {
-        TwingOutputBuffering.obStart();
+        obStart();
 
         this.displayParentBlock(name, context, blocks);
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -224,11 +233,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     renderBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks = true): string {
-        TwingOutputBuffering.obStart();
+        obStart();
 
         this.displayBlock(name, context, blocks, useBlocks);
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -283,7 +292,7 @@ export abstract class TwingTemplate {
         return [...names];
     }
 
-    public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = null): TwingTemplate | TwingTemplateWrapper {
+    public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate | TwingTemplateWrapper {
         try {
             if (Array.isArray(template)) {
                 return this.env.resolveTemplate(template, this.getSourceContext());
@@ -344,21 +353,21 @@ export abstract class TwingTemplate {
     }
 
     render(context: any): string {
-        let level = TwingOutputBuffering.obGetLevel();
+        let level = obGetLevel();
 
-        TwingOutputBuffering.obStart();
+        obStart();
 
         try {
             this.display(context);
         } catch (e) {
-            while (TwingOutputBuffering.obGetLevel() > level) {
-                TwingOutputBuffering.obEndClean();
+            while (obGetLevel() > level) {
+                obEndClean();
             }
 
             throw e;
         }
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -426,5 +435,129 @@ export abstract class TwingTemplate {
 
     public traceableHasBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
+    }
+
+    protected get clone(): <K, V>(m: Map<K, V>) => Map<K, V> {
+        return clone;
+    }
+
+    protected get compare(): (a: any, b: any) => boolean {
+        return compare;
+    }
+
+    protected get convertToMap(): (iterable: any) => Map<any, any>{
+        return iteratorToMap;
+    }
+
+    protected get count(): (a: any) => number{
+        return count;
+    }
+
+    protected get createRange(): (low: any, high: any, step: number) => Map<number, any>{
+        return range;
+    }
+
+    protected get echo(): (value: any) => void {
+        return echo;
+    }
+
+    protected get endAndCleanOutputBuffer(): () => boolean {
+        return obEndClean;
+    }
+
+    protected get ensureTraversable(): <T>(candidate: T[]) => T[] | [] {
+        return twingEnsureTraversable;
+    }
+
+    protected get flushOutputBuffer(): () => void {
+        return flush;
+    }
+
+    protected get getAndCleanOutputBuffer(): () => string | false{
+        return obGetClean;
+    }
+
+    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: any[], type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any{
+        return twingGetAttribute;
+    }
+
+    protected get getConstant(): (env: TwingEnvironment, name: string, source: any) => any{
+        return twingConstant;
+    }
+
+    protected get getOutputBufferContent(): () => string | false{
+        return obGetContents;
+    }
+
+    protected get isCountable(): (candidate: any) => boolean{
+        return isCountable;
+    }
+
+    protected get isIn(): (a: any, b: any) => boolean{
+        return twingInFilter;
+    }
+
+    protected get isMap(): (candidate: any) => boolean{
+        return isMap;
+    }
+
+    protected get isPlainObject(): (candidate: any) => boolean{
+        return isPlainObject;
+    }
+
+    protected get iterate(): (it: any, cb: <K, V>(k: K, v: V) => void) => void{
+        return each;
+    }
+
+    protected get merge(): (iterable1: Array<any> | Map<any, any>, iterable2: Array<any> | Map<any, any>) => Array<any> | Map<any, any> {
+        return merge;
+    }
+
+    protected get parseRegExp(): (input: string) => RegExp{
+        return regexParser;
+    }
+
+    protected get startOutputBuffer(): () => boolean {
+        return obStart;
+    }
+
+    protected get Context(): typeof TwingContext {
+        return TwingContext;
+    }
+
+    protected get LoaderError(): typeof TwingErrorLoader {
+        return TwingErrorLoader;
+    }
+
+    protected get Markup(): typeof TwingMarkup{
+        return TwingMarkup;
+    }
+
+    protected get ProfilerProfile(): typeof TwingProfilerProfile{
+        return TwingProfilerProfile;
+    }
+
+    protected get RuntimeError(): typeof TwingErrorRuntime {
+        return TwingErrorRuntime;
+    }
+
+    protected get SandboxSecurityError(): typeof TwingSandboxSecurityError{
+        return TwingSandboxSecurityError;
+    }
+
+    protected get SandboxSecurityNotAllowedFilterError(): typeof TwingSandboxSecurityNotAllowedFilterError{
+        return TwingSandboxSecurityNotAllowedFilterError;
+    }
+
+    protected get SandboxSecurityNotAllowedFunctionError(): typeof TwingSandboxSecurityNotAllowedFunctionError{
+        return TwingSandboxSecurityNotAllowedFunctionError;
+    }
+
+    protected get SandboxSecurityNotAllowedTagError(): typeof TwingSandboxSecurityNotAllowedTagError{
+        return TwingSandboxSecurityNotAllowedTagError;
+    }
+
+    protected get Source(): typeof TwingSource {
+        return TwingSource;
     }
 }

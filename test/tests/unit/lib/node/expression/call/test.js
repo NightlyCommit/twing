@@ -245,27 +245,6 @@ tap.test('node/expression/call', function (test) {
     });
 
     test.test('getCallableParameters', function (test) {
-        test.test('with unregistered runtime', function (test) {
-            let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
-                ['type', 'function'],
-                ['name', 'date']
-            ]));
-
-            node.setAttribute('arguments', ['foo']);
-
-            let getCallableParameters = Reflect.get(node, 'getCallableParameters').bind(node);
-            let env = new TwingEnvironment(new TwingLoaderArray({}));
-
-            sinon.stub(env, 'getRuntime').returns({
-                bar: 1
-            });
-
-            test.same(getCallableParameters(['foo', 'bar'], false, env), []);
-            test.same(getCallableParameters('foo::bar', false, env), []);
-
-            test.end();
-        });
-
         test.test('with included arguments', function (test) {
             let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
                 ['type', 'function'],

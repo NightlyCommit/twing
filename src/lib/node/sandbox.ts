@@ -11,7 +11,6 @@ export class TwingNodeSandbox extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .write("(")
             .raw("() => {\n")
             .indent()
