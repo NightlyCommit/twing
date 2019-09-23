@@ -426,14 +426,14 @@ export class TwingParser {
 
         // to be removed completely in Twig 3.0
         if (!nested && (node.getType() === TwingNodeType.SPACELESS)) {
-            console.error(`Using the spaceless tag at the root level of a child template in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
+            console.warn(`Using the spaceless tag at the root level of a child template in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
         }
 
         // "block" tags that are not captured (see above) are only used for defining
         // the content of the block. In such a case, nesting it does not work as
         // expected as the definition is not part of the default template code flow.
         if (nested && (node.getType() === TwingNodeType.BLOCK_REFERENCE)) {
-            console.error(`Nesting a block definition under a non-capturing node in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
+            console.warn(`Nesting a block definition under a non-capturing node in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
 
             return null;
         }

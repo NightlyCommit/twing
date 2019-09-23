@@ -31,7 +31,7 @@ export class TwingTokenParserFor extends TwingTokenParser {
         let ifexpr = null;
 
         if (stream.nextIf(TwingToken.NAME_TYPE, 'if')) {
-            console.error('Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).');
+            console.warn('Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).');
 
             ifexpr = this.parser.parseExpression();
         }
