@@ -3,26 +3,18 @@ const {
     TwingTokenStream,
     TwingToken,
     TwingParser,
-    TwingErrorSyntax,
-    TwingSource
-} = require('../../../../../../build/index');
-
+    TwingEnvironment,
+    TwingLoaderArray
+} = require('../../../../../../build/main');
 const tap = require('tape');
-const sinon = require('sinon');
-
-class ExpressionParser {
-    parseExpression() {
-        return new TwingToken(TwingToken.NAME_TYPE, 'foo', 1);
-    }
-}
 
 class Parser extends TwingParser {
     constructor() {
-        super(null);
+        super(new TwingEnvironment(new TwingLoaderArray({})));
     }
 
-    getExpressionParser() {
-        return new ExpressionParser();
+    parseExpression(precedence, allowArrow) {
+        return new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1);
     }
 }
 
@@ -30,19 +22,26 @@ tap.test('token-parser/auto-escape', function (test) {
     test.test('parse', function (test) {
         test.test('when escaping strategy is not a string of false', function(test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1)
+                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1)
             ]);
 
             let tokenParser = new TwingTokenParserAutoEscape();
             let parser = new Parser();
 
-            sinon.stub(parser, 'getStream').returns(stream);
+            Reflect.set(parser, 'stream', stream);
 
             tokenParser.setParser(parser);
 
-            test.throws(function () {
-                tokenParser.parse(new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1));
-            }, new TwingErrorSyntax('An escaping strategy must be a string or false.', 1, new TwingSource('', '')));
+            try {
+                tokenParser.parse(new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1, 1));
+
+                test.fail();
+            }
+            catch (e) {
+                console.warn(e);
+
+                test.same(e.message, 'An escaping strategy must be a string or false at line 1.');
+            }
 
             test.end();
         });

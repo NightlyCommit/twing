@@ -3,7 +3,7 @@ const {
     TwingNode,
     TwingFunction,
     TwingNodeExpressionFunction
-} = require('../../../../../../../build/index');
+} = require('../../../../../../../build/main');
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 const TwingTestEnvironmentStub = require('../../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../../mock/loader');

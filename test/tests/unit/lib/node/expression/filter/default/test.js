@@ -6,7 +6,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingNode
-} = require('../../../../../../../../build/index');
+} = require('../../../../../../../../build/main');
 
 const tap = require('tape');
 

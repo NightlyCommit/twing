@@ -29,7 +29,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
             safeName = Buffer.from(name).toString('hex');
         }
 
-        let macroArguments = this.parser.getExpressionParser().parseArguments(true, true);
+        let macroArguments = this.parser.parseArguments(true, true);
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
 

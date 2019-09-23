@@ -2,7 +2,7 @@ const {
     TwingNodeSandboxedPrint,
     TwingNodeExpressionConstant,
     TwingNodeType
-} = require('../../../../../../build/index');
+} = require('../../../../../../build/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -24,7 +24,7 @@ tap.test('node/sandboxed-print', function (test) {
         let node = new TwingNodeSandboxedPrint(new TwingNodeExpressionConstant('foo', 1, 1), 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.echo(this.extensions.get('TwingExtensionSandbox').ensureToStringAllowed(\`foo\`));
+        test.same(compiler.compile(node).getSource(), `this.echo(this.env.ensureToStringAllowed(\`foo\`));
 `);
 
         test.end();

@@ -22,18 +22,18 @@ export class TwingTokenParserFor extends TwingTokenParser {
         let lineno = token.getLine();
         let columnno = token.getColumn();
         let stream = this.parser.getStream();
-        let targets = this.parser.getExpressionParser().parseAssignmentExpression();
+        let targets = this.parser.parseAssignmentExpression();
 
         stream.expect(TwingToken.OPERATOR_TYPE, 'in');
 
-        let seq = this.parser.getExpressionParser().parseExpression();
+        let seq = this.parser.parseExpression();
 
         let ifexpr = null;
 
         if (stream.nextIf(TwingToken.NAME_TYPE, 'if')) {
             console.error('Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).');
 
-            ifexpr = this.parser.getExpressionParser().parseExpression();
+            ifexpr = this.parser.parseExpression();
         }
 
         stream.expect(TwingToken.BLOCK_END_TYPE);

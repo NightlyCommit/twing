@@ -5,7 +5,7 @@ const {
     TwingOutputBuffering,
     TwingErrorRuntime,
     TwingSource
-} = require('../../../../../build');
+} = require('../../../../../build/main');
 
 const test = require('tape');
 const sinon = require('sinon');

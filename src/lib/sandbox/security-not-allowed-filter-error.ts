@@ -6,11 +6,11 @@ import {TwingSandboxSecurityError} from "./security-error";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
-    private filterName: string;
+    private readonly filterName: string;
 
-    constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, filterName: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
-        this.filterName = functionName;
+        this.filterName = filterName;
         this.name = 'TwingSandboxSecurityNotAllowedFilterError';
     }
 

@@ -4,13 +4,8 @@ import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
 import {TwingTest} from "./test";
-
-export type TwingOperator = {
-    precedence: number,
-    associativity?: string,
-    factory: Function,
-    callable?: Function;
-}
+import {TwingOperator} from "./operator";
+import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
 
 export class TwingExtension implements TwingExtensionInterface {
     TwingExtensionInterfaceImpl: TwingExtensionInterface;
@@ -27,19 +22,23 @@ export class TwingExtension implements TwingExtensionInterface {
         return [];
     }
 
-    getFilters(): Map<string | number, TwingFilter> {
-        return new Map();
-    }
-
-    getTests(): Array<TwingTest> {
+    getFilters(): TwingFilter[] {
         return [];
     }
 
-    getFunctions(): Map<string | number, TwingFunction> {
-        return new Map();
+    getTests(): TwingTest[] {
+        return [];
     }
 
-    getOperators(): [Map<string, TwingOperator>, Map<string, TwingOperator>] {
-        return [new Map(), new Map()];
+    getFunctions(): TwingFunction[] {
+        return [];
+    }
+
+    getOperators(): TwingOperator[] {
+        return [];
+    }
+
+    getSourceMapNodeFactories(): TwingSourceMapNodeFactory[] {
+        return [];
     }
 }

@@ -18,7 +18,7 @@ export class TwingTokenParserAutoEscape extends TwingTokenParser {
             value = 'html';
         }
         else {
-            let expr = this.parser.getExpressionParser().parseExpression();
+            let expr = this.parser.parseExpression();
 
             if (expr.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
                 throw new TwingErrorSyntax('An escaping strategy must be a string or false.', stream.getCurrent().getLine(), stream.getSourceContext());

@@ -3,7 +3,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingNodeExpressionConstant
-} = require("../../../../../../build");
+} = require("../../../../../../build/main");
 
 const tap = require('tape');
 

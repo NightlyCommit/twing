@@ -1,4 +1,4 @@
-const {TwingTest} = require("../../../../../build/index");
+const {TwingTest} = require("../../../../../build/main");
 
 const tap = require('tape');
 
@@ -7,10 +7,10 @@ tap.test('test', function (test) {
         let factory = () => {};
 
         let twingTest = new TwingTest('foo', () => {}, {
-            node_factory: factory
+            expression_factory: factory
         });
 
-        test.same(twingTest.getNodeFactory(), factory);
+        test.same(twingTest.getExpressionFactory(), factory);
 
         test.end();
     });

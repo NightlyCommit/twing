@@ -14,7 +14,7 @@ import {TwingNodeExpression} from "../node/expression";
  */
 export class TwingTokenParserFrom extends TwingTokenParser {
     parse(token: TwingToken) {
-        let macro = this.parser.getExpressionParser().parseExpression();
+        let macro = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
         stream.expect(TwingToken.NAME_TYPE, 'import');

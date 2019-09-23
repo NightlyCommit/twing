@@ -7,7 +7,7 @@ import {TwingNode, TwingNodeType} from "../node";
 
 export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: TwingToken) {
-        let template = this.parser.getExpressionParser().parseExpression();
+        let template = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
         if (template.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {

@@ -3,7 +3,7 @@ const {
     TwingCompiler,
     TwingLoaderArray,
     TwingEnvironment
-} = require('../../../../../../build/index');
+} = require('../../../../../../build/main');
 
 const tap = require('tape');
 
@@ -12,16 +12,15 @@ tap.test('node/check-security', function (test) {
         let node = new TwingNodeCheckSecurity(new Map([['foo', 'bar']]), new Map([['foo', 'bar']]), new Map([['foo', 'bar']]));
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
-        test.same(compiler.compile(node).getSource(), `this.sandbox = this.env.getExtension(\'TwingExtensionSandbox\');
-let tags = new Map([[\`bar\`, null]]);
+        test.same(compiler.compile(node).getSource(), `let tags = new Map([[\`bar\`, null]]);
 let filters = new Map([[\`bar\`, null]]);
 let functions = new Map([[\`bar\`, null]]);
 
 try {
-    this.sandbox.checkSecurity(
-        ['bar'],
-        ['bar'],
-        ['bar']
+    this.env.checkSecurity(
+        [\'bar\'],
+        [\'bar\'],
+        [\'bar\']
     );
 }
 catch (e) {

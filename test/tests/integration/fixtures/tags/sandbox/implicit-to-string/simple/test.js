@@ -15,7 +15,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
     }
 
     getExpectedErrorMessage() {
-        return 'TwingSandboxSecurityNotAllowedMethodError: Calling "toString" method on a "Object" object is not allowed in "foo.twig".';
+        return 'TwingSandboxSecurityNotAllowedMethodError: Calling "toString" method on a "Object" is not allowed in "foo.twig".';
     }
 
     getExtensions() {

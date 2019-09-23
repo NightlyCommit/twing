@@ -5,7 +5,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingErrorSyntax
-} = require('../../../../../../../build/index');
+} = require('../../../../../../../build/main');
 
 const tap = require('tape');
 const sinon = require('sinon');

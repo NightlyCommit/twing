@@ -1,4 +1,4 @@
-import {iconv} from "./helper/iconv";
+import {iconv} from "./helpers/iconv";
 
 /**
  * Marks a content as safe.

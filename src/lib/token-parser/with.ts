@@ -10,7 +10,7 @@ export class TwingTokenParserWith extends TwingTokenParser {
         let only = false;
 
         if (!stream.test(TwingToken.BLOCK_END_TYPE)) {
-            variables = this.parser.getExpressionParser().parseExpression();
+            variables = this.parser.parseExpression();
 
             only = stream.nextIf(TwingToken.NAME_TYPE, 'only') !== null;
         }

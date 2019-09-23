@@ -21,7 +21,7 @@ export class TwingTokenParserFilter extends TwingTokenParser {
 
         let name = this.parser.getVarName();
         let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, token.getLine(), token.getColumn()), null, token.getLine(), token.getColumn(), this.getTag());
-        let filter = this.parser.getExpressionParser().parseFilterExpressionRaw(ref, this.getTag());
+        let filter = this.parser.parseFilterExpressionRaw(ref, this.getTag());
 
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 

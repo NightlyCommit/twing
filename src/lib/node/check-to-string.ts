@@ -18,7 +18,7 @@ export class TwingNodeCheckToString extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('this.sandbox.ensureToStringAllowed(')
+            .raw('this.env.ensureToStringAllowed(')
             .subcompile(this.getNode('expr'))
             .raw(')')
         ;

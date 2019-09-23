@@ -1,39 +1,9 @@
-const nodeIndex = require('../../../../build/index');
+const mainIndex = require('../../../../build/main');
 const browserIndex = require('../../../../build/browser');
 const tape = require('tape');
 
-tape.test('library', function (test) {
+tape.test('main and browser indexes', function (test) {
     let expected = [
-        'abs',
-        'asort',
-        'chunk',
-        'clone',
-        'compare',
-        'count',
-        'each',
-        'examineObject',
-        'fill',
-        'first',
-        'formatDuration',
-        'formatDateTime',
-        'iconv',
-        'includes',
-        'isCountable',
-        'isTraversable',
-        'iteratorToArray',
-        'iteratorToHash',
-        'iteratorToMap',
-        'jsonEncode',
-        'ksort',
-        'max',
-        'merge',
-        'min',
-        'push',
-        'range',
-        'regexParser',
-        'relativeDate',
-        'reverse',
-        'slice',
         'TwingBaseNodeVisitor',
         'TwingCacheFilesystem',
         'TwingCacheNull',
@@ -43,17 +13,9 @@ tape.test('library', function (test) {
         'TwingErrorLoader',
         'TwingErrorRuntime',
         'TwingErrorSyntax',
-        'TwingExpressionParser',
         'TwingExtension',
         'TwingExtensionCore',
-        'TwingExtensionDebug',
-        'TwingExtensionEscaper',
-        'TwingExtensionOptimizer',
-        'TwingExtensionProfiler',
-        'TwingExtensionSandbox',
         'TwingExtensionSet',
-        'TwingExtensionStaging',
-        'TwingExtensionStringLoader',
         'TwingFileExtensionEscapingStrategy',
         'TwingFilter',
         'TwingFunction',
@@ -116,13 +78,7 @@ tape.test('library', function (test) {
         'TwingNodeExpressionNullCoalesce',
         'TwingNodeExpressionParent',
         'TwingNodeExpressionTest',
-        'TwingNodeExpressionTestConstant',
         'TwingNodeExpressionTestDefined',
-        'TwingNodeExpressionTestDivisibleBy',
-        'TwingNodeExpressionTestEven',
-        'TwingNodeExpressionTestNull',
-        'TwingNodeExpressionTestOdd',
-        'TwingNodeExpressionTestSameAs',
         'TwingNodeExpressionUnary',
         'TwingNodeExpressionUnaryNeg',
         'TwingNodeExpressionUnaryNot',
@@ -143,22 +99,18 @@ tape.test('library', function (test) {
         'TwingNodeText',
         'TwingNodeTraverser',
         'TwingNodeType',
+        'TwingNodeVerbatim',
         'TwingNodeVisitorEscaper',
         'TwingNodeVisitorOptimizer',
         'TwingNodeVisitorSafeAnalysis',
         'TwingNodeVisitorSandbox',
         'TwingNodeWith',
+        'TwingOperator',
+        'TwingOperatorType',
+        'TwingOperatorAssociativity',
         'TwingOutputBuffering',
         'TwingOutputHandler',
         'TwingParser',
-        'TwingProfilerDumperBase',
-        'TwingProfilerDumperBlackfire',
-        'TwingProfilerDumperHtml',
-        'TwingProfilerDumperText',
-        'TwingProfilerNodeEnterProfile',
-        'TwingProfilerNodeLeaveProfile',
-        'TwingProfilerNodeVisitorProfiler',
-        'TwingProfilerProfile',
         'TwingReflectionMethod',
         'TwingReflectionParameter',
         'TwingSandboxSecurityError',
@@ -170,6 +122,8 @@ tape.test('library', function (test) {
         'TwingSandboxSecurityPolicy',
         'TwingSource',
         'TwingSourceMapNode',
+        'TwingSourceMapNodeFactory',
+        'TwingSourceMapNodeFactorySpaceless',
         'TwingSourceMapNodeSpaceless',
         'TwingTemplate',
         'TwingTemplateWrapper',
@@ -193,18 +147,18 @@ tape.test('library', function (test) {
         'TwingTokenParserSet',
         'TwingTokenParserSpaceless',
         'TwingTokenParserUse',
+        'TwingTokenParserVerbatim',
         'TwingTokenParserWith',
-        'TwingTokenStream',
-        'varDump'
+        'TwingTokenStream'
     ];
 
     for (let key of expected) {
-        test.true(nodeIndex[key], `${key} is exported by node index`);
+        test.true(mainIndex[key], `${key} is exported by main index`);
         test.true(browserIndex[key], `${key} is exported by browser index`);
     }
 
-    for (let key in nodeIndex) {
-        test.true(expected.includes(key), `${key} is legit in node index`);
+    for (let key in mainIndex) {
+        test.true(expected.includes(key), `${key} is legit in main index`);
     }
 
     for (let key in browserIndex) {

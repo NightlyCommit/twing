@@ -177,7 +177,7 @@ export class TwingNodeModule extends TwingNode {
                     .raw(", this.source);\n")
                     .outdent()
                     .write('}\n')
-                    .write(`let _trait_${i}_blocks = this.clone(_trait_${i}.getBlocks());\n\n`)
+                    .write(`let _trait_${i}_blocks = this.cloneMap(_trait_${i}.getBlocks());\n\n`)
                 ;
 
                 for (let [key, value] of trait.getNode('targets').getNodes()) {
@@ -214,7 +214,7 @@ export class TwingNodeModule extends TwingNode {
                 }
             } else {
                 compiler
-                    .write("this.traits = this.clone(_trait_0_blocks);\n\n")
+                    .write("this.traits = this.cloneMap(_trait_0_blocks);\n\n")
                 ;
             }
 

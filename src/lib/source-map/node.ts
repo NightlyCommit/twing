@@ -1,10 +1,6 @@
 import {SourceNode} from "source-map";
 import {TwingSource} from "../source";
 
-export interface TwingSourceMapNodeConstructor {
-    new(line: number, column: number, source: TwingSource, name: string): TwingSourceMapNode;
-}
-
 export class TwingSourceMapNode {
     protected _name: string;
     protected _source: TwingSource;

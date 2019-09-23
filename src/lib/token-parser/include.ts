@@ -5,7 +5,7 @@ import {TwingNodeExpression} from "../node/expression";
 
 export class TwingTokenParserInclude extends TwingTokenParser {
     parse(token: TwingToken) {
-        let expr = this.parser.getExpressionParser().parseExpression();
+        let expr = this.parser.parseExpression();
 
         let parsedArguments = this.parseArguments();
 
@@ -34,7 +34,7 @@ export class TwingTokenParserInclude extends TwingTokenParser {
         let variables = null;
 
         if (stream.nextIf(TwingToken.NAME_TYPE, 'with')) {
-            variables = this.parser.getExpressionParser().parseExpression();
+            variables = this.parser.parseExpression();
         }
 
         let only = false;

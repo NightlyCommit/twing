@@ -1,4 +1,4 @@
-const {TwingToken} = require('../../../../../build/index');
+const {TwingToken} = require('../../../../../build/main');
 
 const tap = require('tape');
 

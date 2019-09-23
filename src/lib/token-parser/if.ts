@@ -22,7 +22,7 @@ export class TwingTokenParserIf extends TwingTokenParser {
     parse(token: TwingToken) {
         let lineno = token.getLine();
         let columnno = token.getColumn();
-        let expr = this.parser.getExpressionParser().parseExpression();
+        let expr = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
         stream.expect(TwingToken.BLOCK_END_TYPE);
@@ -46,7 +46,7 @@ export class TwingTokenParserIf extends TwingTokenParser {
                     break;
 
                 case 'elseif':
-                    expr = this.parser.getExpressionParser().parseExpression();
+                    expr = this.parser.parseExpression();
                     stream.expect(TwingToken.BLOCK_END_TYPE);
                     body = this.parser.subparse([this, this.decideIfFork]);
                     tests.set(index++, expr);

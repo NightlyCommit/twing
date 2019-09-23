@@ -60,7 +60,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         else {
             let nodes = new Map();
 
-            nodes.set(0, new TwingNodePrint(this.parser.getExpressionParser().parseExpression(), lineno, columnno));
+            nodes.set(0, new TwingNodePrint(this.parser.parseExpression(), lineno, columnno));
 
             body = new TwingNode(nodes);
         }

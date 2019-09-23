@@ -5,7 +5,7 @@ const {
     TwingNodeType,
     TwingNodePrint,
     TwingNodeExpressionName
-} = require('../../../../../../build/index');
+} = require('../../../../../../build/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');

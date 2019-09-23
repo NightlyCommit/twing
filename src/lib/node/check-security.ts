@@ -50,13 +50,12 @@ export class TwingNodeCheckSecurity extends TwingNode {
         }
 
         compiler
-            .write("this.sandbox = this.env.getExtension('TwingExtensionSandbox');\n")
             .write('let tags = ').repr(tags).raw(";\n")
             .write('let filters = ').repr(filters).raw(";\n")
             .write('let functions = ').repr(functions).raw(";\n\n")
             .write("try {\n")
             .indent()
-            .write("this.sandbox.checkSecurity(\n")
+            .write("this.env.checkSecurity(\n")
             .indent()
             .write(!tags.size ? "[],\n" : "['" + [...tags.keys()].join('\', \'') + "'],\n")
             .write(!filters.size ? "[],\n" : "['" + [...filters.keys()].join('\', \'') + "'],\n")
