@@ -6,21 +6,8 @@ import {TwingSandboxSecurityError} from "./security-error";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingSandboxSecurityNotAllowedPropertyError extends TwingSandboxSecurityError {
-    private className: string;
-    private propertyName: string
-
-    constructor(message: string, className: string, propertyName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
-        this.className = className;
-        this.propertyName = propertyName;
         this.name = 'TwingSandboxSecurityNotAllowedPropertyError';
-    }
-
-    getClassName() {
-        return this.className;
-    }
-
-    getPropertyName() {
-        return this.propertyName;
     }
 }

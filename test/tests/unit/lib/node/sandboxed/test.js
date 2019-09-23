@@ -2,7 +2,7 @@ const {
     TwingNodeSandbox,
     TwingNodeText,
     TwingNodeType
-} = require('../../../../../../build/index');
+} = require('../../../../../../build/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -26,13 +26,13 @@ tap.test('node/sandboxed', function (test) {
         let compiler = new TwingTestMockCompiler();
 
         test.same(compiler.compile(node).getSource(), `(() => {
-    let alreadySandboxed = this.sandbox.isSandboxed();
+    let alreadySandboxed = this.env.isSandboxed();
     if (!alreadySandboxed) {
-        this.sandbox.enableSandbox();
+        this.env.enableSandbox();
     }
     this.echo(\`foo\`);
     if (!alreadySandboxed) {
-        this.sandbox.disableSandbox();
+        this.env.disableSandbox();
     }
 })();
 `);

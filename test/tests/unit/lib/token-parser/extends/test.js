@@ -4,7 +4,7 @@ const {
     TwingToken,
     TwingErrorSyntax,
     TwingSource
-} = require('../../../../../../build/index');
+} = require('../../../../../../build/main');
 const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser');
 
 const tap = require('tape');

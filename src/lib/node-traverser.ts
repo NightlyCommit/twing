@@ -9,8 +9,8 @@ import {TwingEnvironment} from "./environment";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingNode} from "./node";
 
-import {ksort} from "./helper/ksort";
-import {push} from "./helper/push";
+import {ksort} from "./helpers/ksort";
+import {push} from "./helpers/push";
 
 export class TwingNodeTraverser {
     private env: TwingEnvironment;

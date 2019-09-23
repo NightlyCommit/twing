@@ -75,19 +75,7 @@ tap.test('compiler', function (test) {
             }
         }
 
-        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext(), this.extensions.get(\'TwingExtensionCore\').getSourceMapNodeConstructor(\'body\'));\n');
-
-        test.test('supports a custom source map node constructor', function (test) {
-            class CustomNodeWithSourceMapNodeConstructor extends CustomNode {
-                compile(compiler) {
-                    compiler.addSourceMapEnter(this, 'Foo');
-                }
-            }
-
-            test.same(compiler.compile(new CustomNodeWithSourceMapNodeConstructor(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext(), Foo);\n');
-
-            test.end();
-        });
+        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext());\n');
 
         test.end();
     });

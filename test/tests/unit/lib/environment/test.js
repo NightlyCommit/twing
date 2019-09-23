@@ -16,8 +16,11 @@ const {
     TwingTest,
     TwingTokenParser,
     TwingExtension,
-    TwingErrorRuntime
-} = require('../../../../../build');
+    TwingErrorRuntime,
+    TwingOperator,
+    TwingOperatorType,
+    TwingNodeType
+} = require('../../../../../build/main');
 
 const TwingTestMockLoader = require('../../../../mock/loader');
 const TwingTestMockCache = require('../../../../mock/cache');
@@ -83,9 +86,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFilters() {
-        return new Map([
-            [0, new TwingFilter('foo_filter')]
-        ]);
+        return [
+            new TwingFilter('foo_filter')
+        ];
     }
 
     getTests() {
@@ -95,19 +98,15 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFunctions() {
-        return new Map([
-            [0, new TwingFunction('foo_function')],
-        ]);
+        return [
+            new TwingFunction('foo_function'),
+        ];
     }
 
     getOperators() {
         return [
-            new Map([
-                ['foo_unary', {}]
-            ]),
-            new Map([
-                ['foo_binary', {}]
-            ])
+            new TwingOperator('foo_unary', TwingOperatorType.UNARY, 10, () => {}),
+            new TwingOperator('foo_binary', TwingOperatorType.BINARY, 10, () => {}),
         ];
     }
 }
@@ -489,22 +488,13 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('hasGetExtensionByClassName', function (test) {
-        let twing = new TwingEnvironment(new TwingTestMockLoader());
-        let ext = new TwingTestsEnvironmentTestExtension();
-        twing.addExtension(ext);
-
-        test.true(twing.hasExtension('TwingTestsEnvironmentTestExtension'));
-        test.same(twing.getExtension('TwingTestsEnvironmentTestExtension'), ext);
-
-        test.end();
-    });
-
     test.test('addExtension', function (test) {
         let twing = new TwingEnvironment(new TwingTestMockLoader());
         let ext = new TwingTestsEnvironmentTestExtension();
-        twing.addExtension(ext);
 
+        twing.addExtension(ext, 'TwingTestsEnvironmentTestExtension');
+
+        test.true(twing.hasExtension('TwingTestsEnvironmentTestExtension'));
         test.true(twing.getTags().has('test'));
         test.true(twing.getFilters().has('foo_filter'));
         test.true(twing.getFunctions().has('foo_function'));
@@ -558,10 +548,10 @@ tap.test('environment', function (test) {
         let loader = new TwingLoaderArray({page: 'hey'});
 
         let twing = new TwingEnvironment(loader);
-        twing.addExtension(extension);
+        twing.addExtension(extension, 'foo');
 
-        test.same(twing.getExtension(extension.constructor.name).name, 'TwingExtension');
-        test.true(twing.isTemplateFresh('page', new Date().getTime()));
+        test.same(twing.getExtension('foo').name, 'TwingExtension');
+        test.true(twing.isTemplateFresh('page', new Date().getTime(), null));
 
         test.end();
     });
@@ -828,7 +818,7 @@ tap.test('environment', function (test) {
 
         let extension = new TwingTestsEnvironmentTestExtension();
 
-        env.setExtensions([extension]);
+        env.addExtensions(new Map([['TwingTestsEnvironmentTestExtension', extension]]));
 
         test.true(env.getExtensions().has('TwingTestsEnvironmentTestExtension'));
 
@@ -1444,6 +1434,76 @@ BAROOF</FOO></foo>oof`);
         test.true(cacheSpy.notCalled, 'Cache should not be queried');
         test.equal(actualTemplate.getTemplateName(), 'main', 'Main template should be loaded successfully');
         test.equal(actualEmbeddedTemplate.getTemplateName(), 'embedded', 'Embedded template should be loaded successfully');
+
+        test.end();
+    });
+
+    test.test('getSourceMapNodeFactories', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let factories = env.getSourceMapNodeFactories();
+
+        test.true(factories.has(TwingNodeType.SPACELESS));
+
+        test.end();
+    });
+
+    test.test('checkMethodAllowed', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let obj = {};
+
+        try {
+            env.checkMethodAllowed(obj, 'foo');
+
+            test.pass();
+        }
+        catch (e) {
+            test.fail();
+        }
+
+        env = new TwingEnvironment(new TwingLoaderArray({}), {
+            sandboxed: true
+        });
+
+        try {
+            env.checkMethodAllowed(obj, 'foo');
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Calling "foo" method on a "Object" is not allowed.');
+        }
+
+        test.end();
+    });
+
+    test.test('checkPropertyAllowed', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let obj = {};
+
+        try {
+            env.checkPropertyAllowed(obj, 'foo');
+
+            test.pass();
+        }
+        catch (e) {
+            test.fail();
+        }
+
+        env = new TwingEnvironment(new TwingLoaderArray({}), {
+            sandboxed: true
+        });
+
+        try {
+            env.checkPropertyAllowed(obj, 'foo');
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Calling "foo" property on a "Object" is not allowed.');
+        }
 
         test.end();
     });

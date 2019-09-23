@@ -9,7 +9,6 @@ import {TwingNodeExpression} from "../node/expression";
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
 import {TwingNodeDo} from "../node/do";
-import {TwingExtensionEscaper} from "../extension/escaper";
 import {TwingNodeExpressionConditional} from "../node/expression/conditional";
 import {TwingNodeInlinePrint} from "../node/inline-print";
 
@@ -31,10 +30,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
 
     protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
         if (node.getType() === TwingNodeType.MODULE) {
-            if (env.hasExtension('TwingExtensionEscaper')) {
-                this.defaultStrategy = (env.getExtension('TwingExtensionEscaper') as TwingExtensionEscaper).getDefaultStrategy(node.getTemplateName());
-            }
-
+            this.defaultStrategy = env.getCoreExtension().getDefaultStrategy(node.getTemplateName());
             this.safeVars = [];
             this.blocks = new Map();
         } else if (node.getType() === TwingNodeType.AUTO_ESCAPE) {
@@ -182,11 +178,10 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         let nodes = new Map();
 
         let name = new TwingNodeExpressionConstant('escape', line, column);
-        let i: number = 0;
 
-        nodes.set(i++, new TwingNodeExpressionConstant(type, line, column));
-        nodes.set(i++, new TwingNodeExpressionConstant(null, line, column));
-        nodes.set(i++, new TwingNodeExpressionConstant(true, line, column));
+        nodes.set(0, new TwingNodeExpressionConstant(type, line, column));
+        nodes.set(1, new TwingNodeExpressionConstant(null, line, column));
+        nodes.set(2, new TwingNodeExpressionConstant(true, line, column));
 
         let nodeArgs = new TwingNode(nodes);
 

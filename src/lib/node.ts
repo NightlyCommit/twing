@@ -39,12 +39,11 @@ export enum TwingNodeType {
     MACRO = 'macro',
     MODULE = 'module',
     PRINT = 'print',
-    PROFILER_ENTER_PROFILE = 'profiler_enter_profile',
-    PROFILER_LEAVE_PROFILE = 'profiler_leave_profile',
     SANDBOX = 'sandbox',
     SET = 'set',
     SPACELESS = 'spaceless',
     TEXT = 'text',
+    VERBATIM = 'verbatim',
     WITH = 'with'
 }
 
@@ -69,7 +68,7 @@ export class TwingNode {
      * @param attributes    Map<string, {}>         A map of attributes (should not be nodes)
      * @param lineno        number                  The line number
      * @param columnno      number                  The column number
-     * @param tag           string                  The tag name associated with the Nodel
+     * @param tag           string                  The tag name associated with the Node
      */
     constructor(nodes: Map<any, any> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, columnno: number = 0, tag: string = null) {
         this.nodes = nodes;

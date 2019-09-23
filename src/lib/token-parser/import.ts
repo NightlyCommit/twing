@@ -5,7 +5,7 @@ import {TwingNodeImport} from "../node/import";
 
 export class TwingTokenParserImport extends TwingTokenParser {
     parse(token: TwingToken) {
-        let macro = this.parser.getExpressionParser().parseExpression();
+        let macro = this.parser.parseExpression();
 
         this.parser.getStream().expect(TwingToken.NAME_TYPE, 'as');
 

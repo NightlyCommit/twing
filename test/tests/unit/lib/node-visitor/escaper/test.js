@@ -9,7 +9,7 @@ const {
     TwingNode,
     TwingSource,
     TwingNodeVisitorSafeAnalysis
-} = require("../../../../../../build");
+} = require("../../../../../../build/main");
 
 const tap = require('tape');
 const sinon = require('sinon');

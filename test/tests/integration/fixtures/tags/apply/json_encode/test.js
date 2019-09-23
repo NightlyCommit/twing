@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return '"apply" tag applies a filter on its children';
+        return '"apply" tag applies json_encode on its children';
     }
 
     getTemplates() {

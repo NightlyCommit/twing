@@ -3,7 +3,7 @@ import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSandbox} from "../node/sandbox";
 import {TwingNode, TwingNodeType} from "../node";
-import {ctypeSpace} from "../helper/ctype_space";
+import {ctypeSpace} from "../helpers/ctype-space";
 
 export class TwingTokenParserSandbox extends TwingTokenParser {
     parse(token: TwingToken) {

@@ -191,7 +191,7 @@ export class TwingCompiler {
      *
      * @returns TwingCompiler
      */
-    addSourceMapEnter(node: TwingNode, ctor: string = null) {
+    addSourceMapEnter(node: TwingNode) {
         if (this.getEnvironment().isSourceMap()) {
             this
                 .write('this.env.enterSourceMapBlock(')
@@ -201,17 +201,7 @@ export class TwingCompiler {
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
-                .raw('this.getSourceContext(), ')
-            ;
-
-            if (ctor) {
-                this.raw(ctor);
-            }
-            else {
-                this.raw(`this.extensions.get('TwingExtensionCore').getSourceMapNodeConstructor('${node.getType()}')`);
-            }
-
-            this.raw(');\n');
+                .raw('this.getSourceContext());\n')
         }
 
         return this;

@@ -4,7 +4,7 @@ const {
     TwingCompiler,
     TwingEnvironment,
     TwingLoaderArray
-} = require('../../../../../../../build/index');
+} = require('../../../../../../../build/main');
 
 const tap = require('tape');
 

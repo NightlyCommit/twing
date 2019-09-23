@@ -23,7 +23,7 @@ export class TwingTokenParserApply extends TwingTokenParser {
         ref = new TwingNodeExpressionTempName(name, false, lineno, columno);
         ref.setAttribute('always_defined', true);
 
-        let filter = this.parser.getExpressionParser().parseFilterExpressionRaw(ref, this.getTag());
+        let filter = this.parser.parseFilterExpressionRaw(ref, this.getTag());
 
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 

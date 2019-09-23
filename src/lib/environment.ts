@@ -13,22 +13,24 @@ import {TwingErrorLoader} from "./error/loader";
 import {TwingTest} from "./test";
 import {TwingFunction} from "./function";
 import {TwingErrorSyntax} from "./error/syntax";
-import {TwingExtensionEscaper} from "./extension/escaper";
 import {TwingTemplate} from "./template";
 import {TwingError} from "./error";
 import {TwingTemplateWrapper} from "./template-wrapper";
 import {TwingCacheInterface} from "./cache-interface";
-import {TwingExtensionOptimizer} from "./extension/optimizer";
 import {TwingCompiler} from "./compiler";
-import {TwingNode} from "./node";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
-import {merge as twingMerge} from "./helper/merge";
-import {TwingOperator} from "./extension";
+import {merge as twingMerge} from "./helpers/merge";
 import {EventEmitter} from 'events';
 import {TwingOutputBuffering} from "./output-buffering";
-import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "./source-map/node";
+import {TwingSourceMapNode} from "./source-map/node";
+import {TwingOperator} from "./operator";
+import {TwingSandboxSecurityPolicy} from "./sandbox/security-policy";
+import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-interface";
+import {TwingEnvironmentOptions} from "./environment-options";
+import {TwingNodeType} from "./node";
+import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
@@ -36,47 +38,7 @@ const hex = require('crypto-js/enc-hex');
 
 type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
 
-export type TwingTemplatesModule = (E: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
-
-/**
- *  * Available options:
- *
- *  * debug: When set to true, it automatically set "auto_reload" to true as
- *           well (default to false).
- *
- *  * charset: The charset used by the templates (default to UTF-8).
- *
- *  * cache: An absolute path where to store the compiled templates,
- *           a TwingCacheInterface implementation,
- *           or false to disable compilation cache (default).
- *
- *  * auto_reload: Whether to reload the template if the original source changed.
- *                 If you don't provide the auto_reload option, it will be
- *                 determined automatically based on the debug value.
- *
- *  * strict_variables: Whether to ignore invalid variables in templates
- *                      (default to false).
- *
- *  * autoescape: Whether to enable auto-escaping (default to html):
- *                  * false: disable auto-escaping
- *                  * html, js: set the autoescaping to one of the supported strategies
- *                  * name: set the autoescaping strategy based on the template name extension
- *                  * callback: a callback that returns an escaping strategy based on the template "name"
- *
- *  * optimizations: A flag that indicates which optimizations to apply
- *                   (default to -1 which means that all optimizations are enabled;
- *                   set it to 0 to disable).
- */
-export type TwingEnvironmentOptions = {
-    debug?: boolean;
-    charset?: string;
-    cache?: TwingCacheInterface | false | string;
-    auto_reload?: boolean;
-    strict_variables?: boolean;
-    autoescape?: string | boolean | Function;
-    optimizations?: number;
-    source_map?: boolean | string;
-}
+export type TwingTemplatesModule = (T: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
 
 export const VERSION = '__VERSION__';
 
@@ -101,6 +63,9 @@ export abstract class TwingEnvironment extends EventEmitter {
     private sourceMapNode: TwingSourceMapNode;
     private sourceMap: boolean | string;
     private autoescape: string | boolean | Function;
+    private coreExtension: TwingExtensionCore;
+    private sandboxed: boolean;
+    private sandboxPolicy: TwingSandboxSecurityPolicyInterface;
 
     /**
      * Constructor.
@@ -116,13 +81,13 @@ export abstract class TwingEnvironment extends EventEmitter {
         options = Object.assign({}, {
             debug: false,
             charset: 'UTF-8',
-            base_template_class: 'TwingTemplate',
             strict_variables: false,
             autoescape: 'html',
             cache: false,
             auto_reload: null,
-            optimizations: -1,
-            source_map: false
+            source_map: false,
+            sandbox_policy: new TwingSandboxSecurityPolicy([], [], new Map(), new Map(), []),
+            sandboxed: false
         }, options);
 
         this.debug = options.debug;
@@ -133,10 +98,20 @@ export abstract class TwingEnvironment extends EventEmitter {
         this.extensionSet = new TwingExtensionSet();
         this.sourceMap = options.source_map;
         this.autoescape = options.autoescape;
+        this.sandboxed = options.sandboxed;
+        this.sandboxPolicy = options.sandbox_policy;
 
-        this.addExtension(new TwingExtensionCore(), 'TwingExtensionCore');
-        this.addExtension(new TwingExtensionEscaper(options.autoescape), 'TwingExtensionEscaper');
-        this.addExtension(new TwingExtensionOptimizer(options.optimizations), 'TwingExtensionOptimizer');
+        this.setCoreExtension(new TwingExtensionCore(options.autoescape));
+    }
+
+    getCoreExtension(): TwingExtensionCore {
+        return this.coreExtension;
+    }
+
+    setCoreExtension(extension: TwingExtensionCore) {
+        this.addExtension(extension, 'TwingExtensionCore');
+
+        this.coreExtension = extension;
     }
 
     /**
@@ -661,27 +636,27 @@ return module.exports;
     /**
      *
      * @param {TwingExtensionInterface} extension
-     * @param {string} name
+     * @param {string} name A name the extension will be registered as
      */
-    addExtension(extension: TwingExtensionInterface, name: string = null) {
+    addExtension(extension: TwingExtensionInterface, name: string) {
         this.extensionSet.addExtension(extension, name);
         this.updateOptionsHash();
     }
 
     /**
-     * Registers an array of extensions.
+     * Registers some extensions.
      *
-     * @param {Array<TwingExtensionInterface>} extensions An array of extensions
+     * @param {Map<string, TwingExtensionInterface>} extensions
      */
-    setExtensions(extensions: Array<TwingExtensionInterface>) {
-        this.extensionSet.setExtensions(extensions);
+    addExtensions(extensions: Map<string, TwingExtensionInterface>) {
+        this.extensionSet.addExtensions(extensions);
         this.updateOptionsHash();
     }
 
     /**
      * Returns all registered extensions.
      *
-     * @returns Map<string, TwingExtensionInterface> A hash of extensions (keys are for internal usage only and should not be relied on)
+     * @returns Map<string, TwingExtensionInterface>
      */
     getExtensions() {
         return this.extensionSet.getExtensions();
@@ -841,6 +816,22 @@ return module.exports;
     }
 
     /**
+     * @param nodeType
+     *
+     * @return TwingSourceMapNodeFactory
+     */
+    getSourceMapNodeFactory(nodeType: TwingNodeType) {
+        return this.extensionSet.getSourceMapNodeFactory(nodeType);
+    }
+
+    /**
+     * @return Map<TwingNodeType, TwingSourceMapNodeFactory>
+     */
+    getSourceMapNodeFactories(): Map<TwingNodeType, TwingSourceMapNodeFactory> {
+        return this.extensionSet.getSourceMapNodeFactories();
+    }
+
+    /**
      * Registers a Global.
      *
      * New globals can be added before compiling or rendering a template;
@@ -934,11 +925,10 @@ return module.exports;
     /**
      * @param {number} line 0-based
      * @param {number} column 1-based
-     * @param {string} name
+     * @param {TwingNodeType} nodeType
      * @param {TwingSource} source
-     * @param {TwingSourceMapNodeConstructor} ctor
      */
-    enterSourceMapBlock(line: number, column: number, name: string, source: TwingSource, ctor: TwingSourceMapNodeConstructor) {
+    enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource) {
         TwingOutputBuffering.obStart();
 
         let sourcePath = path.relative('.', source.getPath());
@@ -949,7 +939,13 @@ return module.exports;
 
         source = new TwingSource(source.getCode(), source.getName(), sourcePath);
 
-        let node = new ctor(line, column - 1, source, name);
+        let factory = this.getSourceMapNodeFactory(nodeType);
+
+        if (!factory) {
+            factory = new TwingSourceMapNodeFactory(nodeType);
+        }
+
+        let node = factory.create(line, column - 1, source);
 
         if (this.sourceMapNode) {
             this.sourceMapNode.addChild(node);
@@ -980,5 +976,43 @@ return module.exports;
         }
 
         return sourceMap;
+    }
+
+    enableSandbox() {
+        this.sandboxed = true;
+    }
+
+    disableSandbox() {
+        this.sandboxed = false;
+    }
+
+    isSandboxed() {
+        return this.sandboxed;
+    }
+
+    checkSecurity(tags: string[], filters: string[], functions: string[]) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkSecurity(tags, filters, functions);
+        }
+    }
+
+    checkMethodAllowed(obj: any, method: string) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkMethodAllowed(obj, method);
+        }
+    }
+
+    checkPropertyAllowed(obj: any, property: string) {
+        if (this.isSandboxed()) {
+            this.sandboxPolicy.checkPropertyAllowed(obj, property);
+        }
+    }
+
+    ensureToStringAllowed(obj: any) {
+        if (this.isSandboxed() && typeof obj === 'object') {
+            this.sandboxPolicy.checkMethodAllowed(obj, 'toString');
+        }
+
+        return obj;
     }
 }

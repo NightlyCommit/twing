@@ -1,8 +1,3 @@
-/**
- * Default base class for compiled templates.
- *
- * @author Eric MORAND <eric.morand@gmail.com>
- */
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingSource} from "./source";
 import {TwingNodeBlock} from "./node/block";
@@ -10,29 +5,35 @@ import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
 import {TwingTemplateWrapper} from "./template-wrapper";
 import {flush, echo, obGetLevel, obStart, obEndClean, obGetClean, obGetContents} from './output-buffering';
-import {iteratorToMap} from "./helper/iterator-to-map";
-import {merge, merge as twingMerge} from "./helper/merge";
+import {iteratorToMap} from "./helpers/iterator-to-map";
+import {merge, merge as twingMerge} from "./helpers/merge";
 import {TwingExtensionInterface} from "./extension-interface";
-import {TwingExtensionSandbox} from "./extension/sandbox";
 import {TwingContext} from "./context";
-import {isMap} from "./helper/is-map";
+import {isMap} from "./helpers/is-map";
 import {TwingErrorLoader} from "./error/loader";
-import {twingConstant, twingEnsureTraversable, twingGetAttribute, twingInFilter} from "./extension/core";
-import {clone} from "./helper/clone";
 import {TwingMarkup} from "./markup";
-import {TwingProfilerProfile} from "./profiler/profile";
 import {TwingSandboxSecurityError} from "./sandbox/security-error";
 import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
 import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
-import {compare} from "./helper/compare";
-import {count} from "./helper/count";
-import {range} from "./helper/range";
-import {isCountable} from "./helper/is-countable";
-import {isPlainObject} from "./helper/is-plain-object";
-import {each} from "./helper/each";
-import {regexParser} from "./helper/regex-parser";
+import {compare} from "./helpers/compare";
+import {count} from "./helpers/count";
+import {isCountable} from "./helpers/is-countable";
+import {isPlainObject} from "./helpers/is-plain-object";
+import {iterate} from "./helpers/iterate";
+import {isIn} from "./helpers/is-in";
+import {ensureTraversable} from "./helpers/ensure-traversable";
+import {getAttribute} from "./helpers/get-attribute";
+import {constant} from "./extension/core/functions/constant";
+import {createRange} from "./helpers/create-range";
+import {cloneMap} from "./helpers/clone-map";
+import {parseRegex} from "./helpers/parse-regex";
 
+/**
+ * Default base class for compiled templates.
+ *
+ * @author Eric MORAND <eric.morand@gmail.com>
+ */
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
     static ARRAY_CALL = 'array';
@@ -43,7 +44,6 @@ export abstract class TwingTemplate {
     protected env: TwingEnvironment;
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
-    protected sandbox: TwingExtensionSandbox;
 
     /**
      * @internal
@@ -428,24 +428,24 @@ export abstract class TwingTemplate {
         return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
     }
 
-    protected get clone(): <K, V>(m: Map<K, V>) => Map<K, V> {
-        return clone;
+    protected get cloneMap(): <K, V>(m: Map<K, V>) => Map<K, V> {
+        return cloneMap;
     }
 
     protected get compare(): (a: any, b: any) => boolean {
         return compare;
     }
 
-    protected get convertToMap(): (iterable: any) => Map<any, any>{
+    protected get convertToMap(): (iterable: any) => Map<any, any> {
         return iteratorToMap;
     }
 
-    protected get count(): (a: any) => number{
+    protected get count(): (a: any) => number {
         return count;
     }
 
-    protected get createRange(): (low: any, high: any, step: number) => Map<number, any>{
-        return range;
+    protected get createRange(): (low: any, high: any, step: number) => Map<number, any> {
+        return createRange;
     }
 
     protected get echo(): (value: any) => void {
@@ -457,55 +457,51 @@ export abstract class TwingTemplate {
     }
 
     protected get ensureTraversable(): <T>(candidate: T[]) => T[] | [] {
-        return twingEnsureTraversable;
+        return ensureTraversable;
     }
 
     protected get flushOutputBuffer(): () => void {
         return flush;
     }
 
-    protected get getAndCleanOutputBuffer(): () => string | false{
+    protected get getAndCleanOutputBuffer(): () => string | false {
         return obGetClean;
     }
 
-    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: any[], type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any{
-        return twingGetAttribute;
+    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: any[], type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any {
+        return getAttribute;
     }
 
-    protected get getConstant(): (env: TwingEnvironment, name: string, source: any) => any{
-        return twingConstant;
-    }
-
-    protected get getOutputBufferContent(): () => string | false{
+    protected get getOutputBufferContent(): () => string | false {
         return obGetContents;
     }
 
-    protected get isCountable(): (candidate: any) => boolean{
+    protected get isCountable(): (candidate: any) => boolean {
         return isCountable;
     }
 
-    protected get isIn(): (a: any, b: any) => boolean{
-        return twingInFilter;
+    protected get isIn(): (a: any, b: any) => boolean {
+        return isIn;
     }
 
-    protected get isMap(): (candidate: any) => boolean{
+    protected get isMap(): (candidate: any) => boolean {
         return isMap;
     }
 
-    protected get isPlainObject(): (candidate: any) => boolean{
+    protected get isPlainObject(): (candidate: any) => boolean {
         return isPlainObject;
     }
 
-    protected get iterate(): (it: any, cb: <K, V>(k: K, v: V) => void) => void{
-        return each;
+    protected get iterate(): (it: any, cb: <K, V>(k: K, v: V) => void) => void {
+        return iterate;
     }
 
     protected get merge(): (iterable1: Array<any> | Map<any, any>, iterable2: Array<any> | Map<any, any>) => Array<any> | Map<any, any> {
         return merge;
     }
 
-    protected get parseRegExp(): (input: string) => RegExp{
-        return regexParser;
+    protected get parseRegExp(): (input: string) => RegExp {
+        return parseRegex;
     }
 
     protected get startOutputBuffer(): () => boolean {
@@ -520,31 +516,27 @@ export abstract class TwingTemplate {
         return TwingErrorLoader;
     }
 
-    protected get Markup(): typeof TwingMarkup{
+    protected get Markup(): typeof TwingMarkup {
         return TwingMarkup;
-    }
-
-    protected get ProfilerProfile(): typeof TwingProfilerProfile{
-        return TwingProfilerProfile;
     }
 
     protected get RuntimeError(): typeof TwingErrorRuntime {
         return TwingErrorRuntime;
     }
 
-    protected get SandboxSecurityError(): typeof TwingSandboxSecurityError{
+    protected get SandboxSecurityError(): typeof TwingSandboxSecurityError {
         return TwingSandboxSecurityError;
     }
 
-    protected get SandboxSecurityNotAllowedFilterError(): typeof TwingSandboxSecurityNotAllowedFilterError{
+    protected get SandboxSecurityNotAllowedFilterError(): typeof TwingSandboxSecurityNotAllowedFilterError {
         return TwingSandboxSecurityNotAllowedFilterError;
     }
 
-    protected get SandboxSecurityNotAllowedFunctionError(): typeof TwingSandboxSecurityNotAllowedFunctionError{
+    protected get SandboxSecurityNotAllowedFunctionError(): typeof TwingSandboxSecurityNotAllowedFunctionError {
         return TwingSandboxSecurityNotAllowedFunctionError;
     }
 
-    protected get SandboxSecurityNotAllowedTagError(): typeof TwingSandboxSecurityNotAllowedTagError{
+    protected get SandboxSecurityNotAllowedTagError(): typeof TwingSandboxSecurityNotAllowedTagError {
         return TwingSandboxSecurityNotAllowedTagError;
     }
 

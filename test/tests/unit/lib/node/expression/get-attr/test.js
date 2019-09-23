@@ -4,7 +4,7 @@ const {
     TwingNodeExpressionArray,
     TwingTemplate,
     TwingNodeExpressionGetAttr
-} = require('../../../../../../../build/index');
+} = require('../../../../../../../build/main');
 
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 
@@ -37,7 +37,7 @@ tap.test('node/expression/get-attr', function (test) {
         let args = new TwingNodeExpressionArray(new Map(), 1, 1);
         let node = new TwingNodeExpressionGetAttr(expr, attr, args, TwingTemplate.ANY_CALL, 1, 1);
 
-        test.same(compiler.compile(node).getSource(), `this.traceableMethod(this.getAttribute, 1, this.source)(this.env, (context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`, [])`);
+        test.same(compiler.compile(node).getSource(), `this.traceableMethod(this.getAttribute, 1, this.source)(this.env, (context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`, [], \`any\`, false, false, false)`);
 
         node = new TwingNodeExpressionGetAttr(expr, attr, args, TwingTemplate.ARRAY_CALL, 1, 1);
 
@@ -48,7 +48,7 @@ tap.test('node/expression/get-attr', function (test) {
         args.addElement(new TwingNodeExpressionConstant('bar', 1, 1));
         node = new TwingNodeExpressionGetAttr(expr, attr, args, TwingTemplate.METHOD_CALL, 1, 1);
 
-        test.same(compiler.compile(node).getSource(), `this.traceableMethod(this.getAttribute, 1, this.source)(this.env, (context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`, [(context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`], \`method\`)`);
+        test.same(compiler.compile(node).getSource(), `this.traceableMethod(this.getAttribute, 1, this.source)(this.env, (context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`, [(context.has(\`foo\`) ? context.get(\`foo\`) : null), \`bar\`], \`method\`, false, false, false)`);
 
         test.end();
     });

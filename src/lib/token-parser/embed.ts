@@ -8,7 +8,7 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
     parse(token: TwingToken) {
         let stream = this.parser.getStream();
 
-        let parent = this.parser.getExpressionParser().parseExpression();
+        let parent = this.parser.parseExpression();
 
         let embedArguments = this.parseArguments();
 

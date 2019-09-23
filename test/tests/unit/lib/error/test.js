@@ -6,7 +6,7 @@ const {
     TwingErrorRuntime,
     TwingLoaderFilesystem,
     TwingSource
-} = require('../../../../../build/index');
+} = require('../../../../../build/main');
 
 const tap = require('tape');
 const path = require('path');

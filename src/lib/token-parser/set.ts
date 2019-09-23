@@ -20,13 +20,13 @@ export class TwingTokenParserSet extends TwingTokenParser {
         let lineno = token.getLine();
         let columnno = token.getColumn();
         let stream = this.parser.getStream();
-        let names = this.parser.getExpressionParser().parseAssignmentExpression();
+        let names = this.parser.parseAssignmentExpression();
 
         let capture = false;
         let values;
 
         if (stream.nextIf(TwingToken.OPERATOR_TYPE, '=')) {
-            values = this.parser.getExpressionParser().parseMultitargetExpression();
+            values = this.parser.parseMultitargetExpression();
 
             stream.expect(TwingToken.BLOCK_END_TYPE);
 

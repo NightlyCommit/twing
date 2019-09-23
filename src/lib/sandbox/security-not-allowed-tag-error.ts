@@ -1,11 +1,11 @@
 import {TwingSandboxSecurityError} from "./security-error";
 
 export class TwingSandboxSecurityNotAllowedTagError extends TwingSandboxSecurityError {
-    private tagName: string;
+    private readonly tagName: string;
 
-    constructor(message: string, functionName: string, lineno: number = -1, filename: string = null) {
+    constructor(message: string, tagName: string, lineno: number = -1, filename: string = null) {
         super(message, lineno, filename);
-        this.tagName = functionName;
+        this.tagName = tagName;
         this.name = 'TwingSandboxSecurityNotAllowedTagError';
     }
 
