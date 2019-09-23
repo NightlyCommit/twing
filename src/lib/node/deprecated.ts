@@ -19,7 +19,7 @@ export class TwingNodeDeprecated extends TwingNode {
 
         if (expr.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
             compiler
-                .write('console.error(')
+                .write('console.warn(')
                 .subcompile(expr)
             ;
         }
@@ -30,7 +30,7 @@ export class TwingNodeDeprecated extends TwingNode {
                 .write(`let ${varName} = `)
                 .subcompile(expr)
                 .raw(';\n')
-                .write(`console.error(${varName}`)
+                .write(`console.warn(${varName}`)
             ;
         }
 

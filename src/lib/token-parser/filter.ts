@@ -17,7 +17,7 @@ import {TwingNodePrint} from "../node/print";
  */
 export class TwingTokenParserFilter extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
-        console.error('The "filter" tag is deprecated since Twig 2.9, use the "apply" tag instead.');
+        console.warn('The "filter" tag is deprecated since Twig 2.9, use the "apply" tag instead.');
 
         let name = this.parser.getVarName();
         let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, token.getLine(), token.getColumn()), null, token.getLine(), token.getColumn(), this.getTag());

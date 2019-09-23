@@ -225,7 +225,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             let consoleData = [];
 
             if (expectedDeprecationMessages) {
-                consoleStub = sinon.stub(console, 'error').callsFake((data, ...args) => {
+                consoleStub = sinon.stub(console, 'warn').callsFake((data, ...args) => {
                     consoleData.push(data);
                 });
             }
