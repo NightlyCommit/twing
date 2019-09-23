@@ -7,7 +7,6 @@ const {
     TwingParser,
     TwingLexer,
     TwingErrorSyntax,
-    TwingTemplateWrapper,
     TwingLoaderArray,
     TwingSource,
     TwingCacheFilesystem,
@@ -724,11 +723,9 @@ tap.test('environment', function (test) {
         }));
 
         let template = new TwingTestMockTemplate();
-        let templateWrapper = new TwingTemplateWrapper(env, template);
 
-        test.true(env.load(template) instanceof TwingTemplateWrapper);
-        test.same(env.load(templateWrapper), templateWrapper);
-        test.true(env.load('index') instanceof TwingTemplateWrapper);
+        test.true(env.load(template));
+        test.true(env.load('index'));
 
         test.end();
     });
@@ -749,11 +746,6 @@ tap.test('environment', function (test) {
         let env = new TwingEnvironment(new TwingLoaderArray({
             index: '{{ foo'
         }));
-
-        let template = new TwingTestMockTemplate();
-        let templateWrapper = new TwingTemplateWrapper(env, template);
-
-        test.same(env.resolveTemplate(templateWrapper), templateWrapper);
 
         test.throws(function () {
             env.resolveTemplate('index');
