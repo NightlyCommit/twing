@@ -15,7 +15,6 @@ import {TwingFunction} from "./function";
 import {TwingErrorSyntax} from "./error/syntax";
 import {TwingTemplate} from "./template";
 import {TwingError} from "./error";
-import {TwingTemplateWrapper} from "./template-wrapper";
 import {TwingCacheInterface} from "./cache-interface";
 import {TwingCompiler} from "./compiler";
 import {TwingNodeModule} from "./node/module";
@@ -203,7 +202,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     /**
      * Sets the active cache implementation.
      *
-     * @param {TwingCacheInterface|string|false} cache A TwingCacheInterface implementation, a string or false to disable cache
+     * @param {TwingCacheInterface|string|string|false} cache A TwingCacheInterface implementation, a string or false to disable cache
      */
     setCache(cache: TwingCacheInterface | string | false) {
         if (typeof cache === 'string') {
@@ -284,24 +283,20 @@ export abstract class TwingEnvironment extends EventEmitter {
     /**
      * Loads a template.
      *
-     * @param {string | TwingTemplateWrapper | TwingTemplate} name The template name
+     * @param {string | TwingTemplate} name The template name
      *
      * @throws {TwingErrorLoader}  When the template cannot be found
      * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
      * @throws {TwingErrorSyntax}  When an error occurred during compilation
      *
-     * @returns {TwingTemplateWrapper}
+     * @returns {TwingTemplate}
      */
-    load(name: string | TwingTemplateWrapper | TwingTemplate) {
-        if (name instanceof TwingTemplateWrapper) {
+    load(name: string | TwingTemplate) {
+        if (name instanceof TwingTemplate) {
             return name;
         }
 
-        if (name instanceof TwingTemplate) {
-            return new TwingTemplateWrapper(this, name);
-        }
-
-        return new TwingTemplateWrapper(this, this.loadTemplate(name as string));
+        return this.loadTemplate(name);
     }
 
     /**
@@ -448,17 +443,16 @@ export abstract class TwingEnvironment extends EventEmitter {
     /**
      * Tries to load a template consecutively from an array.
      *
-     * Similar to loadTemplate() but it also accepts instances of TwingTemplate and
-     * TwingTemplateWrapper, and an array of templates where each is tried to be loaded.
+     * Similar to loadTemplate() but it also accepts instances of TwingTemplate and an array of templates where each is tried to be loaded.
      *
-     * @param {string|TwingTemplate|TwingTemplateWrapper|Array<string|TwingTemplate>} names A template or an array of templates to try consecutively
-     *
-     * @returns {TwingTemplate|TwingTemplateWrapper}
+     * @param {string|TwingTemplate|Array<string|TwingTemplate>} names A template or an array of templates to try consecutively
+     * @param {TwingSource} source
+     * @returns {TwingTemplate}
      *
      * @throws {TwingErrorLoader} When none of the templates can be found
      * @throws {TwingErrorSyntax} When an error occurred during compilation
      */
-    resolveTemplate(names: string | TwingTemplate | TwingTemplateWrapper | Array<string | TwingTemplate>, source: TwingSource = null): TwingTemplate | TwingTemplateWrapper {
+    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate>, source: TwingSource = null): TwingTemplate {
         let self = this;
         let namesArray: Array<any>;
 
@@ -472,10 +466,6 @@ export abstract class TwingEnvironment extends EventEmitter {
 
         for (let name of namesArray) {
             if (name instanceof TwingTemplate) {
-                return name;
-            }
-
-            if (name instanceof TwingTemplateWrapper) {
                 return name;
             }
 

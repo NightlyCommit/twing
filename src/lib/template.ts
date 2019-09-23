@@ -3,7 +3,6 @@ import {TwingSource} from "./source";
 import {TwingNodeBlock} from "./node/block";
 import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
-import {TwingTemplateWrapper} from "./template-wrapper";
 import {flush, echo, obGetLevel, obStart, obEndClean, obGetClean, obGetContents} from './output-buffering';
 import {iteratorToMap} from "./helpers/iterator-to-map";
 import {merge, merge as twingMerge} from "./helpers/merge";
@@ -24,7 +23,6 @@ import {iterate} from "./helpers/iterate";
 import {isIn} from "./helpers/is-in";
 import {ensureTraversable} from "./helpers/ensure-traversable";
 import {getAttribute} from "./helpers/get-attribute";
-import {constant} from "./extension/core/functions/constant";
 import {createRange} from "./helpers/create-range";
 import {cloneMap} from "./helpers/clone-map";
 import {parseRegex} from "./helpers/parse-regex";
@@ -40,7 +38,7 @@ export abstract class TwingTemplate {
     static METHOD_CALL = 'method';
 
     protected parent: TwingTemplate | false = null;
-    protected parents: Map<TwingTemplate | TwingTemplateWrapper | string, TwingTemplate | TwingTemplateWrapper> = new Map();
+    protected parents: Map<TwingTemplate | string, TwingTemplate> = new Map();
     protected env: TwingEnvironment;
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
@@ -83,14 +81,14 @@ export abstract class TwingTemplate {
      *
      * @param context
      *
-     * @returns TwingTemplate|TwingTemplateWrapper|false The parent template or false if there is no parent
+     * @returns TwingTemplate|false The parent template or false if there is no parent
      */
     getParent(context: any = {}) {
         if (this.parent !== null) {
             return this.parent;
         }
 
-        let parent: TwingTemplate | TwingTemplateWrapper | string | false;
+        let parent: TwingTemplate | string | false;
 
         try {
             parent = this.doGetParent(context);
@@ -99,7 +97,7 @@ export abstract class TwingTemplate {
                 return false;
             }
 
-            if (parent instanceof TwingTemplate || parent instanceof TwingTemplateWrapper) {
+            if (parent instanceof TwingTemplate) {
                 this.parents.set(parent.getSourceContext().getName(), parent);
             }
 
@@ -261,35 +259,13 @@ export abstract class TwingTemplate {
         return false;
     }
 
-    /**
-     * Returns all block names in the active context of the template.
-     *
-     * This method checks blocks defined in the active template
-     * or defined in "used" traits or defined in parent templates.
-     *
-     * @param context The context
-     * @param {Map<string, Array<*>>} blocks The active set of blocks
-     * @returns {Array<string>}
-     */
-    getBlockNames(context: any, blocks: Map<string, Array<any>> = new Map()): Array<string> {
-        let names: any = new Set([...blocks.keys(), ...this.blocks.keys()]);
-
-        let parent: TwingTemplate = this.getParent(context) as TwingTemplate;
-
-        if (parent) {
-            names = new Set([...names, ...parent.getBlockNames(context)]);
-        }
-
-        return [...names];
-    }
-
-    public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate | TwingTemplateWrapper {
+    public loadTemplate(template: TwingTemplate | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
         try {
             if (Array.isArray(template)) {
                 return this.env.resolveTemplate(template, this.getSourceContext());
             }
 
-            if (template instanceof TwingTemplate || template instanceof TwingTemplateWrapper) {
+            if (template instanceof TwingTemplate) {
                 return template;
             }
 
@@ -369,7 +345,7 @@ export abstract class TwingTemplate {
      */
     abstract doDisplay(context: {}, blocks: Map<string, Array<any>>): void;
 
-    protected doGetParent(context: any): TwingTemplate | TwingTemplateWrapper | string | false {
+    protected doGetParent(context: any): TwingTemplate | string | false {
         return false;
     }
 

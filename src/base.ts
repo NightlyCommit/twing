@@ -120,7 +120,6 @@ export {TwingSourceMapNode} from "./lib/source-map/node";
 export {TwingSourceMapNodeFactory} from "./lib/source-map/node-factory";
 export {TwingSourceMapNodeFactorySpaceless} from "./lib/source-map/node-factory/spaceless";
 export {TwingSourceMapNodeSpaceless} from "./lib/source-map/node/spaceless";
-export {TwingTemplateWrapper} from "./lib/template-wrapper";
 export {TwingTemplate} from "./lib/template";
 export {TwingTest} from "./lib/test";
 export {TwingToken} from "./lib/token";
