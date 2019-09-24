@@ -65,7 +65,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         compiler
             .raw('(')
             .subcompile(this.getNode('name'))
-            .raw(', context');
+            .raw(', context.clone()');
 
         if (!this.hasNode('template')) {
             compiler.raw(', blocks');

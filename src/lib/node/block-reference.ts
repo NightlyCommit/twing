@@ -21,7 +21,7 @@ export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutpu
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write(`this.traceableDisplayBlock(${this.getTemplateLine()}, this.source)('${this.getAttribute('name')}', context, blocks);\n`)
+            .write(`this.traceableDisplayBlock(${this.getTemplateLine()}, this.source)('${this.getAttribute('name')}', context.clone(), blocks);\n`)
         ;
     }
 }
