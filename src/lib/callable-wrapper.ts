@@ -4,6 +4,11 @@ import {TwingNode} from "./node";
 
 const merge = require('merge');
 
+export type TwingCallableArgument = {
+  name: string,
+  defaultValue?: any
+};
+
 export type TwingCallableWrapperOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
@@ -19,13 +24,15 @@ export type TwingCallableWrapperOptions = {
 export abstract class TwingCallableWrapper {
     readonly name: string;
     readonly callable: Function;
+    readonly acceptedArguments: TwingCallableArgument[];
     readonly options: TwingCallableWrapperOptions;
 
     private arguments: Array<any> = [];
 
-    protected constructor(name: string, callable: Function, options: TwingCallableWrapperOptions = {}) {
+    protected constructor(name: string, callable: Function, acceptedArguments: TwingCallableArgument[], options: TwingCallableWrapperOptions = {}) {
         this.name = name;
         this.callable = callable;
+        this.acceptedArguments = acceptedArguments;
 
         this.options = merge({
             needs_environment: false,
@@ -48,6 +55,13 @@ export abstract class TwingCallableWrapper {
      */
     getCallable() {
         return this.callable;
+    }
+
+    /**
+     * @return TwingCallableArgument[]
+     */
+    getAcceptedArgments(): TwingCallableArgument[] {
+        return this.acceptedArguments;
     }
 
     /**
@@ -75,7 +89,6 @@ export abstract class TwingCallableWrapper {
             }
         };
     }
-
 
     isVariadic(): boolean {
         return this.options.is_variadic;

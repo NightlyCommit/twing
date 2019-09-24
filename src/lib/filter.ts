@@ -1,22 +1,22 @@
 import {TwingNodeExpressionFilter} from "./node/expression/filter";
 import {TwingNode} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
-import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapperOptions, TwingCallableWrapper, TwingCallableArgument} from "./callable-wrapper";
 
 let merge = require('merge');
 
 type TwingFilterCallable = (...args: any[]) => any;
 
 export type TwingFilterOptions = TwingCallableWrapperOptions & {
-    pre_escape?: string;
-    preserves_safety?: Array<string>;
+    pre_escape?: string,
+    preserves_safety?: Array<string>
 }
 
 export class TwingFilter extends TwingCallableWrapper {
     readonly options: TwingFilterOptions;
 
-    constructor(name: string, callable: TwingFilterCallable, options: TwingFilterOptions = {}) {
-        super(name, callable);
+    constructor(name: string, callable: TwingFilterCallable, acceptedArguments: TwingCallableArgument[], options: TwingFilterOptions = {}) {
+        super(name, callable, acceptedArguments);
 
         this.options.pre_escape = null;
         this.options.preserves_safety = null;

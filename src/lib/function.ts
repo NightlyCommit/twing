@@ -1,6 +1,6 @@
 import {TwingNodeExpressionFunction} from "./node/expression/function";
 import {TwingNode} from "./node";
-import {TwingCallableWrapperOptions, TwingCallableWrapper} from "./callable-wrapper";
+import {TwingCallableWrapperOptions, TwingCallableWrapper, TwingCallableArgument} from "./callable-wrapper";
 
 const merge = require('merge');
 
@@ -14,10 +14,11 @@ export class TwingFunction extends TwingCallableWrapper {
      *
      * @param {string} name Name of this function
      * @param {TwingFunctionCallable} callable A callable implementing the function. If null, you need to overwrite the "expression_factory" option to customize compilation.
+     * @param {TwingCallableArgument[]} acceptedArguments
      * @param {TwingCallableWrapperOptions} options Options
      */
-    constructor(name: string, callable: TwingFunctionCallable = null, options: TwingCallableWrapperOptions = {}) {
-        super (name, callable);
+    constructor(name: string, callable: TwingFunctionCallable = null, acceptedArguments: TwingCallableArgument[], options: TwingCallableWrapperOptions = {}) {
+        super (name, callable, acceptedArguments);
 
         this.options.expression_factory = function (name: string, functionArguments: TwingNode, line: number, columnno: number) {
             return new TwingNodeExpressionFunction(name, functionArguments, line, columnno);

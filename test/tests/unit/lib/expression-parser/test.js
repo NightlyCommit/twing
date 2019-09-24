@@ -43,15 +43,15 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     getFunctions() {
         return [
             new TwingFunction('deprecated', () => {
-            }, {
+            }, [], {
                 deprecated: true
             }),
             new TwingFunction('deprecated_with_version', () => {
-            }, {
+            }, [], {
                 deprecated: 1
             }),
             new TwingFunction('deprecated_with_alternative', () => {
-            }, {
+            }, [], {
                 deprecated: true,
                 alternative: 'alternative'
             })
@@ -67,15 +67,15 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     getFilters() {
         return [
             new TwingFilter('deprecated', () => {
-            }, {
+            }, [], {
                 deprecated: true
             }),
             new TwingFilter('deprecated_with_version', () => {
-            }, {
+            }, [], {
                 deprecated: 1
             }),
             new TwingFilter('deprecated_with_alternative', () => {
-            }, {
+            }, [], {
                 deprecated: true,
                 alternative: 'alternative'
             })
@@ -574,7 +574,7 @@ tap.test('expression-parser', function (test) {
                     test.same(chunk, testCase[2]);
                 };
 
-                parser.getFunctionNode(testCase[0], 1);
+                parser.getFunctionNode(testCase[0], 1, 1);
             }
 
             test.end();
@@ -735,6 +735,10 @@ tap.test('expression-parser', function (test) {
 
                     test.same(chunk, testCase[2]);
                 };
+
+                process.stdout.on('error', (e) => {
+                    // console.error('e', e);
+                });
 
                 parser.parseFilterExpressionRaw(new TwingNodeExpressionConstant(1, 1, 1), testCase[0]);
             }

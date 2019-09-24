@@ -3,3 +3,6 @@
 
 {% include template_from_string("Hello {{ name }}") %}
 {% include template_from_string('{% extends "parent.twig" %}{% block content %}Hello {{ name }}{% endblock %}') %}
+{# named arguments #}
+{% include template_from_string(template = "Hello {{ name }}", name = "index") %}
+{% include template_from_string(name = "index", template = "Hello {{ name }}") %}

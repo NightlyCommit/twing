@@ -26,6 +26,7 @@ import {getAttribute} from "./helpers/get-attribute";
 import {createRange} from "./helpers/create-range";
 import {cloneMap} from "./helpers/clone-map";
 import {parseRegex} from "./helpers/parse-regex";
+import {constant} from "./extension/core/functions/constant";
 
 /**
  * Default base class for compiled templates.
@@ -410,6 +411,10 @@ export abstract class TwingTemplate {
 
     protected get compare(): (a: any, b: any) => boolean {
         return compare;
+    }
+
+    protected get constant(): (env: TwingEnvironment, name: string, object: any) => any {
+        return constant;
     }
 
     protected get convertToMap(): (iterable: any) => Map<any, any> {
