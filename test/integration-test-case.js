@@ -46,53 +46,53 @@ class TwingTestExtension extends TwingExtension {
 
         return [
             // new TwingFilter('§', array($this, '§Filter')),
-            new TwingFilter('escape_and_nl2br', escape_and_nl2br, {
+            new TwingFilter('escape_and_nl2br', escape_and_nl2br, [], {
                 'needs_environment': true,
                 'is_safe': ['html']
             }),
             // name this filter "nl2br_" to allow the core "nl2br" filter to be tested
-            new TwingFilter('nl2br_', nl2br, {'pre_escape': 'html', 'is_safe': ['html']}),
-            new TwingFilter('§', this.sectionFilter),
-            new TwingFilter('escape_something', escape_something, {'is_safe': ['something']}),
-            new TwingFilter('preserves_safety', preserves_safety, {'preserves_safety': ['html']}),
-            new TwingFilter('static_call_string', TwingTestExtension.staticCall),
-            new TwingFilter('static_call_array', TwingTestExtension.staticCall),
+            new TwingFilter('nl2br_', nl2br, [], {'pre_escape': 'html', 'is_safe': ['html']}),
+            new TwingFilter('§', this.sectionFilter, []),
+            new TwingFilter('escape_something', escape_something, [], {'is_safe': ['something']}),
+            new TwingFilter('preserves_safety', preserves_safety, [], {'preserves_safety': ['html']}),
+            new TwingFilter('static_call_string', TwingTestExtension.staticCall, []),
+            new TwingFilter('static_call_array', TwingTestExtension.staticCall, []),
             new TwingFilter('magic_call', function () {
                 return self.__call('magicCall', arguments);
-            }),
+            }, []),
             new TwingFilter('magic_call_string', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            }),
+            }, []),
             new TwingFilter('magic_call_array', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            }),
-            new TwingFilter('*_path', dynamic_path),
-            new TwingFilter('*_foo_*_bar', dynamic_foo),
+            }, []),
+            new TwingFilter('*_path', dynamic_path, []),
+            new TwingFilter('*_foo_*_bar', dynamic_foo, []),
             new TwingFilter('anon_foo', function (name) {
                 return '*' + name + '*';
-            }),
+            }, []),
         ];
     }
 
     getFunctions() {
         return [
-            new TwingFunction('§', this.sectionFunction),
-            new TwingFunction('safe_br', this.br, {'is_safe': ['html']}),
-            new TwingFunction('unsafe_br', this.br),
-            new TwingFunction('static_call_string', TwingTestExtension.staticCall),
-            new TwingFunction('static_call_array', TwingTestExtension.staticCall),
-            new TwingFunction('*_path', dynamic_path),
-            new TwingFunction('*_foo_*_bar', dynamic_foo),
+            new TwingFunction('§', this.sectionFunction, []),
+            new TwingFunction('safe_br', this.br, [], {'is_safe': ['html']}),
+            new TwingFunction('unsafe_br', this.br, []),
+            new TwingFunction('static_call_string', TwingTestExtension.staticCall, []),
+            new TwingFunction('static_call_array', TwingTestExtension.staticCall, []),
+            new TwingFunction('*_path', dynamic_path, []),
+            new TwingFunction('*_foo_*_bar', dynamic_foo, []),
             new TwingFunction('anon_foo', function (name) {
                 return '*' + name + '*';
-            }),
+            }, []),
         ];
     }
 
     getTests() {
         return [
-            new TwingTest('multi word', this.is_multi_word),
-            new TwingTest('test_*', this.dynamic_test)
+            new TwingTest('multi word', this.is_multi_word, []),
+            new TwingTest('test_*', this.dynamic_test, [])
         ];
     }
 
@@ -242,8 +242,6 @@ module.exports = class TwingTestIntegrationTestCaseBase {
                         test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
                     }
                 } catch (e) {
-                    console.warn(e);
-
                     test.fail(`should not throw an error (${e})`);
                 }
             } else {

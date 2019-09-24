@@ -34,6 +34,7 @@ export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
 
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', function_.isVariadic());
+        this.setAttribute('accepted_arguments', function_.getAcceptedArgments());
 
         this.compileCallable(compiler);
     }

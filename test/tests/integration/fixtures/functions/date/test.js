@@ -22,6 +22,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         Luxon.Settings.defaultZoneName = 'UTC';
 
         return {
+            date: Luxon.DateTime.fromObject({year: 2010, month: 10, day: 4, hour: 13, minute: 45}),
             date1: Luxon.DateTime.fromObject({year: 2010, month: 10, day: 4, hour: 13, minute: 45}),
             date2: Luxon.DateTime.fromObject({year: 2010, month: 10, day: 4, hour: 13, minute: 45}),
             date3: '2010-10-04 13:45',

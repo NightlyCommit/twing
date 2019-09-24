@@ -39,9 +39,12 @@ tap.test('node/expression/test', function (test) {
         let loader = new TwingTestMockLoader();
         let environment = new TwingTestEnvironmentStub(loader);
 
-        environment.addTest(new TwingTest('barbar', twig_tests_test_barbar, {is_variadic: true, need_context: true}));
+        environment.addTest(new TwingTest('barbar', twig_tests_test_barbar, [
+            {name: 'arg1', defaultValue: null},
+            {name: 'arg2', defaultValue: null}
+        ], {is_variadic: true, need_context: true}));
         environment.addTest(new TwingTest('anonymous', function () {
-        }));
+        }, []));
 
         let compiler = new TwingTestMockCompiler(environment);
 

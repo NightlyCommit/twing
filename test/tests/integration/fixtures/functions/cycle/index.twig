@@ -2,3 +2,7 @@
 {% for i in 0..6 %}
 {{ cycle(array1, i) }}-{{ cycle(array2, i) }}
 {% endfor %}
+{# named arguments #}
+{% for i in 0..6 %}
+{{ cycle(values = array1, position = i) }}-{{ cycle(position = i, values = array2) }}
+{% endfor %}

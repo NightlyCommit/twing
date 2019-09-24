@@ -6,7 +6,7 @@ tap.test('test', function (test) {
     test.test('getNodeFactory', function(test) {
         let factory = () => {};
 
-        let twingTest = new TwingTest('foo', () => {}, {
+        let twingTest = new TwingTest('foo', () => {}, [], {
             expression_factory: factory
         });
 
@@ -16,7 +16,7 @@ tap.test('test', function (test) {
     });
 
     test.test('isVariadic', function(test) {
-        let twingTest = new TwingTest('foo', () => {}, {
+        let twingTest = new TwingTest('foo', () => {}, [], {
             is_variadic: true
         });
 
@@ -26,13 +26,13 @@ tap.test('test', function (test) {
     });
 
     test.test('isDeprecated', function(test) {
-        let twingTest = new TwingTest('foo', () => {}, {
+        let twingTest = new TwingTest('foo', () => {}, [], {
             deprecated: true
         });
 
         test.same(twingTest.isDeprecated(), true);
 
-        twingTest = new TwingTest('foo', () => {}, {
+        twingTest = new TwingTest('foo', () => {}, [], {
             deprecated: false
         });
 
@@ -42,7 +42,7 @@ tap.test('test', function (test) {
     });
 
     test.test('getDeprecatedVersion', function(test) {
-        let twingTest = new TwingTest('foo', () => {}, {
+        let twingTest = new TwingTest('foo', () => {}, [], {
             deprecated: 1
         });
 
@@ -52,7 +52,7 @@ tap.test('test', function (test) {
     });
 
     test.test('getAlternative', function(test) {
-        let twingTest = new TwingTest('foo', () => {}, {
+        let twingTest = new TwingTest('foo', () => {}, [], {
             alternative: 'bar'
         });
 

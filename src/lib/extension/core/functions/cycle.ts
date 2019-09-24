@@ -1,12 +1,12 @@
 /**
  * Cycles over a value.
  *
- * @param {Array} values
+ * @param {any[] | any} values
  * @param {number} position The cycle position
  *
- * @returns {string} The next value in the cycle
+ * @returns {any} The value at position
  */
-export function cycle(values: Array<any>, position: number) {
+export function cycle(values: any[] | any, position: number) {
     if (!Array.isArray(values)) {
         return values;
     }

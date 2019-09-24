@@ -38,8 +38,6 @@ tap.test('token-parser/auto-escape', function (test) {
                 test.fail();
             }
             catch (e) {
-                console.warn(e);
-
                 test.same(e.message, 'An escaping strategy must be a string or false at line 1.');
             }
 

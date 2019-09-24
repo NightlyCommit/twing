@@ -7,7 +7,7 @@ const tap = require('tape');
 
 tap.test('function', function (test) {
     test.test('getSafe', function (test) {
-        let function_ = new TwingFunction('foo', () => {}, {
+        let function_ = new TwingFunction('foo', () => {}, [], {
             is_safe_callback: () => {
                 return 'html'
             }

@@ -3,16 +3,14 @@ const {
     TwingNode,
     TwingCompiler,
     TwingEnvironment,
-    TwingLoaderArray,
-    TwingErrorSyntax
+    TwingLoaderArray
 } = require('../../../../../../../build/main');
 
 const tap = require('tape');
-const sinon = require('sinon');
 
 class TwingTestsNodeExpressionCall extends TwingNodeExpressionCall {
-    getArguments(callable = null, argumentsNode) {
-        return super.getArguments(callable, argumentsNode);
+    getArguments(callable = null, argumentsNode, env) {
+        return super.getArguments(callable, argumentsNode, env);
     }
 }
 
@@ -26,10 +24,6 @@ function date(format, timestamp) {
 
 }
 
-function substr_compare(main_str, str, offset, length, case_sensitivity) {
-
-}
-
 function customFunction(arg1, arg2 = 'default', arg3 = []) {
 }
 
@@ -39,11 +33,6 @@ class TwingTestsNodeExpressionCallTest {
 }
 
 function custom_Twig_Tests_Node_Expression_CallTest_function(required) {
-}
-
-class CallableTestClass {
-    __invoke(required) {
-    }
 }
 
 class Callable extends TwingNodeExpressionCall {
@@ -61,6 +50,11 @@ tap.test('node/expression/call', function (test) {
             ['name', 'date']
         ]));
 
+        node.setAttribute('accepted_arguments', [
+            {name: 'format'},
+            {name: 'timestamp'}
+        ]);
+
         test.same(
             getArguments(node, [date, new Map([['format', 'Y-m-d'], ['timestamp', null]])]),
             ['Y-m-d', null]
@@ -73,13 +67,37 @@ tap.test('node/expression/call', function (test) {
                 ['is_variadic', true]
             ]));
 
-            test.throws(function () {
+            try {
                 getArguments(node, [null, new Map([[0, 'bar']])]);
-            }, new Error('Arbitrary positional arguments are not supported for function "date".'));
 
-            test.throws(function () {
+                test.fail();
+            } catch (e) {
+                test.same(e.message, 'Arbitrary positional arguments are not supported for function "date".')
+            }
+
+            try {
                 getArguments(node, [null, new Map([['foo', 'bar']])]);
-            }, new Error('Named arguments are not supported for function "date".'));
+
+                test.fail();
+            } catch (e) {
+                test.same(e.message, 'Named arguments are not supported for function "date".')
+            }
+
+            test.end();
+        });
+
+        test.test('supports unset accepted_arguments attribute', function (test) {
+            let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
+                ['type', 'function'],
+                ['name', 'anonymous']
+            ]));
+
+            node.setAttribute('is_variadic', true);
+
+            test.same(
+                getArguments(node, [() => {}, new Map()]),
+                []
+            );
 
             test.end();
         });
@@ -93,11 +111,13 @@ tap.test('node/expression/call', function (test) {
             ['name', 'date']
         ]));
 
-        test.throws(
-            function () {
-                getArguments(node, [date, new Map([['timestamp', 123456], [0, 'Y-m-d']])]);
-            }, new TwingErrorSyntax('Positional arguments cannot be used after named arguments for function "date".', 0), 'should throw a TwingErrorSyntax'
-        );
+        try {
+            getArguments(node, [date, new Map([['timestamp', 123456], [0, 'Y-m-d']])]);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Positional arguments cannot be used after named arguments for function "date".')
+        }
 
         test.end();
     });
@@ -108,11 +128,18 @@ tap.test('node/expression/call', function (test) {
             ['name', 'date']
         ]));
 
-        test.throws(
-            function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['format', 'U']])]);
-            }, new TwingErrorSyntax('Argument "format" is defined twice for function "date".', 0), 'should throw a TwingErrorSyntax'
-        );
+        node.setAttribute('accepted_arguments', [
+            {name: 'format'},
+            {name: 'timestamp'}
+        ]);
+
+        try {
+            getArguments(node, [date, new Map([[0, 'Y-m-d'], ['format', 'U']])]);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Argument "format" is defined twice for function "date".')
+        }
 
         test.end();
     });
@@ -123,11 +150,18 @@ tap.test('node/expression/call', function (test) {
             ['name', 'date']
         ]));
 
-        test.throws(
-            function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown', '']])]);
-            }, new TwingErrorSyntax('Unknown argument "unknown" for function "date(format, timestamp)".', 0), 'should throw a TwingErrorSyntax'
-        );
+        node.setAttribute('accepted_arguments', [
+            {name: 'format'},
+            {name: 'timestamp'}
+        ]);
+
+        try {
+            getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown', '']])]);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Unknown argument "unknown" for function "date(format, timestamp)".')
+        }
 
         test.end();
     });
@@ -138,30 +172,18 @@ tap.test('node/expression/call', function (test) {
             ['name', 'date']
         ]));
 
-        test.throws(
-            function () {
-                getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown1', ''], ['unknown2', '']])]);
-            }, new TwingErrorSyntax('Unknown arguments "unknown1", "unknown2" for function "date(format, timestamp)".', 0), 'should throw a TwingErrorSyntax'
-        );
+        node.setAttribute('accepted_arguments', [
+            {name: 'format'},
+            {name: 'timestamp'}
+        ]);
 
-        test.end();
-    });
+        try {
+            getArguments(node, [date, new Map([[0, 'Y-m-d'], ['timestamp', null], ['unknown1', ''], ['unknown2', '']])]);
 
-    /**
-     * This test is unreachable with JavaScript due to the nature of the language: in C, a parameter can be declared optional even without a default value; in JavaScript this is not possible.
-     */
-    test.test('testResolveArgumentsWithMissingValueForOptionalArgument', function (test) {
-        let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
-            ['type', 'function'],
-            ['name', 'substr_compare']
-        ]));
-
-        // test.throws(
-        //     function() {
-        //         getArguments(node, [substr_compare, new Map([[0, 'abcd'], [1, 'bc'], ['offset', 1], ['case_sensitivity', true]])])
-        //     }, new TwingErrorSyntax('Argument "case_sensitivity" could not be assigned for function "substr_compare(main_str, str, offset, length, case_sensitivity)" because it is mapped to an internal PHP function which cannot determine default value for optional argument "length".'), 'should throw a TwingErrorSyntax'
-        // );
-        test.pass();
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Unknown arguments "unknown1", "unknown2" for function "date(format, timestamp)".')
+        }
 
         test.end();
     });
@@ -171,6 +193,12 @@ tap.test('node/expression/call', function (test) {
             ['type', 'function'],
             ['name', 'custom_function']
         ]));
+
+        node.setAttribute('accepted_arguments', [
+            {name: 'arg1'},
+            {name: 'arg2', defaultValue: 'default'},
+            {name: 'arg3', defaultValue: []}
+        ]);
 
         test.same(
             getArguments(node, [customFunction, new Map([['arg1', 'arg1']])]),
@@ -187,13 +215,19 @@ tap.test('node/expression/call', function (test) {
             ['is_variadic', true]
         ]));
 
+        node.setAttribute('accepted_arguments', [
+            {name: 'arg1'}
+        ]);
+
         let callTest = new TwingTestsNodeExpressionCallTest();
 
-        test.throws(
-            function () {
-                getArguments(node, [callTest.customFunctionWithArbitraryArguments, new Map()]);
-            }, new Error('The last parameter of "customFunctionWithArbitraryArguments" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
-        );
+        try {
+            getArguments(node, [callTest.customFunctionWithArbitraryArguments, new Map()]);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Value for argument "arg1" is required for function "foo".')
+        }
 
         test.end();
     });
@@ -205,27 +239,17 @@ tap.test('node/expression/call', function (test) {
             ['is_variadic', true]
         ]));
 
-        test.throws(
-            function () {
-                getArguments(node, [custom_Twig_Tests_Node_Expression_CallTest_function, new Map()]);
-            }, new Error('The last parameter of "custom_Twig_Tests_Node_Expression_CallTest_function" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
-        );
+        node.setAttribute('accepted_arguments', [
+            {name: 'required'}
+        ]);
 
-        test.end();
-    });
+        try {
+            getArguments(node, [custom_Twig_Tests_Node_Expression_CallTest_function, new Map()]);
 
-    test.test('testResolveArgumentsWithMissingParameterForArbitraryArgumentsOnObject', function (test) {
-        let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
-            ['type', 'function'],
-            ['name', 'foo'],
-            ['is_variadic', true]
-        ]));
-
-        test.throws(
-            function () {
-                getArguments(node, [new CallableTestClass(), new Map()]);
-            }, new Error('The last parameter of "CallableTestClass::__invoke" for function "foo" must be an array with default value, eg. "arg = []".'), 'should throw an Error'
-        );
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Value for argument "required" is required for function "foo".')
+        }
 
         test.end();
     });
@@ -240,33 +264,6 @@ tap.test('node/expression/call', function (test) {
         compiler.compile(node);
 
         test.same(compiler.getSource(), 'foo(...[])');
-
-        test.end();
-    });
-
-    test.test('getCallableParameters', function (test) {
-        test.test('with included arguments', function (test) {
-            let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
-                ['type', 'function'],
-                ['name', 'date']
-            ]));
-
-            node.setAttribute('arguments', ['foo']);
-
-            let getCallableParameters = Reflect.get(node, 'getCallableParameters').bind(node);
-            let env = new TwingEnvironment(new TwingLoaderArray({}));
-
-            test.same(getCallableParameters((foo, bar) => {
-            }, false, env), [
-                {
-                    optional: false,
-                    name: "bar",
-                    defaultValue: undefined
-                }
-            ]);
-
-            test.end();
-        });
 
         test.end();
     });
