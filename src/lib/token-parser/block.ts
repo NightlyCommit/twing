@@ -1,11 +1,11 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
 import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
 
 import {TwingNodeBlock} from "../node/block";
 import {TwingNodePrint} from "../node/print";
 import {TwingNodeBlockReference} from "../node/block-reference";
+import {Token, TokenType} from "twig-lexer";
 
 /**
  * Marks a section of a template as being reusable.
@@ -20,11 +20,11 @@ import {TwingNodeBlockReference} from "../node/block-reference";
 const varValidator = require('var-validator');
 
 export class TwingTokenParserBlock extends TwingTokenParser {
-    parse(token: TwingToken): TwingNode {
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
+    parse(token: Token): TwingNode {
+        let lineno = token.line;
+        let columnno = token.column;
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+        let name = stream.expect(TokenType.NAME).value;
 
         let safeName = name;
 
@@ -33,7 +33,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         }
 
         if (this.parser.hasBlock(name)) {
-            throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().getLine(), stream.getSourceContext());
+            throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().line, stream.getSourceContext());
         }
 
         let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno, columnno);
@@ -44,16 +44,16 @@ export class TwingTokenParserBlock extends TwingTokenParser {
 
         let body;
 
-        if (stream.nextIf(TwingToken.BLOCK_END_TYPE)) {
+        if (stream.nextIf(TokenType.TAG_END)) {
             body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-            let token = stream.nextIf(TwingToken.NAME_TYPE);
+            let token = stream.nextIf(TokenType.NAME);
 
             if (token) {
-                let value = token.getValue();
+                let value = token.value;
 
                 if (value != name) {
-                    throw new TwingErrorSyntax(`Expected endblock for block "${name}" (but "${value}" given).`, stream.getCurrent().getLine(), stream.getSourceContext());
+                    throw new TwingErrorSyntax(`Expected endblock for block "${name}" (but "${value}" given).`, stream.getCurrent().line, stream.getSourceContext());
                 }
             }
         }
@@ -65,7 +65,7 @@ export class TwingTokenParserBlock extends TwingTokenParser {
             body = new TwingNode(nodes);
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         block.setNode('body', body);
 
@@ -75,8 +75,8 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         return new TwingNodeBlockReference(name, lineno, columnno, this.getTag());
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endblock');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endblock');
     }
 
     getTag() {

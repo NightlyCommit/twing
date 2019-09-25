@@ -30,6 +30,7 @@ import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-int
 import {TwingEnvironmentOptions} from "./environment-options";
 import {TwingNodeType} from "./node";
 import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
+import {Token, TokenStream} from "twig-lexer";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
@@ -499,12 +500,14 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @throws {TwingErrorSyntax} When the code is syntactically wrong
      */
-    tokenize(source: TwingSource) {
+    tokenize(source: TwingSource): TwingTokenStream {
         if (!this.lexer) {
             this.lexer = new TwingLexer(this);
         }
 
-        return this.lexer.tokenize(source);
+        let stream = this.lexer.tokenizeSource(source);
+
+        return new TwingTokenStream(stream.toAst(), stream.getSourceContext());
     }
 
     setParser(parser: TwingParser) {
@@ -512,7 +515,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     }
 
     /**
-     * Converts a token stream to a template.
+     * Converts a token list to a template.
      *
      * @param {TwingTokenStream} stream
      * @returns {TwingNodeModule}

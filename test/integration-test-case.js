@@ -1,6 +1,5 @@
 const {TwingTokenParser} = require('../build/lib/token-parser');
 const {TwingNodePrint} = require('../build/lib/node/print');
-const {TwingToken} = require('../build/lib/token');
 const {TwingNodeExpressionConstant} = require('../build/lib/node/expression/constant');
 const {TwingExtension} = require('../build/lib/extension');
 const {TwingFilter} = require('../build/lib/filter');
@@ -9,10 +8,11 @@ const {TwingTest} = require('../build/lib/test');
 const {escape} = require('../build/lib/extension/core/filters/escape');
 const {TwingLoaderArray} = require('../build/lib/loader/array');
 const {TwingSandboxSecurityPolicy} = require('../build/lib/sandbox/security-policy');
+const {TokenType} = require('twig-lexer');
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
         return new TwingNodePrint(new TwingNodeExpressionConstant('§', -1, -1), -1, -1);
     }
@@ -134,7 +134,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         this.twing = null;
     }
 
-    setTwing(env) {
+    setEnvironment(env) {
         this.twing = env;
     }
 
@@ -199,21 +199,21 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             }, this.getConfig());
 
             let loader = new TwingLoaderArray(templates);
-            let twing = new TwingEnvironment(loader, config);
+            let environment = new TwingEnvironment(loader, config);
 
-            this.setTwing(twing);
+            this.setEnvironment(environment);
 
             // extensions
             this.getExtensions().forEach(function (extension) {
-                twing.addExtension(extension);
+                environment.addExtension(extension);
             });
 
             // globals
             this.getGlobals().forEach(function (value, key) {
-                twing.addGlobal(key, value);
+                environment.addGlobal(key, value);
             });
 
-            twing.addGlobal('global', 'global');
+            environment.addGlobal('global', 'global');
 
             // data
             let data = this.getData();
@@ -232,7 +232,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
 
             if (!expectedErrorMessage) {
                 try {
-                    let actual = twing.render('index.twig', data);
+                    let actual = environment.render('index.twig', data);
 
                     test.same(actual.trim(), expected.trim(), 'should render as expected');
 
@@ -246,7 +246,7 @@ module.exports = class TwingTestIntegrationTestCaseBase {
                 }
             } else {
                 try {
-                    twing.render('index.twig', data);
+                    environment.render('index.twig', data);
 
                     test.fail(`should throw an error`);
                 } catch (e) {

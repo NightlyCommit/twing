@@ -1,7 +1,7 @@
 import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingParser} from "./parser";
-import {TwingToken} from "./token";
 import {TwingNode} from "./node";
+import {Token} from "twig-lexer";
 
 /**
  * Base class for all token parsers.
@@ -20,7 +20,7 @@ export abstract class TwingTokenParser implements TwingTokenParserInterface {
      */
     protected parser: TwingParser;
 
-    abstract parse(token: TwingToken): TwingNode;
+    abstract parse(token: Token): TwingNode;
 
     abstract getTag(): string;
 

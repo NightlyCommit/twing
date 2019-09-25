@@ -10,49 +10,48 @@
  * </pre>
  */
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
-
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSet} from "../node/set";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserSet extends TwingTokenParser {
-    parse(token: TwingToken) {
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
+    parse(token: Token) {
+        let lineno = token.line;
+        let columnno = token.column;
         let stream = this.parser.getStream();
         let names = this.parser.parseAssignmentExpression();
 
         let capture = false;
         let values;
 
-        if (stream.nextIf(TwingToken.OPERATOR_TYPE, '=')) {
+        if (stream.nextIf(TokenType.OPERATOR, '=')) {
             values = this.parser.parseMultitargetExpression();
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TokenType.TAG_END);
 
             if (names.getNodes().size !== values.getNodes().size) {
-                throw new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', stream.getCurrent().getLine(), stream.getSourceContext());
+                throw new TwingErrorSyntax('When using set, you must have the same number of variables and assignments.', stream.getCurrent().line, stream.getSourceContext());
             }
         }
         else {
             capture = true;
 
             if (names.getNodes().size > 1) {
-                throw new TwingErrorSyntax('When using set with a block, you cannot have a multi-target.', stream.getCurrent().getLine(), stream.getSourceContext());
+                throw new TwingErrorSyntax('When using set with a block, you cannot have a multi-target.', stream.getCurrent().line, stream.getSourceContext());
             }
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TokenType.TAG_END);
 
             values = this.parser.subparse([this, this.decideBlockEnd], true);
 
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+            stream.expect(TokenType.TAG_END);
         }
 
         return new TwingNodeSet(capture, names, values, lineno, columnno, this.getTag());
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endset');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endset');
     }
 
     getTag() {

@@ -1,7 +1,6 @@
 const {
     TwingTokenParserUse,
     TwingTokenStream,
-    TwingToken,
     TwingNode,
     TwingNodeExpressionConstant
 } = require('../../../../../../build/main');
@@ -9,6 +8,7 @@ const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser')
 
 const tap = require('tape');
 const sinon = require('sinon');
+const {Token, TokenType} = require('twig-lexer');
 
 tap.test('token-parser/use', function (test) {
     test.test('parse', function (test) {
@@ -21,13 +21,11 @@ tap.test('token-parser/use', function (test) {
 
             sinon.stub(parser, 'parseExpression').returns(new TwingNode());
             sinon.stub(stream, 'getCurrent').returns({
-                getLine: function() {
-                    return 1;
-                }
+                line: 1
             });
 
             try {
-                tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'set', 1, 1));
+                tokenParser.parse(new Token(TokenType.NAME, 'set', 1, 1));
 
                 test.fail();
             }
@@ -40,16 +38,16 @@ tap.test('token-parser/use', function (test) {
 
         test.test('when multiple aliases', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'with', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'as', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'rab', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ',', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'as', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'oof', 1, 1),
-                new TwingToken(TwingToken.BLOCK_END_TYPE, null, 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.NAME, 'with', 1, 1),
+                new Token(TokenType.NAME, 'bar', 1, 1),
+                new Token(TokenType.NAME, 'as', 1, 1),
+                new Token(TokenType.NAME, 'rab', 1, 1),
+                new Token(TokenType.PUNCTUATION, ',', 1, 1),
+                new Token(TokenType.NAME, 'foo', 1, 1),
+                new Token(TokenType.NAME, 'as', 1, 1),
+                new Token(TokenType.NAME, 'oof', 1, 1),
+                new Token(TokenType.TAG_END, null, 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let tokenParser = new TwingTokenParserUse();
@@ -64,7 +62,7 @@ tap.test('token-parser/use', function (test) {
                 trait = node;
             });
 
-            tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'set', 1, 1));
+            tokenParser.parse(new Token(TokenType.NAME, 'set', 1, 1));
 
             test.equals(trait.getNode('targets').getNodes().size, 2);
 

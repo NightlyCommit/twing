@@ -8,7 +8,6 @@ const {
     TwingNodeExpressionBinaryConcat,
     TwingExtension,
     TwingEnvironment,
-    TwingToken,
     TwingTokenStream,
     TwingNodeExpressionHash,
     TwingFunction,
@@ -20,6 +19,7 @@ const {
 
 const TwingTestMockEnvironment = require('../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../mock/loader');
+const {Token, TokenType} = require('twig-lexer');
 
 const tap = require('tape');
 const sinon = require('sinon');
@@ -60,7 +60,7 @@ class TwingTestExpressionParserExtension extends TwingExtension {
 
     getTests() {
         return [
-            new TwingTest('foo bar')
+            new TwingTest('foo bar', () => {}, [])
         ]
     }
 
@@ -480,13 +480,13 @@ tap.test('expression-parser', function (test) {
     test.test('parseExpression', function (test) {
         let env = new TwingEnvironment(new TwingTestMockLoader());
 
-        env.addExtension(new TwingTestExpressionParserExtension());
+        env.addExtension(new TwingTestExpressionParserExtension(), 'TwingTestExpressionParserExtension');
 
         let stream = new TwingTokenStream([
-            new TwingToken(TwingToken.NUMBER_TYPE, '1', 1, 1),
-            new TwingToken(TwingToken.OPERATOR_TYPE, 'with-callable', 1, 1),
-            new TwingToken(TwingToken.NUMBER_TYPE, '2', 1, 1),
-            new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+            new Token(TokenType.NUMBER, '1', 1, 1),
+            new Token(TokenType.OPERATOR, 'with-callable', 1, 1),
+            new Token(TokenType.NUMBER, '2', 1, 1),
+            new Token(TokenType.VARIABLE_END, null, 1, 1)
         ]);
 
         let parser = new TwingParser(env);
@@ -506,9 +506,9 @@ tap.test('expression-parser', function (test) {
         let parser = new TwingParser(env);
 
         let stream = new TwingTokenStream([
-            new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-            new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-            new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+            new Token(TokenType.PUNCTUATION, '(', 1, 1),
+            new Token(TokenType.PUNCTUATION, ')', 1, 1),
+            new Token(TokenType.VARIABLE_END, null, 1, 1)
         ]);
 
         Reflect.set(parser, 'stream', stream);
@@ -525,9 +525,9 @@ tap.test('expression-parser', function (test) {
             let parser = new TwingParser(env);
 
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                new Token(TokenType.VARIABLE_END, null, 1, 1)
             ]);
 
             Reflect.set(parser, 'stream', stream);
@@ -559,9 +559,9 @@ tap.test('expression-parser', function (test) {
 
             for (let testCase of testCases) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                    new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                    new TwingToken(TwingToken.VAR_END_TYPE, null, 1, 1)
+                    new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                    new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                    new Token(TokenType.VARIABLE_END, null, 1, 1)
                 ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
 
                 Reflect.set(parser, 'stream', stream);
@@ -588,14 +588,14 @@ tap.test('expression-parser', function (test) {
 
         test.test('with key as an expression', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, '1', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ':', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '}', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '{', 1, 1),
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.STRING, '1', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                new Token(TokenType.PUNCTUATION, ':', 1, 1),
+                new Token(TokenType.STRING, 'bar', 1, 1),
+                new Token(TokenType.PUNCTUATION, '}', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -611,8 +611,8 @@ tap.test('expression-parser', function (test) {
 
         test.test('with key as an expression', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '{', 1, 1),
-                new TwingToken(TwingToken.OPERATOR_TYPE, 'foo', 1, 1)
+                new Token(TokenType.PUNCTUATION, '{', 1, 1),
+                new Token(TokenType.OPERATOR, 'foo', 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -634,9 +634,9 @@ tap.test('expression-parser', function (test) {
 
         test.test('with dot syntax and non-name/number token', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '.', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '.', 1, 1),
+                new Token(TokenType.STRING, 'bar', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -660,9 +660,9 @@ tap.test('expression-parser', function (test) {
 
         test.test('with not existing 2-words test', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'bar2', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.NAME, 'foo', 1, 1),
+                new Token(TokenType.NAME, 'bar2', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -684,11 +684,11 @@ tap.test('expression-parser', function (test) {
 
         test.test('with non-name named argument', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1, 1),
-                new TwingToken(TwingToken.OPERATOR_TYPE, '=', 1, 1),
-                new TwingToken(TwingToken.NUMBER_TYPE, '5', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1)
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.NUMBER, '5', 1, 1),
+                new Token(TokenType.OPERATOR, '=', 1, 1),
+                new Token(TokenType.NUMBER, '5', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1)
             ]);
 
             let parser = new TwingParser(env);
@@ -722,8 +722,8 @@ tap.test('expression-parser', function (test) {
 
             for (let testCase of testCases) {
                 let stream = new TwingTokenStream([
-                    new TwingToken(TwingToken.NAME_TYPE, testCase[0], 1, 1),
-                    new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                    new Token(TokenType.NAME, testCase[0], 1, 1),
+                    new Token(TokenType.EOF, null, 1, 1)
                 ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
 
                 Reflect.set(parser, 'stream', stream);
@@ -735,10 +735,6 @@ tap.test('expression-parser', function (test) {
 
                     test.same(chunk, testCase[2]);
                 };
-
-                process.stdout.on('error', (e) => {
-                    // console.error('e', e);
-                });
 
                 parser.parseFilterExpressionRaw(new TwingNodeExpressionConstant(1, 1, 1), testCase[0]);
             }
@@ -754,9 +750,9 @@ tap.test('expression-parser', function (test) {
 
         test.test('returns null when closing parenthesis is missing', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.STRING, 'bar', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new Parser(env);
@@ -772,11 +768,11 @@ tap.test('expression-parser', function (test) {
 
         test.test('returns null when arrow is missing', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, '=>', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.STRING, 'bar', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                new Token(TokenType.STRING, '=>', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new Parser(env);
@@ -792,11 +788,11 @@ tap.test('expression-parser', function (test) {
 
         test.test('with non-name token', function (test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.STRING_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                new TwingToken(TwingToken.ARROW_TYPE, '=>', 1, 1),
-                new TwingToken(TwingToken.EOF_TYPE, null, 1, 1)
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.STRING, 'bar', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                new Token(TokenType.ARROW, '=>', 1, 1),
+                new Token(TokenType.EOF, null, 1, 1)
             ]);
 
             let parser = new Parser(env);

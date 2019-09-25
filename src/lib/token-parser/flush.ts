@@ -1,12 +1,12 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
 import {TwingNodeFlush} from "../node/flush";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserFlush extends TwingTokenParser {
-    parse(token: TwingToken) {
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+    parse(token: Token) {
+        this.parser.getStream().expect(TokenType.TAG_END);
 
-        return new TwingNodeFlush(token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodeFlush(token.line, token.column, this.getTag());
     }
 
     getTag() {

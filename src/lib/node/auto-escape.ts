@@ -11,7 +11,7 @@ import {TwingCompiler} from "../compiler";
  *
  * If autoescaping is disabled, then the value is false.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingNodeAutoEscape extends TwingNode {
     constructor(value: {}, body: TwingNode, lineno: number, columnno: number, tag = 'autoescape') {

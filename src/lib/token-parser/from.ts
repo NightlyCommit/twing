@@ -1,9 +1,8 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
-
 import {TwingNodeImport} from "../node/import";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeExpression} from "../node/expression";
+import {Token, TokenType} from "twig-lexer";
 
 /**
  * Imports macros.
@@ -13,32 +12,32 @@ import {TwingNodeExpression} from "../node/expression";
  * </pre>
  */
 export class TwingTokenParserFrom extends TwingTokenParser {
-    parse(token: TwingToken) {
+    parse(token: Token) {
         let macro = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.NAME_TYPE, 'import');
+        stream.expect(TokenType.NAME, 'import');
 
         let targets = new Map();
 
         do {
-            let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+            let name = stream.expect(TokenType.NAME).value;
             let alias = name;
 
-            if (stream.nextIf(TwingToken.NAME_TYPE, 'as')) {
-                alias = stream.expect(TwingToken.NAME_TYPE).getValue();
+            if (stream.nextIf(TokenType.NAME, 'as')) {
+                alias = stream.expect(TokenType.NAME).value;
             }
 
             targets.set(name, alias);
 
-            if (!stream.nextIf(TwingToken.PUNCTUATION_TYPE, ',')) {
+            if (!stream.nextIf(TokenType.PUNCTUATION, ',')) {
                 break;
             }
         } while (true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
-        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.getLine(), token.getColumn()), token.getLine(), token.getColumn(), this.getTag());
+        let node = new TwingNodeImport(macro, new TwingNodeExpressionAssignName(this.parser.getVarName(), token.line, token.column), token.line, token.column, this.getTag());
 
         for (let [name, alias] of targets) {
             this.parser.addImportedSymbol('function', alias, `macro_${name}`, node.getNode('var') as TwingNodeExpression);

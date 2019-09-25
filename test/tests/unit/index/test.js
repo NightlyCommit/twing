@@ -126,7 +126,6 @@ tape.test('main and browser indexes', function (test) {
         'TwingSourceMapNodeSpaceless',
         'TwingTemplate',
         'TwingTest',
-        'TwingToken',
         'TwingTokenParser',
         'TwingTokenParserAutoEscape',
         'TwingTokenParserBlock',

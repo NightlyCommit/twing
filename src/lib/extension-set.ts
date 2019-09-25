@@ -7,7 +7,6 @@ import {TwingTest} from "./test";
 import {merge} from "./helpers/merge";
 import {TwingOperator, TwingOperatorType} from "./operator";
 import {TwingNodeType} from "./node";
-import {TwingEnvironment} from "./environment";
 import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
 
 export class TwingExtensionSet {

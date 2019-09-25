@@ -4,7 +4,7 @@ import {TwingTemplatesModule} from "../environment";
 /**
  * Implements a no-cache strategy.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingCacheNull implements TwingCacheInterface {
     TwingCacheInterfaceImpl: TwingCacheInterface;

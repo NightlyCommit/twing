@@ -62,7 +62,7 @@
     "isobject": "^3.0.1",
     "levenshtein": "^1.0.5",
     "locutus": "^2.0.9",
-    "luxon": "^1.4.1",
+    "luxon": "^1.19.3",
     "merge": "^1.2.1",
     "object-hash": "^1.2.0",
     "pad": "^2.0.3",
@@ -71,6 +71,7 @@
     "snake-case": "^2.1.0",
     "source-map": "^0.6.1",
     "tmp": "0.0.33",
+    "twig-lexer": "^0.6.3",
     "utf8-binary-cutter": "^0.9.2",
     "var-validator": "0.0.3"
   },
