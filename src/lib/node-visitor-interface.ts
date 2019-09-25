@@ -3,7 +3,7 @@
 /**
  * Twig_NodeVisitorInterface is the interface the all node visitor classes must implement.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingNode} from "./node";

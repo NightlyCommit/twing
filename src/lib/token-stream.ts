@@ -1,17 +1,23 @@
-import {TwingToken} from "./token";
 import {TwingSource} from "./source";
 import {TwingErrorSyntax} from "./error/syntax";
-
-const array_merge = require('locutus/php/array/array_merge');
+import {Token, TokenStream, TokenType, astVisitor} from "twig-lexer";
+import {typeToEnglish} from "./lexer";
 
 export class TwingTokenStream {
-    tokens: Array<TwingToken>;
-    current: number = 0;
-    source: TwingSource;
+    private readonly _stream: TokenStream;
+    private readonly _source: TwingSource;
 
-    constructor(tokens: Array<TwingToken>, source: TwingSource = null) {
-        this.tokens = tokens;
-        this.source = source ? source : new TwingSource('', '');
+    constructor(tokens: Token[], source: TwingSource = null) {
+        this._stream = new TokenStream(tokens);
+        this._source = source ? source : new TwingSource('', '');
+    }
+
+    private get stream(): TokenStream {
+        return this._stream;
+    }
+
+    get tokens(): Token[] {
+        return this.stream.tokens;
     }
 
     toString() {
@@ -20,53 +26,33 @@ export class TwingTokenStream {
         }).join('\n');
     }
 
-    injectTokens(tokens: Array<TwingToken>) {
-        this.tokens = array_merge(this.tokens.slice(0, this.current), tokens, this.tokens.slice(this.current));
+    injectTokens(tokens: Array<Token>) {
+        this.stream.injectTokens(tokens);
     }
 
-    /**
-     * Sets the pointer to the next token and returns the old one.
-     *
-     * @return TwingToken
-     */
-    next() {
-        this.current++;
-
-        if (this.current >= this.tokens.length) {
-            throw new TwingErrorSyntax('Unexpected end of template.', this.tokens[this.current - 1].getLine(), this.source);
-        }
-
-        return this.tokens[this.current - 1];
+    next(): Token {
+        return this.stream.next()
     }
 
-    /**
-     * Tests a token, sets the pointer to the next one and returns it or throws a syntax error.
-     *
-     * @return TwingToken|null The next token if the condition is true, null otherwise
-     */
-    nextIf(primary: number, secondary: Array<string> | string = null) {
-        if (this.tokens[this.current].test(primary, secondary)) {
-            return this.next();
-        }
-
-        return null;
+    nextIf(primary: TokenType, secondary: string[] | string = null): Token {
+        return this.stream.nextIf(primary, secondary);
     }
 
     /**
      * Tests a token and returns it or throws a syntax error.
      *
-     * @return TwingToken
+     * @return {Token}
      */
-    expect(type: number, value: Array<string> | string | number = null, message: string = null) {
-        let token = this.tokens[this.current];
+    expect(type: TokenType, value: string[] | string | number = null, message: string = null): Token {
+        let token = this.getCurrent();
 
         if (!token.test(type, value)) {
-            let line = token.getLine();
+            let line = token.line;
 
             throw new TwingErrorSyntax(
-                `${message ? message + '. ' : ''}Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getValue()}" ("${TwingToken.typeToEnglish(type)}" expected${value ? ` with value "${value}"` : ''}).`,
+                `${message ? message + '. ' : ''}Unexpected token "${typeToEnglish(token.type)}" of value "${token.value}" ("${typeToEnglish(type)}" expected${value ? ` with value "${value}"` : ''}).`,
                 line,
-                this.source
+                this._source
             );
         }
 
@@ -75,56 +61,45 @@ export class TwingTokenStream {
         return token;
     }
 
-    /**
-     * Looks at the next token.
-     *
-     * @param number {number}
-     *
-     * @return TwingToken
-     */
-    look(number: number = 1) {
-        let index = this.current + number;
-
-        if (index >= this.tokens.length) {
-            throw new TwingErrorSyntax('Unexpected end of template.', this.tokens[this.current + number - 1].getLine(), this.source);
-        }
-
-        return this.tokens[index];
+    look(number: number): Token {
+        return this.stream.look(number);
     }
 
-    /**
-     * Tests the active token.
-     *
-     * @return bool
-     */
-    test(primary: number, secondary: Array<string> | string = null) {
-        return this.tokens[this.current].test(primary, secondary);
+    test(type: TokenType, value: string | number | string[] = null): boolean {
+        return this.stream.test(type, value);
     }
 
     /**
      * Checks if end of stream was reached.
      *
-     * @return bool
+     * @return boolean
      */
     isEOF() {
-        return this.tokens[this.current].getType() === TwingToken.EOF_TYPE;
+        return this.stream.current.type === TokenType.EOF;
     }
 
-    /**
-     * @return TwingToken
-     */
-    getCurrent() {
-        return this.tokens[this.current];
+    toAst(): Token[] {
+        return this.stream.traverse((token: Token, stream: TokenStream) => {
+            token = astVisitor(token, stream);
+
+            if (token && token.test(TokenType.TEST_OPERATOR)) {
+                token = new Token(TokenType.OPERATOR, token.value, token.line, token.column);
+            }
+
+            return token;
+        });
+    }
+
+    getCurrent(): Token {
+        return this.stream.current;
     }
 
     /**
      * Gets the source associated with this stream.
      *
      * @return TwingSource
-     *
-     * @internal
      */
     getSourceContext() {
-        return this.source;
+        return this._source;
     }
 }

@@ -1,19 +1,19 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeSandbox} from "../node/sandbox";
 import {TwingNode, TwingNodeType} from "../node";
 import {ctypeSpace} from "../helpers/ctype-space";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserSandbox extends TwingTokenParser {
-    parse(token: TwingToken) {
+    parse(token: Token) {
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         // in a sandbox tag, only include tags are allowed
         if (body.getType() !== TwingNodeType.INCLUDE) {
@@ -26,11 +26,11 @@ export class TwingTokenParserSandbox extends TwingTokenParser {
             });
         }
 
-        return new TwingNodeSandbox(body, token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodeSandbox(body, token.line, token.column, this.getTag());
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endsandbox');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endsandbox');
     }
 
     getTag() {

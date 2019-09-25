@@ -1,7 +1,7 @@
 /**
  * Represents an import node.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingNodeExpression} from "./expression";

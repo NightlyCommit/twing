@@ -121,7 +121,6 @@ export {TwingSourceMapNodeFactorySpaceless} from "./lib/source-map/node-factory/
 export {TwingSourceMapNodeSpaceless} from "./lib/source-map/node/spaceless";
 export {TwingTemplate} from "./lib/template";
 export {TwingTest} from "./lib/test";
-export {TwingToken} from "./lib/token";
 export {TwingTokenParserAutoEscape} from "./lib/token-parser/auto-escape";
 export {TwingTokenParserBlock} from "./lib/token-parser/block";
 export {TwingTokenParserDo} from "./lib/token-parser/do";

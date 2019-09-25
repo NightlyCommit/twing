@@ -1,9 +1,9 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
-import {TwingToken} from "../token";
 import {TwingNodePrint} from "../node/print";
 import {TwingNodeSet} from "../node/set";
 import {TwingNodeExpressionTempName} from "../node/expression/temp-name";
+import {Token, TokenType} from "twig-lexer";
 
 /**
  * Applies filters on a section of a template.
@@ -13,9 +13,9 @@ import {TwingNodeExpressionTempName} from "../node/expression/temp-name";
  *   {% endapply %}
  */
 export class TwingTokenParserApply extends TwingTokenParser {
-    parse(token: TwingToken): TwingNode {
-        let lineno = token.getLine();
-        let columno = token.getColumn();
+    parse(token: Token): TwingNode {
+        let lineno = token.line;
+        let columno = token.column;
         let name = this.parser.getVarName();
 
         let ref: TwingNodeExpressionTempName;
@@ -25,11 +25,11 @@ export class TwingTokenParserApply extends TwingTokenParser {
 
         let filter = this.parser.parseFilterExpressionRaw(ref, this.getTag());
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
         let nodes: Map<number, TwingNode> = new Map();
 
@@ -41,8 +41,8 @@ export class TwingTokenParserApply extends TwingTokenParser {
         return new TwingNode(nodes);
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endapply');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endapply');
     }
 
     getTag() {

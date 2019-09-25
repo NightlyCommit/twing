@@ -1,6 +1,6 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
 import {TwingNodeDeprecated} from "../node/deprecated";
+import {Token, TokenType} from "twig-lexer";
 
 /**
  * Deprecates a section of a template.
@@ -14,12 +14,12 @@ import {TwingNodeDeprecated} from "../node/deprecated";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingTokenParserDeprecated extends TwingTokenParser {
-    parse(token: TwingToken) {
+    parse(token: Token) {
         let expr = this.parser.parseExpression();
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
-        return new TwingNodeDeprecated(expr, token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodeDeprecated(expr, token.line, token.column, this.getTag());
     }
 
     getTag() {

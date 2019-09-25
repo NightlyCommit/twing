@@ -1,16 +1,16 @@
 const {
     TwingTokenParserMacro,
     TwingTokenStream,
-    TwingToken,
     TwingNode
 } = require('../../../../../../build/main');
 const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser');
 
 const tap = require('tape');
+const {Token, TokenType} = require('twig-lexer');
 
 class ExpressionParser {
     parseExpression() {
-        return new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1);
+        return new Token(TokenType.NAME, 'foo', 1, 1);
     }
 
     parseArguments() {
@@ -22,15 +22,15 @@ tap.test('token-parser/macro', function (test) {
     test.test('parse', function (test) {
         test.test('when endmacro name doesn\'t match', function(test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, '(', 1, 1),
-                new TwingToken(TwingToken.PUNCTUATION_TYPE, ')', 1, 1),
-                new TwingToken(TwingToken.BLOCK_END_TYPE, null, 1, 1),
-                new TwingToken(TwingToken.TEXT_TYPE, 'FOO', 1, 1),
-                new TwingToken(TwingToken.BLOCK_START_TYPE, null, 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'endmacro', 1, 1),
-                new TwingToken(TwingToken.NAME_TYPE, 'bar', 1, 1),
-                new TwingToken(TwingToken.BLOCK_END_TYPE, null, 1, 1)
+                new Token(TokenType.NAME, 'foo', 1, 1),
+                new Token(TokenType.PUNCTUATION, '(', 1, 1),
+                new Token(TokenType.PUNCTUATION, ')', 1, 1),
+                new Token(TokenType.TAG_END, null, 1, 1),
+                new Token(TokenType.TEXT, 'FOO', 1, 1),
+                new Token(TokenType.TAG_START, null, 1, 1),
+                new Token(TokenType.NAME, 'endmacro', 1, 1),
+                new Token(TokenType.NAME, 'bar', 1, 1),
+                new Token(TokenType.TAG_END, null, 1, 1)
             ]);
 
             let tokenParser = new TwingTokenParserMacro();
@@ -39,7 +39,7 @@ tap.test('token-parser/macro', function (test) {
             tokenParser.setParser(parser);
 
             try {
-                tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'block', 1, 1));
+                tokenParser.parse(new Token(TokenType.NAME, 'block', 1, 1));
 
                 test.fail();
             }

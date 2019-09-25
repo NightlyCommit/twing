@@ -1,11 +1,11 @@
-import {TwingToken} from "../token";
 import {TwingTokenParserInclude} from "./include";
 import {TwingNodeEmbed} from "../node/embed";
 import {TwingNodeModule} from "../node/module";
 import {TwingNodeType} from "../node";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserEmbed extends TwingTokenParserInclude {
-    parse(token: TwingToken) {
+    parse(token: Token) {
         let stream = this.parser.getStream();
 
         let parent = this.parser.parseExpression();
@@ -19,21 +19,21 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
         let parentToken;
         let fakeParentToken;
 
-        parentToken = fakeParentToken = new TwingToken(TwingToken.STRING_TYPE, '__parent__', token.getLine(), token.getColumn());
+        parentToken = fakeParentToken = new Token(TokenType.STRING, '__parent__', token.line, token.column);
 
         if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
-            parentToken = new TwingToken(TwingToken.STRING_TYPE, parent.getAttribute('value'), token.getLine(), token.getColumn());
+            parentToken = new Token(TokenType.STRING, parent.getAttribute('value'), token.line, token.column);
         }
         else if (parent.getType() === TwingNodeType.EXPRESSION_NAME) {
-            parentToken = new TwingToken(TwingToken.NAME_TYPE, parent.getAttribute('name'), token.getLine(), token.getColumn());
+            parentToken = new Token(TokenType.NAME, parent.getAttribute('name'), token.line, token.column);
         }
 
         // inject a fake parent to make the parent() function work
         stream.injectTokens([
-            new TwingToken(TwingToken.BLOCK_START_TYPE, '', token.getLine(), token.getColumn()),
-            new TwingToken(TwingToken.NAME_TYPE, 'extends', token.getLine(), token.getColumn()),
+            new Token(TokenType.TAG_START, '', token.line, token.column),
+            new Token(TokenType.NAME, 'extends', token.line, token.column),
             parentToken,
-            new TwingToken(TwingToken.BLOCK_END_TYPE, '', token.getLine(), token.getColumn()),
+            new Token(TokenType.TAG_END, '', token.line, token.column),
         ]);
 
         let module = this.parser.parse(stream, [this, this.decideBlockEnd], true);
@@ -45,13 +45,13 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
 
         this.parser.embedTemplate(module as TwingNodeModule);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
-        return new TwingNodeEmbed(module.getTemplateName(), module.getAttribute('index'), variables, only, ignoreMissing, token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodeEmbed(module.getTemplateName(), module.getAttribute('index'), variables, only, ignoreMissing, token.line, token.column, this.getTag());
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endembed');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endembed');
     }
 
     getTag() {

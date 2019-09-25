@@ -1,30 +1,30 @@
 import {TwingTokenParser} from "../token-parser";
-import {TwingToken} from "../token";
 import {TwingNodeVerbatim} from "../node/verbatim";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserVerbatim extends TwingTokenParser {
     /**
-     * @param {TwingToken} token
+     * @param {Token} token
      *
      * @return TwingNodeVerbatim
      */
-    parse(token: TwingToken) {
+    parse(token: Token) {
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         /**
          * @type {TwingNodeText}
          */
         let text = this.parser.subparse([this, this.decideBlockEnd], true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
-        return new TwingNodeVerbatim(text.getAttribute('data'), token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodeVerbatim(text.getAttribute('data'), token.line, token.column, this.getTag());
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endverbatim');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endverbatim');
     }
 
     getTag() {

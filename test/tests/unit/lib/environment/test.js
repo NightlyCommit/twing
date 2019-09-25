@@ -25,6 +25,7 @@ const TwingTestMockLoader = require('../../../../mock/loader');
 const TwingTestMockCache = require('../../../../mock/cache');
 const TwingTestMockTemplate = require('../../../../mock/template');
 const {SourceMapConsumer} = require('source-map');
+const {Token, TokenType} = require('twig-lexer');
 
 const tap = require('tape');
 const sinon = require('sinon');
@@ -124,28 +125,6 @@ class TwingTestsEnvironmentTestExtensionRegression extends TwingTestsEnvironment
     }
 }
 
-class TwingTestsEnvironmentTestExtensionWithDeprecationInitRuntime extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionInitRuntimeInterfaceImpl = {
-            initRuntime(env) {
-            }
-        };
-    }
-}
-
-class TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionInitRuntimeInterfaceImpl = {
-            initRuntime(env) {
-            }
-        };
-    }
-}
-
 class TwingTestsEnvironmentParserBar extends TwingParser {
     parse(stream, test, dropNeedle) {
         return 'bar';
@@ -154,19 +133,13 @@ class TwingTestsEnvironmentParserBar extends TwingParser {
 
 class TwingTestsEnvironmentLexerBar extends TwingLexer {
     tokenize(source) {
-        return 'bar';
+        return [new Token(TokenType.TEXT, 'bar', 1, 1)];
     }
 }
 
 class TwingTestsEnvironmentParserError extends TwingParser {
     parse(stream, test, dropNeedle) {
         throw new Error('Parser error "foo".');
-    }
-}
-
-class TwingTestEnvironmentRuntimeLoaderNull {
-    load(class_) {
-        return null;
     }
 }
 
@@ -555,33 +528,19 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('initRuntimeWithAnExtensionUsingInitRuntimeNoDeprecation', function (test) {
-        let loader = new TwingLoaderArray({});
-        let twing = new TwingEnvironment(loader);
-
-        sinon.stub(loader, 'getCacheKey').returns('');
-        sinon.stub(loader, 'getSourceContext').returns(new TwingSource('', ''));
-
-        twing.addExtension(new TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime());
-
-        twing.loadTemplate('');
-
-        sinon.assert.calledOnce(loader['getSourceContext']);
-
-        // add a dummy assertion here, the only thing we want to test is that the code above
-        // can be executed without throwing any deprecations
-        test.pass();
-        test.end();
-    });
-
     test.test('overrideExtension', function (test) {
         let twing = new TwingEnvironment(new TwingLoaderArray({}));
 
-        twing.addExtension(new TwingTestsEnvironmentTestExtension());
+        twing.addExtension(new TwingTestsEnvironmentTestExtension(), 'TwingTestsEnvironmentTestExtension');
 
-        test.throws(function () {
-            twing.addExtension(new TwingTestsEnvironmentTestExtension());
-        }, new Error('Unable to register extension "TwingTestsEnvironmentTestExtension" as it is already registered.'));
+        try {
+            twing.addExtension(new TwingTestsEnvironmentTestExtension(), 'TwingTestsEnvironmentTestExtension');
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Unable to register extension "TwingTestsEnvironmentTestExtension" as it is already registered.')
+        }
 
         test.end();
     });
@@ -777,7 +736,7 @@ tap.test('environment', function (test) {
 
         env.setLexer(new TwingTestsEnvironmentLexerBar(env));
 
-        test.same(env.tokenize(new TwingSource('foo', 'index', '')), 'bar');
+        test.true(env.tokenize(new TwingSource('foo', 'index', '')).getCurrent().test(TokenType.TEXT, 'bar'));
 
         test.end();
     });
@@ -789,16 +748,27 @@ tap.test('environment', function (test) {
 
         let source = new TwingSource('{{ foo', 'index', '');
 
-        test.throws(function () {
+        try {
             env.compileSource(source);
-        }, new TwingErrorSyntax('Unexpected token "end of template" of value "null" ("end of print statement" expected).', 1, source));
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Unclosed variable opened at {1:1} in "index" at line 1.');
+        }
 
         env.setParser(new TwingTestsEnvironmentParserError(env));
+
         source = new TwingSource('{{ foo.bar }}', 'index', '');
 
-        test.throws(function () {
+        try {
             env.compileSource(source);
-        }, new TwingErrorSyntax('An exception has been thrown during the compilation of a template ("Parser error "foo".").', -1, source, new Error('Parser error "foo"')));
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'An exception has been thrown during the compilation of a template ("Parser error "foo".") in "index".');
+        }
 
         test.end();
     });

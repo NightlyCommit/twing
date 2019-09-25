@@ -6,7 +6,7 @@ import {TwingNodeOutputInterface} from "../node-output-interface";
 /**
  * Represents a block call node.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;

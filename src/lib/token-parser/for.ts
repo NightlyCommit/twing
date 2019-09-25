@@ -11,44 +11,44 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode, TwingNodeType} from "../node";
-import {TwingToken} from "../token";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingTokenStream} from "../token-stream";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeFor} from "../node/for";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserFor extends TwingTokenParser {
-    parse(token: TwingToken) {
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
+    parse(token: Token) {
+        let lineno = token.line;
+        let columnno = token.column;
         let stream = this.parser.getStream();
         let targets = this.parser.parseAssignmentExpression();
 
-        stream.expect(TwingToken.OPERATOR_TYPE, 'in');
+        stream.expect(TokenType.OPERATOR, 'in');
 
         let seq = this.parser.parseExpression();
 
         let ifexpr = null;
 
-        if (stream.nextIf(TwingToken.NAME_TYPE, 'if')) {
+        if (stream.nextIf(TokenType.NAME, 'if')) {
             console.warn('Using an "if" condition on "for" tag is deprecated since Twig 2.10.0, use a "filter" filter or an "if" condition inside the "for" body instead (if your condition depends on a variable updated inside the loop).');
 
             ifexpr = this.parser.parseExpression();
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         let body = this.parser.subparse([this, this.decideForFork]);
         let elseToken;
 
-        if (stream.next().getValue() == 'else') {
-            stream.expect(TwingToken.BLOCK_END_TYPE);
+        if (stream.next().value == 'else') {
+            stream.expect(TokenType.TAG_END);
             elseToken = this.parser.subparse([this, this.decideForEnd], true);
         } else {
             elseToken = null;
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         let keyTarget;
         let valueTarget;
@@ -74,12 +74,12 @@ export class TwingTokenParserFor extends TwingTokenParser {
         return new TwingNodeFor(keyTarget, valueTarget, seq, ifexpr, body, elseToken, lineno, columnno, this.getTag());
     }
 
-    decideForFork(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, ['else', 'endfor']);
+    decideForFork(token: Token) {
+        return token.test(TokenType.NAME, ['else', 'endfor']);
     }
 
-    decideForEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endfor');
+    decideForEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endfor');
     }
 
     // the loop variable cannot be used in the condition

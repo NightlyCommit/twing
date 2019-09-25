@@ -11,25 +11,25 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
-import {TwingToken} from "../token";
 import {TwingNodeSpaceless} from "../node/spaceless";
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserSpaceless extends TwingTokenParser {
-    parse(token: TwingToken): TwingNode {
+    parse(token: Token): TwingNode {
         console.warn('The "spaceless" tag is deprecated since Twig 2.7, use the "spaceless" filter instead.');
 
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
+        let lineno = token.line;
+        let columnno = token.column;
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
         let body = this.parser.subparse([this, this.decideSpacelessEnd], true);
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
         return new TwingNodeSpaceless(body, lineno, columnno, this.getTag());
     }
 
-    decideSpacelessEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endspaceless');
+    decideSpacelessEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endspaceless');
     }
 
     getTag() {
