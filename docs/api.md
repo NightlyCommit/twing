@@ -439,6 +439,8 @@ The escaping rules are implemented as follows:
 ```
 {% endraw  %}
 
+* Objects with a `toString` method are converted to strings and escaped.
+
 * Escaping is applied before printing, after any other filter is applied:
 
 {% raw  %}

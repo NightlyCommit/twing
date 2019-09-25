@@ -709,14 +709,9 @@ return module.exports;
     /**
      * Get a filter by name.
      *
-     * Subclasses may override this method and load filters differently;
-     * so no list of filters is available.
-     *
-     * @param string name The filter name
+     * @param {string} name
      *
      * @return Twig_Filter|false A Twig_Filter instance or null if the filter does not exist
-     *
-     * @internal
      */
     getFilter(name: string): TwingFilter {
         return this.extensionSet.getFilter(name);

@@ -1,0 +1,9 @@
+
+{% macro thing() %}
+    Do it
+{% endmacro %}
+
+{% import _self as macros %}
+{% block content %}
+    {{ macros.thing() }}
+{% endblock %}

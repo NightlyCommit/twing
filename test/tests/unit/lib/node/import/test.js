@@ -29,7 +29,7 @@ tap.test('node/import', function (test) {
         let node = new TwingNodeImport(macro, var_, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, null, 1);
+        test.same(compiler.compile(node).getSource(), `macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, null, 1);
 `);
 
         test.end();

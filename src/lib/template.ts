@@ -27,6 +27,7 @@ import {createRange} from "./helpers/create-range";
 import {cloneMap} from "./helpers/clone-map";
 import {parseRegex} from "./helpers/parse-regex";
 import {constant} from "./extension/core/functions/constant";
+import {callMacro} from "./helpers/call-macro";
 
 /**
  * Default base class for compiled templates.
@@ -403,6 +404,10 @@ export abstract class TwingTemplate {
 
     public traceableHasBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
+    }
+
+    protected get callMacro(): (template: TwingTemplate, method: string, args: any[], lineno: number, context: TwingContext<any, any>, source: TwingSource) => void {
+        return callMacro;
     }
 
     protected get cloneMap(): <K, V>(m: Map<K, V>) => Map<K, V> {

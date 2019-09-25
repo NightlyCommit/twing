@@ -15,7 +15,7 @@ export class TwingTokenParserImport extends TwingTokenParser {
         this.parser.getStream().expect(TokenType.TAG_END);
         this.parser.addImportedSymbol('template', var_.getAttribute('name'));
 
-        return new TwingNodeImport(macro, var_, token.line, token.column, this.getTag());
+        return new TwingNodeImport(macro, var_, token.line, token.column, this.getTag(), this.parser.isMainScope());
     }
 
     getTag() {
