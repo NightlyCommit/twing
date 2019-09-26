@@ -11,11 +11,11 @@
     "typescript"
   ],
   "version": "2.3.6",
-  "homepage": "https://github.com/ericmorand/twing",
+  "homepage": "http://NightlyCommit.github.io/twing",
   "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ericmorand/twing"
+    "url": "git://github.com/NightlyCommit/twing"
   },
   "main": "dist/cjs/main.js",
   "browser": "dist/es/browser.js",
