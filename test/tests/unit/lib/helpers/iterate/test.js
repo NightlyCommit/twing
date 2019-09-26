@@ -1,4 +1,4 @@
-const {iterate} = require('../../../../../../build/lib/helpers/iterate');
+const {iterate} = require('../../../../../../dist/cjs/lib/helpers/iterate');
 
 const tap = require('tape');
 

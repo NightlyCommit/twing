@@ -1,4 +1,4 @@
-const {TwingCacheFilesystem} = require('../../../../../../build/lib/cache/filesystem');
+const {TwingCacheFilesystem} = require('../../../../../../dist/cjs/lib/cache/filesystem');
 
 const tap = require('tape');
 const nodePath = require('path');

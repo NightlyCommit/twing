@@ -19,7 +19,7 @@ const {
     TwingOperator,
     TwingOperatorType,
     TwingNodeType
-} = require('../../../../../build/main');
+} = require('../../../../../dist/cjs/main');
 
 const TwingTestMockLoader = require('../../../../mock/loader');
 const TwingTestMockCache = require('../../../../mock/cache');

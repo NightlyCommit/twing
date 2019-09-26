@@ -1,4 +1,4 @@
-import {TwingTest} from '../../../../../build/main';
+import {TwingTest} from '../../../../../dist/cjs/main';
 
 new TwingTest('foo', () => {
     return true;

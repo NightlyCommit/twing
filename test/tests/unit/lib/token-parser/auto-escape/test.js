@@ -5,7 +5,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingNodeText
-} = require('../../../../../../build/main');
+} = require('../../../../../../dist/cjs/main');
 const tap = require('tape');
 const sinon = require('sinon');
 const {Token, TokenType} = require('twig-lexer');

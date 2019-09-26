@@ -1,4 +1,4 @@
-const {count} = require('../../../../../../build/lib/helpers/count');
+const {count} = require('../../../../../../dist/cjs/lib/helpers/count');
 
 const tap = require('tape');
 

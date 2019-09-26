@@ -1,4 +1,4 @@
-const {source} = require('../../../../../../../../build/lib/extension/core/functions/source');
+const {source} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/source');
 const tape = require('tape');
 const sinon = require('sinon');
 
@@ -6,7 +6,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingSource
-} = require('../../../../../../../../build/main');
+} = require('../../../../../../../../dist/cjs/main');
 
 tape.test('source', function (test) {
     let loader = new TwingLoaderArray({});

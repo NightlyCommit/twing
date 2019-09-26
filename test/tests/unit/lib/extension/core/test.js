@@ -1,20 +1,20 @@
-const {reverse: twingReverseFilter} = require('../../../../../../build/lib/extension/core/filters/reverse');
-const {escape: twingEscapeFilter} = require('../../../../../../build/lib/extension/core/filters/escape');
-const {isIn: twingInFilter} = require('../../../../../../build/lib/helpers/is-in');
-const {first: twingFirst} = require('../../../../../../build/lib/extension/core/filters/first');
-const {trim: twingTrimFilter} = require('../../../../../../build/lib/extension/core/filters/trim');
-const {slice: twingSlice} = require('../../../../../../build/lib/extension/core/filters/slice');
-const {last: twingLast} = require('../../../../../../build/lib/extension/core/filters/last');
-const {urlEncode: twingUrlencodeFilter} = require('../../../../../../build/lib/extension/core/filters/url-encode');
-const {replace: twingReplaceFilter} = require('../../../../../../build/lib/extension/core/filters/replace');
-const {round: twingRound} = require('../../../../../../build/lib/extension/core/filters/round');
-const {defaultFilter: twingDefaultFilter} = require('../../../../../../build/lib/extension/core/filters/default');
-const {join: twingJoinFilter} = require('../../../../../../build/lib/extension/core/filters/join');
-const {lower: twingLowerFilter} = require('../../../../../../build/lib/extension/core/filters/lower');
-const {length: twingLengthFilter} = require('../../../../../../build/lib/extension/core/filters/length');
-const {sort: twingSortFilter} = require('../../../../../../build/lib/extension/core/filters/sort');
-const {arrayKeys: twingGetArrayKeysFilter} = require('../../../../../../build/lib/extension/core/filters/array-keys');
-const {column: twingColumnFilter} = require('../../../../../../build/lib/extension/core/filters/column');
+const {reverse: twingReverseFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/reverse');
+const {escape: twingEscapeFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/escape');
+const {isIn: twingInFilter} = require('../../../../../../dist/cjs/lib/helpers/is-in');
+const {first: twingFirst} = require('../../../../../../dist/cjs/lib/extension/core/filters/first');
+const {trim: twingTrimFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/trim');
+const {slice: twingSlice} = require('../../../../../../dist/cjs/lib/extension/core/filters/slice');
+const {last: twingLast} = require('../../../../../../dist/cjs/lib/extension/core/filters/last');
+const {urlEncode: twingUrlencodeFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/url-encode');
+const {replace: twingReplaceFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/replace');
+const {round: twingRound} = require('../../../../../../dist/cjs/lib/extension/core/filters/round');
+const {defaultFilter: twingDefaultFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/default');
+const {join: twingJoinFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/join');
+const {lower: twingLowerFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/lower');
+const {length: twingLengthFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/length');
+const {sort: twingSortFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/sort');
+const {arrayKeys: twingGetArrayKeysFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/array-keys');
+const {column: twingColumnFilter} = require('../../../../../../dist/cjs/lib/extension/core/filters/column');
 
 const {
     TwingExtensionCore,
@@ -23,9 +23,9 @@ const {
     TwingLoaderArray,
     TwingEnvironment,
     TwingLoaderNull
-} = require('../../../../../../build/main');
+} = require('../../../../../../dist/cjs/main');
 
-const {TwingMarkup} = require('../../../../../../build/lib/markup');
+const {TwingMarkup} = require('../../../../../../dist/cjs/lib/markup');
 const TwingTestMockEnvironment = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');
 

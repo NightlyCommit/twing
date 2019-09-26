@@ -1,4 +1,4 @@
-import {TwingEnvironmentOptions} from '../../../../../build/main';
+import {TwingEnvironmentOptions} from '../../../../../dist/cjs/main';
 
 let options: TwingEnvironmentOptions = {
   cache: 'foo'

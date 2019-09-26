@@ -2,7 +2,7 @@ const {
     TwingTokenParserMacro,
     TwingTokenStream,
     TwingNode
-} = require('../../../../../../build/main');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser');
 
 const tap = require('tape');

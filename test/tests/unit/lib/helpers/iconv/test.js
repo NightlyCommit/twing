@@ -1,4 +1,4 @@
-const {iconv} = require('../../../../../../build/lib/helpers/iconv');
+const {iconv} = require('../../../../../../dist/cjs/lib/helpers/iconv');
 
 const tap = require('tape');
 

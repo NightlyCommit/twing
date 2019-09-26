@@ -1,5 +1,5 @@
-const {getAttribute} = require('../../../../../../build/lib/helpers/get-attribute');
-const {TwingEnvironment, TwingLoaderNull, TwingTemplate, TwingErrorRuntime, TwingSource} = require('../../../../../../build/main');
+const {getAttribute} = require('../../../../../../dist/cjs/lib/helpers/get-attribute');
+const {TwingEnvironment, TwingLoaderNull, TwingTemplate, TwingErrorRuntime, TwingSource} = require('../../../../../../dist/cjs/main');
 const TwingTestMockEnvironment = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');
 

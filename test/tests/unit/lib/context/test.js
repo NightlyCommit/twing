@@ -1,4 +1,4 @@
-const {TwingContext} = require('../../../../../build/lib/context');
+const {TwingContext} = require('../../../../../dist/cjs/lib/context');
 
 const tap = require('tape');
 

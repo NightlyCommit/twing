@@ -1,7 +1,7 @@
 const {
     TwingFunction,
     TwingNode
-} = require("../../../../../build/main");
+} = require("../../../../../dist/cjs/main");
 
 const tap = require('tape');
 

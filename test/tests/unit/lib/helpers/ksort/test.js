@@ -1,4 +1,4 @@
-const {ksort} = require('../../../../../../build/lib/helpers/ksort');
+const {ksort} = require('../../../../../../dist/cjs/lib/helpers/ksort');
 
 const tap = require('tape');
 

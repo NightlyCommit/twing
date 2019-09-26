@@ -1,4 +1,4 @@
-const {TwingErrorSyntax} = require('../../../../../../build/lib/error/syntax');
+const {TwingErrorSyntax} = require('../../../../../../dist/cjs/lib/error/syntax');
 
 const tap = require('tape');
 

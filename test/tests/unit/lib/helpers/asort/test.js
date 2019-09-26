@@ -1,4 +1,4 @@
-const {asort} = require('../../../../../../build/lib/helpers/asort');
+const {asort} = require('../../../../../../dist/cjs/lib/helpers/asort');
 
 const tap = require('tape');
 

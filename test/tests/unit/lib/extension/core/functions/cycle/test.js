@@ -1,4 +1,4 @@
-const {cycle} = require('../../../../../../../../build/lib/extension/core/functions/cycle');
+const {cycle} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/cycle');
 
 const tap = require('tape');
 

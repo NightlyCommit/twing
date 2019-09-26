@@ -1,5 +1,5 @@
-const mainIndex = require('../../../../build/main');
-const browserIndex = require('../../../../build/browser');
+const mainIndex = require('../../../../dist/cjs/main');
+const browserIndex = require('../../../../dist/cjs/browser');
 const tape = require('tape');
 
 tape.test('main and browser indexes', function (test) {

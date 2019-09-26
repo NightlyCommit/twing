@@ -1,4 +1,4 @@
-const {chunk} = require('../../../../../../build/lib/helpers/chunk');
+const {chunk} = require('../../../../../../dist/cjs/lib/helpers/chunk');
 
 const tap = require('tape');
 

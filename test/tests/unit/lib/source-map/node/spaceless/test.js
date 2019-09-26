@@ -2,7 +2,7 @@ const {
     TwingSourceMapNode,
     TwingSourceMapNodeSpaceless,
     TwingSource
-} = require('../../../../../../../build/main');
+} = require('../../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 

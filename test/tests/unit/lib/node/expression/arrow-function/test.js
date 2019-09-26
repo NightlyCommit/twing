@@ -1,7 +1,7 @@
-const {TwingNodeExpressionArrowFunction} = require('../../../../../../../build/lib/node/expression/arrow-function');
-const {TwingNodeExpressionConstant} = require('../../../../../../../build/lib/node/expression/constant');
-const {TwingNodeExpressionAssignName} = require('../../../../../../../build/lib/node/expression/assign-name');
-const {TwingNode} = require('../../../../../../../build/lib/node');
+const {TwingNodeExpressionArrowFunction} = require('../../../../../../../dist/cjs/lib/node/expression/arrow-function');
+const {TwingNodeExpressionConstant} = require('../../../../../../../dist/cjs/lib/node/expression/constant');
+const {TwingNodeExpressionAssignName} = require('../../../../../../../dist/cjs/lib/node/expression/assign-name');
+const {TwingNode} = require('../../../../../../../dist/cjs/lib/node');
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 
 const tap = require('tape');

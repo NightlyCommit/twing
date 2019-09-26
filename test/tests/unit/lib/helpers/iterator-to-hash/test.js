@@ -1,4 +1,4 @@
-const {iteratorToHash} = require('../../../../../../build/lib/helpers/iterator-to-hash');
+const {iteratorToHash} = require('../../../../../../dist/cjs/lib/helpers/iterator-to-hash');
 
 const tap = require('tape');
 

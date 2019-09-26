@@ -1,12 +1,12 @@
-const {date} = require('../../../../../../../../build/lib/extension/core/functions/date');
-const {formatDateTime} = require('../../../../../../../../build/lib/helpers/format-date-time');
+const {date} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/date');
+const {formatDateTime} = require('../../../../../../../../dist/cjs/lib/helpers/format-date-time');
 const Luxon = require('luxon');
 const tape = require('tape');
 
 const {
     TwingEnvironment,
     TwingLoaderNull
-} = require('../../../../../../../../build/main');
+} = require('../../../../../../../../dist/cjs/main');
 
 tape.test('date', function (test) {
     Luxon.Settings.defaultZoneName = 'UTC';

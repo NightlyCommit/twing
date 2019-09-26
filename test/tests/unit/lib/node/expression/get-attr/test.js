@@ -4,7 +4,7 @@ const {
     TwingNodeExpressionArray,
     TwingTemplate,
     TwingNodeExpressionGetAttr
-} = require('../../../../../../../build/main');
+} = require('../../../../../../../dist/cjs/main');
 
 const TwingTestMockCompiler = require('../../../../../../mock/compiler');
 

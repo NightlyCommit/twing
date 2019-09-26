@@ -1,4 +1,4 @@
-const {formatDateTime} = require('../../../../../../build/lib/helpers/format-date-time');
+const {formatDateTime} = require('../../../../../../dist/cjs/lib/helpers/format-date-time');
 
 const tap = require('tape');
 const {DateTime} = require('luxon');

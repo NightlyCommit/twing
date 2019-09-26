@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "outDir": "build",
+    "outDir": "dist",
     "module": "es6",
     "moduleResolution": "node",
     "noEmitOnError": true

@@ -1,7 +1,7 @@
 import {isTraversable} from "../../../helpers/is-traversable";
-import isPlainObject = require("is-plain-object");
 import {iteratorToMap} from "../../../helpers/iterator-to-map";
 import {TwingErrorRuntime} from "../../../error/runtime";
+import {isPlainObject} from "../../../helpers/is-plain-object";
 
 /**
  * Return the values from a single column in the input array.

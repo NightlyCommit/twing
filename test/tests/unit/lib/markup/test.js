@@ -1,4 +1,4 @@
-const {TwingMarkup} = require('../../../../../build/main');
+const {TwingMarkup} = require('../../../../../dist/cjs/main');
 
 const tap = require('tape');
 

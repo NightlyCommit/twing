@@ -1,13 +1,13 @@
-const {TwingTokenParser} = require('../build/lib/token-parser');
-const {TwingNodePrint} = require('../build/lib/node/print');
-const {TwingNodeExpressionConstant} = require('../build/lib/node/expression/constant');
-const {TwingExtension} = require('../build/lib/extension');
-const {TwingFilter} = require('../build/lib/filter');
-const {TwingFunction} = require('../build/lib/function');
-const {TwingTest} = require('../build/lib/test');
-const {escape} = require('../build/lib/extension/core/filters/escape');
-const {TwingLoaderArray} = require('../build/lib/loader/array');
-const {TwingSandboxSecurityPolicy} = require('../build/lib/sandbox/security-policy');
+const {TwingTokenParser} = require('../dist/cjs/lib/token-parser');
+const {TwingNodePrint} = require('../dist/cjs/lib/node/print');
+const {TwingNodeExpressionConstant} = require('../dist/cjs/lib/node/expression/constant');
+const {TwingExtension} = require('../dist/cjs/lib/extension');
+const {TwingFilter} = require('../dist/cjs/lib/filter');
+const {TwingFunction} = require('../dist/cjs/lib/function');
+const {TwingTest} = require('../dist/cjs/lib/test');
+const {escape} = require('../dist/cjs/lib/extension/core/filters/escape');
+const {TwingLoaderArray} = require('../dist/cjs/lib/loader/array');
+const {TwingSandboxSecurityPolicy} = require('../dist/cjs/lib/sandbox/security-policy');
 const {TokenType} = require('twig-lexer');
 
 class TwingTestTokenParserSection extends TwingTokenParser {

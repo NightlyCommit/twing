@@ -1,4 +1,4 @@
-const {iteratorToArray} = require('../../../../../../build/lib/helpers/iterator-to-array');
+const {iteratorToArray} = require('../../../../../../dist/cjs/lib/helpers/iterator-to-array');
 
 const tap = require('tape');
 
