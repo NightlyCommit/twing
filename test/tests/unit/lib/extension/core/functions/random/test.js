@@ -1,15 +1,15 @@
-const {random} = require('../../../../../../../../build/lib/extension/core/functions/random');
+const {random} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/random');
 const tape = require('tape');
 const getrandmax = require('locutus/php/math/getrandmax');
-const {iconv} = require('../../../../../../../../build/lib/helpers/iconv');
-const {createRange} = require('../../../../../../../../build/lib/helpers/create-range');
+const {iconv} = require('../../../../../../../../dist/cjs/lib/helpers/iconv');
+const {createRange} = require('../../../../../../../../dist/cjs/lib/helpers/create-range');
 
 const TwingTestMockEnvironment = require('../../../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../../../mock/loader');
 
 const {
     TwingErrorRuntime,
-} = require('../../../../../../../../build/main');
+} = require('../../../../../../../../dist/cjs/main');
 
 tape.test('random', function (test) {
     /**

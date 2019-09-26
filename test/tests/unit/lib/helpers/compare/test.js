@@ -1,4 +1,4 @@
-const {compare} = require('../../../../../../build/lib/helpers/compare');
+const {compare} = require('../../../../../../dist/cjs/lib/helpers/compare');
 const {DateTime} = require('luxon');
 
 const tap = require('tape');

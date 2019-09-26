@@ -1,4 +1,4 @@
-const {examineObject} = require('../../../../../../build/lib/helpers/examine-object');
+const {examineObject} = require('../../../../../../dist/cjs/lib/helpers/examine-object');
 
 const tap = require('tape');
 

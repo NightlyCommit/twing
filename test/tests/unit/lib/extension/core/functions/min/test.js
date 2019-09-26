@@ -1,4 +1,4 @@
-const {min} = require('../../../../../../../../build/lib/extension/core/functions/min');
+const {min} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/min');
 
 const tap = require('tape');
 

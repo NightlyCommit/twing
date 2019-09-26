@@ -1,8 +1,8 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 import {isNullOrUndefined} from "util";
+import {addcslashes} from "locutus/php/strings";
 
-const addcslashes = require('locutus/php/strings/addcslashes');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
 

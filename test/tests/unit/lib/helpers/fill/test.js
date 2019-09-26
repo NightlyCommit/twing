@@ -1,4 +1,4 @@
-const {fill} = require('../../../../../../build/lib/helpers/fill');
+const {fill} = require('../../../../../../dist/cjs/lib/helpers/fill');
 
 const tap = require('tape');
 

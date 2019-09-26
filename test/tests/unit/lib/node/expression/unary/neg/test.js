@@ -2,7 +2,7 @@ const {
     TwingNodeExpressionUnaryNeg,
     TwingNodeExpressionConstant,
     TwingNodeType
-} = require('../../../../../../../../build/main');
+} = require('../../../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../../../mock/compiler');
 
 const tap = require('tape');

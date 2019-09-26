@@ -1,4 +1,4 @@
-const {slice} = require('../../../../../../build/lib/helpers/slice');
+const {slice} = require('../../../../../../dist/cjs/lib/helpers/slice');
 
 const tap = require('tape');
 

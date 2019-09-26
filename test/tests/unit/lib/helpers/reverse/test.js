@@ -1,4 +1,4 @@
-const {reverse} = require('../../../../../../build/lib/helpers/reverse');
+const {reverse} = require('../../../../../../dist/cjs/lib/helpers/reverse');
 
 const tap = require('tape');
 

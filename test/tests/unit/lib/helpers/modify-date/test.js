@@ -1,4 +1,4 @@
-const {modifyDate} = require('../../../../../../build/lib/helpers/modify-date');
+const {modifyDate} = require('../../../../../../dist/cjs/lib/helpers/modify-date');
 
 const tap = require('tape');
 const sinon = require('sinon');

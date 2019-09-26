@@ -15,7 +15,7 @@ const {
     TwingFilter,
     TwingOperator,
     TwingOperatorType
-} = require('../../../../../build/main');
+} = require('../../../../../dist/cjs/main');
 
 const TwingTestMockEnvironment = require('../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../mock/loader');

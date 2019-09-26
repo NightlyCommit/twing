@@ -1,4 +1,4 @@
-import * as iconvLite from "iconv-lite";
+const {decode, encode} = require('iconv-lite');
 
 /**
  * Internationalization conversion: convert buffer to requested character encoding
@@ -10,9 +10,9 @@ import * as iconvLite from "iconv-lite";
  * @returns {Buffer} the converted buffer or false on failure.
  */
 export function iconv(inCharset: string, outCharset: string, buffer: Buffer): Buffer {
-    let str = iconvLite.decode(buffer, inCharset);
+    let str = decode(buffer, inCharset);
 
-    buffer = iconvLite.encode(str, outCharset) as Buffer;
+    buffer = encode(str, outCharset) as Buffer;
 
     return buffer;
 }

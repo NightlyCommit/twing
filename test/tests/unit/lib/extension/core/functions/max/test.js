@@ -1,4 +1,4 @@
-const {max} = require('../../../../../../../../build/lib/extension/core/functions/max');
+const {max} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/max');
 
 const tap = require('tape');
 

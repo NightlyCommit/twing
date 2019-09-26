@@ -1,4 +1,4 @@
-const {TwingSandboxSecurityPolicy} = require('../../../../../../build/main');
+const {TwingSandboxSecurityPolicy} = require('../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 

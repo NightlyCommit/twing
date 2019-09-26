@@ -1,4 +1,4 @@
-const {TwingErrorLoader} = require('../../../../../../build/lib/error/loader');
+const {TwingErrorLoader} = require('../../../../../../dist/cjs/lib/error/loader');
 
 const tap = require('tape');
 

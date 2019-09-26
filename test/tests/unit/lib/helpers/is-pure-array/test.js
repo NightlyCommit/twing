@@ -1,4 +1,4 @@
-const {isPureArray} = require('../../../../../../build/lib/helpers/is-pure-array');
+const {isPureArray} = require('../../../../../../dist/cjs/lib/helpers/is-pure-array');
 
 const tap = require('tape');
 

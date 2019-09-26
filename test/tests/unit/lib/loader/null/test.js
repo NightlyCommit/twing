@@ -1,4 +1,4 @@
-const {TwingLoaderNull} = require('../../../../../../build/lib/loader/null');
+const {TwingLoaderNull} = require('../../../../../../dist/cjs/lib/loader/null');
 
 const tap = require('tape');
 

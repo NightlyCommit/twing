@@ -1,4 +1,4 @@
-const {dump} = require('../../../../../../../../build/lib/extension/core/functions/dump');
+const {dump} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/dump');
 
 const tap = require('tape');
 

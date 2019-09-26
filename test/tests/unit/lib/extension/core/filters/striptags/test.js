@@ -1,4 +1,4 @@
-const {striptags} = require('../../../../../../../../build/lib/extension/core/filters/striptags');
+const {striptags} = require('../../../../../../../../dist/cjs/lib/extension/core/filters/striptags');
 
 const tap = require('tape');
 

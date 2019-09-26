@@ -1,4 +1,4 @@
-const {includes} = require('../../../../../../build/lib/helpers/includes');
+const {includes} = require('../../../../../../dist/cjs/lib/helpers/includes');
 
 const tap = require('tape');
 

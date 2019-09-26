@@ -1,4 +1,4 @@
-const {empty} = require('../../../../../../../../build/lib/extension/core/tests/empty');
+const {empty} = require('../../../../../../../../dist/cjs/lib/extension/core/tests/empty');
 
 const tap = require('tape');
 

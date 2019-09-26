@@ -1,4 +1,4 @@
-const {TwingParser, TwingEnvironment, TwingLoaderNull} = require("../../build/main");
+const {TwingParser, TwingEnvironment, TwingLoaderNull} = require("../../dist/cjs/main");
 
 const sinon = require('sinon');
 

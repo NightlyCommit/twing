@@ -1,4 +1,4 @@
-const {TwingError} = require('../../../../../build/lib/error');
+const {TwingError} = require('../../../../../dist/cjs/lib/error');
 
 const {
     TwingLoaderArray,
@@ -6,7 +6,7 @@ const {
     TwingErrorRuntime,
     TwingLoaderFilesystem,
     TwingSource
-} = require('../../../../../build/main');
+} = require('../../../../../dist/cjs/main');
 
 const tap = require('tape');
 const path = require('path');

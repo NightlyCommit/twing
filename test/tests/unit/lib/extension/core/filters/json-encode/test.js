@@ -1,4 +1,4 @@
-const {jsonEncode} = require('../../../../../../../../build/lib/extension/core/filters/json-encode');
+const {jsonEncode} = require('../../../../../../../../dist/cjs/lib/extension/core/filters/json-encode');
 
 const tap = require('tape');
 

@@ -1,7 +1,7 @@
 const {
     TwingEnvironment,
     TwingCacheNull
-} = require('../../../../../../build/browser');
+} = require('../../../../../../dist/cjs/browser');
 const test = require('tape');
 
 test('browser environment', (test) => {

@@ -1,4 +1,4 @@
-const {isCountable} = require('../../../../../../build/lib/helpers/is-countable');
+const {isCountable} = require('../../../../../../dist/cjs/lib/helpers/is-countable');
 
 const tap = require('tape');
 

@@ -17,21 +17,21 @@
     "type": "git",
     "url": "git://github.com/ericmorand/twing"
   },
-  "main": "main.js",
-  "browser": "browser.js",
+  "main": "dist/cjs/main.js",
+  "browser": "dist/es/browser.js",
+  "module": "dist/es",
   "engines": {
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "rimraf build && rimraf test/tests/types/build",
+    "clean": "rimraf dist && rimraf test/tests/types/dist",
     "precover": "rimraf coverage .nyc_output",
     "prebuild": "npm run clean",
     "postbuild": "replace-in-file '__VERSION__' $npm_package_version build/**/*",
-    "pretest": "npm run build",
+    "pretest": "npm run clean && npm run build:cjs",
     "pretest:browser": "npm run pretest",
-    "pretest:types": "npm run pretest && rimraf test/tests/types/build",
-    "prepack": "npm run build -- --sourceMap false && npm run bundle && mv build/* .",
-    "postpack": "rimraf lib dist browser.* index.*",
+    "pretest:types": "npm run pretest && rimraf test/tests/types/dist",
+    "prepack": "npm run build -- --sourceMap false && npm run bundle",
     "test": "npm run fastest:all",
     "test:browser": "npm run fastest:integration:browser",
     "test:docs": "cd docs && bundle exec jekyll build",
@@ -42,8 +42,10 @@
     "fastest:unit": "tape 'test/tests/unit/**/test.js' | tap-bail | tap-spec",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "tsc --project .",
-    "bundle": "browserify build/browser.js -g uglifyify -s Twing -o build/dist/lib.min.js",
+    "build": "npm run build:cjs && npm run build:es",
+    "build:cjs": "tsc --project . --module commonjs --outDir dist/cjs --declaration true",
+    "build:es": "tsc --project . --module es6 --outDir dist/es --declaration true",
+    "bundle": "browserify dist/cjs/browser.js -g uglifyify -s Twing -o dist/lib.min.js",
     "docs": "cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
@@ -61,7 +63,7 @@
     "is-plain-object": "^2.0.4",
     "isobject": "^3.0.1",
     "levenshtein": "^1.0.5",
-    "locutus": "^2.0.9",
+    "locutus": "^2.0.11",
     "luxon": "^1.19.3",
     "merge": "^1.2.1",
     "object-hash": "^1.2.0",
@@ -76,6 +78,7 @@
     "var-validator": "0.0.3"
   },
   "devDependencies": {
+    "@types/locutus": "0.0.5",
     "@types/node": "^9.3.0",
     "@types/sinon": "^4.3.0",
     "@types/tmp": "0.0.33",

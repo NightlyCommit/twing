@@ -1,4 +1,4 @@
-const {TwingOutputBuffering} = require('../../../../../build/main');
+const {TwingOutputBuffering} = require('../../../../../dist/cjs/main');
 
 const tap = require('tape');
 const sinon = require('sinon');

@@ -1,4 +1,4 @@
-const {TwingEnvironment, varDump, TwingOutputBuffering, TwingTemplate} = require("../../../../../../build/main");
+const {TwingEnvironment, varDump, TwingOutputBuffering, TwingTemplate} = require("../../../../../../dist/cjs/main");
 
 const tap = require('tape');
 

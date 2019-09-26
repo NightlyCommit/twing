@@ -1,4 +1,4 @@
-const {include} = require('../../../../../../../../build/lib/extension/core/functions/include');
+const {include} = require('../../../../../../../../dist/cjs/lib/extension/core/functions/include');
 const tape = require('tape');
 const path = require('path');
 
@@ -7,7 +7,7 @@ const {
     TwingLoaderRelativeFilesystem,
     TwingLoaderArray,
     TwingSource
-} = require('../../../../../../../../build/main');
+} = require('../../../../../../../../dist/cjs/main');
 
 tape.test('include', function (test) {
     let env = new TwingEnvironment(new TwingLoaderArray({}));

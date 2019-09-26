@@ -5,9 +5,9 @@ const {
     TwingOperator,
     TwingOperatorType,
     TwingOperatorAssociativity
-} = require('../../../../../build/main');
+} = require('../../../../../dist/cjs/main');
 
-const {typeToEnglish} = require('../../../../../build/lib/lexer');
+const {typeToEnglish} = require('../../../../../dist/cjs/lib/lexer');
 const tap = require('tape');
 const {TokenType} = require('twig-lexer');
 

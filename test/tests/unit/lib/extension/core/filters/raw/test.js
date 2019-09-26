@@ -1,5 +1,5 @@
-const {raw} = require('../../../../../../../../build/lib/extension/core/filters/raw');
-const {TwingMarkup} = require('../../../../../../../../build/lib/markup');
+const {raw} = require('../../../../../../../../dist/cjs/lib/extension/core/filters/raw');
+const {TwingMarkup} = require('../../../../../../../../dist/cjs/lib/markup');
 
 const tap = require('tape');
 
