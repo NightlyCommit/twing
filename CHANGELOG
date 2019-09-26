@@ -1,3 +1,22 @@
+3.0.0
+
+ * #409 3.x: compatibility chart is not up-to-date
+ * #403 3.x: Lexer doesn't support custom operators
+ * #399 Move the project to NightlyCommit
+ * #398 Add support for Node.js 12
+ * #391 Add a way to register templates module in the environment cache
+ * #390 Get rid of TwingTemplateWrapper
+ * #375 Clean the included extensions
+ * #368 filter tag is supposed to create a new context scope
+ * #365 Add support for Twig 2.11
+ * #362 Array syntax should always resolve to a Map
+ * #348 The lexer is lossy
+ * #345 Provide an easier way to load the main pre-compiled template
+ * #338 Rework filter and function declaration APIs to enforce explicit parameters naming
+ * #337 Clarify documentation of the auto_reload option
+ * #310 Move deprecation messages to warnings instead of errors
+ * #305 Provide an ES along with CJS version of Twing
+
 2.3.6
 
  * #385 Get rid of most constructor.name usage
