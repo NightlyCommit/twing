@@ -1,7 +1,7 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 /**
- * @see https://github.com/ericmorand/twing/issues/236
+ * @see https://github.com/NightlyCommit/twing/issues/236
  * @type {module.exports}
  */
 module.exports = class extends TwingTestIntegrationTestCaseBase {
