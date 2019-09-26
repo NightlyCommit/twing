@@ -3,8 +3,6 @@ import {TwingNode} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
 import {TwingCallableWrapperOptions, TwingCallableWrapper, TwingCallableArgument} from "./callable-wrapper";
 
-let merge = require('merge');
-
 type TwingFilterCallable = (...args: any[]) => any;
 
 export type TwingFilterOptions = TwingCallableWrapperOptions & {
@@ -24,7 +22,7 @@ export class TwingFilter extends TwingCallableWrapper {
             return new TwingNodeExpressionFilter(node, filterName, methodArguments, lineno, columnno, tag);
         };
 
-        this.options = merge(this.options, options);
+        this.options = Object.assign({}, this.options, options);
     }
 
     getPreservesSafety() {

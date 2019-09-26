@@ -2,8 +2,6 @@ import {TwingNodeExpressionFunction} from "./node/expression/function";
 import {TwingNode} from "./node";
 import {TwingCallableWrapperOptions, TwingCallableWrapper, TwingCallableArgument} from "./callable-wrapper";
 
-const merge = require('merge');
-
 type TwingFunctionCallable = (...args: any[]) => void;
 
 export class TwingFunction extends TwingCallableWrapper {
@@ -24,6 +22,6 @@ export class TwingFunction extends TwingCallableWrapper {
             return new TwingNodeExpressionFunction(name, functionArguments, line, columnno);
         };
 
-        this.options = merge(this.options, options);
+        this.options = Object.assign({}, this.options, options);
     }
 }

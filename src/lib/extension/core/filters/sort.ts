@@ -4,18 +4,18 @@ import {iteratorToMap} from "../../../helpers/iterator-to-map";
 import {asort} from "../../../helpers/asort";
 
 /**
- * Sorts an array.
+ * Sorts an iterable.
  *
- * @param {Array<*>} array
+ * @param {Map<any, any>} iterable
  *
- * @returns {Map<*,*>}
+ * @returns {Map<any, any>}
  */
-export function sort(array: Array<any>) {
-    if (!isTraversable(array) && !Array.isArray(array)) {
-        throw new TwingErrorRuntime(`The sort filter only works with iterables, got "${typeof array}".`);
+export function sort(iterable: Map<any, any>) {
+    if (!isTraversable(iterable)) {
+        throw new TwingErrorRuntime(`The sort filter only works with iterables, got "${typeof iterable}".`);
     }
 
-    let map = iteratorToMap(array);
+    let map = iteratorToMap(iterable);
 
     asort(map);
 

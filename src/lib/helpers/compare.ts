@@ -6,11 +6,12 @@
  */
 
 import {DateTime} from "luxon";
+import {isMap} from "./is-map";
 
 export function compare(firstOperand: any, secondOperand: any): boolean {
-    // array
-    if (Array.isArray(firstOperand)) {
-        return compareToArray(firstOperand, secondOperand);
+    // Map
+    if (isMap(firstOperand)) {
+        return compareToMap(firstOperand as Map<any, any>, secondOperand);
     }
 
     // string
@@ -43,7 +44,7 @@ export function compare(firstOperand: any, secondOperand: any): boolean {
 }
 
 /**
- * Compare an array to something else by conforming to PHP loose comparisons rules
+ * Compare a Map to something else by conforming to PHP loose comparisons rules
  * ┌─────────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬─────────┬───────┬───────┐
  * │         │ TRUE  │ FALSE │   1   │   0   │  -1   │  "1"  │  "0"  │ "-1"  │ NULL  │ []    │ ["php"] | "php" │  ""   │
  * ├─────────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼─────────┼───────┼───────┤
@@ -51,26 +52,25 @@ export function compare(firstOperand: any, secondOperand: any): boolean {
  * │ ["php"] │ TRUE  │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ FALSE │ TRUE    │ FALSE │ FALSE |
  * └─────────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴─────────┴───────┴───────┘
  */
-function compareToArray(firstOperand: Array<any>, secondOperand: any): boolean {
-    if (firstOperand.length < 1) {
-        return (secondOperand === false || secondOperand === null || (Array.isArray(secondOperand) && secondOperand.length < 1));
+function compareToMap(firstOperand: Map<any, any>, secondOperand: any): boolean {
+    if (firstOperand.size < 1) {
+        return (secondOperand === false || secondOperand === null || (isMap(secondOperand) && (secondOperand as Map<any, any>).size < 1));
     }
     else {
         if (secondOperand === true) {
             return true;
         }
-        else if (!Array.isArray(secondOperand)) {
+        else if (!isMap(secondOperand)) {
             return false;
         }
-        else if (firstOperand.length !== secondOperand.length) {
+        else if (firstOperand.size !== (secondOperand as Map<any, any>).size) {
             return false;
         }
 
         let result = false;
 
-        for (let i = 0; i < firstOperand.length; i++) {
-            let valueItem = firstOperand[i];
-            let compareItem = secondOperand[i];
+        for (let [i, valueItem] of firstOperand) {
+            let compareItem = (secondOperand as Map<any, any>).get(i);
 
             result = compare(valueItem, compareItem);
 
@@ -121,8 +121,8 @@ function compareToBoolean(firstOperand: boolean, secondOperand: any): boolean {
         return !firstOperand;
     }
 
-    if (Array.isArray(secondOperand)) {
-        return firstOperand === (secondOperand.length > 0)
+    if (isMap(secondOperand)) {
+        return firstOperand === (secondOperand as Map<any, any>).size > 0;
     }
 
     return false;
@@ -171,8 +171,8 @@ function compareToNull(value: any) {
         return true;
     }
 
-    if (Array.isArray(value)) {
-        return value.length < 1;
+    if (isMap(value)) {
+        return (value as Map<any, any>).size < 1;
     }
 
     return false;
@@ -194,7 +194,6 @@ function compareToNumber(firstOperand: number, secondOperand: any): boolean {
     }
 
     if (typeof secondOperand === 'boolean') {
-
         return (firstOperand !== 0) === secondOperand;
     }
 

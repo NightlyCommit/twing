@@ -115,23 +115,6 @@ export class TwingCompiler {
         else if (typeof value === 'boolean') {
             this.raw(value ? 'true' : 'false');
         }
-        else if (Array.isArray(value)) {
-            this.raw('[');
-
-            let first = true;
-
-            for (let v of value) {
-                if (!first) {
-                    this.raw(', ');
-                }
-
-                first = false;
-
-                this.repr(v);
-            }
-
-            this.raw(']');
-        }
         else if (value instanceof Map) {
             this.raw('new Map([');
 

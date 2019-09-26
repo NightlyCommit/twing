@@ -2,6 +2,7 @@ import {compare as compareHelper} from "./compare";
 import {isTraversable} from "./is-traversable";
 import {iteratorToArray} from "./iterator-to-array";
 import {TwingMarkup} from "../markup";
+import {isMap} from "./is-map";
 
 export function isIn(value: any, compare: any): boolean {
     let result = false;
@@ -14,8 +15,8 @@ export function isIn(value: any, compare: any): boolean {
         compare = compare.toString();
     }
 
-    if (Array.isArray(compare)) {
-        for (let item of compare) {
+    if (isMap(compare)) {
+        for (let [key, item] of (compare as Map<number, any>)) {
             if (compareHelper(item, value)) {
                 result = true;
                 break;

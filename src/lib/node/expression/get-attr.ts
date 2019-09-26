@@ -34,31 +34,17 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         if (this.getAttribute('optimizable')
             && (!env.isStrictVariables() || this.getAttribute('ignore_strict_check'))
             && !this.getAttribute('is_defined_test')
-            && TwingTemplate.ARRAY_CALL === this.getAttribute('type')) {
+            && this.getAttribute('type') === TwingTemplate.ARRAY_CALL) {
             let var_ = compiler.getVarName();
 
             compiler
                 .raw('(() => {let ' + var_ + ' = ')
                 .subcompile(this.getNode('node'))
-                .raw('; return this.isMap(')
+                .raw('; return this.get(')
                 .raw(var_)
-                .raw(') ? (')
-                .raw(var_)
-                .raw('.has(')
+                .raw(', ')
                 .subcompile(this.getNode('attribute'))
-                .raw(') ? ')
-                .raw(var_)
-                .raw('.get(')
-                .subcompile(this.getNode('attribute'))
-                .raw(') : null) : (Array.isArray(')
-                .raw(var_)
-                .raw(') || this.isPlainObject(')
-                .raw(var_)
-                .raw(') ? ')
-                .raw(var_)
-                .raw('[')
-                .subcompile(this.getNode('attribute'))
-                .raw('] : null);})()')
+                .raw(');})()')
             ;
 
             return;
@@ -77,7 +63,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         if (this.hasNode('arguments')) {
             compiler.raw(', ').subcompile(this.getNode('arguments'));
         } else {
-            compiler.raw(', []');
+            compiler.raw(', new Map()');
         }
 
         compiler

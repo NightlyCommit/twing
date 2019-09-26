@@ -142,7 +142,7 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && this.isCountable(context.get('_seq')))) {
+if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_seq'))) {
     let length = this.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);
@@ -292,7 +292,7 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && this.isCountable(context.get('_seq')))) {
+if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_seq'))) {
     let length = this.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);

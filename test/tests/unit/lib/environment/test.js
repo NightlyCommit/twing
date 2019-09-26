@@ -63,14 +63,6 @@ class TwingTestsEnvironmentTestNodeVisitor {
 class TwingTestsEnvironmentTestExtension extends TwingExtension {
     constructor() {
         super();
-
-        this.TwingExtensionGlobalsInterfaceImpl = {
-            getGlobals: () => {
-                return new Map([
-                    ['foo_global', 'foo_global']
-                ]);
-            }
-        };
     }
 
     getTokenParsers() {
@@ -473,7 +465,6 @@ tap.test('environment', function (test) {
         test.true(twing.getTests().has('foo_test'));
         test.true(twing.getUnaryOperators().has('foo_unary'));
         test.true(twing.getBinaryOperators().has('foo_binary'));
-        test.true(twing.getGlobals().has('foo_global'));
 
         let visitors = twing.getNodeVisitors();
         let found = false;

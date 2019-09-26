@@ -1,4 +1,4 @@
-import {arrayMerge} from "../../../helpers/array-merge";
+import {merge as mergeHelper} from "../../../helpers/merge";
 import {isNullOrUndefined} from "util";
 import {isTraversable} from "../../../helpers/is-traversable";
 import {TwingErrorRuntime} from "../../../error/runtime";
@@ -14,19 +14,19 @@ import {TwingErrorRuntime} from "../../../error/runtime";
  *  {# items now contains { 'apple': 'fruit', 'orange': 'fruit', 'peugeot': 'car' } #}
  * </pre>
  *
- * @param {*} arr1 An array
- * @param {*} arr2 An array
+ * @param {Map<any, any>} iterable1 A map
+ * @param {Map<any, any>} iterable2 A map
  *
- * @return array The merged array
+ * @return {Map<any, any>} The merged map
  */
-export function merge(arr1: any, arr2: any) {
-    if (isNullOrUndefined(arr1) || (!isTraversable(arr1) && (typeof arr1 !== 'object'))) {
-        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr1) ? typeof arr1 : arr1}" as first argument.`);
+export function merge(iterable1: Map<any, any>, iterable2: Map<any, any>): Map<any, any> {
+    if (isNullOrUndefined(iterable1) || (!isTraversable(iterable1) && (typeof iterable1 !== 'object'))) {
+        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(iterable1) ? typeof iterable1 : iterable1}" as first argument.`);
     }
 
-    if (isNullOrUndefined(arr2) || (!isTraversable(arr2) && (typeof arr2 !== 'object'))) {
-        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(arr2) ? typeof arr2 : arr2}" as second argument.`);
+    if (isNullOrUndefined(iterable2) || (!isTraversable(iterable2) && (typeof iterable2 !== 'object'))) {
+        throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(iterable2) ? typeof iterable2 : iterable2}" as second argument.`);
     }
 
-    return arrayMerge(arr1, arr2);
+    return mergeHelper(iterable1, iterable2);
 }

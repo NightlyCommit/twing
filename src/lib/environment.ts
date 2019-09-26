@@ -20,7 +20,6 @@ import {TwingCompiler} from "./compiler";
 import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
-import {merge as twingMerge} from "./helpers/merge";
 import {EventEmitter} from 'events';
 import {TwingOutputBuffering} from "./output-buffering";
 import {TwingSourceMapNode} from "./source-map/node";
@@ -30,7 +29,6 @@ import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-int
 import {TwingEnvironmentOptions} from "./environment-options";
 import {TwingNodeType} from "./node";
 import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
-import {Token, TokenStream} from "twig-lexer";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
@@ -54,7 +52,6 @@ export abstract class TwingEnvironment extends EventEmitter {
     private lexer: TwingLexer;
     private parser: TwingParser;
     private globals: Map<any, any> = new Map();
-    private resolvedGlobals: any;
     private loadedTemplates: Map<string, TwingTemplate> = new Map();
     private strictVariables: boolean;
     private originalCache: TwingCacheInterface | string | false;
@@ -822,8 +819,7 @@ return module.exports;
     /**
      * Registers a Global.
      *
-     * New globals can be added before compiling or rendering a template;
-     * but after, you can only update existing globals.
+     * New globals can be added before compiling or rendering a template, but after, you can only update existing globals.
      *
      * @param {string} name The global name
      * @param {*} value The global value
@@ -833,30 +829,16 @@ return module.exports;
             throw new Error(`Unable to add global "${name}" as the extensions have already been initialized.`);
         }
 
-        if (this.resolvedGlobals) {
-            this.resolvedGlobals.set(name, value);
-        } else {
-            this.globals.set(name, value);
-        }
+        this.globals.set(name, value);
     }
 
     /**
      * Gets the registered Globals.
      *
-     * @return array An array of globals
-     *
-     * @internal
+     * @return Map<any, any> A map of globals
      */
     getGlobals(): Map<any, any> {
-        if (this.extensionSet.isInitialized()) {
-            if (!this.resolvedGlobals) {
-                this.resolvedGlobals = twingMerge(this.extensionSet.getGlobals(), this.globals);
-            }
-
-            return this.resolvedGlobals;
-        }
-
-        return twingMerge(this.extensionSet.getGlobals(), this.globals) as Map<any, any>;
+        return this.globals;
     }
 
     /**
@@ -866,8 +848,6 @@ return module.exports;
      * @returns {Map<*, *>}
      */
     mergeGlobals(context: Map<any, any>) {
-        // we don't use Twing merge as the context being generally
-        // bigger than globals, this code is faster.
         for (let [key, value] of this.getGlobals()) {
             if (!context.has(key)) {
                 context.set(key, value);

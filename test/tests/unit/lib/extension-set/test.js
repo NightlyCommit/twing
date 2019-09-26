@@ -11,38 +11,13 @@ const {
 } = require("../../../../../build/main");
 
 const tap = require('tape');
-const sinon = require('sinon');
 
 class TwingTestExtensionSetExtension extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionGlobalsInterfaceImpl = {
-            getGlobals: () => {
-                return new Map([
-                    ['foo', 'bar']
-                ]);
-            }
-        };
-    }
-
     getOperators() {
         return [
             new TwingOperator('foo', TwingOperatorType.UNARY, 1, () => null),
             new TwingOperator('bar', TwingOperatorType.BINARY, 1, () => null)
         ];
-    }
-}
-
-class TwingTestExtensionSetExtensionInvalid extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionGlobalsInterfaceImpl = {
-            getGlobals: () => {
-                return 'foo';
-            }
-        };
     }
 }
 
@@ -319,53 +294,6 @@ tap.test('extension-set', function (test) {
             });
 
             test.same(extensionSet.getFunction('foo'), null);
-
-            test.end();
-        });
-
-        test.end();
-    });
-
-    test.test('getGlobals', function (test) {
-        test.test('valid extension', function (test) {
-            let extensionSet = new TwingExtensionSet();
-            let extension = new TwingTestExtensionSetExtension();
-
-            extensionSet.addExtension(extension);
-
-            test.same(extensionSet.getGlobals(), extension.TwingExtensionGlobalsInterfaceImpl.getGlobals());
-
-            test.end();
-        });
-
-        test.test('invalid extension', function (test) {
-            let extensionSet = new TwingExtensionSet();
-
-            extensionSet.addExtension(new TwingTestExtensionSetExtensionInvalid());
-
-            test.throws(function () {
-                extensionSet.getGlobals();
-            }, new Error('"TwingTestExtensionSetExtensionInvalid[TwingExtensionGlobalsInterface].getGlobals()" must return a Map of globals.'));
-
-            test.end();
-        });
-
-        test.test('initialized', function (test) {
-            let extensionSet = new TwingExtensionSet();
-            let extension = new TwingTestExtensionSetExtension();
-
-            extensionSet.addExtension(extension, 'TwingTestExtensionSetExtension');
-            // initialize the extension set
-            extensionSet.getFunctions();
-
-            sinon.spy(extension.TwingExtensionGlobalsInterfaceImpl, 'getGlobals');
-
-            let globals = extensionSet.getGlobals();
-
-            extensionSet.getGlobals();
-
-            test.same(extension.TwingExtensionGlobalsInterfaceImpl.getGlobals.callCount, 1, 'getGlobals should return extension set globals if set');
-            test.same(globals, extension.TwingExtensionGlobalsInterfaceImpl.getGlobals());
 
             test.end();
         });

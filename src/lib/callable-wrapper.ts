@@ -2,8 +2,6 @@ import {TwingError} from "./error";
 import {TwingSource} from "./source";
 import {TwingNode} from "./node";
 
-const merge = require('merge');
-
 export type TwingCallableArgument = {
   name: string,
   defaultValue?: any
@@ -34,7 +32,7 @@ export abstract class TwingCallableWrapper {
         this.callable = callable;
         this.acceptedArguments = acceptedArguments;
 
-        this.options = merge({
+        this.options = Object.assign({}, {
             needs_environment: false,
             needs_context: false,
             needs_source: false,

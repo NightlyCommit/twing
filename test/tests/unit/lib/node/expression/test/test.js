@@ -69,7 +69,7 @@ tap.test('node/expression/test', function (test) {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, null, null, [\`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
 
             node = createTest(string, 'barbar', new Map([
                 [0, new TwingNodeExpressionConstant('1', 1, 1)],
@@ -78,7 +78,7 @@ tap.test('node/expression/test', function (test) {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, \`1\`, \`2\`, [\`3\`, \`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
             test.end();
         });
