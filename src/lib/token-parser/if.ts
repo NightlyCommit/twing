@@ -13,19 +13,17 @@
  */
 import {TwingTokenParser} from "../token-parser";
 import {TwingNode} from "../node";
-import {TwingToken} from "../token";
-import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeIf} from "../node/if";
-
+import {Token, TokenType} from "twig-lexer";
 
 export class TwingTokenParserIf extends TwingTokenParser {
-    parse(token: TwingToken) {
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
-        let expr = this.parser.getExpressionParser().parseExpression();
+    parse(token: Token) {
+        let lineno = token.line;
+        let columnno = token.column;
+        let expr = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         let index = 0;
         let body = this.parser.subparse([this, this.decideIfFork]);
@@ -39,15 +37,15 @@ export class TwingTokenParserIf extends TwingTokenParser {
         let end = false;
 
         while (!end) {
-            switch (stream.next().getValue()) {
+            switch (stream.next().value) {
                 case 'else':
-                    stream.expect(TwingToken.BLOCK_END_TYPE);
+                    stream.expect(TokenType.TAG_END);
                     elseNode = this.parser.subparse([this, this.decideIfEnd]);
                     break;
 
                 case 'elseif':
-                    expr = this.parser.getExpressionParser().parseExpression();
-                    stream.expect(TwingToken.BLOCK_END_TYPE);
+                    expr = this.parser.parseExpression();
+                    stream.expect(TokenType.TAG_END);
                     body = this.parser.subparse([this, this.decideIfFork]);
                     tests.set(index++, expr);
                     tests.set(index++, body);
@@ -59,17 +57,17 @@ export class TwingTokenParserIf extends TwingTokenParser {
             }
         }
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         return new TwingNodeIf(new TwingNode(tests), elseNode, lineno, columnno, this.getTag());
     }
 
-    decideIfFork(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, ['elseif', 'else', 'endif']);
+    decideIfFork(token: Token) {
+        return token.test(TokenType.NAME, ['elseif', 'else', 'endif']);
     }
 
-    decideIfEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endif');
+    decideIfEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endif');
     }
 
     getTag() {

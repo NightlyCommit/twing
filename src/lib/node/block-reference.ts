@@ -6,7 +6,7 @@ import {TwingNodeOutputInterface} from "../node-output-interface";
 /**
  * Represents a block call node.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
@@ -21,8 +21,7 @@ export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutpu
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
-            .write(`this.traceableDisplayBlock(${this.getTemplateLine()}, this.source)('${this.getAttribute('name')}', context, blocks);\n`)
+            .write(`this.traceableDisplayBlock(${this.getTemplateLine()}, this.source)('${this.getAttribute('name')}', context.clone(), blocks);\n`)
         ;
     }
 }

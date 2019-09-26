@@ -10,7 +10,7 @@ const {
     TwingNodeExpressionGetAttr,
     TwingNodeExpressionName,
     TwingTemplate
-} = require("../../../../../../build");
+} = require("../../../../../../dist/cjs/main");
 
 const tap = require('tape');
 const sinon = require('sinon');

@@ -7,7 +7,6 @@ const {
     TwingParser,
     TwingLexer,
     TwingErrorSyntax,
-    TwingTemplateWrapper,
     TwingLoaderArray,
     TwingSource,
     TwingCacheFilesystem,
@@ -16,14 +15,17 @@ const {
     TwingTest,
     TwingTokenParser,
     TwingExtension,
-    TwingErrorRuntime
-} = require('../../../../../build');
+    TwingErrorRuntime,
+    TwingOperator,
+    TwingOperatorType,
+    TwingNodeType
+} = require('../../../../../dist/cjs/main');
 
-const TwingTestMockRuntimeLoader = require('../../../../mock/runtime-loader');
 const TwingTestMockLoader = require('../../../../mock/loader');
 const TwingTestMockCache = require('../../../../mock/cache');
 const TwingTestMockTemplate = require('../../../../mock/template');
 const {SourceMapConsumer} = require('source-map');
+const {Token, TokenType} = require('twig-lexer');
 
 const tap = require('tape');
 const sinon = require('sinon');
@@ -61,14 +63,6 @@ class TwingTestsEnvironmentTestNodeVisitor {
 class TwingTestsEnvironmentTestExtension extends TwingExtension {
     constructor() {
         super();
-
-        this.TwingExtensionGlobalsInterfaceImpl = {
-            getGlobals: () => {
-                return new Map([
-                    ['foo_global', 'foo_global']
-                ]);
-            }
-        };
     }
 
     getTokenParsers() {
@@ -84,9 +78,9 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFilters() {
-        return new Map([
-            [0, new TwingFilter('foo_filter')]
-        ]);
+        return [
+            new TwingFilter('foo_filter')
+        ];
     }
 
     getTests() {
@@ -96,19 +90,15 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     }
 
     getFunctions() {
-        return new Map([
-            [0, new TwingFunction('foo_function')],
-        ]);
+        return [
+            new TwingFunction('foo_function'),
+        ];
     }
 
     getOperators() {
         return [
-            new Map([
-                ['foo_unary', {}]
-            ]),
-            new Map([
-                ['foo_binary', {}]
-            ])
+            new TwingOperator('foo_unary', TwingOperatorType.UNARY, 10, () => {}),
+            new TwingOperator('foo_binary', TwingOperatorType.BINARY, 10, () => {}),
         ];
     }
 }
@@ -127,47 +117,6 @@ class TwingTestsEnvironmentTestExtensionRegression extends TwingTestsEnvironment
     }
 }
 
-class TwingTestsEnvironmentTestExtensionWithDeprecationInitRuntime extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionInitRuntimeInterfaceImpl = {
-            initRuntime(env) {
-            }
-        };
-    }
-}
-
-class TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime extends TwingExtension {
-    constructor() {
-        super();
-
-        this.TwingExtensionInitRuntimeInterfaceImpl = {
-            initRuntime(env) {
-            }
-        };
-    }
-}
-
-class TwingTestsEnvironmentTestExtensionWithoutRuntime extends TwingExtension {
-    getFunctions() {
-        return new Map([
-            [0, new TwingFunction('from_runtime_array', ['TwingTestsEnvironmentTestRuntime', 'fromRuntime'])],
-            [1, new TwingFunction('from_runtime_string', 'TwingTestsEnvironmentTestRuntime::fromRuntime')]
-        ]);
-    }
-
-    getName() {
-        return 'from_runtime';
-    }
-}
-
-class TwingTestsEnvironmentTestRuntime {
-    fromRuntime(name = 'bar') {
-        return name;
-    }
-}
-
 class TwingTestsEnvironmentParserBar extends TwingParser {
     parse(stream, test, dropNeedle) {
         return 'bar';
@@ -176,19 +125,13 @@ class TwingTestsEnvironmentParserBar extends TwingParser {
 
 class TwingTestsEnvironmentLexerBar extends TwingLexer {
     tokenize(source) {
-        return 'bar';
+        return [new Token(TokenType.TEXT, 'bar', 1, 1)];
     }
 }
 
 class TwingTestsEnvironmentParserError extends TwingParser {
     parse(stream, test, dropNeedle) {
         throw new Error('Parser error "foo".');
-    }
-}
-
-class TwingTestEnvironmentRuntimeLoaderNull {
-    load(class_) {
-        return null;
     }
 }
 
@@ -326,7 +269,7 @@ tap.test('environment', function (test) {
         let loader = new TwingLoaderArray({index: '{{ foo }}'});
         let twing = new TwingEnvironment(loader, options);
 
-        let key = cache.generateKey('index', twing.getTemplateClass('index'));
+        let key = cache.generateKey('index', twing.getTemplateHash('index'));
         cache.write(key, twing.compileSource(new TwingSource('{{ foo }}', 'index')));
 
         // check that extensions won't be initialized when rendering a template that is already in the cache
@@ -447,7 +390,7 @@ tap.test('environment', function (test) {
             }
 
             return () => {
-                return {};
+                return new Map();
             }
         });
 
@@ -490,7 +433,8 @@ tap.test('environment', function (test) {
             }
 
             return () => {
-                return {};
+                return new Map()
+
             }
         });
 
@@ -508,29 +452,19 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('hasGetExtensionByClassName', function (test) {
-        let twing = new TwingEnvironment(new TwingTestMockLoader());
-        let ext = new TwingTestsEnvironmentTestExtension();
-        twing.addExtension(ext);
-
-        test.true(twing.hasExtension('TwingTestsEnvironmentTestExtension'));
-        test.same(twing.getExtension('TwingTestsEnvironmentTestExtension'), ext);
-
-        test.end();
-    });
-
     test.test('addExtension', function (test) {
         let twing = new TwingEnvironment(new TwingTestMockLoader());
         let ext = new TwingTestsEnvironmentTestExtension();
-        twing.addExtension(ext);
 
+        twing.addExtension(ext, 'TwingTestsEnvironmentTestExtension');
+
+        test.true(twing.hasExtension('TwingTestsEnvironmentTestExtension'));
         test.true(twing.getTags().has('test'));
         test.true(twing.getFilters().has('foo_filter'));
         test.true(twing.getFunctions().has('foo_function'));
         test.true(twing.getTests().has('foo_test'));
         test.true(twing.getUnaryOperators().has('foo_unary'));
         test.true(twing.getBinaryOperators().has('foo_binary'));
-        test.true(twing.getGlobals().has('foo_global'));
 
         let visitors = twing.getNodeVisitors();
         let found = false;
@@ -577,71 +511,27 @@ tap.test('environment', function (test) {
         let loader = new TwingLoaderArray({page: 'hey'});
 
         let twing = new TwingEnvironment(loader);
-        twing.addExtension(extension);
+        twing.addExtension(extension, 'foo');
 
-        test.same(twing.getExtension(extension.constructor.name).name, 'TwingExtension');
-        test.true(twing.isTemplateFresh('page', new Date().getTime()));
+        test.same(twing.getExtension('foo').name, 'TwingExtension');
+        test.true(twing.isTemplateFresh('page', new Date().getTime(), null));
 
-        test.end();
-    });
-
-    test.test('initRuntimeWithAnExtensionUsingInitRuntimeNoDeprecation', function (test) {
-        let loader = new TwingLoaderArray({});
-        let twing = new TwingEnvironment(loader);
-
-        sinon.stub(loader, 'getCacheKey').returns('');
-        sinon.stub(loader, 'getSourceContext').returns(new TwingSource('', ''));
-
-        twing.addExtension(new TwingTestsEnvironmentTestExtensionWithoutDeprecationInitRuntime());
-
-        twing.loadTemplate('');
-
-        sinon.assert.calledOnce(loader['getSourceContext']);
-
-        // add a dummy assertion here, the only thing we want to test is that the code above
-        // can be executed without throwing any deprecations
-        test.pass();
         test.end();
     });
 
     test.test('overrideExtension', function (test) {
         let twing = new TwingEnvironment(new TwingLoaderArray({}));
 
-        twing.addExtension(new TwingTestsEnvironmentTestExtension());
+        twing.addExtension(new TwingTestsEnvironmentTestExtension(), 'TwingTestsEnvironmentTestExtension');
 
-        test.throws(function () {
-            twing.addExtension(new TwingTestsEnvironmentTestExtension());
-        }, new Error('Unable to register extension "TwingTestsEnvironmentTestExtension" as it is already registered.'));
+        try {
+            twing.addExtension(new TwingTestsEnvironmentTestExtension(), 'TwingTestsEnvironmentTestExtension');
 
-        test.end();
-    });
-
-    test.test('addRuntimeLoader', function (test) {
-        let runtimeLoader = new TwingTestMockRuntimeLoader();
-
-        sinon.stub(runtimeLoader, 'load').returns(new TwingTestsEnvironmentTestRuntime());
-
-        let loader = new TwingLoaderArray({
-            func_array: '{{ from_runtime_array("foo") }}',
-            func_array_default: '{{ from_runtime_array() }}',
-            func_array_named_args: '{{ from_runtime_array(name="foo") }}',
-            func_string: '{{ from_runtime_string("foo") }}',
-            func_string_default: '{{ from_runtime_string() }}',
-            func_string_named_args: '{{ from_runtime_string(name="foo") }}'
-        });
-
-        let twing = new TwingEnvironment(loader, {cache: false});
-        twing.addExtension(new TwingTestsEnvironmentTestExtensionWithoutRuntime());
-        twing.addRuntimeLoader(runtimeLoader);
-
-        test.same(twing.render('func_array'), 'foo');
-        test.same(twing.render('func_array_default'), 'bar');
-        test.same(twing.render('func_array_named_args'), 'foo');
-        test.same(twing.render('func_string'), 'foo');
-        test.same(twing.render('func_string_default'), 'bar');
-        test.same(twing.render('func_string_named_args'), 'foo');
-
-        sinon.assert.called(runtimeLoader.load);
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Unable to register extension "TwingTestsEnvironmentTestExtension" as it is already registered.')
+        }
 
         test.end();
     });
@@ -657,33 +547,18 @@ tap.test('environment', function (test) {
         test.end();
     });
 
-    test.test('baseTemplateClass', function (test) {
-        let env = new TwingEnvironment(new TwingTestMockLoader(), {
-            base_template_class: 'Foo'
-        });
-
-        let templateClass = env.getTemplateClass('foo');
-
-        env.setBaseTemplateClass('Bar');
-
-        test.same(env.getBaseTemplateClass(), 'Bar');
-        test.notSame(env.getTemplateClass('foo'), templateClass);
-
-        test.end();
-    });
-
     test.test('debug', function (test) {
         let env = new TwingEnvironment(new TwingTestMockLoader(), {
             debug: false
         });
 
-        let templateClass = env.getTemplateClass('foo');
+        let templateClass = env.getTemplateHash('foo');
 
         test.test('enable', function (test) {
             env.enableDebug();
 
             test.true(env.isDebug());
-            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.notSame(env.getTemplateHash('foo'), templateClass);
             test.end();
         });
 
@@ -691,7 +566,7 @@ tap.test('environment', function (test) {
             env.disableDebug();
 
             test.false(env.isDebug());
-            test.same(env.getTemplateClass('foo'), templateClass);
+            test.same(env.getTemplateHash('foo'), templateClass);
             test.end();
         });
 
@@ -726,13 +601,13 @@ tap.test('environment', function (test) {
             strict_variables: false
         });
 
-        let templateClass = env.getTemplateClass('foo');
+        let templateClass = env.getTemplateHash('foo');
 
         test.test('enable', function (test) {
             env.enableStrictVariables();
 
             test.true(env.isStrictVariables());
-            test.notSame(env.getTemplateClass('foo'), templateClass);
+            test.notSame(env.getTemplateHash('foo'), templateClass);
             test.end();
         });
 
@@ -740,7 +615,7 @@ tap.test('environment', function (test) {
             env.disableStrictVariables();
 
             test.false(env.isStrictVariables());
-            test.same(env.getTemplateClass('foo'), templateClass);
+            test.same(env.getTemplateHash('foo'), templateClass);
             test.end();
         });
 
@@ -798,11 +673,9 @@ tap.test('environment', function (test) {
         }));
 
         let template = new TwingTestMockTemplate();
-        let templateWrapper = new TwingTemplateWrapper(env, template);
 
-        test.true(env.load(template) instanceof TwingTemplateWrapper);
-        test.same(env.load(templateWrapper), templateWrapper);
-        test.true(env.load('index') instanceof TwingTemplateWrapper);
+        test.true(env.load(template));
+        test.true(env.load('index'));
 
         test.end();
     });
@@ -823,11 +696,6 @@ tap.test('environment', function (test) {
         let env = new TwingEnvironment(new TwingLoaderArray({
             index: '{{ foo'
         }));
-
-        let template = new TwingTestMockTemplate();
-        let templateWrapper = new TwingTemplateWrapper(env, template);
-
-        test.same(env.resolveTemplate(templateWrapper), templateWrapper);
 
         test.throws(function () {
             env.resolveTemplate('index');
@@ -859,7 +727,7 @@ tap.test('environment', function (test) {
 
         env.setLexer(new TwingTestsEnvironmentLexerBar(env));
 
-        test.same(env.tokenize(new TwingSource('foo', 'index', '')), 'bar');
+        test.true(env.tokenize(new TwingSource('foo', 'index', '')).getCurrent().test(TokenType.TEXT, 'bar'));
 
         test.end();
     });
@@ -871,30 +739,27 @@ tap.test('environment', function (test) {
 
         let source = new TwingSource('{{ foo', 'index', '');
 
-        test.throws(function () {
+        try {
             env.compileSource(source);
-        }, new TwingErrorSyntax('Unexpected token "end of template" of value "null" ("end of print statement" expected).', 1, source));
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Unclosed variable opened at {1:1} in "index" at line 1.');
+        }
 
         env.setParser(new TwingTestsEnvironmentParserError(env));
+
         source = new TwingSource('{{ foo.bar }}', 'index', '');
 
-        test.throws(function () {
+        try {
             env.compileSource(source);
-        }, new TwingErrorSyntax('An exception has been thrown during the compilation of a template ("Parser error "foo".").', -1, source, new Error('Parser error "foo"')));
 
-        test.end();
-    });
-
-    test.test('getRuntime', function (test) {
-        let env = new TwingEnvironment(new TwingLoaderArray({
-            index: 'foo'
-        }));
-
-        env.addRuntimeLoader(new TwingTestEnvironmentRuntimeLoaderNull());
-
-        test.throws(function () {
-            env.getRuntime('Foo');
-        }, new TwingErrorRuntime('Unable to load the "Foo" runtime.'));
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'An exception has been thrown during the compilation of a template ("Parser error "foo".") in "index".');
+        }
 
         test.end();
     });
@@ -906,7 +771,7 @@ tap.test('environment', function (test) {
 
         let extension = new TwingTestsEnvironmentTestExtension();
 
-        env.setExtensions([extension]);
+        env.addExtensions(new Map([['TwingTestsEnvironmentTestExtension', extension]]));
 
         test.true(env.getExtensions().has('TwingTestsEnvironmentTestExtension'));
 
@@ -1322,12 +1187,10 @@ tap.test('environment', function (test) {
                 }
 
                 load(key) {
-                    let obj = {};
-
-                    obj[key] = CustomTemplate;
-
                     return () => {
-                        return obj;
+                        return new Map([
+                            [0, CustomTemplate]
+                        ]);
                     };
                 }
             }
@@ -1490,6 +1353,110 @@ BAROOF</FOO></foo>oof`);
         template = env.createTemplate('foo', 'foo.twig');
 
         test.same(template.getTemplateName(), 'foo.twig (string template 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae)');
+
+        test.end();
+    });
+
+    test.test('registerTemplatesModule', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({
+            foo: ''
+        }));
+
+        let loaderSpy = sinon.spy(env.getLoader(), 'getSourceContext');
+        let cacheSpy = sinon.spy(env.getCache(false), 'generateKey');
+
+        env.registerTemplatesModule((c) => {
+            return new Map([
+                [0, class extends c {
+                    getTemplateName() {
+                        return 'main';
+                    }
+                }],
+                [1, class extends c {
+                    getTemplateName() {
+                        return 'embedded';
+                    }
+                }]
+            ])
+        }, 'foo');
+
+        let actualTemplate = env.loadTemplate('foo');
+        let actualEmbeddedTemplate = env.loadTemplate('foo', 1);
+
+        test.true(loaderSpy.notCalled, 'Loader should not be queried');
+        test.true(cacheSpy.notCalled, 'Cache should not be queried');
+        test.equal(actualTemplate.getTemplateName(), 'main', 'Main template should be loaded successfully');
+        test.equal(actualEmbeddedTemplate.getTemplateName(), 'embedded', 'Embedded template should be loaded successfully');
+
+        test.end();
+    });
+
+    test.test('getSourceMapNodeFactories', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let factories = env.getSourceMapNodeFactories();
+
+        test.true(factories.has(TwingNodeType.SPACELESS));
+
+        test.end();
+    });
+
+    test.test('checkMethodAllowed', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let obj = {};
+
+        try {
+            env.checkMethodAllowed(obj, 'foo');
+
+            test.pass();
+        }
+        catch (e) {
+            test.fail();
+        }
+
+        env = new TwingEnvironment(new TwingLoaderArray({}), {
+            sandboxed: true
+        });
+
+        try {
+            env.checkMethodAllowed(obj, 'foo');
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Calling "foo" method on a "Object" is not allowed.');
+        }
+
+        test.end();
+    });
+
+    test.test('checkPropertyAllowed', function (test) {
+        let env = new TwingEnvironment(new TwingLoaderArray({}));
+
+        let obj = {};
+
+        try {
+            env.checkPropertyAllowed(obj, 'foo');
+
+            test.pass();
+        }
+        catch (e) {
+            test.fail();
+        }
+
+        env = new TwingEnvironment(new TwingLoaderArray({}), {
+            sandboxed: true
+        });
+
+        try {
+            env.checkPropertyAllowed(obj, 'foo');
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Calling "foo" property on a "Object" is not allowed.');
+        }
 
         test.end();
     });

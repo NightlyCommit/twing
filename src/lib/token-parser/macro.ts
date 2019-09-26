@@ -7,47 +7,48 @@
  * {% endmacro %}
  * </pre>
  */
-import {TwingToken} from "../token";
 import {TwingTokenParser} from "../token-parser";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeBody} from "../node/body";
 
 import {TwingNodeMacro} from "../node/macro";
 import {TwingNode} from "../node";
+import {Token, TokenType} from "twig-lexer";
 
 const varValidator = require('var-validator');
 
 export class TwingTokenParserMacro extends TwingTokenParser {
-    parse(token: TwingToken): TwingNode {
-        let lineno = token.getLine();
-        let columnno = token.getColumn();
+    parse(token: Token): TwingNode {
+        let lineno = token.line;
+        let columnno = token.column;
         let stream = this.parser.getStream();
-        let name = stream.expect(TwingToken.NAME_TYPE).getValue();
+        let name = stream.expect(TokenType.NAME).value;
         let safeName = name;
 
         if (!varValidator.isValid(name)) {
             safeName = Buffer.from(name).toString('hex');
         }
 
-        let macroArguments = this.parser.getExpressionParser().parseArguments(true, true);
+        let macroArguments = this.parser.parseArguments(true, true);
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         this.parser.pushLocalScope();
 
         let body = this.parser.subparse([this, this.decideBlockEnd], true);
+        let nextToken = stream.nextIf(TokenType.NAME);
 
-        if (token = stream.nextIf(TwingToken.NAME_TYPE)) {
-            let value = token.getValue();
+        if (nextToken) {
+            let value = nextToken.value;
 
             if (value != name) {
-                throw new TwingErrorSyntax(`Expected endmacro for macro "${name}" (but "${value}" given).`, stream.getCurrent().getLine(), stream.getSourceContext());
+                throw new TwingErrorSyntax(`Expected endmacro for macro "${name}" (but "${value}" given).`, stream.getCurrent().line, stream.getSourceContext());
             }
         }
 
         this.parser.popLocalScope();
 
-        stream.expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TokenType.TAG_END);
 
         let nodes = new Map([
             [0, body]
@@ -58,8 +59,8 @@ export class TwingTokenParserMacro extends TwingTokenParser {
         return null;
     }
 
-    decideBlockEnd(token: TwingToken) {
-        return token.test(TwingToken.NAME_TYPE, 'endmacro');
+    decideBlockEnd(token: Token) {
+        return token.test(TokenType.NAME, 'endmacro');
     }
 
     getTag() {

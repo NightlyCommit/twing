@@ -132,9 +132,6 @@ class Rot13Handler {
 let handler = new Rot13Handler();
 
 filter = new TwingFilter('rot13', handler.handle);
-
-// the one below needs a runtime implementation (see below for more information)
-filter = new TwingFilter('rot13', array('SomeClass', 'rot13Filter'));
 ```
 
 The first argument passed to the `TwingFilter` constructor is the name of the filter you will use in templates and the second one is the JavaScript callable to associate with it.
@@ -698,82 +695,6 @@ class ProjectTwingExtension extends TwingExtension {
     }
 
     // ...
-}
-```
-
-### Definition vs Runtime
-
-Twing filters, functions, and tests runtime implementations can be defined as any valid JavaScript callable:
-
-* **local functions**: Simple to implement and fast (used by all Twing core extensions); but it is hard for the runtime to depend on external objects;
-
-* **anonymous functions**: Simple to implement;
-
-* **object methods**: More flexible and required if your runtime code depends on external objects.
-
-The simplest way to use methods is to define them on the extension itself:
-
-```javascript
-class ProjectTwingExtension extends Twing_Extension {
-    constructor(rot13Provider) {
-        this.rot13Provider = rot13Provider;
-    }
-
-    getFunctions() {
-        return [
-            new TwingFunction('rot13', this.rot13)),
-        ];
-    }
-
-    rot13($value) {
-        return this.rot13Provider.rot13($value);
-    }
-}
-```
-
-This is very convenient but not recommended as it makes template compilation depend on runtime dependencies even if they are not needed (think for instance
-as a dependency that connects to a database engine).
-
-You can easily decouple the extension definitions from their runtime implementations by registering a `TwingRuntimeLoaderInterface` instance on the environment that knows how to instantiate such runtime classes:
-
-```javascript
-class RuntimeLoader {
-    load(className) {
-        // implement the logic to create an instance of className and inject its dependencies
-        if (className === 'ProjectTwingRuntimeExtension') {
-            return new ProjectTwingRuntimeExtension(new Rot13Provider());
-        } 
-        else {
-            // ...
-        }
-    }
-}
-
-twing.addRuntimeLoader(new RuntimeLoader());
-```
-
-It is now possible to move the runtime logic to a new `ProjectTwingRuntimeExtension` class and use it directly in the extension:
-
-```javascript
-class ProjectTwingRuntimeExtension
-{
-    constructor(rot13Provider) {
-        this.rot13Provider = rot13Provider;
-    }
-
-    rot13($value) {
-        return this.rot13Provider.rot13($value);
-    }
-}
-
-class ProjectTwingExtension extends TwingExtension {
-    getFunctions() {
-        return [
-            new TwingFunction('rot13', ['ProjectTwingRuntimeExtension', 'rot13']),
-            // or
-            new TwingFunction('rot13', 'ProjectTwingRuntimeExtension::rot13'),
-        );
-    }
 }
 ```
 

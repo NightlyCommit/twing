@@ -17,20 +17,6 @@ In an HTML context, wrap the output with a `pre` tag to make it easier to read:
 </pre>
 ````
 
-> The dump function is not available by default. You must add the TwingExtensionDebug extension explicitly when creating your Twing environment:
->
-> ````js
-> const {TwingEnvironment, TwingExtensionDebug} = require('twing');
->
-> let env = new TwingEnvironment(loader, {
->    debug: true
-> });
->
-> env.addExtension(new TwingExtensionDebug());
-> ````
->
-> Even when enabled, the dump function won't display anything if the debug option on the environment is not enabled.
-
 You can debug several variables by passing them as additional arguments:
 
 ````twig

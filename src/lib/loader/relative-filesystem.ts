@@ -9,7 +9,7 @@ const fs = require('fs');
 /**
  * Loads template from the filesystem.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
@@ -117,8 +117,6 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     protected validateName(name: string) {
         if (name.indexOf(`\0`) > -1) {
-            console.warn('NUL');
-
             throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
         }
     }

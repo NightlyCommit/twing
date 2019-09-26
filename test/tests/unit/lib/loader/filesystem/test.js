@@ -3,7 +3,7 @@ const {
     TwingErrorLoader,
     TwingSource,
     TwingEnvironment
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 const nodePath = require('path');
@@ -276,7 +276,9 @@ tap.test('loader filesystem', function (test) {
             let loader = new TwingLoaderFilesystem([]);
             loader.addPath(nodePath.join(fixturesPath, 'inheritance'));
 
-            let twing = new TwingEnvironment(loader);
+            let twing = new TwingEnvironment(loader, {
+                cache: 'tmp/unit'
+            });
             let template = twing.loadTemplate(templateName);
 
             test.same(template.renderBlock('body', {}), 'VALID Child', testMessage);

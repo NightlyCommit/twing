@@ -1,22 +1,20 @@
-const {TwingTokenParser} = require('../build/lib/token-parser');
-const {TwingNodePrint} = require('../build/lib/node/print');
-const {TwingToken} = require('../build/lib/token');
-const {TwingNodeExpressionConstant} = require('../build/lib/node/expression/constant');
-const {TwingExtension} = require('../build/lib/extension');
-const {TwingExtensionDebug} = require('../build/lib/extension/debug');
-const {TwingExtensionSandbox} = require('../build/lib/extension/sandbox');
-const {TwingExtensionStringLoader} = require('../build/lib/extension/string-loader');
-const {TwingFilter} = require('../build/lib/filter');
-const {TwingFunction} = require('../build/lib/function');
-const {TwingTest} = require('../build/lib/test');
-const {TwingSandboxSecurityPolicy} = require('../build/lib/sandbox/security-policy');
-const escape = require('../build/lib/extension/core').twingEscapeFilter;
+const {TwingTokenParser} = require('../dist/cjs/lib/token-parser');
+const {TwingNodePrint} = require('../dist/cjs/lib/node/print');
+const {TwingNodeExpressionConstant} = require('../dist/cjs/lib/node/expression/constant');
+const {TwingExtension} = require('../dist/cjs/lib/extension');
+const {TwingFilter} = require('../dist/cjs/lib/filter');
+const {TwingFunction} = require('../dist/cjs/lib/function');
+const {TwingTest} = require('../dist/cjs/lib/test');
+const {escape} = require('../dist/cjs/lib/extension/core/filters/escape');
+const {TwingLoaderArray} = require('../dist/cjs/lib/loader/array');
+const {TwingSandboxSecurityPolicy} = require('../dist/cjs/lib/sandbox/security-policy');
+const {TokenType} = require('twig-lexer');
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token) {
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        this.parser.getStream().expect(TokenType.TAG_END);
 
-        return new TwingNodePrint(new TwingNodeExpressionConstant('§', -1), -1);
+        return new TwingNodePrint(new TwingNodeExpressionConstant('§', -1, -1), -1, -1);
     }
 
     getTag() {
@@ -45,59 +43,56 @@ class TwingTestExtension extends TwingExtension {
 
     getFilters() {
         let self = this;
-        let i = 0;
 
-        return new Map([
+        return [
             // new TwingFilter('§', array($this, '§Filter')),
-            [i++, new TwingFilter('escape_and_nl2br', escape_and_nl2br, {
+            new TwingFilter('escape_and_nl2br', escape_and_nl2br, [], {
                 'needs_environment': true,
                 'is_safe': ['html']
-            })],
+            }),
             // name this filter "nl2br_" to allow the core "nl2br" filter to be tested
-            [i++, new TwingFilter('nl2br_', nl2br, {'pre_escape': 'html', 'is_safe': ['html']})],
-            [i++, new TwingFilter('§', this.sectionFilter)],
-            [i++, new TwingFilter('escape_something', escape_something, {'is_safe': ['something']})],
-            [i++, new TwingFilter('preserves_safety', preserves_safety, {'preserves_safety': ['html']})],
-            [i++, new TwingFilter('static_call_string', TwingTestExtension.staticCall)],
-            [i++, new TwingFilter('static_call_array', TwingTestExtension.staticCall)],
-            [i++, new TwingFilter('magic_call', function () {
+            new TwingFilter('nl2br_', nl2br, [], {'pre_escape': 'html', 'is_safe': ['html']}),
+            new TwingFilter('§', this.sectionFilter, []),
+            new TwingFilter('escape_something', escape_something, [], {'is_safe': ['something']}),
+            new TwingFilter('preserves_safety', preserves_safety, [], {'preserves_safety': ['html']}),
+            new TwingFilter('static_call_string', TwingTestExtension.staticCall, []),
+            new TwingFilter('static_call_array', TwingTestExtension.staticCall, []),
+            new TwingFilter('magic_call', function () {
                 return self.__call('magicCall', arguments);
-            })],
-            [i++, new TwingFilter('magic_call_string', function () {
+            }, []),
+            new TwingFilter('magic_call_string', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            })],
-            [i++, new TwingFilter('magic_call_array', function () {
+            }, []),
+            new TwingFilter('magic_call_array', function () {
                 return TwingTestExtension.__callStatic('magicStaticCall', arguments);
-            })],
-            [i++, new TwingFilter('*_path', dynamic_path)],
-            [i++, new TwingFilter('*_foo_*_bar', dynamic_foo)],
-            [i++, new TwingFilter('anon_foo', function (name) {
+            }, []),
+            new TwingFilter('*_path', dynamic_path, []),
+            new TwingFilter('*_foo_*_bar', dynamic_foo, []),
+            new TwingFilter('anon_foo', function (name) {
                 return '*' + name + '*';
-            })],
-        ]);
+            }, []),
+        ];
     }
 
     getFunctions() {
-        let i = 0;
-
-        return new Map([
-            [i++, new TwingFunction('§', this.sectionFunction)],
-            [i++, new TwingFunction('safe_br', this.br, {'is_safe': ['html']})],
-            [i++, new TwingFunction('unsafe_br', this.br)],
-            [i++, new TwingFunction('static_call_string', TwingTestExtension.staticCall)],
-            [i++, new TwingFunction('static_call_array', TwingTestExtension.staticCall)],
-            [i++, new TwingFunction('*_path', dynamic_path)],
-            [i++, new TwingFunction('*_foo_*_bar', dynamic_foo)],
-            [i++, new TwingFunction('anon_foo', function (name) {
+        return [
+            new TwingFunction('§', this.sectionFunction, []),
+            new TwingFunction('safe_br', this.br, [], {'is_safe': ['html']}),
+            new TwingFunction('unsafe_br', this.br, []),
+            new TwingFunction('static_call_string', TwingTestExtension.staticCall, []),
+            new TwingFunction('static_call_array', TwingTestExtension.staticCall, []),
+            new TwingFunction('*_path', dynamic_path, []),
+            new TwingFunction('*_foo_*_bar', dynamic_foo, []),
+            new TwingFunction('anon_foo', function (name) {
                 return '*' + name + '*';
-            })],
-        ]);
+            }, []),
+        ];
     }
 
     getTests() {
         return [
-            new TwingTest('multi word', this.is_multi_word),
-            new TwingTest('test_*', this.dynamic_test)
+            new TwingTest('multi word', this.is_multi_word, []),
+            new TwingTest('test_*', this.dynamic_test, [])
         ];
     }
 
@@ -130,8 +125,6 @@ class TwingTestExtension extends TwingExtension {
     }
 }
 
-const {TwingLoaderArray} = require('../build/lib/loader/array');
-
 const test = require('tape');
 const merge = require('merge');
 const sinon = require('sinon');
@@ -141,20 +134,13 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         this.twing = null;
     }
 
-    setTwing(env) {
+    setEnvironment(env) {
         this.twing = env;
     }
 
-    getExtensions(includeSandbox = true) {
-        let extensions = [
-            new TwingExtensionDebug()
-        ];
+    getExtensions() {
+        let extensions = [];
 
-        if (includeSandbox) {
-            extensions.push(new TwingExtensionSandbox(new TwingSandboxSecurityPolicy([], this.getSandboxSecurityPolicyFilters(), new Map(), new Map(), this.getSandboxSecurityPolicyFunctions()), false));
-        }
-
-        extensions.push(new TwingExtensionStringLoader());
         extensions.push(new TwingTestExtension());
 
         return extensions;
@@ -208,25 +194,26 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             // config
             let config = merge({
                 strict_variables: true,
-                cache: false
+                cache: false,
+                sandbox_policy: new TwingSandboxSecurityPolicy([], this.getSandboxSecurityPolicyFilters(), new Map(), new Map(), this.getSandboxSecurityPolicyFunctions()),
             }, this.getConfig());
 
             let loader = new TwingLoaderArray(templates);
-            let twing = new TwingEnvironment(loader, config);
+            let environment = new TwingEnvironment(loader, config);
 
-            this.setTwing(twing);
+            this.setEnvironment(environment);
 
             // extensions
             this.getExtensions().forEach(function (extension) {
-                twing.addExtension(extension);
+                environment.addExtension(extension);
             });
 
             // globals
             this.getGlobals().forEach(function (value, key) {
-                twing.addGlobal(key, value);
+                environment.addGlobal(key, value);
             });
 
-            twing.addGlobal('global', 'global');
+            environment.addGlobal('global', 'global');
 
             // data
             let data = this.getData();
@@ -238,14 +225,14 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             let consoleData = [];
 
             if (expectedDeprecationMessages) {
-                consoleStub = sinon.stub(console, 'error').callsFake((data, ...args) => {
+                consoleStub = sinon.stub(console, 'warn').callsFake((data, ...args) => {
                     consoleData.push(data);
                 });
             }
 
             if (!expectedErrorMessage) {
                 try {
-                    let actual = twing.render('index.twig', data);
+                    let actual = environment.render('index.twig', data);
 
                     test.same(actual.trim(), expected.trim(), 'should render as expected');
 
@@ -255,13 +242,11 @@ module.exports = class TwingTestIntegrationTestCaseBase {
                         test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
                     }
                 } catch (e) {
-                    console.warn(e);
-
                     test.fail(`should not throw an error (${e})`);
                 }
             } else {
                 try {
-                    twing.render('index.twig', data);
+                    environment.render('index.twig', data);
 
                     test.fail(`should throw an error`);
                 } catch (e) {
@@ -287,8 +272,6 @@ function escape_and_nl2br(env, value, sep = '<br />') {
  * nl2br only, for testing filters with pre_escape.
  */
 function nl2br(value, sep = '<br />') {
-    // not secure if value contains html tags (not only entities)
-    // don't use
     return value.replace('\n', `${sep}\n`);
 }
 

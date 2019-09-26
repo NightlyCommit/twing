@@ -3,7 +3,7 @@ const {
     TwingErrorLoader,
     TwingSource,
     TwingEnvironment
-} = require('../../../../../../build');
+} = require('../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 const nodePath = require('path');
@@ -179,11 +179,11 @@ tap.test('loader filesystem', function (test) {
 
         let twing = new TwingEnvironment(loader);
 
-        let template = twing.loadTemplate('../themes/theme1/blocks.html.twig', null, new TwingSource('', '', resolvePath('normal/index.html')));
+        let template = twing.loadTemplate('../themes/theme1/blocks.html.twig', 0, new TwingSource('', '', resolvePath('normal/index.html')));
 
         test.same(template.renderBlock('b1', {}), 'block from theme 1');
 
-        template = twing.loadTemplate('../themes/theme3/blocks.html.twig', null, new TwingSource('', '', resolvePath('normal/index.html')));
+        template = twing.loadTemplate('../themes/theme3/blocks.html.twig', 0, new TwingSource('', '', resolvePath('normal/index.html')));
 
         test.same(template.renderBlock('b2', {}), 'block from theme 3');
 

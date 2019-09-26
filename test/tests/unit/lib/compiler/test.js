@@ -1,9 +1,8 @@
-const {TwingNode, TwingNodeType} = require('../../../../../build/lib/node');
-const {TwingNodeText} = require('../../../../../build/lib/node/text');
-const {TwingCompiler} = require('../../../../../build/lib/compiler');
+const {TwingNode, TwingNodeType} = require('../../../../../dist/cjs/lib/node');
+const {TwingCompiler} = require('../../../../../dist/cjs/lib/compiler');
 const MockEnvironement = require('../../../../mock/environment');
 const MockLoader = require('../../../../mock/loader');
-const {TwingNodeExpressionConstant} = require('../../../../../build/lib/node/expression/constant');
+const {TwingNodeExpressionConstant} = require('../../../../../dist/cjs/lib/node/expression/constant');
 
 const tap = require('tape');
 
@@ -40,7 +39,6 @@ tap.test('compiler', function (test) {
 
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
-        test.same(compiler.compile(node).repr([1, 2, '3']).getSource(), '[1, 2, \`3\`]', 'supports arrays');
         test.same(compiler.compile(node).repr({1: 'a', 'b': 2, 'c': '3'}).getSource(), '{"1": \`a\`, "b": 2, "c": \`3\`}', 'supports hashes');
         test.same(compiler.compile(node).repr(undefined).getSource(), '', 'supports undefined');
 
@@ -76,19 +74,7 @@ tap.test('compiler', function (test) {
             }
         }
 
-        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext(), this.extensions.get(\'TwingExtensionCore\').getSourceMapNodeConstructor(\'body\'));\n');
-
-        test.test('supports a custom source map node constructor', function (test) {
-            class CustomNodeWithSourceMapNodeConstructor extends CustomNode {
-                compile(compiler) {
-                    compiler.addSourceMapEnter(this, 'Foo');
-                }
-            }
-
-            test.same(compiler.compile(new CustomNodeWithSourceMapNodeConstructor(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext(), Foo);\n');
-
-            test.end();
-        });
+        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext());\n');
 
         test.end();
     });

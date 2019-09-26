@@ -7,7 +7,7 @@ const {
     TwingOutputBuffering,
     TwingErrorLoader,
     TwingLoaderChain
-} = require("../../../../../build");
+} = require("../../../../../dist/cjs/main");
 
 const test = require('tape');
 const sinon = require('sinon');

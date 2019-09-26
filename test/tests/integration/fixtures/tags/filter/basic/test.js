@@ -19,7 +19,7 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
     getExpectedDeprecationMessages() {
         return [
-            'The "filter" tag is deprecated since Twig 2.9, use the "apply" tag instead.'
+            'The "filter" tag in "index.twig" at line 2 is deprecated since Twig 2.9, use the "apply" tag instead.'
         ];
     }
 

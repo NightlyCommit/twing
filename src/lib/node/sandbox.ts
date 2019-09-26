@@ -11,20 +11,19 @@ export class TwingNodeSandbox extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .write("(")
             .raw("() => {\n")
             .indent()
-            .write('let alreadySandboxed = this.sandbox.isSandboxed();\n')
+            .write('let alreadySandboxed = this.env.isSandboxed();\n')
             .write("if (!alreadySandboxed) {\n")
             .indent()
-            .write("this.sandbox.enableSandbox();\n")
+            .write("this.env.enableSandbox();\n")
             .outdent()
             .write("}\n")
             .subcompile(this.getNode('body'))
             .write("if (!alreadySandboxed) {\n")
             .indent()
-            .write("this.sandbox.disableSandbox();\n")
+            .write("this.env.disableSandbox();\n")
             .outdent()
             .write("}\n")
             .outdent()

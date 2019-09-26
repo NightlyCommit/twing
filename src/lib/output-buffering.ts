@@ -276,4 +276,5 @@ export const obStart = TwingOutputBuffering.obStart;
 export const obEndClean = TwingOutputBuffering.obEndClean;
 export const obGetClean = TwingOutputBuffering.obGetClean;
 export const obGetContents = TwingOutputBuffering.obGetContents;
+export const obGetLevel = TwingOutputBuffering.obGetLevel;
 export const flush = TwingOutputBuffering.flush;

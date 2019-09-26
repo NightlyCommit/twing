@@ -19,19 +19,7 @@ The rendering of a Twig template can be summarized into four key steps:
 
 ## The Lexer
 
-The lexer tokenizes a template source code into a token stream (each token is an instance of `TwingToken`, and the stream is an instance of `TwingTokenStream`). The default lexer recognizes 15 different token types:
-
-* `TwingToken.BLOCK_START_TYPE`, `TwingToken.BLOCK_END_TYPE`: Delimiters for blocks (`{% %}`)
-* `TwingToken.VAR_START_TYPE`, `TwingToken.VAR_END_TYPE`: Delimiters for variables (`{{ }}`)
-* `TwingToken.COMMENT_START_TYPE`, `TwingToken.COMMENT_END_TYPE`: Delimiters for comments (`{# #}`)
-* `TwingToken.TEXT_TYPE`: A text outside an expression;
-* `TwingToken.NAME_TYPE`: A name in an expression;
-* `TwingToken.NUMBER_TYPE`: A number in an expression;
-* `TwingToken.STRING_TYPE`: A string in an expression;
-* `TwingToken.OPERATOR_TYPE`: An operator;
-* `TwingToken.PUNCTUATION_TYPE`: A punctuation sign;
-* `TwingToken.INTERPOLATION_START_TYPE`, `TwingToken.INTERPOLATION_END_TYPE`: Delimiters for string interpolation;
-* `TwingToken.EOF_TYPE`: Ends of template.
+The lexer tokenizes a template source code into a token stream. Each token is an instance of  [twig-lexer][twig-lexer-url] `Token` and the stream is an instance of `TwingTokenStream`.
 
 You can manually convert a source code into a token stream by calling the `tokenize()` method of an environment:
 
@@ -48,11 +36,11 @@ console.log(stream.toString());
 Here is the output for the `Hello {{ name }}` template:
 
 ````
-TEXT_TYPE(Hello )
-VAR_START_TYPE()
-NAME_TYPE(name)
-VAR_END_TYPE()
-EOF_TYPE()
+TEXT(Hello )
+VARIABLE_START({{)
+NAME(name)
+VARIABLE_END(}})
+EOF()
 ```` 
 
 > The default lexer (`TwingLexer`) can be changed by calling the `setLexer()` method:
@@ -128,51 +116,42 @@ let javaScript = twing.compile(nodes);
 The generated template for a `Hello {{ name }}` template reads as follows (the actual output can differ depending on the version of Twing you are using):
 
 ````javascript
-module.exports = (Runtime) => {
-    let templates = {};
+module.exports = (TwingTemplate) => {
+    return new Map([
+        [0, class extends TwingTemplate {
+            constructor(env) {
+                super(env);
     
-
-    /* index */
-    templates.__TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 = class __TwingTemplate_9cadb83babaa0e1afb73d96ce4ee9fe40fba1a8817aa66bf960846ee4b718781 extends Runtime.TwingTemplate {
-        constructor(env) {
-            super(env);
-
-            this.source = this.getSourceContext();
-
-            this.parent = false;
-
-            this.blocks = new Map([
-            ]);
-        }
-
-        doDisplay(context, blocks = new Map()) {
-            // line 1, column 1
-            Runtime.echo(`Hello `);
-            Runtime.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
-        }
-
-        getTemplateName() {
-            return `index`;
-        }
-
-        getSourceMapSource() {
-            return this.env.getLoader().resolve(`index`);
-        }
-
-        isTraitable() {
-            return false;
-        }
-
-        getDebugInfo() {
-            return new Map([[20, {"line": 1, "column": 1}]]);
-        }
-
-        getSourceContext() {
-            return new Runtime.TwingSource(``, `index`, ``);
-        }
-    };
-
-    return templates;
+                this.source = this.getSourceContext();
+    
+                this.parent = false;
+    
+                this.blocks = new Map([
+                ]);
+            }
+    
+            doDisplay(context, blocks = new Map()) {
+                this.echo(`Hello `);
+                this.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
+            }
+    
+            getTemplateName() {
+                return `index`;
+            }
+    
+            getSourceMapSource() {
+                return this.env.getLoader().resolve(`index`);
+            }
+    
+            isTraitable() {
+                return false;
+            }
+    
+            getSourceContext() {
+                return new this.Source(``, `index`, ``);
+            }
+        }],
+    ]);
 };
 ````
 
@@ -187,3 +166,4 @@ twing.setCompiler(compiler);
 [back][back-url]
 
 [back-url]: {{ site.baseurl }}{% link index.md %}
+[twig-lexer-url]: https://www.npmjs.com/package/twig-lexer

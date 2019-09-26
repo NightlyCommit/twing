@@ -3,7 +3,7 @@ const {
     TwingNodeType,
     TwingNodeExpressionName,
     TwingNodeExpressionConstant
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -31,13 +31,12 @@ tap.test('node/with', function (test) {
 
         let stub = sinon.stub(compiler, 'getVarName').returns('__internal_fooVar');
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-let __internal_fooVar = \`bar\`;
+        test.same(compiler.compile(node).getSource(), `let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
-    throw new Runtime.TwingErrorRuntime('Variables passed to the "with" tag must be a hash.', 1, this.source);
+    throw new this.RuntimeError('Variables passed to the "with" tag must be a hash.', 1, this.source);
 }
 context.set('_parent', context.clone());
-context = new Runtime.TwingContext(this.env.mergeGlobals(Runtime.merge(context, Runtime.iteratorToMap(__internal_fooVar))));
+context = new this.Context(this.env.mergeGlobals(this.merge(context, this.convertToMap(__internal_fooVar))));
 (context.has(\`foo\`) ? context.get(\`foo\`) : null)context = context.get('_parent');
 `);
 

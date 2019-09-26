@@ -28,8 +28,6 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         }
         else {
             if (this.getAttribute('output')) {
-                compiler.addDebugInfo(this);
-
                 this
                     .compileTemplateCall(compiler, `traceableDisplayBlock`)
                     .raw(";\n");
@@ -67,7 +65,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         compiler
             .raw('(')
             .subcompile(this.getNode('name'))
-            .raw(', context');
+            .raw(', context.clone()');
 
         if (!this.hasNode('template')) {
             compiler.raw(', blocks');

@@ -1,47 +1,57 @@
-/**
- * Default base class for compiled templates.
- *
- * This class is an implementation detail of how template compilation currently
- * works, which might change. It should never be used directly. Use twig.load()
- * instead, which returns an instance of TwingTemplateWrapper.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @internal
- */
 import {TwingErrorRuntime} from "./error/runtime";
 import {TwingSource} from "./source";
-
 import {TwingNodeBlock} from "./node/block";
 import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
-import {TwingTemplateWrapper} from "./template-wrapper";
-import {TwingOutputBuffering} from './output-buffering';
-import {iteratorToMap} from "./helper/iterator-to-map";
-import {merge as twingMerge} from "./helper/merge";
+import {flush, echo, obGetLevel, obStart, obEndClean, obGetClean, obGetContents} from './output-buffering';
+import {iteratorToMap} from "./helpers/iterator-to-map";
+import {merge} from "./helpers/merge";
 import {TwingExtensionInterface} from "./extension-interface";
-import {TwingExtensionSandbox} from "./extension/sandbox";
 import {TwingContext} from "./context";
-import {isMap} from "./helper/is-map";
+import {isMap} from "./helpers/is-map";
+import {TwingErrorLoader} from "./error/loader";
+import {TwingMarkup} from "./markup";
+import {TwingSandboxSecurityError} from "./sandbox/security-error";
+import {TwingSandboxSecurityNotAllowedFilterError} from "./sandbox/security-not-allowed-filter-error";
+import {TwingSandboxSecurityNotAllowedFunctionError} from "./sandbox/security-not-allowed-function-error";
+import {TwingSandboxSecurityNotAllowedTagError} from "./sandbox/security-not-allowed-tag-error";
+import {compare} from "./helpers/compare";
+import {count} from "./helpers/count";
+import {isCountable} from "./helpers/is-countable";
+import {isPlainObject} from "./helpers/is-plain-object";
+import {iterate} from "./helpers/iterate";
+import {isIn} from "./helpers/is-in";
+import {ensureTraversable} from "./helpers/ensure-traversable";
+import {getAttribute} from "./helpers/get-attribute";
+import {createRange} from "./helpers/create-range";
+import {cloneMap} from "./helpers/clone-map";
+import {parseRegex} from "./helpers/parse-regex";
+import {constant} from "./extension/core/functions/constant";
+import {callMacro} from "./helpers/call-macro";
+import {get} from "./helpers/get";
 
+/**
+ * Default base class for compiled templates.
+ *
+ * @author Eric MORAND <eric.morand@gmail.com>
+ */
 export abstract class TwingTemplate {
     static ANY_CALL = 'any';
     static ARRAY_CALL = 'array';
     static METHOD_CALL = 'method';
 
     protected parent: TwingTemplate | false = null;
-    protected parents: Map<TwingTemplate | TwingTemplateWrapper | string, TwingTemplate | TwingTemplateWrapper> = new Map();
+    protected parents: Map<TwingTemplate | string, TwingTemplate> = new Map();
     protected env: TwingEnvironment;
     protected blocks: Map<string, Array<any>> = new Map();
     protected traits: Map<string, Array<any>> = new Map();
-    protected sandbox: TwingExtensionSandbox;
 
     /**
      * @internal
      */
     protected extensions: Map<string, TwingExtensionInterface> = new Map();
 
-    constructor(env: TwingEnvironment) {
+    protected constructor(env: TwingEnvironment) {
         this.env = env;
         this.extensions = env.getExtensions();
     }
@@ -61,15 +71,6 @@ export abstract class TwingTemplate {
     abstract getTemplateName(): string;
 
     /**
-     * Returns debug information about the template.
-     *
-     * @returns {Map<number, {line: number, column: number}>} Debug information
-     *
-     * @internal
-     */
-    abstract getDebugInfo(): Map<number, { line: number, column: number }>;
-
-    /**
      * Returns information about the original template source code.
      *
      * @return TwingSource
@@ -83,14 +84,14 @@ export abstract class TwingTemplate {
      *
      * @param context
      *
-     * @returns TwingTemplate|TwingTemplateWrapper|false The parent template or false if there is no parent
+     * @returns TwingTemplate|false The parent template or false if there is no parent
      */
     getParent(context: any = {}) {
         if (this.parent !== null) {
             return this.parent;
         }
 
-        let parent: TwingTemplate | TwingTemplateWrapper | string | false;
+        let parent: TwingTemplate | string | false;
 
         try {
             parent = this.doGetParent(context);
@@ -99,7 +100,7 @@ export abstract class TwingTemplate {
                 return false;
             }
 
-            if (parent instanceof TwingTemplate || parent instanceof TwingTemplateWrapper) {
+            if (parent instanceof TwingTemplate) {
                 this.parents.set(parent.getSourceContext().getName(), parent);
             }
 
@@ -178,7 +179,7 @@ export abstract class TwingTemplate {
         if (template !== null) {
             Reflect.get(template, block).call(template, context, blocks);
         } else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
-            parent.displayBlock(name, context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>, false);
+            parent.displayBlock(name, context, merge(this.blocks, blocks) as Map<string, Array<any>>, false);
         } else if (blocks.has(name)) {
             throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getSourceContext());
         } else {
@@ -201,11 +202,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     renderParentBlock(name: string, context: any, blocks: Map<string, Array<any>> = new Map()) {
-        TwingOutputBuffering.obStart();
+        obStart();
 
         this.displayParentBlock(name, context, blocks);
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -224,11 +225,11 @@ export abstract class TwingTemplate {
      * @internal
      */
     renderBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks = true): string {
-        TwingOutputBuffering.obStart();
+        obStart();
 
         this.displayBlock(name, context, blocks, useBlocks);
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -261,39 +262,17 @@ export abstract class TwingTemplate {
         return false;
     }
 
-    /**
-     * Returns all block names in the active context of the template.
-     *
-     * This method checks blocks defined in the active template
-     * or defined in "used" traits or defined in parent templates.
-     *
-     * @param context The context
-     * @param {Map<string, Array<*>>} blocks The active set of blocks
-     * @returns {Array<string>}
-     */
-    getBlockNames(context: any, blocks: Map<string, Array<any>> = new Map()): Array<string> {
-        let names: any = new Set([...blocks.keys(), ...this.blocks.keys()]);
-
-        let parent: TwingTemplate = this.getParent(context) as TwingTemplate;
-
-        if (parent) {
-            names = new Set([...names, ...parent.getBlockNames(context)]);
-        }
-
-        return [...names];
-    }
-
-    public loadTemplate(template: TwingTemplate | TwingTemplateWrapper | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = null): TwingTemplate | TwingTemplateWrapper {
+    public loadTemplate(template: TwingTemplate | Map<number, TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
         try {
-            if (Array.isArray(template)) {
-                return this.env.resolveTemplate(template, this.getSourceContext());
+            if (typeof template === 'string') {
+                return this.env.loadTemplate(template, index, this.getSourceContext());
             }
 
-            if (template instanceof TwingTemplate || template instanceof TwingTemplateWrapper) {
+            if (template instanceof TwingTemplate) {
                 return template;
             }
 
-            return this.env.loadTemplate(template as string, index, this.getSourceContext());
+            return this.env.resolveTemplate([...template.values()], this.getSourceContext());
         } catch (e) {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
@@ -340,25 +319,25 @@ export abstract class TwingTemplate {
 
         context = new TwingContext(this.env.mergeGlobals(context));
 
-        this.displayWithErrorHandling(context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
+        this.displayWithErrorHandling(context, merge(this.blocks, blocks) as Map<string, Array<any>>);
     }
 
     render(context: any): string {
-        let level = TwingOutputBuffering.obGetLevel();
+        let level = obGetLevel();
 
-        TwingOutputBuffering.obStart();
+        obStart();
 
         try {
             this.display(context);
         } catch (e) {
-            while (TwingOutputBuffering.obGetLevel() > level) {
-                TwingOutputBuffering.obEndClean();
+            while (obGetLevel() > level) {
+                obEndClean();
             }
 
             throw e;
         }
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return obGetClean() as string;
     }
 
     /**
@@ -369,7 +348,7 @@ export abstract class TwingTemplate {
      */
     abstract doDisplay(context: {}, blocks: Map<string, Array<any>>): void;
 
-    protected doGetParent(context: any): TwingTemplate | TwingTemplateWrapper | string | false {
+    protected doGetParent(context: any): TwingTemplate | string | false {
         return false;
     }
 
@@ -426,5 +405,129 @@ export abstract class TwingTemplate {
 
     public traceableHasBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
+    }
+
+    protected get callMacro(): (template: TwingTemplate, method: string, args: any[], lineno: number, context: TwingContext<any, any>, source: TwingSource) => void {
+        return callMacro;
+    }
+
+    protected get cloneMap(): <K, V>(m: Map<K, V>) => Map<K, V> {
+        return cloneMap;
+    }
+
+    protected get compare(): (a: any, b: any) => boolean {
+        return compare;
+    }
+
+    protected get constant(): (env: TwingEnvironment, name: string, object: any) => any {
+        return constant;
+    }
+
+    protected get convertToMap(): (iterable: any) => Map<any, any> {
+        return iteratorToMap;
+    }
+
+    protected get count(): (a: any) => number {
+        return count;
+    }
+
+    protected get createRange(): (low: any, high: any, step: number) => Map<number, any> {
+        return createRange;
+    }
+
+    protected get echo(): (value: any) => void {
+        return echo;
+    }
+
+    protected get endAndCleanOutputBuffer(): () => boolean {
+        return obEndClean;
+    }
+
+    protected get ensureTraversable(): <T>(candidate: T[]) => T[] | [] {
+        return ensureTraversable;
+    }
+
+    protected get flushOutputBuffer(): () => void {
+        return flush;
+    }
+
+    protected get get(): (object: any, property: any) => any {
+        return (object: any, property: any): any => {
+            if (isMap(object) || isPlainObject(object)) {
+                return get(object, property);
+            }
+        };
+    }
+
+    protected get getAndCleanOutputBuffer(): () => string | false {
+        return obGetClean;
+    }
+
+    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: Map<any, any>, type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any {
+        return getAttribute;
+    }
+
+    protected get getOutputBufferContent(): () => string | false {
+        return obGetContents;
+    }
+
+    protected get isCountable(): (candidate: any) => boolean {
+        return isCountable;
+    }
+
+    protected get isIn(): (a: any, b: any) => boolean {
+        return isIn;
+    }
+
+    protected get iterate(): (it: any, cb: <K, V>(k: K, v: V) => void) => void {
+        return iterate;
+    }
+
+    protected get merge(): (iterable1: Array<any> | Map<any, any>, iterable2: Array<any> | Map<any, any>) => Array<any> | Map<any, any> {
+        return merge;
+    }
+
+    protected get parseRegExp(): (input: string) => RegExp {
+        return parseRegex;
+    }
+
+    protected get startOutputBuffer(): () => boolean {
+        return obStart;
+    }
+
+    protected get Context(): typeof TwingContext {
+        return TwingContext;
+    }
+
+    protected get LoaderError(): typeof TwingErrorLoader {
+        return TwingErrorLoader;
+    }
+
+    protected get Markup(): typeof TwingMarkup {
+        return TwingMarkup;
+    }
+
+    protected get RuntimeError(): typeof TwingErrorRuntime {
+        return TwingErrorRuntime;
+    }
+
+    protected get SandboxSecurityError(): typeof TwingSandboxSecurityError {
+        return TwingSandboxSecurityError;
+    }
+
+    protected get SandboxSecurityNotAllowedFilterError(): typeof TwingSandboxSecurityNotAllowedFilterError {
+        return TwingSandboxSecurityNotAllowedFilterError;
+    }
+
+    protected get SandboxSecurityNotAllowedFunctionError(): typeof TwingSandboxSecurityNotAllowedFunctionError {
+        return TwingSandboxSecurityNotAllowedFunctionError;
+    }
+
+    protected get SandboxSecurityNotAllowedTagError(): typeof TwingSandboxSecurityNotAllowedTagError {
+        return TwingSandboxSecurityNotAllowedTagError;
+    }
+
+    protected get Source(): typeof TwingSource {
+        return TwingSource;
     }
 }

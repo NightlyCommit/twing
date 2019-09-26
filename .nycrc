@@ -6,7 +6,7 @@
     "extension": [
       ".js"
     ],
-    "include": "build",
+    "include": "dist/cjs",
     "reporter": [
       "text-summary",
       "html"

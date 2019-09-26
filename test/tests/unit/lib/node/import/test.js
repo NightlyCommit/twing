@@ -3,7 +3,7 @@ const {
     TwingNodeType,
     TwingNodeExpressionConstant,
     TwingNodeExpressionAssignName
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -29,8 +29,7 @@ tap.test('node/import', function (test) {
         let node = new TwingNodeImport(macro, var_, 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, null, 1);
+        test.same(compiler.compile(node).getSource(), `macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, null, 1);
 `);
 
         test.end();

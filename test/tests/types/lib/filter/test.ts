@@ -1,5 +1,5 @@
-import {TwingFilter} from '../../../../../build';
+import {TwingFilter} from '../../../../../dist/cjs/main';
 
-new TwingFilter('foo', () => {}, {
-    alternative: new TwingFilter('alternative', () => {})
+new TwingFilter('foo', () => {}, [], {
+    alternative: new TwingFilter('alternative', () => {}, [])
 });

@@ -1,4 +1,4 @@
-const {TwingNode} = require('../../../../../build/index');
+const {TwingNode} = require('../../../../../dist/cjs/main');
 
 const tap = require('tape');
 

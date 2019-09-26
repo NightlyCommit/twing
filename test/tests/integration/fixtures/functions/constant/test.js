@@ -2,7 +2,22 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../integration-tes
 
 const DATE_W3C = 'DATE_W3C';
 
+const Obj = class {
+
+};
+
+Obj['ARRAY_AS_PROPS'] = 2;
+
+const object = new Obj();
+
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    run(EnvironmentCtor) {
+        EnvironmentCtor['DATE_W3C'] = 'DATE_W3C';
+        EnvironmentCtor['ARRAY_AS_PROPS'] = object;
+
+        super.run(EnvironmentCtor);
+    }
+
     getDescription() {
         return '"constant" function';
     }
@@ -19,21 +34,10 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         return require('./expected.html');
     }
 
-    getGlobals() {
-        let result = new Map();
-
-        result.set(DATE_W3C, DATE_W3C);
-        result.set('Map', new Map([
-            ['ARRAY_AS_PROPS', 2]
-        ]));
-
-        return result;
-    }
-
     getData() {
         return {
             expect: DATE_W3C,
-            object: new Map([[0, 'hi']])
+            object: object
         }
     }
 };

@@ -1,16 +1,16 @@
 const {
     TwingNodeExpressionBinaryIn,
     TwingNodeExpressionConstant
-} = require('../../../../../../../../build/index');
+} = require('../../../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../../../mock/compiler');
 
 const tap = require('tape');
 
 tap.test('node/expression/binary/in', function (test) {
     test.test('constructor', function (test) {
-        let left = new TwingNodeExpressionConstant(1, 1);
-        let right = new TwingNodeExpressionConstant(2, 1);
-        let node = new TwingNodeExpressionBinaryIn(left, right, 1);
+        let left = new TwingNodeExpressionConstant(1, 1, 1);
+        let right = new TwingNodeExpressionConstant(2, 1, 1);
+        let node = new TwingNodeExpressionBinaryIn([left, right], 1, 1);
 
         test.same(node.getNode('left'), left);
         test.same(node.getNode('right'), right);
@@ -19,12 +19,12 @@ tap.test('node/expression/binary/in', function (test) {
     });
 
     test.test('compile', function (test) {
-        let left = new TwingNodeExpressionConstant(1, 1);
-        let right = new TwingNodeExpressionConstant(2, 1);
-        let node = new TwingNodeExpressionBinaryIn(left, right, 1);
+        let left = new TwingNodeExpressionConstant(1, 1, 1);
+        let right = new TwingNodeExpressionConstant(2, 1, 1);
+        let node = new TwingNodeExpressionBinaryIn([left, right], 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), 'Runtime.twingInFilter(1, 2)');
+        test.same(compiler.compile(node).getSource(), 'this.isIn(1, 2)');
 
         test.end();
     });

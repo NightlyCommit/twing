@@ -6,7 +6,7 @@ const {
     TwingNodeExpressionAssignName,
     TwingNodeExpressionName,
     TwingNodePrint
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -68,11 +68,10 @@ tap.test('node/for', function (test) {
 
             node.setAttribute('with_loop', false);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', context.clone());
+            test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
 (() => {
-    let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
+    let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', context.clone());
@@ -82,10 +81,10 @@ context.set('_parent', context.clone());
     }
 })();
 
-Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+this.iterate(context.get('_seq'), (__key__, __value__) => {
     context.proxy[\`key\`] = __key__;
     context.proxy[\`item\`] = __value__;
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 });
 (() => {
     let parent = context.get('_parent');
@@ -124,11 +123,10 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', context.clone());
+            test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
 (() => {
-    let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
+    let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', context.clone());
@@ -144,18 +142,18 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Runtime.isCountable(context.get('_seq')))) {
-    let length = Runtime.count(context.get('_seq'));
+if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_seq'))) {
+    let length = this.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);
     loop.set('revindex', length);
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+this.iterate(context.get('_seq'), (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     (() => {
         let loop = context.get('loop');
         loop.set('index0', loop.get('index0') + 1);
@@ -205,11 +203,10 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', context.clone());
+            test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
 (() => {
-    let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
+    let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', context.clone());
@@ -225,11 +222,11 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+this.iterate(context.get('_seq'), (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
     if (true) {
-        Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+        this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
         (() => {
             let loop = context.get('loop');
             loop.set('index0', loop.get('index0') + 1);
@@ -275,11 +272,10 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
 
             node.setAttribute('with_loop', true);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.set('_parent', context.clone());
+            test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
 (() => {
-    let c = Runtime.twingEnsureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
+    let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
         context.set('_seq', context.clone());
@@ -296,18 +292,18 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && Runtime.isCountable(context.get('_seq')))) {
-    let length = Runtime.count(context.get('_seq'));
+if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_seq'))) {
+    let length = this.count(context.get('_seq'));
     let loop = context.get('loop');
     loop.set('revindex0', length - 1);
     loop.set('revindex', length);
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
+this.iterate(context.get('_seq'), (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     context.set('_iterated',  true);
     (() => {
         let loop = context.get('loop');
@@ -322,7 +318,7 @@ Runtime.each.bind(this)(context.get('_seq'), (__key__, __value__) => {
     })();
 });
 if (context.get('_iterated') === false) {
-    Runtime.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 (() => {
     let parent = context.get('_parent');

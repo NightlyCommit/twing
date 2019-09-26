@@ -3,8 +3,8 @@ import {TwingNodeExpressionConstant} from "./constant";
 
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node";
-import {push} from "../../helper/push";
-import {ctypeDigit} from "../../helper/ctype_digit";
+import {push} from "../../helpers/push";
+import {ctypeDigit} from "../../helpers/ctype-digit";
 
 let array_chunk = require('locutus/php/array/array_chunk');
 
@@ -52,7 +52,7 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.raw('[');
+        compiler.raw('new Map([');
 
         let first = true;
 
@@ -63,9 +63,14 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
 
             first = false;
 
-            compiler.subcompile(pair.value);
+            compiler
+                .raw('[')
+                .subcompile(pair.key)
+                .raw(', ')
+                .subcompile(pair.value)
+                .raw(']')
         }
 
-        compiler.raw(']');
+        compiler.raw('])');
     }
 }

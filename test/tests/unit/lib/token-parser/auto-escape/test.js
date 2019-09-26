@@ -1,48 +1,39 @@
 const {
     TwingTokenParserAutoEscape,
     TwingTokenStream,
-    TwingToken,
     TwingParser,
-    TwingErrorSyntax,
-    TwingSource
-} = require('../../../../../../build/index');
-
+    TwingEnvironment,
+    TwingLoaderArray,
+    TwingNodeText
+} = require('../../../../../../dist/cjs/main');
 const tap = require('tape');
 const sinon = require('sinon');
-
-class ExpressionParser {
-    parseExpression() {
-        return new TwingToken(TwingToken.NAME_TYPE, 'foo', 1);
-    }
-}
-
-class Parser extends TwingParser {
-    constructor() {
-        super(null);
-    }
-
-    getExpressionParser() {
-        return new ExpressionParser();
-    }
-}
+const {Token, TokenType} = require('twig-lexer');
 
 tap.test('token-parser/auto-escape', function (test) {
     test.test('parse', function (test) {
         test.test('when escaping strategy is not a string of false', function(test) {
             let stream = new TwingTokenStream([
-                new TwingToken(TwingToken.NAME_TYPE, 'foo', 1)
+                new Token(TokenType.NAME, 'foo', 1, 1)
             ]);
 
             let tokenParser = new TwingTokenParserAutoEscape();
-            let parser = new Parser();
+            let parser = new TwingParser(new TwingEnvironment(new TwingLoaderArray({})));
 
-            sinon.stub(parser, 'getStream').returns(stream);
+            sinon.stub(parser, 'parseExpression').returns(new TwingNodeText('foo', 1, 1, null));
+
+            Reflect.set(parser, 'stream', stream);
 
             tokenParser.setParser(parser);
 
-            test.throws(function () {
-                tokenParser.parse(new TwingToken(TwingToken.BLOCK_START_TYPE, '', 1));
-            }, new TwingErrorSyntax('An escaping strategy must be a string or false.', 1, new TwingSource('', '')));
+            try {
+                tokenParser.parse(new Token(TokenType.TAG_START, '', 1, 1));
+
+                test.fail();
+            }
+            catch (e) {
+                test.same(e.message, 'An escaping strategy must be a string or false at line 1.');
+            }
 
             test.end();
         });

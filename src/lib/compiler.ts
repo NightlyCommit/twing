@@ -1,10 +1,8 @@
 import {TwingNode} from "./node";
 import {TwingEnvironment} from "./environment";
 import {isNullOrUndefined} from "util";
-import {ksort} from "./helper/ksort";
+import {addcslashes} from "locutus/php/strings";
 
-const substr_count = require('locutus/php/strings/substr_count');
-const addcslashes = require('locutus/php/strings/addcslashes');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
 
@@ -13,9 +11,6 @@ export class TwingCompiler {
     private source: string;
     private indentation: number;
     private env: TwingEnvironment;
-    private debugInfo: Map<number, { line: number; column: number }>;
-    private sourceOffset: number;
-    private sourceLine: number;
     private varNameSalt = 0;
 
     constructor(env: TwingEnvironment) {
@@ -38,10 +33,6 @@ export class TwingCompiler {
     compile(node: TwingNode, indentation: number = 0): TwingCompiler {
         this.lastLine = null;
         this.source = '';
-        this.debugInfo = new Map();
-        this.sourceOffset = 0;
-        // source code starts at 1 (as we then increment it when we encounter new lines)
-        this.sourceLine = 1;
         this.indentation = indentation;
         this.varNameSalt = 0;
 
@@ -124,23 +115,6 @@ export class TwingCompiler {
         else if (typeof value === 'boolean') {
             this.raw(value ? 'true' : 'false');
         }
-        else if (Array.isArray(value)) {
-            this.raw('[');
-
-            let first = true;
-
-            for (let v of value) {
-                if (!first) {
-                    this.raw(', ');
-                }
-
-                first = false;
-
-                this.repr(v);
-            }
-
-            this.raw(']');
-        }
         else if (value instanceof Map) {
             this.raw('new Map([');
 
@@ -196,39 +170,11 @@ export class TwingCompiler {
     }
 
     /**
-     * Adds debugging information.
-     *
-     * @returns TwingCompiler
-     */
-    addDebugInfo(node: TwingNode): TwingCompiler {
-        if (node.getTemplateLine() != this.lastLine) {
-            this.write(`// line ${node.getTemplateLine()}, column ${node.getTemplateColumn()}\n`);
-
-            this.sourceLine += substr_count(this.source, "\n", this.sourceOffset);
-            this.sourceOffset = this.source.length;
-            this.debugInfo.set(this.sourceLine, {
-                line: node.getTemplateLine(),
-                column: node.getTemplateColumn()
-            });
-
-            this.lastLine = node.getTemplateLine();
-        }
-
-        return this;
-    }
-
-    getDebugInfo() {
-        ksort(this.debugInfo);
-
-        return this.debugInfo;
-    }
-
-    /**
      * Adds source-map enter call.
      *
      * @returns TwingCompiler
      */
-    addSourceMapEnter(node: TwingNode, ctor: string = null) {
+    addSourceMapEnter(node: TwingNode) {
         if (this.getEnvironment().isSourceMap()) {
             this
                 .write('this.env.enterSourceMapBlock(')
@@ -238,17 +184,7 @@ export class TwingCompiler {
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
-                .raw('this.getSourceContext(), ')
-            ;
-
-            if (ctor) {
-                this.raw(ctor);
-            }
-            else {
-                this.raw(`this.extensions.get('TwingExtensionCore').getSourceMapNodeConstructor('${node.getType()}')`);
-            }
-
-            this.raw(');\n');
+                .raw('this.getSourceContext());\n')
         }
 
         return this;

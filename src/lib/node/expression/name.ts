@@ -28,8 +28,6 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
     compile(compiler: TwingCompiler) {
         let name: string = this.getAttribute('name');
 
-        compiler.addDebugInfo(this);
-
         if (this.getAttribute('is_defined_test')) {
             if (this.isSpecial()) {
                 compiler.repr(true);
@@ -64,7 +62,7 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
                     .string(name)
                     .raw(') ? context.get(')
                     .string(name)
-                    .raw(') : (() => { throw new Runtime.TwingErrorRuntime(\'Variable ')
+                    .raw(') : (() => { throw new this.RuntimeError(\'Variable ')
                     .string(name)
                     .raw(' does not exist.\', ')
                     .repr(this.lineno)

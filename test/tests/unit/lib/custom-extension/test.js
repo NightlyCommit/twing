@@ -55,14 +55,5 @@ tap.test('custom-extension', function (test) {
         test.end();
     });
 
-    test.test('undefinedOperators', function(test) {
-        let env = new MockEnvironement(new MockLoader);
-        env.addExtension(new OperatorExtension());
-        env.getUnaryOperators();
-
-        test.pass();
-        test.end();
-    });
-
     test.end();
 });

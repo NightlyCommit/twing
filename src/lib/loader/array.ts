@@ -5,7 +5,7 @@ import {TwingErrorLoader} from "../error/loader";
 /**
  * Loads template from the filesystem.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderArray implements TwingLoaderInterface {

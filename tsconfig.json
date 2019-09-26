@@ -4,8 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "outDir": "build",
-    "declaration": true,
+    "outDir": "dist",
     "sourceMap": true,
     "removeComments": false
   },

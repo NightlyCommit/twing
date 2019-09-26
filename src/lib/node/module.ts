@@ -1,10 +1,9 @@
 import {TwingNode, TwingNodeType} from "../node";
 import {TwingSource} from "../source";
-
 import {TwingCompiler} from "../compiler";
 
 /**
- * Represents a module node.
+ * Represents a module node that compiles into a JavaScript module.
  */
 export class TwingNodeModule extends TwingNode {
     public source: TwingSource;
@@ -29,7 +28,7 @@ export class TwingNodeModule extends TwingNode {
         // embedded templates are set as attributes so that they are only visited once by the visitors
         let attributes = new Map();
 
-        attributes.set('index', null);
+        attributes.set('index', 0);
         attributes.set('embedded_templates', embeddedTemplates);
 
         super(nodes, attributes, 1, 1);
@@ -46,11 +45,14 @@ export class TwingNodeModule extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        if (!this.getAttribute('index')) {
+        let index: number = this.getAttribute('index');
+
+        if (index === 0) {
             compiler
-                .write('module.exports = (Runtime) => {\n')
+                .write('module.exports = (TwingTemplate) => {\n')
                 .indent()
-                .write('let templates = {};\n')
+                .write('return new Map([\n')
+                .indent()
             ;
         }
 
@@ -60,9 +62,10 @@ export class TwingNodeModule extends TwingNode {
             compiler.subcompile(template);
         }
 
-        if (!this.getAttribute('index')) {
+        if (index === 0) {
             compiler
-                .write('return templates;\n')
+                .outdent()
+                .write(']);\n')
                 .outdent()
                 .write('};')
             ;
@@ -86,8 +89,6 @@ export class TwingNodeModule extends TwingNode {
 
         this.compileIsTraitable(compiler);
 
-        this.compileDebugInfo(compiler);
-
         this.compileGetSourceContext(compiler);
 
         this.compileClassfooter(compiler);
@@ -103,7 +104,6 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("doGetParent(context) {\n")
             .indent()
-            .addDebugInfo(parent)
             .write('return ')
         ;
 
@@ -129,14 +129,10 @@ export class TwingNodeModule extends TwingNode {
     }
 
     protected compileClassHeader(compiler: TwingCompiler) {
-        let templateClass = compiler.getEnvironment().getTemplateClass(this.source.getName(), this.getAttribute('index'));
+        let index: number = this.getAttribute('index');
 
         compiler
-            .write("\n\n")
-            .write('/* ' + this.source.getName() + ' */\n')
-            .write('templates.')
-            .raw(`${templateClass} = class ${templateClass} extends Runtime.${compiler.getEnvironment().getBaseTemplateClass()} `)
-            .raw('{\n')
+            .write(`[${index}, class extends TwingTemplate {\n`)
             .indent();
     }
 
@@ -146,7 +142,9 @@ export class TwingNodeModule extends TwingNode {
             .indent()
             .subcompile(this.getNode('constructor_start'))
             .write('super(env);\n\n')
-            .write("this.source = this.getSourceContext();\n\n")
+            .write("this.source = this.getSourceContext();\n")
+            .write("this.macros = new this.Context();\n")
+            .write('let macros = new this.Context();\n\n')
         ;
 
         // parent
@@ -172,17 +170,16 @@ export class TwingNodeModule extends TwingNode {
                 ;
 
                 compiler
-                    .addDebugInfo(trait.getNode('template'))
                     .write(`if (!_trait_${i}.isTraitable()) {\n`)
                     .indent()
-                    .write('throw new Runtime.TwingErrorRuntime(\'Template "+')
+                    .write('throw new this.RuntimeError(\'Template "+')
                     .subcompile(trait.getNode('template'))
                     .raw('+" cannot be used as a trait.\', ')
                     .repr(node.getTemplateLine())
                     .raw(", this.source);\n")
                     .outdent()
                     .write('}\n')
-                    .write(`let _trait_${i}_blocks = Runtime.clone(_trait_${i}.getBlocks());\n\n`)
+                    .write(`let _trait_${i}_blocks = this.cloneMap(_trait_${i}.getBlocks());\n\n`)
                 ;
 
                 for (let [key, value] of trait.getNode('targets').getNodes()) {
@@ -191,7 +188,7 @@ export class TwingNodeModule extends TwingNode {
                         .string(key as string)
                         .raw(")) {\n")
                         .indent()
-                        .write('throw new Runtime.TwingErrorRuntime(\'Block ')
+                        .write('throw new this.RuntimeError(\'Block ')
                         .string(key as string)
                         .raw(' is not defined in trait ')
                         .subcompile(trait.getNode('template'))
@@ -214,17 +211,17 @@ export class TwingNodeModule extends TwingNode {
             if (countTraits > 1) {
                 for (let i = 0; i < countTraits; ++i) {
                     compiler
-                        .write(`this.traits = Runtime.merge(this.traits, _trait_${i}_blocks);\n`)
+                        .write(`this.traits = this.merge(this.traits, _trait_${i}_blocks);\n`)
                     ;
                 }
             } else {
                 compiler
-                    .write("this.traits = Runtime.clone(_trait_0_blocks);\n\n")
+                    .write("this.traits = this.cloneMap(_trait_0_blocks);\n\n")
                 ;
             }
 
             compiler
-                .write("this.blocks = Runtime.merge(this.traits, new Map([\n")
+                .write("this.blocks = this.merge(this.traits, new Map([\n")
                 .indent()
             ;
         } else {
@@ -292,6 +289,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("doDisplay(context, blocks = new Map()) {\n")
             .indent()
+            .write('let macros = this.macros.clone();\n')
             .addSourceMapEnter(this)
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))
@@ -300,7 +298,6 @@ export class TwingNodeModule extends TwingNode {
         if (this.hasNode('parent')) {
             let parent = this.getNode('parent');
 
-            compiler.addDebugInfo(parent);
 
             if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
                 compiler
@@ -318,7 +315,7 @@ export class TwingNodeModule extends TwingNode {
                 compiler.write('this.getParent(context)');
             }
 
-            compiler.raw(".display(context, Runtime.merge(this.blocks, blocks));\n");
+            compiler.raw(".display(context, this.merge(this.blocks, blocks));\n");
         }
 
         compiler
@@ -373,16 +370,6 @@ export class TwingNodeModule extends TwingNode {
                     continue;
                 }
 
-                // unit: this block is not coverable; how can node be of type TEXT and have children nodes?
-                // if (node.getType() === TwingNodeType.TEXT && ctype_space(node.getAttribute('data'))) {
-                //     continue;
-                // }
-
-                // unit: this block is not coverable; how can node be of type BLOCK_REFERENCE and have children nodes?
-                // if (node.getType() === TwingNodeType.BLOCK_REFERENCE) {
-                //     continue;
-                // }
-
                 traitable = false;
 
                 break;
@@ -396,22 +383,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("isTraitable() {\n")
             .indent()
-            // unit: something is really wrong here
-            // .write(`return ${traitable ? 'true' : 'false'};\n`)
             .write('return false;\n')
-            .outdent()
-            .write("}\n\n")
-        ;
-    }
-
-    protected compileDebugInfo(compiler: TwingCompiler) {
-        compiler
-            .write("getDebugInfo() {\n")
-            .indent()
-            .write('return ')
-            // @see https://github.com/Microsoft/TypeScript/issues/11152
-            .repr(new Map(Array.from(compiler.getDebugInfo()).reverse() as Iterable<any>))
-            .raw(';\n')
             .outdent()
             .write("}\n\n")
         ;
@@ -421,7 +393,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("getSourceContext() {\n")
             .indent()
-            .write('return new Runtime.TwingSource(')
+            .write('return new this.Source(')
             .string(compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ? this.source.getCode() : '')
             .raw(', ')
             .string(this.source.getName())
@@ -434,10 +406,11 @@ export class TwingNodeModule extends TwingNode {
     }
 
     protected compileClassfooter(compiler: TwingCompiler) {
+
         compiler
             .subcompile(this.getNode('class_end'))
             .outdent()
-            .write('};\n\n')
+            .write(`}],\n`)
         ;
     }
 }

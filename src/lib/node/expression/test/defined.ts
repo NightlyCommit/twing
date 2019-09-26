@@ -36,6 +36,9 @@ export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         else if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY) {
             node = new TwingNodeExpressionConstant(true, node.getTemplateLine(), node.getTemplateColumn());
         }
+        else if (node.getType() === TwingNodeType.EXPRESSION_METHOD_CALL) {
+            node.setAttribute('is_defined_test', true);
+        }
         else {
             error = 'The "defined" test only works with simple variables.';
         }

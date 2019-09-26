@@ -24,9 +24,11 @@ export class TwingNodeExpressionTest extends TwingNodeExpressionCall {
 
         this.setAttribute('name', name);
         this.setAttribute('type', 'test');
+        this.setAttribute('needs_environment', test.needsEnvironment());
         this.setAttribute('arguments', test.getArguments());
         this.setAttribute('callable', test.getCallable());
         this.setAttribute('is_variadic', test.isVariadic());
+        this.setAttribute('accepted_arguments', test.getAcceptedArgments());
 
         super.compileCallable(compiler);
     }

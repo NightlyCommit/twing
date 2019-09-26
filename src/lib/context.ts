@@ -1,8 +1,10 @@
+import {iteratorToMap} from "./helpers/iterator-to-map";
+
 export class TwingContext<K, V> {
     private readonly _container: Map<any, any>;
     private readonly _proxy: any;
 
-    constructor(container: Map<K, V>) {
+    constructor(container: Map<K, V> = new Map()) {
         this._container = container;
         this._proxy = new Proxy(this._container, {
             set: (target: Map<any, any>, key: string | number | symbol, value: any, receiver: any): boolean => {
@@ -39,7 +41,13 @@ export class TwingContext<K, V> {
     }
 
     get(key: K): V {
-        return this._container.get(key);
+        let value: any = this._container.get(key);
+
+        if (Array.isArray(value)) {
+            value = iteratorToMap(value);
+        }
+
+        return value;
     }
 
     delete(key: K): boolean {

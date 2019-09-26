@@ -1,14 +1,14 @@
 const {
     TwingTokenParserExtends,
     TwingTokenStream,
-    TwingToken,
     TwingErrorSyntax,
     TwingSource
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockBuilderParser = require('../../../../../mock-builder/parser');
 
 const tap = require('tape');
 const sinon = require('sinon');
+const {Token, TokenType} = require('twig-lexer');
 
 class ExpressionParser {
     parseExpression() {}
@@ -28,7 +28,7 @@ tap.test('token-parser/extends', function (test) {
             sinon.stub(parser, 'getParent').returns(true);
 
             test.throws(function () {
-                tokenParser.parse(new TwingToken(TwingToken.NAME_TYPE, 'foo', 1));
+                tokenParser.parse(new Token(TokenType.NAME, 'foo', 1, 1));
             }, new TwingErrorSyntax('Multiple extends tags are forbidden.', 1, new TwingSource('', '')));
 
             test.end();

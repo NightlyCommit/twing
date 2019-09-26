@@ -1,4 +1,4 @@
-const {twingEscapeFilter} = require("../../../../../build/lib/extension/core");
+const {escape: twingEscapeFilter} = require("../../../../../dist/cjs/lib/extension/core/filters/escape");
 const EnvironmentMock = require("../../../../mock/environment");
 const LoaderMock = require("../../../../mock/loader");
 

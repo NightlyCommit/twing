@@ -11,9 +11,9 @@ export class TwingNodeBlock extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .addDebugInfo(this)
             .write(`block_${this.getAttribute('name')}(context, blocks = new Map()) {\n`)
             .indent()
+            .write('let macros = this.macros.clone();\n')
         ;
 
         compiler

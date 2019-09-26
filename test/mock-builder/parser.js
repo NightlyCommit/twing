@@ -1,15 +1,13 @@
-const {TwingParser} = require("../../build");
+const {TwingParser, TwingEnvironment, TwingLoaderNull} = require("../../dist/cjs/main");
 
 const sinon = require('sinon');
 
 class Parser extends TwingParser {
     constructor() {
-        super(null);
+        super(new TwingEnvironment(new TwingLoaderNull()));
     }
-}
 
-class ExpressionParser {
-    parseExpression() {
+    parseExpression(precedence, allowArrow) {
     }
 
     parseAssignmentExpression() {
@@ -19,7 +17,7 @@ class ExpressionParser {
     }
 }
 
-module.exports.getParser = function (stream, expressionParser) {
+module.exports.getParser = function (stream) {
     let parser = new Parser();
 
     Reflect.set(parser, 'stream', stream);
@@ -29,7 +27,6 @@ module.exports.getParser = function (stream, expressionParser) {
     sinon.stub(parser, 'setBlock').returns(false);
     sinon.stub(parser, 'pushLocalScope').returns(false);
     sinon.stub(parser, 'pushBlockStack').returns(false);
-    sinon.stub(parser, 'getExpressionParser').returns(expressionParser ? expressionParser : new ExpressionParser());
 
     return parser;
 };

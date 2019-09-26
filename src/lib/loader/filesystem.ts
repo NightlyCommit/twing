@@ -10,7 +10,7 @@ const rtrim = require('locutus/php/strings/rtrim');
 /**
  * Loads template from the filesystem.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderFilesystem implements TwingLoaderInterface {

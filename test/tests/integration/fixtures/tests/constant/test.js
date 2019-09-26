@@ -1,6 +1,13 @@
 const TwingTestIntegrationTestCaseBase = require('../../../../../integration-test-case');
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
+    run(EnvironmentCtor) {
+        EnvironmentCtor['E_NOTICE'] = 8;
+        EnvironmentCtor['TwigTestFoo::BAR_NAME'] = 'bar';
+
+        super.run(EnvironmentCtor);
+    }
+
     getDescription() {
         return '"constant" test';
     }
@@ -17,22 +24,16 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         return require('./expected.html');
     }
 
-    getGlobals() {
-        let result = new Map();
-
-        result.set('E_NOTICE', 8);
-        result.set('TwigTestFoo::BAR_NAME', 'bar');
-        result.set('Array', new Map([
-            ['ARRAY_AS_PROPS', 2]
-        ]));
-
-        return result
-    }
-
     getData() {
+        const Obj = class {
+
+        };
+
+        Obj['ARRAY_AS_PROPS'] = 2;
+
         return {
             value: 'bar',
-            object: ['hi']
+            object: new Obj()
         };
     }
 };

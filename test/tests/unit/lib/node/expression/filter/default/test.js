@@ -6,7 +6,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingNode
-} = require('../../../../../../../../build/index');
+} = require('../../../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 
@@ -22,8 +22,7 @@ tap.test('node/expression/filter/default', function (test) {
 
             let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
-            test.same(compiler.compile(node).getSource(), `((// line 1, column 1
-(context.has(\`foo\`))) ? (this.env.getFilter('default').traceableCallable(1, this.source)(...[(context.has(\`foo\`) ? context.get(\`foo\`) : null)])) : (\`\`))`);
+            test.same(compiler.compile(node).getSource(), `(((context.has(\`foo\`))) ? (this.env.getFilter('default').traceableCallable(1, this.source)(...[(context.has(\`foo\`) ? context.get(\`foo\`) : null)])) : (\`\`))`);
 
             test.end();
         });

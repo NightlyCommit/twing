@@ -1,5 +1,8 @@
 
 FOO
 {{ source("foo.twig") }}
+{# named arguments #}
+{{ source(name = "foo.twig") }}
+{{ source(ignore_missing = true, name = "missing.twig") }}
 
 BAR

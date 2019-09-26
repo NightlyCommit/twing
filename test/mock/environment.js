@@ -1,7 +1,7 @@
-const {TwingEnvironmentNode: TwingEnvironment} = require('../../build/lib/environment/node');
+const {TwingEnvironmentNode: TwingEnvironment} = require('../../dist/cjs/lib/environment/node');
 
 module.exports = class extends TwingEnvironment {
-    getTemplateClass(name, index = null) {
+    getTemplateHash(name, index = null, from = null) {
         return `__TwingTemplate_foo${(index === null ? '' : '_' + index)}`;
     }
 };

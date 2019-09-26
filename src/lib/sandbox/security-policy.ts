@@ -53,23 +53,23 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
     checkSecurity(tags: string[], filters: string[], functions: string[]): void {
         let self = this;
 
-        tags.forEach(function (tag) {
+        for (let tag of tags) {
             if (!self.allowedTags.includes(tag)) {
                 throw new TwingSandboxSecurityNotAllowedTagError(`Tag "${tag}" is not allowed.`, tag);
             }
-        });
+        }
 
-        filters.forEach(function (filter) {
+        for (let filter of filters) {
             if (!self.allowedFilters.includes(filter)) {
                 throw new TwingSandboxSecurityNotAllowedFilterError(`Filter "${filter}" is not allowed.`, filter);
             }
-        });
+        }
 
-        functions.forEach(function (function_) {
+        for (let function_ of functions) {
             if (!self.allowedFunctions.includes(function_)) {
                 throw new TwingSandboxSecurityNotAllowedFunctionError(`Function "${function_}" is not allowed.`, function_);
             }
-        });
+        }
     }
 
     checkMethodAllowed(obj: any, method: string): void {
@@ -78,24 +78,24 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
         }
 
         let allowed = false;
-        let checkableMethod = method.toLowerCase();
+        let candidate = method.toLowerCase();
 
-        for (let [class_, methods] of this.allowedMethods) {
-            if (obj instanceof class_) {
-                allowed = methods.includes(checkableMethod);
+        for (let [constructorName, methods] of this.allowedMethods) {
+            if (obj instanceof constructorName) {
+                allowed = methods.includes(candidate);
 
                 break;
             }
         }
 
         if (!allowed) {
-            let class_ = obj.constructor.name;
-            throw new TwingSandboxSecurityNotAllowedMethodError(`Calling "${method}" method on a "${class_}" object is not allowed.`, class_, method);
+            throw new TwingSandboxSecurityNotAllowedMethodError(`Calling "${method}" method on a "${obj.constructor.name}" is not allowed.`);
         }
     }
 
     checkPropertyAllowed(obj: any, property: string): void {
         let allowed = false;
+
         for (let [class_, properties] of this.allowedProperties) {
             if (obj instanceof class_) {
                 allowed = (Array.isArray(properties) ? properties : [properties]).includes(property);
@@ -105,8 +105,7 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
         }
 
         if (!allowed) {
-            let class_ = obj.constructor.name;
-            throw new TwingSandboxSecurityNotAllowedPropertyError(`Calling "${property}" property on a "${class_}" object is not allowed.`, class_, property);
+            throw new TwingSandboxSecurityNotAllowedPropertyError(`Calling "${property}" property on a "${obj.constructor.name}" is not allowed.`);
         }
     }
 }

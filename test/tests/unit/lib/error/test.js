@@ -1,4 +1,4 @@
-const {TwingError} = require('../../../../../build/lib/error');
+const {TwingError} = require('../../../../../dist/cjs/lib/error');
 
 const {
     TwingLoaderArray,
@@ -6,7 +6,7 @@ const {
     TwingErrorRuntime,
     TwingLoaderFilesystem,
     TwingSource
-} = require('../../../../../build/index');
+} = require('../../../../../dist/cjs/main');
 
 const tap = require('tape');
 const path = require('path');
@@ -83,7 +83,7 @@ tap.test('TwingError', function (test) {
         let twing = new TwingEnvironment(loader, {
             strict_variables: true,
             debug: true,
-            cache: 'tmp/foo'
+            cache: false
         });
 
         let template = twing.loadTemplate('index.html');

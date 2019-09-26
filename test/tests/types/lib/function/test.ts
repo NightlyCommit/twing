@@ -1,5 +1,5 @@
-import {TwingFunction} from '../../../../../build';
+import {TwingFunction} from '../../../../../dist/cjs/main';
 
-new TwingFunction('foo', () => {}, {
-    alternative: new TwingFunction('alternative')
+new TwingFunction('foo', () => {}, [], {
+    alternative: new TwingFunction('alternative', () => {}, [])
 });

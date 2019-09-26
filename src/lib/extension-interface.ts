@@ -10,7 +10,8 @@ import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingFilter} from "./filter";
 import {TwingFunction} from "./function";
 import {TwingTest} from "./test";
-import {TwingOperator} from "./extension";
+import {TwingOperator} from "./operator";
+import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
 
 export interface TwingExtensionInterface {
     TwingExtensionInterfaceImpl: TwingExtensionInterface;
@@ -32,29 +33,35 @@ export interface TwingExtensionInterface {
     /**
      * Returns a list of filters to add to the existing list.
      *
-     * @return Map<string | number, TwingFilter>
+     * @return Array<TwingFilter>
      */
-    getFilters(): Map<string | number, TwingFilter>;
+    getFilters(): TwingFilter[];
 
     /**
      * Returns a list of tests to add to the existing list.
      *
      * @returns Array<TwingTest>
      */
-    getTests(): Array<TwingTest>;
+    getTests(): TwingTest[];
 
     /**
      * Returns a list of functions to add to the existing list.
      *
-     * @return Map<string | number, TwingFunction>
+     * @return Array<TwingFunction>
      */
-    getFunctions(): Map<string | number, TwingFunction>;
+    getFunctions(): TwingFunction[];
 
     /**
      * Returns a list of operators to add to the existing list.
      *
-     * @return [Map<string, TwingOperator>, Map<string, TwingOperator>] First array of unary operators, second array of binary operators
+     * @return TwingOperator[]
      */
-    getOperators(): [Map<string, TwingOperator>, Map<string, TwingOperator>];
-}
+    getOperators(): TwingOperator[];
 
+    /**
+     * Returns a list of factories that will be used to construct the source-map nodes.
+     *
+     * @return TwingSourceMapNodeFactory[]
+     */
+    getSourceMapNodeFactories(): TwingSourceMapNodeFactory[];
+}

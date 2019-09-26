@@ -4,7 +4,7 @@ const {
     TwingEnvironment,
     TwingLoaderArray,
     TwingNodeExpressionConstant
-} = require('../../../../../../../build/index');
+} = require('../../../../../../../dist/cjs/main');
 
 const tap = require('tape');
 
@@ -14,7 +14,7 @@ class BinaryExpression extends TwingNodeExpressionBinary {
 
 tap.test('node/expression/binary', function (test) {
     test.test('compile', function (test) {
-        let expr = new BinaryExpression(new TwingNodeExpressionConstant('foo'), new TwingNodeExpressionConstant('bar'), 1);
+        let expr = new BinaryExpression([new TwingNodeExpressionConstant('foo', 1, 1), new TwingNodeExpressionConstant('bar', 1, 1)], 1, 1);
         let compiler = new TwingCompiler(new TwingEnvironment(new TwingLoaderArray({})));
 
         compiler.compile(expr);

@@ -38,7 +38,7 @@ let output = twing.render('index.twig', {name: 'Fabien'});
 
 ## Usage with Express
 
-Twing and Express work quite well together. Have a look at the [documentation](http://ericmorand.github.io/twing/intro.html#real-world-example-using-express) for an example of usage with Express.
+Twing and Express work quite well together. Have a look at the [documentation](http://NightlyCommit.github.io/twing/intro.html#real-world-example-using-express) for an example of usage with Express.
 
 ## Browser support
 
@@ -68,6 +68,7 @@ Here is the compatibility chart between minor versions of Twing and Twig specifi
 
 |Twing version|Twig specifications level|Notable features|
 |:---:|:---:|---|
+|3.0|2.11|[Macros scoping](https://twig.symfony.com/doc/2.x/tags/macro.html#macros-scoping)|
 |2.3|2.10|`spaceless`, `column`, `filter`, `map` and `reduce` filters, `apply` tag, `line whitespace trimming` whitespace control modifier|
 |2.2|2.6|`deprecated` tag|
 |1.3|2.5|`spaceless` and `block`-related deprecations|
@@ -77,11 +78,11 @@ It is highly recommended to always use the latest version of Twing available as 
 
 ### Known issues
 
-You can find the list of known issues of Twing regarding Twig specifications implementation [here](http://ericmorand.github.io/twing/known_issues). Note that known issues are guaranteed to be addressed in the next major version bump of Twing.
+You can find the list of known issues of Twing regarding Twig specifications implementation [here](http://NightlyCommit.github.io/twing/known_issues). Note that known issues are guaranteed to be addressed in the next major version bump of Twing.
 
 ## More information
 
-Read the [documentation](http://ericmorand.github.io/twing) for more information.
+Read the [documentation](http://NightlyCommit.github.io/twing) for more information.
 
 ## Related projects
 
@@ -101,9 +102,9 @@ Copyright © 2018 [Eric MORAND](https://github.com/ericmorand). Released under t
 
 [npm-image]: https://badge.fury.io/js/twing.svg
 [npm-url]: https://npmjs.org/package/twing
-[travis-image]: https://travis-ci.org/ericmorand/twing.svg?branch=master
-[travis-url]: https://travis-ci.org/ericmorand/twing
-[coveralls-image]: https://coveralls.io/repos/github/ericmorand/twing/badge.svg
-[coveralls-url]: https://coveralls.io/github/ericmorand/twing
+[travis-image]: https://travis-ci.com/NightlyCommit/twing.svg?branch=master
+[travis-url]: https://travis-ci.com/NightlyCommit/twing
+[coveralls-image]: https://coveralls.io/repos/github/NightlyCommit/twing/badge.svg
+[coveralls-url]: https://coveralls.io/github/NightlyCommit/twing
 [donate-image]: https://img.shields.io/badge/Donate-PayPal-green.svg
 [donate-url]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7YZU3L2JL2KJA

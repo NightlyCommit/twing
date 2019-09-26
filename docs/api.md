@@ -96,17 +96,13 @@ The following options are available:
 
   The charset used by the templates.
 
-* `base_template_class` *string* (defaults to `TwingTemplate`)
-
-  The base template class to use for generated templates.
-
 * `cache` *string* or `false`
 
   An absolute path where to store the compiled templates, or `false` to disable caching (which is the default).
 
 * `auto_reload` *boolean*
 
-  When developing with Twing, it's useful to recompile the template whenever the source code changes. If you don't provide a value for the `auto_reload` option, it will be determined automatically based on the `debug` value.
+  Setting the `auto_reload` option to `true` enables templates to be recompiled whenever their content changes instead of fetching them from the cache. Note that this won't invalidate the environment inner cache but only the cache passed using the `cache` option. If you don't provide a value for the `auto_reload` option, it will be determined automatically based on the `debug` value.
 
 * `strict_variables` *boolean*
 
@@ -442,6 +438,8 @@ The escaping rules are implemented as follows:
 {{ foo ? text|escape : "<br />Twing" }} {# the result of the expression won't be escaped #}
 ```
 {% endraw  %}
+
+* Objects with a `toString` method are converted to strings and escaped.
 
 * Escaping is applied before printing, after any other filter is applied:
 

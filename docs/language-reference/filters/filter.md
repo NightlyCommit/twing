@@ -8,11 +8,22 @@ The `filter` filter filters elements of a sequence or a mapping using an arrow f
 ```twig
 {% set sizes = [34, 36, 38, 40, 42] %}
 
+{{ sizes|filter(v => v > 38)|join(', ') }}
+{# output 40, 42 #}
+```
+
+Combined with the `for` tag, it allows to filter the items to iterate over:
+
+```twig
 {% for v in sizes|filter(v => v > 38) -%}
     {{ v }}
 {% endfor %}
 {# output 40 42 #}
+```
 
+It also works with mappings:
+
+```twig
 {% set sizes = {
     xs: 34,
     s:  36,

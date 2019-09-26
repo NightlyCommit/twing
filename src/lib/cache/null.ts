@@ -1,11 +1,10 @@
 import {TwingCacheInterface} from "../cache-interface";
-import {TwingTemplate} from "../template";
-import {TwingEnvironment} from "../environment";
+import {TwingTemplatesModule} from "../environment";
 
 /**
  * Implements a no-cache strategy.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingCacheNull implements TwingCacheInterface {
     TwingCacheInterfaceImpl: TwingCacheInterface;
@@ -21,9 +20,9 @@ export class TwingCacheNull implements TwingCacheInterface {
     write(key: string, content: string) {
     }
 
-    load(key: string): (Runtime: any) => { [s: string]: new(e: TwingEnvironment) => TwingTemplate } {
+    load(key: string): TwingTemplatesModule {
         return () => {
-            return {};
+            return new Map();
         };
     }
 

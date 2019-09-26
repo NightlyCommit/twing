@@ -2,7 +2,7 @@ const {
     TwingNodePrint,
     TwingNodeExpressionConstant,
     TwingNodeType
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -24,8 +24,7 @@ tap.test('node/print', function (test) {
         let node = new TwingNodePrint(new TwingNodeExpressionConstant('foo', 1, 1), 1, 1);
         let compiler = new TwingTestMockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `this.echo(\`foo\`);
 `);
 
         test.end();

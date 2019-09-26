@@ -6,7 +6,7 @@ const {
     TwingNodeExpressionAssignName,
     TwingNodePrint,
     TwingNodeExpressionConstant
-} = require('../../../../../../build/index');
+} = require('../../../../../../dist/cjs/main');
 const TwingTestMockCompiler = require('../../../../../mock/compiler');
 
 const tap = require('tape');
@@ -55,8 +55,7 @@ tap.test('node/set', function (test) {
 
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.proxy[\`foo\`] = \`foo\`;
+            test.same(compiler.compile(node).getSource(), `context.proxy[\`foo\`] = \`foo\`;
 `);
 
             test.end();
@@ -77,10 +76,9 @@ context.proxy[\`foo\`] = \`foo\`;
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-Runtime.obStart();
-Runtime.echo(\`foo\`);
-context.proxy[\`foo\`] = (() => {let tmp = Runtime.obGetClean(); return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})();
+            test.same(compiler.compile(node).getSource(), `this.startOutputBuffer();
+this.echo(\`foo\`);
+context.proxy[\`foo\`] = (() => {let tmp = this.getAndCleanOutputBuffer(); return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
 `);
 
             test.end();
@@ -96,8 +94,7 @@ context.proxy[\`foo\`] = (() => {let tmp = Runtime.obGetClean(); return tmp === 
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-context.proxy[\`foo\`] = (() => {let tmp = \`foo\`; return tmp === '' ? '' : new Runtime.TwingMarkup(tmp, this.env.getCharset());})();
+            test.same(compiler.compile(node).getSource(), `context.proxy[\`foo\`] = (() => {let tmp = \`foo\`; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
 `);
 
             test.end();
@@ -120,8 +117,7 @@ context.proxy[\`foo\`] = (() => {let tmp = \`foo\`; return tmp === '' ? '' : new
 
             let node = new TwingNodeSet(false, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `// line 1, column 1
-[context.proxy[\`foo\`], context.proxy[\`bar\`]] = [\`foo\`, \`bar\`];
+            test.same(compiler.compile(node).getSource(), `[context.proxy[\`foo\`], context.proxy[\`bar\`]] = [\`foo\`, \`bar\`];
 `);
 
             test.end();
