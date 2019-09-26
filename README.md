@@ -68,6 +68,7 @@ Here is the compatibility chart between minor versions of Twing and Twig specifi
 
 |Twing version|Twig specifications level|Notable features|
 |:---:|:---:|---|
+|3.0|2.11|[Macros scoping](https://twig.symfony.com/doc/2.x/tags/macro.html#macros-scoping)|
 |2.3|2.10|`spaceless`, `column`, `filter`, `map` and `reduce` filters, `apply` tag, `line whitespace trimming` whitespace control modifier|
 |2.2|2.6|`deprecated` tag|
 |1.3|2.5|`spaceless` and `block`-related deprecations|
