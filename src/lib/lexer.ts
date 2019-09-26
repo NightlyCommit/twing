@@ -78,6 +78,15 @@ export class TwingLexer extends Lexer {
         if (options.variable_pair) {
             this.variablePair = options.variable_pair;
         }
+
+        // custom operators
+        for (let operators of [env.getBinaryOperators(), env.getUnaryOperators()]) {
+            for (let [key, operator] of operators) {
+                if (!this.operators.includes(key)) {
+                    this.operators.push(key);
+                }
+            }
+        }
     }
 
     tokenizeSource(source: TwingSource): TwingTokenStream {
