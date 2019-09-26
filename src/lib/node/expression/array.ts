@@ -52,7 +52,7 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.raw('[');
+        compiler.raw('new Map([');
 
         let first = true;
 
@@ -63,9 +63,14 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
 
             first = false;
 
-            compiler.subcompile(pair.value);
+            compiler
+                .raw('[')
+                .subcompile(pair.key)
+                .raw(', ')
+                .subcompile(pair.value)
+                .raw(']')
         }
 
-        compiler.raw(']');
+        compiler.raw('])');
     }
 }

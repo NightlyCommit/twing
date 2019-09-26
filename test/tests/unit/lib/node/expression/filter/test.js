@@ -145,7 +145,7 @@ tap.test('node/expression/filter', function (test) {
 
             node = createFilter(string, 'barbar', new Map([['foo', new TwingNodeExpressionConstant('bar', 1, 1)]]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, null, null, [\`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
 
             node = createFilter(string, 'barbar', new Map([['arg2', new TwingNodeExpressionConstant('bar', 1, 1)]]));
 
@@ -158,7 +158,7 @@ tap.test('node/expression/filter', function (test) {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, \`1\`, \`2\`, [\`3\`, \`bar\`]])');
+            test.same(compiler.compile(node).getSource(), 'this.env.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
             test.end();
         });

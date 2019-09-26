@@ -1,3 +1,5 @@
+import {iteratorToMap} from "./helpers/iterator-to-map";
+
 export class TwingContext<K, V> {
     private readonly _container: Map<any, any>;
     private readonly _proxy: any;
@@ -39,7 +41,13 @@ export class TwingContext<K, V> {
     }
 
     get(key: K): V {
-        return this._container.get(key);
+        let value: any = this._container.get(key);
+
+        if (Array.isArray(value)) {
+            value = iteratorToMap(value);
+        }
+
+        return value;
     }
 
     delete(key: K): boolean {

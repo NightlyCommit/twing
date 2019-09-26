@@ -3,6 +3,7 @@ import {merge} from "../../../helpers/merge";
 import {TwingErrorLoader} from "../../../error/loader";
 import {TwingEnvironment} from "../../../environment";
 import {TwingSource} from "../../../source";
+import {TwingTemplate} from "../../../template";
 
 /**
  * Renders a template.
@@ -18,7 +19,7 @@ import {TwingSource} from "../../../source";
  *
  * @returns {string} The rendered template
  */
-export function include(env: TwingEnvironment, context: Map<any, any>, source: TwingSource, template: string | Array<string>, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
+export function include(env: TwingEnvironment, context: Map<any, any>, source: TwingSource, template: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
     let alreadySandboxed = env.isSandboxed();
 
     variables = iteratorToMap(variables);
@@ -36,7 +37,11 @@ export function include(env: TwingEnvironment, context: Map<any, any>, source: T
     let loaded = null;
 
     try {
-        loaded = env.resolveTemplate(template, source);
+        if (typeof template === 'string' || template instanceof TwingTemplate) {
+            template = new Map([[0, template]]);
+        }
+
+        loaded = env.resolveTemplate([...template.values()], source);
     } catch (e) {
         if (e instanceof TwingErrorLoader) {
             if (!ignoreMissing) {

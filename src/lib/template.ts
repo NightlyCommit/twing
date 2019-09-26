@@ -5,7 +5,7 @@ import {TwingError} from "./error";
 import {TwingEnvironment} from "./environment";
 import {flush, echo, obGetLevel, obStart, obEndClean, obGetClean, obGetContents} from './output-buffering';
 import {iteratorToMap} from "./helpers/iterator-to-map";
-import {merge, merge as twingMerge} from "./helpers/merge";
+import {merge} from "./helpers/merge";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingContext} from "./context";
 import {isMap} from "./helpers/is-map";
@@ -28,6 +28,7 @@ import {cloneMap} from "./helpers/clone-map";
 import {parseRegex} from "./helpers/parse-regex";
 import {constant} from "./extension/core/functions/constant";
 import {callMacro} from "./helpers/call-macro";
+import {get} from "./helpers/get";
 
 /**
  * Default base class for compiled templates.
@@ -178,7 +179,7 @@ export abstract class TwingTemplate {
         if (template !== null) {
             Reflect.get(template, block).call(template, context, blocks);
         } else if ((parent = this.getParent(context) as TwingTemplate | false) !== false) {
-            parent.displayBlock(name, context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>, false);
+            parent.displayBlock(name, context, merge(this.blocks, blocks) as Map<string, Array<any>>, false);
         } else if (blocks.has(name)) {
             throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getSourceContext());
         } else {
@@ -261,17 +262,17 @@ export abstract class TwingTemplate {
         return false;
     }
 
-    public loadTemplate(template: TwingTemplate | Array<TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
+    public loadTemplate(template: TwingTemplate | Map<number, TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
         try {
-            if (Array.isArray(template)) {
-                return this.env.resolveTemplate(template, this.getSourceContext());
+            if (typeof template === 'string') {
+                return this.env.loadTemplate(template, index, this.getSourceContext());
             }
 
             if (template instanceof TwingTemplate) {
                 return template;
             }
 
-            return this.env.loadTemplate(template as string, index, this.getSourceContext());
+            return this.env.resolveTemplate([...template.values()], this.getSourceContext());
         } catch (e) {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
@@ -318,7 +319,7 @@ export abstract class TwingTemplate {
 
         context = new TwingContext(this.env.mergeGlobals(context));
 
-        this.displayWithErrorHandling(context, twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
+        this.displayWithErrorHandling(context, merge(this.blocks, blocks) as Map<string, Array<any>>);
     }
 
     render(context: any): string {
@@ -450,11 +451,19 @@ export abstract class TwingTemplate {
         return flush;
     }
 
+    protected get get(): (object: any, property: any) => any {
+        return (object: any, property: any): any => {
+            if (isMap(object) || isPlainObject(object)) {
+                return get(object, property);
+            }
+        };
+    }
+
     protected get getAndCleanOutputBuffer(): () => string | false {
         return obGetClean;
     }
 
-    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: any[], type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any {
+    protected get getAttribute(): (env: TwingEnvironment, object: any, item: any, _arguments: Map<any, any>, type: string, isDefinedTest: boolean, ignoreStrictCheck: boolean, sandboxed: boolean) => any {
         return getAttribute;
     }
 
@@ -468,14 +477,6 @@ export abstract class TwingTemplate {
 
     protected get isIn(): (a: any, b: any) => boolean {
         return isIn;
-    }
-
-    protected get isMap(): (candidate: any) => boolean {
-        return isMap;
-    }
-
-    protected get isPlainObject(): (candidate: any) => boolean {
-        return isPlainObject;
     }
 
     protected get iterate(): (it: any, cb: <K, V>(k: K, v: V) => void) => void {

@@ -79,37 +79,7 @@ export class TwingExtensionSet {
             this.initExtensions();
         }
 
-        return Array.from(this.tokenParsers.values());
-    }
-
-    getGlobals(): Map<any, any> {
-        if (this.globals !== undefined) {
-            return this.globals;
-        }
-
-        let globals = new Map();
-
-        for (let extension of this.getExtensions().values()) {
-            let candidate: any = extension;
-
-            if (!candidate.TwingExtensionGlobalsInterfaceImpl) {
-                continue;
-            }
-
-            let extGlobals = candidate.TwingExtensionGlobalsInterfaceImpl.getGlobals();
-
-            if (!(extGlobals instanceof Map)) {
-                throw new Error(`"${extension.constructor.name}[TwingExtensionGlobalsInterface].getGlobals()" must return a Map of globals.`);
-            }
-
-            globals = merge(globals, extGlobals) as Map<any, any>;
-        }
-
-        if (this.initialized) {
-            this.globals = globals;
-        }
-
-        return globals;
+        return [...this.tokenParsers.values()];
     }
 
     /**

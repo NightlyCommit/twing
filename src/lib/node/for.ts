@@ -90,7 +90,7 @@ export class TwingNodeFor extends TwingNode {
 
             if (!this.getAttribute('ifexpr')) {
                 compiler
-                    .write("if (Array.isArray(context.get('_seq')) || (typeof context.get('_seq') === 'object' && this.isCountable(context.get('_seq')))) {\n")
+                    .write("if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_seq'))) {\n")
                     .indent()
                     .write("let length = this.count(context.get('_seq'));\n")
                     .write("let loop = context.get('loop');\n")

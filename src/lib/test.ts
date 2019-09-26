@@ -3,8 +3,6 @@ import {TwingNode} from "./node";
 import {TwingNodeExpressionTest} from "./node/expression/test";
 import {TwingCallableArgument, TwingCallableWrapper, TwingCallableWrapperOptions} from "./callable-wrapper";
 
-const merge = require('merge');
-
 type TwingTestCallable = (...args: any[]) => boolean;
 
 export class TwingTest extends TwingCallableWrapper {
@@ -25,6 +23,6 @@ export class TwingTest extends TwingCallableWrapper {
             return new TwingNodeExpressionTest(node, name, nodeArguments, lineno, columnno);
         };
 
-        this.options = merge(this.options, options);
+        this.options = Object.assign({}, this.options, options);
     }
 }

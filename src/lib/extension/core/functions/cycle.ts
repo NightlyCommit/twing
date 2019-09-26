@@ -1,15 +1,17 @@
+import {isMap} from "../../../helpers/is-map";
+
 /**
  * Cycles over a value.
  *
- * @param {any[] | any} values
+ * @param {Map<any, any> | any} value
  * @param {number} position The cycle position
  *
  * @returns {any} The value at position
  */
-export function cycle(values: any[] | any, position: number) {
-    if (!Array.isArray(values)) {
-        return values;
+export function cycle(value: Map<any, any> | any, position: number) {
+    if (!isMap(value)) {
+        return value;
     }
 
-    return values[position % values.length];
+    return [...(value as Map<any, any>).values()][position % (value as Map<any, any>).size];
 }

@@ -124,7 +124,7 @@ tap.test('node/expression/function', function (test) {
                     ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').traceableCallable(1, this.source)(...[null, null, [\`bar\`]])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').traceableCallable(1, this.source)(...[null, null, new Map([[\`foo\`, \`bar\`]])])');
 
                 node = createFunction('barbar', new Map([
                     ['arg2', new TwingNodeExpressionConstant('bar', 1, 1)]
@@ -139,7 +139,7 @@ tap.test('node/expression/function', function (test) {
                     ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
                 ]));
 
-                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').traceableCallable(1, this.source)(...[\`1\`, \`2\`, [\`3\`, \`bar\`]])');
+                test.same(compiler.compile(node).getSource(), 'this.env.getFunction(\'barbar\').traceableCallable(1, this.source)(...[\`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
                 test.end();
             });

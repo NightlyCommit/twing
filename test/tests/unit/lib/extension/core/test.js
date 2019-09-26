@@ -1,8 +1,3 @@
-const {date: twingDateConverter} = require('../../../../../../build/lib/extension/core/functions/date');
-const {getAttribute: twingGetAttribute} = require('../../../../../../build/lib/helpers/get-attribute');
-const {random: twingRandom} = require('../../../../../../build/lib/extension/core/functions/random');
-const {include: twingInclude} = require('../../../../../../build/lib/extension/core/functions/include');
-const {iconv} = require('../../../../../../build/lib/helpers/iconv');
 const {reverse: twingReverseFilter} = require('../../../../../../build/lib/extension/core/filters/reverse');
 const {escape: twingEscapeFilter} = require('../../../../../../build/lib/extension/core/filters/escape');
 const {isIn: twingInFilter} = require('../../../../../../build/lib/helpers/is-in');
@@ -15,26 +10,18 @@ const {replace: twingReplaceFilter} = require('../../../../../../build/lib/exten
 const {round: twingRound} = require('../../../../../../build/lib/extension/core/filters/round');
 const {defaultFilter: twingDefaultFilter} = require('../../../../../../build/lib/extension/core/filters/default');
 const {join: twingJoinFilter} = require('../../../../../../build/lib/extension/core/filters/join');
-const {formatDateTime} = require('../../../../../../build/lib/helpers/format-date-time');
 const {lower: twingLowerFilter} = require('../../../../../../build/lib/extension/core/filters/lower');
-const {upper: twingUpperFilter} = require('../../../../../../build/lib/extension/core/filters/upper');
 const {length: twingLengthFilter} = require('../../../../../../build/lib/extension/core/filters/length');
 const {sort: twingSortFilter} = require('../../../../../../build/lib/extension/core/filters/sort');
 const {arrayKeys: twingGetArrayKeysFilter} = require('../../../../../../build/lib/extension/core/filters/array-keys');
-const {cycle: twingCycle} = require('../../../../../../build/lib/extension/core/functions/cycle');
-const {source: twingSource} = require('../../../../../../build/lib/extension/core/functions/source');
 const {column: twingColumnFilter} = require('../../../../../../build/lib/extension/core/filters/column');
 
 const {
     TwingExtensionCore,
-    TwingSource,
     TwingErrorRuntime,
     TwingTest,
     TwingLoaderArray,
-    TwingLoaderRelativeFilesystem,
     TwingEnvironment,
-    TwingErrorLoader,
-    TwingTemplate,
     TwingLoaderNull
 } = require('../../../../../../build/main');
 
@@ -45,8 +32,6 @@ const TwingTestMockLoader = require('../../../../../mock/loader');
 const Luxon = require('luxon');
 
 const tap = require('tape');
-const range = require('locutus/php/array/range');
-const getrandmax = require('locutus/php/math/getrandmax');
 
 let getFilter = function (name) {
     let extension = new TwingExtensionCore();
@@ -73,44 +58,6 @@ let getTest = function (name) {
     }
 };
 
-class Foo {
-    constructor() {
-        this.oof = 'oof';
-    }
-
-    foo() {
-        return 'foo';
-    }
-
-    getFoo() {
-        return 'getFoo';
-    }
-
-    getBar() {
-        return 'getBar';
-    }
-
-    isBar() {
-        return 'isBar';
-    }
-
-    hasBar() {
-        return 'hasBar';
-    }
-
-    isOof() {
-        return 'isOof';
-    }
-
-    hasFooBar() {
-        return 'hasFooBar';
-    }
-
-    __call() {
-
-    }
-}
-
 function foo_escaper_for_test(env, string, charset) {
     return (string ? string : '') + charset;
 }
@@ -136,10 +83,6 @@ class CoreTestIterator {
     rewind() {
         this.position = 0;
     }
-}
-
-class TwingTestExtensionCoreTemplate extends TwingTemplate {
-
 }
 
 tap.test('TwingExtensionCore', function (test) {
@@ -296,212 +239,10 @@ tap.test('TwingExtensionCore', function (test) {
                 callable([], 'a');
             }, new Error('The merge filter only works with arrays or "Traversable", got "string" as second argument.'));
 
-            test.same(callable(['a'], ['b']), ['a', 'b']);
             test.same(callable(new Map([[0, 'a']]), ['b']), new Map([[0, 'a'], [1, 'b']]));
 
             test.end();
         });
-
-        test.end();
-    });
-
-    test.test('twingGetAttribute', function (test) {
-        let env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-            strict_variables: true
-        });
-
-        let source = new TwingSource('', '');
-
-        test.test('should support method calls', function (test) {
-            let foo = new Foo();
-
-            // object property
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], true), true);
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
-
-            test.same(twingGetAttribute(env, foo, 'foo'), 'foo', 'should resolve methods by their name');
-            test.same(twingGetAttribute(env, foo, 'bar'), 'getBar', 'should resolve get{name} if {name} doesn\'t exist');
-            test.same(twingGetAttribute(env, foo, 'Oof'), 'isOof', 'should resolve is{name} if {name} and get{name} don\'t exist');
-            test.same(twingGetAttribute(env, foo, 'fooBar'), 'hasFooBar', 'should resolve has{name} if {name}, get{name} and is{name} don\'t exist');
-
-            test.same(twingGetAttribute(env, foo, 'getfoo'), 'getFoo', 'should resolve method in a case-insensitive way');
-            test.same(twingGetAttribute(env, foo, 'GeTfOo'), 'getFoo', 'should resolve method in a case-insensitive way');
-
-            // !METHOD_CALL + boolean item
-            test.same(twingGetAttribute(env, [2, 3], false), 2);
-            test.same(twingGetAttribute(env, [2, 3], true), 3);
-
-            // !METHOD_CALL + float item
-            test.same(twingGetAttribute(env, [2, 3], 0.1), 2);
-            test.same(twingGetAttribute(env, [2, 3], 1.1), 3);
-
-            test.throws(function () {
-                twingGetAttribute(env, [], 0);
-            }, new TwingErrorRuntime('Index "0" is out of bounds as the array is empty.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, [1], 1);
-            }, new TwingErrorRuntime('Index "1" is out of bounds for array [1].', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, new Map(), 'foo');
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a object variable ("[object Map]").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, 5, 'foo', [], TwingTemplate.ARRAY_CALL);
-            }, new TwingErrorRuntime('Impossible to access a key ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.ANY_CALL);
-            }, new TwingErrorRuntime('Impossible to access an attribute ("foo") on a null variable.', -1, source));
-
-            // METHOD_CALL
-            test.equals(twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, true), false);
-            test.equals(twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL, false, true), undefined);
-
-            test.throws(function () {
-                twingGetAttribute(env, null, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a null variable.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, 5, 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on a number variable ("5").', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, [], 'foo', [], TwingTemplate.METHOD_CALL);
-            }, new TwingErrorRuntime('Impossible to invoke a method ("foo") on an array.', -1, source));
-
-            test.throws(function () {
-                twingGetAttribute(env, new TwingTestExtensionCoreTemplate(env), 'foo');
-            }, new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.', -1));
-
-            test.throws(function () {
-                twingGetAttribute(env, new Foo(), 'ooof', TwingTemplate.ANY_CALL, [], false, false);
-            }, new TwingErrorRuntime('Neither the property "ooof" nor one of the methods ooof()" or "getooof()"/"isooof()"/"hasooof()" exist and have public access in class "Foo".', -1, source));
-
-            // no strict_variables
-            env = new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-                strict_variables: false
-            });
-
-            test.same(twingGetAttribute(env, new Foo(), 'oof', TwingTemplate.ANY_CALL, [], false), 'oof');
-
-            test.end();
-        });
-
-        test.end();
-    });
-
-    test.test('randomFunction', function (test) {
-        let randomFunctionTestData = [
-            [ // array
-                ['apple', 'orange', 'citrus'],
-                ['apple', 'orange', 'citrus']
-            ],
-            [ // Traversable
-                new Set(['apple', 'orange', 'citrus']),
-                ['apple', 'orange', 'citrus']
-            ],
-            [ // unicode string
-                'Ä€é',
-                ['Ä', '€', 'é']
-            ],
-            [ // numeric but string
-                '123',
-                ['1', '2', '3']
-            ],
-            [ // integer
-                5,
-                range(0, 5, 1)
-            ],
-            [ // float
-                5.9,
-                range(0, 5, 1)
-            ],
-            [ // negative
-                -2,
-                [0, -1, -2]
-            ],
-            [ // min max int
-                50,
-                range(50, 100),
-                100,
-            ],
-            [ // min max float
-                -9.5,
-                range(-10, 10),
-                9.5,
-            ],
-            [ // min null
-                null,
-                range(0, 100),
-                100,
-            ],
-        ];
-
-        let env = new TwingTestMockEnvironment(new TwingTestMockLoader());
-        let random = env.getFunction('random');
-
-        for (let data of randomFunctionTestData) {
-            for (let i = 0; i < 100; i++) {
-                let max = data.length > 2 ? data[2] : null;
-
-                test.true(data[1].includes(random.getCallable()(env, data[0], max)));
-            }
-        }
-
-        test.same(random.getAcceptedArgments(), [
-            {name: 'values', defaultValue: null},
-            {name: 'max', defaultValue: null}
-        ]);
-
-        test.end();
-    });
-
-    test.test('randomFunctionWithoutParameter', function (test) {
-        let max = getrandmax();
-
-        for (let i = 0; i < 100; i++) {
-            let val = twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()));
-            test.true((typeof val === 'number') && val >= 0 && val <= max);
-        }
-
-        test.end();
-    });
-
-    test.test('randomFunctionReturnsAsIs', function (test) {
-        test.same(twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), ''), '');
-        test.same(twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader(), {
-            charset: 'null'
-        }), ''), '');
-        let instance = {};
-        test.same(twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), instance), instance);
-
-        test.end();
-    });
-
-    test.test('randomFunctionOfEmptyArrayThrowsException', function (test) {
-        test.throws(function () {
-            twingRandom(new TwingTestMockEnvironment(new TwingTestMockLoader()), []);
-        }, new TwingErrorRuntime('The random function cannot pick from an empty array.'));
-
-        test.end();
-    });
-
-    test.test('randomFunctionOnNonUTF8String', function (test) {
-        let twing = new TwingTestMockEnvironment(new TwingTestMockLoader());
-        twing.setCharset('ISO-8859-1');
-
-        let text = iconv('UTF-8', 'ISO-8859-1', Buffer.from('Äé'));
-
-        for (let i = 0; i < 30; i++) {
-            let rand = twingRandom(twing, text);
-            test.true(['Ä', 'é'].includes(iconv('ISO-8859-1', 'UTF-8', rand).toString()));
-        }
 
         test.end();
     });
