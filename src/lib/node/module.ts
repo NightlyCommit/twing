@@ -151,6 +151,21 @@ export class TwingNodeModule extends TwingNode {
         if (!this.hasNode('parent')) {
             compiler.write("this.parent = false;\n\n");
         }
+        else {
+            let parent = this.getNode('parent');
+
+            if (parent && (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
+                compiler
+                    .write('this.parent = this.loadTemplate(')
+                    .subcompile(parent)
+                    .raw(', ')
+                    .repr(this.source.getName())
+                    .raw(', ')
+                    .repr(parent.getTemplateLine())
+                    .raw(");\n\n")
+                ;
+            }
+        }
 
         let countTraits = this.getNode('traits').getNodes().size;
 
@@ -300,16 +315,6 @@ export class TwingNodeModule extends TwingNode {
 
 
             if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
-                compiler
-                    .write('this.parent = this.loadTemplate(')
-                    .subcompile(parent)
-                    .raw(', ')
-                    .repr(this.source.getName())
-                    .raw(', ')
-                    .repr(parent.getTemplateLine())
-                    .raw(");\n")
-                ;
-
                 compiler.write('this.parent');
             } else {
                 compiler.write('this.getParent(context)');

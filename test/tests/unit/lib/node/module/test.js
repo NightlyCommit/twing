@@ -112,6 +112,8 @@ tap.test('node/module', function (test) {
                 this.macros = new this.Context();
                 let macros = new this.Context();
 
+                this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
+
                 this.blocks = new Map([
                 ]);
             }
@@ -123,7 +125,6 @@ tap.test('node/module', function (test) {
             doDisplay(context, blocks = new Map()) {
                 let macros = this.macros.clone();
                 macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
-                this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
                 this.parent.display(context, this.merge(this.blocks, blocks));
             }
 

@@ -1,2 +1,3 @@
 
-{{ include(foo) }} FOO
+{{ include(["foo.twig", "bar.twig"]) }}
+{{- include(["bar.twig", "foo.twig"]) }}

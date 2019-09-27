@@ -29,9 +29,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
     }
 
     getCacheKey(name: string, from: TwingSource): string {
-        let _path = this.findTemplate(name, true, from);
-
-        return _path;
+        return this.findTemplate(name, true, from);
     }
 
     exists(name: string, from: TwingSource): boolean {
@@ -71,13 +69,12 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
                 return null;
             }
 
-            throw new TwingErrorLoader(this.errorCache.get(name));
+            throw new TwingErrorLoader(this.errorCache.get(name), -1, from);
         }
 
         try {
-            this.validateName(name);
-        }
-        catch (e) {
+            this.validateName(name, from);
+        } catch (e) {
             if (!throw_) {
                 return null;
             }
@@ -93,8 +90,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
                 return this.cache.get(name);
             }
-        }
-        catch (e) {
+        } catch (e) {
             // noop, we'll throw later if needed
         }
 
@@ -104,7 +100,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
             return null;
         }
 
-        throw new TwingErrorLoader(this.errorCache.get(name));
+        throw new TwingErrorLoader(this.errorCache.get(name), -1, from);
     }
 
     protected normalizeName(name: string) {
@@ -115,9 +111,9 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
         return name.replace(/\\/g, '/').replace(/\/{2,}/g, '/')
     }
 
-    protected validateName(name: string) {
+    protected validateName(name: string, from: TwingSource) {
         if (name.indexOf(`\0`) > -1) {
-            throw new TwingErrorLoader('A template name cannot contain NUL bytes.');
+            throw new TwingErrorLoader('A template name cannot contain NUL bytes.', -1, from);
         }
     }
 

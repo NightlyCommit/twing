@@ -53,7 +53,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
     }
 
     exists(name: string, from: TwingSource) {
@@ -91,7 +91,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
     }
 
     isFresh(name: string, time: number, from: TwingSource) {
@@ -111,7 +111,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
     }
 
     resolve(name: string, from: TwingSource): string {
@@ -131,6 +131,6 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             }
         }
 
-        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`);
+        throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
     }
 }

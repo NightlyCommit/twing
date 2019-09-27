@@ -29,6 +29,7 @@ import {parseRegex} from "./helpers/parse-regex";
 import {constant} from "./extension/core/functions/constant";
 import {callMacro} from "./helpers/call-macro";
 import {get} from "./helpers/get";
+import {include} from "./extension/core/functions/include";
 
 /**
  * Default base class for compiled templates.
@@ -262,25 +263,19 @@ export abstract class TwingTemplate {
         return false;
     }
 
-    public loadTemplate(template: TwingTemplate | Map<number, TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
+    public loadTemplate(templates: TwingTemplate | Map<number, TwingTemplate> | string, templateName: string = null, line: number = null, index: number = 0): TwingTemplate {
         try {
-            if (typeof template === 'string') {
-                return this.env.loadTemplate(template, index, this.getSourceContext());
+            if (typeof templates === 'string') {
+                return this.env.loadTemplate(templates, index, this.getSourceContext());
             }
 
-            if (template instanceof TwingTemplate) {
-                return template;
+            if (templates instanceof TwingTemplate) {
+                return templates;
             }
 
-            return this.env.resolveTemplate([...template.values()], this.getSourceContext());
+            return this.env.resolveTemplate([...templates.values()], this.getSourceContext());
         } catch (e) {
             if (e instanceof TwingError) {
-                if (!e.getSourceContext()) {
-                    let source = this.getSourceContext();
-
-                    e.setSourceContext(templateName ? new TwingSource(source.getCode(), templateName, source.getPath()) : source);
-                }
-
                 if (e.getTemplateLine() !== -1) {
                     throw e;
                 }
@@ -471,6 +466,23 @@ export abstract class TwingTemplate {
         return obGetContents;
     }
 
+    protected get include(): (context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number) => string {
+        return (context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number): string => {
+            try {
+                return include(this.env, context, from, templates, variables, withContext, ignoreMissing);
+            }
+            catch (e) {
+                if (e instanceof TwingError) {
+                    if (e.getTemplateLine() === -1) {
+                        e.setTemplateLine(line);
+                    }
+                }
+
+                throw e;
+            }
+        }
+    }
+
     protected get isCountable(): (candidate: any) => boolean {
         return isCountable;
     }
@@ -497,10 +509,6 @@ export abstract class TwingTemplate {
 
     protected get Context(): typeof TwingContext {
         return TwingContext;
-    }
-
-    protected get LoaderError(): typeof TwingErrorLoader {
-        return TwingErrorLoader;
     }
 
     protected get Markup(): typeof TwingMarkup {

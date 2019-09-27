@@ -439,18 +439,18 @@ export abstract class TwingEnvironment extends EventEmitter {
     }
 
     /**
-     * Tries to load a template consecutively from an array.
+     * Tries to load templates consecutively from an array.
      *
      * Similar to loadTemplate() but it also accepts instances of TwingTemplate and an array of templates where each is tried to be loaded.
      *
      * @param {string|TwingTemplate|Array<string|TwingTemplate>} names A template or an array of templates to try consecutively
-     * @param {TwingSource} source
+     * @param {TwingSource} from The source of the template that initiated the resolving.
      * @returns {TwingTemplate}
      *
      * @throws {TwingErrorLoader} When none of the templates can be found
      * @throws {TwingErrorSyntax} When an error occurred during compilation
      */
-    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate>, source: TwingSource = null): TwingTemplate {
+    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate>, from: TwingSource): TwingTemplate {
         let self = this;
         let namesArray: Array<any>;
 
@@ -468,9 +468,13 @@ export abstract class TwingEnvironment extends EventEmitter {
             }
 
             try {
-                return self.loadTemplate(name, 0, source);
+                return self.loadTemplate(name, 0, from);
             } catch (e) {
                 if (e instanceof TwingErrorLoader) {
+                    if (e.getSourceContext().getName() !== from.getName()) {
+                        throw e;
+                    }
+
                     error = e;
                 } else {
                     throw e;
@@ -482,7 +486,7 @@ export abstract class TwingEnvironment extends EventEmitter {
             throw error;
         }
 
-        throw new TwingErrorLoader(`Unable to find one of the following templates: "${namesArray.join(', ')}".`);
+        throw new TwingErrorLoader(`Unable to find one of the following templates: "${namesArray.join(', ')}".`, -1, from);
     }
 
     setLexer(lexer: TwingLexer) {

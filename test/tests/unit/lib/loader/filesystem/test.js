@@ -82,33 +82,33 @@ tap.test('loader filesystem', function (test) {
         let path = nodePath.resolve('test/tests/integration/fixtures');
         let loader = new TwingLoaderFilesystem([path]);
 
-        test.same(loader.getSourceContext('errors/index.html').getName(), 'errors/index.html');
-        test.same(nodePath.resolve(loader.getSourceContext('errors/index.html').getPath()), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
+        test.same(loader.getSourceContext('errors/index.html', null).getName(), 'errors/index.html');
+        test.same(nodePath.resolve(loader.getSourceContext('errors/index.html', null).getPath()), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
 
         test.throws(function() {
-            loader.getSourceContext('@foo/bar');
-        }, new TwingErrorLoader('There are no registered paths for namespace "foo"'));
+            loader.getSourceContext('@foo/bar', null);
+        }, new TwingErrorLoader('There are no registered paths for namespace "foo"', -1, null));
 
         test.throws(function() {
-            loader.getSourceContext('@foo');
-        }, new TwingErrorLoader('Malformed namespaced template name "@foo" (expecting "@namespace/template_name").'));
+            loader.getSourceContext('@foo', null);
+        }, new TwingErrorLoader('Malformed namespaced template name "@foo" (expecting "@namespace/template_name").', -1, null));
 
         test.throws(function() {
-            loader.getSourceContext('../../../foo');
-        }, new TwingErrorLoader('Looks like you try to load a template outside configured directories (../../../foo).'));
+            loader.getSourceContext('../../../foo', null);
+        }, new TwingErrorLoader('Looks like you try to load a template outside configured directories (../../../foo).', -1, null));
 
         test.test('use error cache on subsequent calls', function (test) {
             let validateNameStub = sinon.stub(loader, 'validateName');
 
             try {
-                loader.getSourceContext('foo');
+                loader.getSourceContext('foo', null);
             }
             catch (e) {
 
             }
 
             try {
-                loader.getSourceContext('foo');
+                loader.getSourceContext('foo', null);
             }
             catch (e) {
 
@@ -225,7 +225,7 @@ tap.test('loader filesystem', function (test) {
         loader.addPath(nodePath.join(basePath, 'named'), 'named');
 
         try {
-            loader.getSourceContext('@named/nowhere.html');
+            loader.getSourceContext('@named/nowhere.html', null);
         }
         catch (e) {
             test.same(e instanceof TwingErrorLoader, true);
@@ -401,6 +401,46 @@ tap.test('loader filesystem', function (test) {
         let loader = new TwingLoaderFilesystem(fixturesPath);
 
         test.equals(loader.resolve('named/index.html'), nodePath.resolve(nodePath.join(fixturesPath, 'named/index.html')));
+
+        test.end();
+    });
+
+    test.test('findTemplate', function (test) {
+        let resolvePath = (path) => {
+            return nodePath.resolve(fixturesPath, path);
+        };
+
+        let CustomLoader = class extends TwingLoaderFilesystem {
+            findTemplate(name, throw_, from) {
+                return super.findTemplate(name, throw_, from);
+            }
+        };
+
+        let loader = new CustomLoader('test/tests/unit/lib/loader/filesystem/fixtures');
+
+        test.same(loader.findTemplate('named/index.html'), resolvePath('named/index.html'));
+        test.same(loader.findTemplate('named', false), null);
+
+        try {
+            loader.findTemplate(resolvePath('named'), true);
+        }
+        catch (err) {
+            test.true(err instanceof TwingErrorLoader);
+            test.same(err.getMessage(), `Unable to find template "${resolvePath('named')}" (looked into: test/tests/unit/lib/loader/filesystem/fixtures).`);
+        }
+
+        test.test('find-template-with-error-cache', function (test) {
+            loader.findTemplate('non-existing', false);
+
+            let spy = sinon.spy(loader, 'validateName');
+
+            test.same(loader.findTemplate('non-existing', false), null);
+            test.same(spy.callCount, 0);
+
+            spy.restore();
+
+            test.end();
+        });
 
         test.end();
     });

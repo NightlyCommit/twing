@@ -1,9 +1,9 @@
 export class TwingSource {
-    private code: string;
-    private name: string;
-    private path: string;
+    private readonly code: string;
+    private readonly name: string;
+    private readonly path: string;
 
-    constructor(code: string, name: string | Object, path: string = '') {
+    constructor(code: string, name: string, path: string = '') {
         this.code = code;
         this.name = name as string;
         this.path = path;

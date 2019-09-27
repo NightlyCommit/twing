@@ -5,8 +5,8 @@ import {TwingErrorSyntax} from "../../error/syntax";
 import {TwingNodeExpressionConstant} from "./constant";
 import {TwingNodeExpressionArray} from "./array";
 import {TwingCompiler} from "../../compiler";
-import {TwingEnvironment} from "../../environment";
 import {TwingCallableArgument} from "../../callable-wrapper";
+import {TwingSource} from "../../source";
 
 const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
@@ -86,7 +86,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
 
         if (this.hasNode('arguments')) {
             let callable = this.getAttribute('callable');
-            let arguments_ = this.getArguments(callable, this.getNode('arguments'), compiler.getEnvironment());
+            let arguments_ = this.getArguments(callable, this.getNode('arguments'));
 
             for (let node of arguments_) {
                 if (!first) {
@@ -102,8 +102,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         compiler.raw(']');
     }
 
-    protected getArguments(callable: Function, argumentsNode: TwingNode, env: TwingEnvironment): Array<TwingNode> {
-        let self = this;
+    protected getArguments(callable: Function, argumentsNode: TwingNode): Array<TwingNode> {
         let callType = this.getAttribute('type');
         let callName = this.getAttribute('name');
 
@@ -113,7 +112,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         for (let [name, node] of argumentsNode.getNodes()) {
             if (typeof name !== 'number') {
                 named = true;
-                name = self.normalizeName(name);
+                name = this.normalizeName(name);
             }
             else if (named) {
                 throw new TwingErrorSyntax(`Positional arguments cannot be used after named arguments for ${callType} "${callName}".`, this.getTemplateLine());
@@ -150,7 +149,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let pos = 0;
 
         for (let callableParameter of callableParameters) {
-            let name = '' + self.normalizeName(callableParameter.name);
+            let name = '' + this.normalizeName(callableParameter.name);
 
             names.push(name);
 
@@ -210,7 +209,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 return parameter instanceof TwingNode;
             });
 
-            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : this.getTemplateLine(), self.getTemplateName());
+            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : this.getTemplateLine(), new TwingSource('', this.getTemplateName()));
         }
 
         return arguments_;
