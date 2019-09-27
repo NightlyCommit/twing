@@ -32,7 +32,7 @@ export class TwingNodeInclude extends TwingNode {
             compiler.subcompile(this.getNode('variables'));
         }
         else {
-            compiler.repr({})
+            compiler.repr(undefined)
         }
 
         compiler
