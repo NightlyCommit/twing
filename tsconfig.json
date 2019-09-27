@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "dist",
-    "sourceMap": true,
     "removeComments": false
   },
   "include": [

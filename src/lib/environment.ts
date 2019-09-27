@@ -38,7 +38,7 @@ type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
 
 export type TwingTemplatesModule = (T: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
 
-export const VERSION = '__VERSION__';
+export const VERSION: string = '__VERSION__';
 
 /**
  * @author Eric MORAND <eric.morand@gmail.com>
