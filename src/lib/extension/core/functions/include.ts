@@ -4,23 +4,31 @@ import {TwingErrorLoader} from "../../../error/loader";
 import {TwingEnvironment} from "../../../environment";
 import {TwingSource} from "../../../source";
 import {TwingTemplate} from "../../../template";
+import {isTraversable} from "../../../helpers/is-traversable";
+import {TwingErrorRuntime} from "../../../error/runtime";
+import {isNullOrUndefined} from "util";
+import {isPlainObject} from "../../../helpers/is-plain-object";
 
 /**
  * Renders a template.
  *
  * @param {TwingEnvironment} env
- * @param {Map<*,*>} context
- * @param {TwingSource} source
- * @param {string|Array<string>} template The template to render or an array of templates to try consecutively
- * @param variables The variables to pass to the template
+ * @param {any} context
+ * @param {TwingSource} from
+ * @param {string | Map<number, string | TwingTemplate>} templates The template to render or an array of templates to try consecutively
+ * @param {any} variables The variables to pass to the template
  * @param {boolean} withContext
  * @param {boolean} ignoreMissing Whether to ignore missing templates or not
  * @param {boolean} sandboxed Whether to sandbox the template or not
  *
  * @returns {string} The rendered template
  */
-export function include(env: TwingEnvironment, context: Map<any, any>, source: TwingSource, template: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
+export function include(env: TwingEnvironment, context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
     let alreadySandboxed = env.isSandboxed();
+
+    if (!isPlainObject(variables) && !isTraversable(variables)) {
+        throw new TwingErrorRuntime(`Variables passed to the "include" function or tag must be iterable, got "${!isNullOrUndefined(variables) ? typeof variables : variables}".`, -1, from);
+    }
 
     variables = iteratorToMap(variables);
 
@@ -36,15 +44,15 @@ export function include(env: TwingEnvironment, context: Map<any, any>, source: T
 
     let loaded = null;
 
-    try {
-        if (typeof template === 'string' || template instanceof TwingTemplate) {
-            template = new Map([[0, template]]);
-        }
+    if (typeof templates === 'string' || templates instanceof TwingTemplate) {
+        templates = new Map([[0, templates]]);
+    }
 
-        loaded = env.resolveTemplate([...template.values()], source);
+    try {
+        loaded = env.resolveTemplate([...templates.values()], from);
     } catch (e) {
         if (e instanceof TwingErrorLoader) {
-            if (!ignoreMissing) {
+            if ((e.getSourceContext().getName() !== from.getName()) || !ignoreMissing) {
                 if (sandboxed && !alreadySandboxed) {
                     env.disableSandbox();
                 }

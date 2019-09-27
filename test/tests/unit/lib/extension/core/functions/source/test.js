@@ -17,7 +17,7 @@ tape.test('source', function (test) {
     }
     catch (e) {
         test.same(e.name, 'TwingErrorLoader');
-        test.same(e.message, 'Template "foo" is not defined.');
+        test.same(e.message, 'Template "foo" is not defined in "index".');
     }
 
     test.equals(source(env, new TwingSource('', 'index'), 'foo', true), null);

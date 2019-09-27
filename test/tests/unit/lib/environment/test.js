@@ -833,7 +833,9 @@ tap.test('environment', function (test) {
             let env = new TwingEnvironment(new TwingLoaderArray({
                 index: '{% include "foo" %}',
                 foo: 'Foo'
-            }));
+            }), {
+                cache: 'tmp/rftg'
+            });
 
             let templates = [];
 

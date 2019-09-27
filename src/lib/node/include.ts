@@ -6,7 +6,9 @@ export class TwingNodeInclude extends TwingNode {
     constructor(expr: TwingNodeExpression, variables: TwingNodeExpression, only: boolean, ignoreMissing: boolean, lineno: number, columnno: number, tag: string = null) {
         let nodes = new Map();
 
-        nodes.set('expr', expr);
+        if (expr) {
+            nodes.set('expr', expr);
+        }
 
         if (variables !== null) {
             nodes.set('variables', variables);
@@ -18,83 +20,33 @@ export class TwingNodeInclude extends TwingNode {
     }
 
     compile(compiler: TwingCompiler) {
-        if (this.getAttribute('ignore_missing')) {
-            compiler
-                .write('(() => {\n')
-                .indent()
-                .write('let template = null;\n')
-                .write('try {\n')
-                .indent()
-                .write('template = ')
-            ;
+        compiler
+            .write('this.echo(')
+            .raw('this.include(context, this.source, ');
 
-            this.addGetTemplate(compiler);
+        this.addGetTemplate(compiler);
 
-            compiler
-                .raw(';\n')
-                .outdent()
-                .write('}\n')
-                .write('catch (e) {\n')
-                .indent()
-                .write('if (e instanceof this.LoaderError) {\n')
-                .indent()
-                .write('// ignore missing template\n')
-                .outdent()
-                .write('}\n')
-                .write('else {\n')
-                .indent()
-                .write('throw e;\n')
-                .outdent()
-                .write('}\n')
-                .outdent()
-                .write('}\n')
-                .write('if (template) {\n')
-                .indent()
-                .write('template.display(')
-            ;
+        compiler.raw(', ');
 
-            this.addTemplateArguments(compiler);
-
-            compiler
-                .raw(');\n')
-                .outdent()
-                .write('}\n')
-                .outdent()
-                .write('})();\n')
+        if (this.hasNode('variables')) {
+            compiler.subcompile(this.getNode('variables'));
         }
         else {
-            this.addGetTemplate(compiler);
-            compiler.raw('.display(');
-            this.addTemplateArguments(compiler);
-            compiler.raw(');\n');
+            compiler.repr({})
         }
-    }
 
-    addGetTemplate(compiler: TwingCompiler) {
         compiler
-            .write('this.loadTemplate(')
-            .subcompile(this.getNode('expr'))
             .raw(', ')
-            .repr(this.getTemplateName())
+            .repr(!this.getAttribute('only'))
+            .raw(', ')
+            .repr(this.getAttribute('ignore_missing'))
             .raw(', ')
             .repr(this.getTemplateLine())
             .raw(')')
-        ;
+            .raw(');\n');
     }
 
-    addTemplateArguments(compiler: TwingCompiler) {
-        if (!this.hasNode('variables')) {
-            compiler.raw(this.getAttribute('only') === false ? 'context' : 'new Map()');
-        }
-        else if (this.getAttribute('only') === false) {
-            compiler
-                .raw('this.merge(context, ')
-                .subcompile(this.getNode('variables'))
-                .raw(')')
-            ;
-        }
-        else {
-            compiler.subcompile(this.getNode('variables'));
-        }
+    protected addGetTemplate(compiler: TwingCompiler) {
+        compiler.subcompile(this.getNode('expr'));
     }
 }

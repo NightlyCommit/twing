@@ -5,10 +5,6 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
         return '"include" tag throws an error when passed undefined data';
     }
 
-    getName() {
-        return 'tags/include/with_undefined_variables';
-    }
-
     getTemplates() {
         let templates = super.getTemplates();
 

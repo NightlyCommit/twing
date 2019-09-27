@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return '"include" function accepts Twig_Template instance';
+        return '"include" function with an array of templates';
     }
 
     getTemplates() {
@@ -16,11 +16,5 @@ module.exports = class extends TwingTestIntegrationTestCaseBase {
 
     getExpected() {
         return require('./expected.html');
-    }
-
-    getData() {
-        return {
-            foo: this.twing.loadTemplate('foo.twig')
-        }
     }
 };

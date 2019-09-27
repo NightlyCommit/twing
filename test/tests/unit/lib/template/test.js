@@ -177,6 +177,21 @@ test('template', function (test) {
         test.end();
     });
 
+    test.test('display', function (test) {
+        let template = new TwingTestTemplateTemplate();
+
+        try {
+            template.display(null);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Argument 1 passed to TwingTemplate::display() must be an iterator, null given');
+        }
+
+        test.end();
+    });
+
     test.test('displayWithErrorHandling', function (test) {
         let template = new TwingTestTemplateTemplate();
 

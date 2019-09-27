@@ -123,8 +123,8 @@ tap.test('loader filesystem', function (test) {
         };
 
         let CustomLoader = class extends TwingLoaderFilesystem {
-            findTemplate(name, throw_) {
-                return super.findTemplate(name, throw_);
+            findTemplate(name, throw_, from) {
+                return super.findTemplate(name, throw_, from);
             }
         };
 

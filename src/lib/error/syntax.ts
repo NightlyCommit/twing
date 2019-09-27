@@ -4,7 +4,7 @@ import {TwingSource} from "../source";
 const Levenshtein = require('levenshtein');
 
 export class TwingErrorSyntax extends TwingError {
-    constructor(message: string, lineno: number = -1, source: TwingSource | Object | null = null, previous?: Error) {
+    constructor(message: string, lineno: number = -1, source: TwingSource = null, previous?: Error) {
         super(message, lineno, source, previous);
 
         this.name = 'TwingErrorSyntax';

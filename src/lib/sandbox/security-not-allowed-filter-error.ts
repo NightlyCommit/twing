@@ -1,4 +1,5 @@
 import {TwingSandboxSecurityError} from "./security-error";
+import {TwingSource} from "../source";
 
 /**
  * Exception thrown when a not allowed filter is used in a template.
@@ -8,8 +9,8 @@ import {TwingSandboxSecurityError} from "./security-error";
 export class TwingSandboxSecurityNotAllowedFilterError extends TwingSandboxSecurityError {
     private readonly filterName: string;
 
-    constructor(message: string, filterName: string, lineno: number = -1, filename: string = null) {
-        super(message, lineno, filename);
+    constructor(message: string, filterName: string, lineno: number = -1, source: TwingSource = null) {
+        super(message, lineno, source);
         this.filterName = filterName;
         this.name = 'TwingSandboxSecurityNotAllowedFilterError';
     }

@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return '"include" function';
+        return '"include" function with ignore_missing';
     }
 
     getTemplates() {

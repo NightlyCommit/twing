@@ -3,28 +3,19 @@ import {TwingSource} from "./source";
 /**
  * Twing base error.
  *
- * This error class and its children must only be used when
- * an error occurs during the loading of a template, when a syntax error
- * is detected in a template, or when rendering a template. Other
- * errors must use regular JavaScript error classes (like when the template
- * cache directory is not writable for instance).
- *
- * To help debugging template issues, this class tracks the original template
- * name and line where the error occurred.
- *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingError extends Error {
     private lineno: number | boolean;
     private rawMessage: string = null;
-    private sourceName: string | Object = null;
+    private sourceName: string = null;
     private sourcePath: string = null;
     private sourceCode: string = null;
     private previous: Error = null;
 
     protected type: string;
 
-    constructor(message: string, lineno: number = -1, source: TwingSource | Object | null = null, previous?: Error) {
+    constructor(message: string, lineno: number = -1, source?: TwingSource, previous?: Error) {
         super(message);
 
         this.name = 'TwingError';
@@ -36,15 +27,13 @@ export class TwingError extends Error {
 
         this.rawMessage = message;
 
-        let name: string | Object;
+        let name: string;
 
         if (source === null) {
             name = null;
-        }
-        else if (!(source instanceof TwingSource)) {
+        } else if (!(source instanceof TwingSource)) {
             name = source;
-        }
-        else {
+        } else {
             name = source.getName();
 
             this.sourceCode = source.getCode();
@@ -105,8 +94,7 @@ export class TwingError extends Error {
     setSourceContext(source: TwingSource = null) {
         if (source === null) {
             this.sourceCode = this.sourceName = this.sourcePath = null;
-        }
-        else {
+        } else {
             this.sourceCode = source.getCode();
             this.sourceName = source.getName();
             this.sourcePath = source.getPath();
@@ -143,8 +131,7 @@ export class TwingError extends Error {
 
             if (typeof this.sourceName === 'string' || (typeof this.sourceName === 'object' && Reflect.has(this.sourceName, 'toString'))) {
                 sourceName = `"${this.sourceName}"`;
-            }
-            else {
+            } else {
                 sourceName = JSON.stringify(this.sourceName);
             }
 

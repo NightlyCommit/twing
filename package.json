@@ -24,11 +24,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "rimraf dist && rimraf test/tests/types/dist",
     "precover": "rimraf coverage .nyc_output",
-    "prebuild": "npm run clean",
     "postbuild": "replace-in-file '__VERSION__' $npm_package_version build/**/*",
-    "pretest": "npm run clean && npm run build:cjs",
+    "pretest": "rimraf test/tests/types/dist && npm run build:cjs",
     "pretest:browser": "npm run pretest",
     "pretest:types": "npm run pretest && rimraf test/tests/types/dist",
     "prepack": "npm run build -- --sourceMap false && npm run bundle",
@@ -43,8 +41,8 @@
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "npm run build:cjs && npm run build:es",
-    "build:cjs": "tsc --project . --module commonjs --outDir dist/cjs --declaration true",
-    "build:es": "tsc --project . --module es6 --outDir dist/es --declaration true",
+    "build:cjs": "rimraf dist/cjs && tsc --project . --module commonjs --outDir dist/cjs --declaration true",
+    "build:es": "rimraf dist/es && tsc --project . --module es6 --outDir dist/es --declaration true",
     "bundle": "browserify dist/cjs/browser.js -g uglifyify -s Twing -o dist/lib.min.js",
     "docs": "cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
