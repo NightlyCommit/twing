@@ -40,7 +40,7 @@ tap.test('compiler', function (test) {
         let compiler = new TwingCompiler(new MockEnvironement(new MockLoader));
 
         test.same(compiler.compile(node).repr({1: 'a', 'b': 2, 'c': '3'}).getSource(), '{"1": \`a\`, "b": 2, "c": \`3\`}', 'supports hashes');
-        test.same(compiler.compile(node).repr(undefined).getSource(), '', 'supports undefined');
+        test.same(compiler.compile(node).repr(undefined).getSource(), 'undefined', 'supports undefined');
 
         test.end();
     });

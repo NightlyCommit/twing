@@ -99,18 +99,10 @@ export class TwingCompiler {
 
     repr(value: any): any {
         if (typeof value === 'number') {
-            // if (false !== $locale = setlocale(LC_NUMERIC, '0')) {
-            //     setlocale(LC_NUMERIC, 'C');
-            // }
-
             this.raw(value);
-
-            // if (false !== $locale) {
-            //     setlocale(LC_NUMERIC, $locale);
-            // }
         }
-        else if (value === null) {
-            this.raw('null');
+        else if (isNullOrUndefined(value)) {
+            this.raw(`${value}`);
         }
         else if (typeof value === 'boolean') {
             this.raw(value ? 'true' : 'false');
@@ -158,9 +150,6 @@ export class TwingCompiler {
             }
 
             this.raw('}');
-        }
-        else if (value === undefined) {
-            this.raw('');
         }
         else {
             this.string(value);
