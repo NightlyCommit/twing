@@ -1,3 +1,11 @@
+3.0.1
+
+ * #419 TwingLoaderNull doesn't behave as expected
+ * #418 Types are not available to consumers
+ * #414 Include function should be called with undefined when no variables is set to benefit from the default values
+ * #412 Performance is way lower than pre-2.3
+ * #411 Source maps are exported in the npm package
+
 3.0.0
 
  * #409 3.x: compatibility chart is not up-to-date
