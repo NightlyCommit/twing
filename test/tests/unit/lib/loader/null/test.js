@@ -6,7 +6,14 @@ tap.test('loader array', function (test) {
     test.test('getSourceContext', function (test) {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.getSourceContext('foo', null), null);
+        try {
+            loader.getSourceContext('foo', null);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Template "foo" is not defined.');
+        }
 
         test.end();
     });
@@ -22,7 +29,7 @@ tap.test('loader array', function (test) {
     test.test('getCacheKey', function (test) {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.getCacheKey('foo', null), null);
+        test.same(loader.getCacheKey('foo', null), 'foo');
 
         test.end();
     });
@@ -38,7 +45,7 @@ tap.test('loader array', function (test) {
     test.test('resolve', function (test) {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.resolve('foo', null), null);
+        test.same(loader.resolve('foo', null), 'foo');
 
         test.end();
     });

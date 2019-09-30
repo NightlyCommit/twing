@@ -1,5 +1,6 @@
 import {TwingLoaderInterface} from "../loader-interface";
 import {TwingSource} from "../source";
+import {TwingErrorLoader} from "../error/loader";
 
 /**
  * Noop implementation of TwingLoaderInterface.
@@ -14,11 +15,11 @@ export class TwingLoaderNull implements TwingLoaderInterface {
     }
 
     getCacheKey(name: string, from: TwingSource): string {
-        return null;
+        return name;
     }
 
     getSourceContext(name: string, from: TwingSource): TwingSource {
-        return null;
+        throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
     }
 
     isFresh(name: string, time: number, from: TwingSource): boolean {
@@ -26,6 +27,6 @@ export class TwingLoaderNull implements TwingLoaderInterface {
     }
 
     resolve(name: string, from: TwingSource): string {
-        return null;
+        return name;
     }
 }
