@@ -20,6 +20,7 @@
   "main": "dist/cjs/main.js",
   "browser": "dist/es/browser.js",
   "module": "dist/es",
+  "types": "dist/types/main.d.ts",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -41,9 +42,10 @@
     "fastest:unit": "tape 'test/tests/unit/**/test.js' | tap-bail | tap-spec",
     "cover": "nyc npm t",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "npm run build:cjs && npm run build:es",
-    "build:cjs": "rimraf dist/cjs && tsc --project . --module commonjs --outDir dist/cjs --declaration true",
-    "build:es": "rimraf dist/es && tsc --project . --module es6 --outDir dist/es --declaration true",
+    "build": "npm run build:cjs && npm run build:es && npm run build:types",
+    "build:cjs": "rimraf dist/cjs && tsc --project . --module commonjs --outDir dist/cjs",
+    "build:es": "rimraf dist/es && tsc --project . --module es6 --outDir dist/es",
+    "build:types": "rimraf dist/types && tsc --project . --declaration true --emitDeclarationOnly true --outDir dist/types",
     "bundle": "browserify dist/cjs/browser.js -g uglifyify -s Twing -o dist/lib.min.js",
     "docs": "cd docs && bundle exec jekyll serve",
     "docs:install": "cd docs && bundle install --path vendor/bundle"
