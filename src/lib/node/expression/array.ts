@@ -11,7 +11,7 @@ let array_chunk = require('locutus/php/array/array_chunk');
 export class TwingNodeExpressionArray extends TwingNodeExpression {
     private index: number;
 
-    constructor(elements: Map<string, TwingNodeExpression>, lineno: number, columno: number) {
+    constructor(elements: Map<string | number, TwingNodeExpression>, lineno: number, columno: number) {
         super(elements, new Map(), lineno, columno);
 
         this.type = TwingNodeType.EXPRESSION_ARRAY;

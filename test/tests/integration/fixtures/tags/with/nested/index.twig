@@ -1,8 +1,0 @@
-
-{% set foo, bar = 'foo', 'bar' %}
-{% with {bar: 'BAZ'} %}
-    {% with {foo: 'FOO'} %}
-        {{ foo }}{{ bar }}
-    {% endwith %}
-{% endwith %}
-{{ foo }}{{ bar }}

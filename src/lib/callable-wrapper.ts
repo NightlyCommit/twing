@@ -15,7 +15,7 @@ export type TwingCallableWrapperOptions = {
     is_safe?: Array<any>;
     is_safe_callback?: Function;
     deprecated?: string;
-    alternative?: TwingCallableWrapper;
+    alternative?: string;
     expression_factory?: Function;
 }
 

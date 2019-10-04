@@ -15,13 +15,13 @@ import {iteratorToArray} from "../../../helpers/iterator-to-array";
  *  {# returns 123 #}
  * </pre>
  *
- * @param {Array<*>} value An array
+ * @param {any} value A value
  * @param {string} glue The separator
  * @param {string | null} and The separator for the last pair
  *
  * @returns {string} The concatenated string
  */
-export function join(value: Array<any>, glue: string = '', and: string = null) {
+export function join(value: any, glue: string = '', and: string = null) {
     if (isNullOrUndefined(value)) {
         return '';
     }
@@ -31,7 +31,7 @@ export function join(value: Array<any>, glue: string = '', and: string = null) {
 
         // this is ugly but we have to ensure that each element of the array is rendered as PHP would render it
         // this is mainly useful for booleans that are not rendered the same way in PHP and JavaScript
-        let safeValue = value.map(function (item) {
+        let safeValue = value.map(function (item: any) {
             if (typeof item === 'boolean') {
                 return (item === true) ? '1' : ''
             }
