@@ -238,7 +238,7 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @return string The template hash
      */
-    protected getTemplateHash(name: string, index: number = 0, from: TwingSource = null) {
+    getTemplateHash(name: string, index: number = 0, from: TwingSource = null) {
         let key = this.getLoader().getCacheKey(name, from) + this.optionsHash;
 
         return hex.stringify(sha256(key)) + (index === 0 ? '' : '_' + index);
