@@ -1,3 +1,3 @@
-export function nullFunction(value: any): boolean {
+export function nullTest(value: any): boolean {
     return value === null;
 }

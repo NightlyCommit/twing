@@ -34,7 +34,7 @@ const path = require('path');
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
 
-type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
+export type TwingTemplateConstructor = new(e: TwingEnvironment) => TwingTemplate;
 
 export type TwingTemplatesModule = (T: typeof TwingTemplate) => Map<number, TwingTemplateConstructor>;
 
@@ -189,9 +189,7 @@ export abstract class TwingEnvironment extends EventEmitter {
      *
      * @param {boolean} original Whether to return the original cache option or the real cache instance
      *
-     * @returns {TwingCacheInterface|string|false} A TwingCacheInterface implementation,
-     *                                                an absolute path to the compiled templates,
-     *                                                or false to disable cache
+     * @returns {TwingCacheInterface|string|false} A TwingCacheInterface implementation, an absolute path to the compiled templates or false to disable cache
      */
     getCache(original: boolean = true): TwingCacheInterface | string | false {
         return original ? this.originalCache : this.cache;
@@ -374,10 +372,6 @@ export abstract class TwingEnvironment extends EventEmitter {
                 let templatesModule = this.getTemplatesModule(content);
 
                 templates = templatesModule(templateConstructor);
-
-                if (!templates.has(index)) {
-                    throw new TwingErrorRuntime(`Failed to load Twig template "${name}", index "${index}": cache is corrupted.`, -1, source);
-                }
             }
         }
 

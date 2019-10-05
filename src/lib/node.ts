@@ -64,13 +64,13 @@ export class TwingNode {
      * The nodes are automatically made available as properties ($this->node).
      * The attributes are automatically made available as array items ($this['name']).
      *
-     * @param nodes         Map<string, TwingNode>  A map of named nodes
-     * @param attributes    Map<string, {}>         A map of attributes (should not be nodes)
-     * @param lineno        number                  The line number
-     * @param columnno      number                  The column number
-     * @param tag           string                  The tag name associated with the Node
+     * @param nodes Map<string | number, TwingNode>  A map of named nodes
+     * @param attributes Map<string, any> A map of attributes (should not be nodes)
+     * @param lineno number The line number
+     * @param columnno number The column number
+     * @param tag string The tag name associated with the Node
      */
-    constructor(nodes: Map<any, any> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, columnno: number = 0, tag: string = null) {
+    constructor(nodes: Map<string | number, TwingNode> = new Map(), attributes: Map<string, any> = new Map(), lineno: number = 0, columnno: number = 0, tag: string = null) {
         this.nodes = nodes;
         this.attributes = attributes;
         this.lineno = lineno;

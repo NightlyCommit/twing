@@ -15,7 +15,7 @@ export class TwingFunction extends TwingCallableWrapper {
      * @param {TwingCallableArgument[]} acceptedArguments
      * @param {TwingCallableWrapperOptions} options Options
      */
-    constructor(name: string, callable: TwingFunctionCallable = null, acceptedArguments: TwingCallableArgument[], options: TwingCallableWrapperOptions = {}) {
+    constructor(name: string, callable: TwingFunctionCallable, acceptedArguments: TwingCallableArgument[], options: TwingCallableWrapperOptions = {}) {
         super (name, callable, acceptedArguments);
 
         this.options.expression_factory = function (name: string, functionArguments: TwingNode, line: number, columnno: number) {

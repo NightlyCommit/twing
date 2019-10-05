@@ -52,7 +52,7 @@ export abstract class TwingTemplate {
      */
     protected extensions: Map<string, TwingExtensionInterface> = new Map();
 
-    protected constructor(env: TwingEnvironment) {
+    constructor(env: TwingEnvironment) {
         this.env = env;
         this.extensions = env.getExtensions();
     }

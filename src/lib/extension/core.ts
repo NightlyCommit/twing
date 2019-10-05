@@ -63,7 +63,7 @@ import {TwingOperator, TwingOperatorAssociativity, TwingOperatorType} from "../o
 import {even} from "./core/tests/even";
 import {odd} from "./core/tests/odd";
 import {sameAs} from "./core/tests/same-as";
-import {nullFunction} from "./core/tests/null";
+import {nullTest} from "./core/tests/null";
 import {divisibleBy} from "./core/tests/divisible-by";
 import {min} from "./core/functions/min";
 import {max} from "./core/functions/max";
@@ -135,7 +135,7 @@ export class TwingExtensionCore extends TwingExtension {
     private defaultStrategy: string | boolean | Function;
 
     /**
-     * @param {string} defaultStrategy An escaping strategy
+     * @param {string | boolean | Function} defaultStrategy An escaping strategy
      */
     constructor(defaultStrategy: string | boolean | Function = 'html') {
         super();
@@ -532,8 +532,8 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingTest('empty', empty, []),
             new TwingTest('even', even, []),
             new TwingTest('iterable', iterable, []),
-            new TwingTest('none', nullFunction, []),
-            new TwingTest('null', nullFunction, []),
+            new TwingTest('none', nullTest, []),
+            new TwingTest('null', nullTest, []),
             new TwingTest('odd', odd, []),
             new TwingTest('same as', sameAs, []),
         ];

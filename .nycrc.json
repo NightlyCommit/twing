@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "lines": 100,
+  "branches": 100,
+  "functions": 100,
+  "extension": [
+    ".ts"
+  ],
+  "include": "src",
+  "reporter": [
+    "text-summary",
+    "html"
+  ]
+}

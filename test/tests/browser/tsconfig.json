@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig",
+  "include": [
+    "../integration/fixtures/**/*.ts",
+    "../../../src/lib/environment/browser.ts",
+    "./test.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "./dist"
+  }
+}

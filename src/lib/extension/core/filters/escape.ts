@@ -1,7 +1,6 @@
 import {TwingEnvironment} from "../../../environment";
 import {TwingMarkup} from "../../../markup";
 import {TwingErrorRuntime} from "../../../error/runtime";
-import {TwingExtensionCore} from "../../../extension/core";
 
 const bin2hex = require('locutus/php/strings/bin2hex');
 const strlen = require('utf8-binary-cutter').getBinarySize;
@@ -203,7 +202,7 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
         case 'url':
             return rawurlencode(string);
         default:
-            let coreExtension = env.getExtension('TwingExtensionCore') as TwingExtensionCore;
+            let coreExtension = env.getCoreExtension();
             let escapers: Map<string, Function> = coreExtension.getEscapers();
 
             if (escapers.has(strategy)) {

@@ -1247,7 +1247,7 @@ export class TwingParser {
 
             let src = this.getStream().getSourceContext();
 
-            message += ` in ${src.getPath() ? src.getPath() : src.getName()} at line ${line}.`;
+            message += ` in "${src.getPath() ? src.getPath() : src.getName()}" at line ${line}.`;
 
             process.stdout.write(message);
         }
@@ -1279,7 +1279,7 @@ export class TwingParser {
 
             let src = this.getStream().getSourceContext();
 
-            message += ` in ${src.getPath() ? src.getPath() : src.getName()} at line ${line}.`;
+            message += ` in "${src.getPath() ? src.getPath() : src.getName()}" at line ${line}.`;
 
             process.stdout.write(message);
         }

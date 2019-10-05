@@ -127,15 +127,7 @@ export class TwingError extends Error {
         }
 
         if (this.sourceName) {
-            let sourceName;
-
-            if (typeof this.sourceName === 'string' || (typeof this.sourceName === 'object' && Reflect.has(this.sourceName, 'toString'))) {
-                sourceName = `"${this.sourceName}"`;
-            } else {
-                sourceName = JSON.stringify(this.sourceName);
-            }
-
-            this.message += ` in ${sourceName}`;
+            this.message += ` in "${this.sourceName}"`;
         }
 
         if (this.lineno && this.lineno >= 0) {

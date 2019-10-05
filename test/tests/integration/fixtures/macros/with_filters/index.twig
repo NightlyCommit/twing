@@ -1,8 +1,0 @@
-
-{% import _self as test %}
-
-{% macro test() %}
-    {% filter escape %}foo<br />{% endfilter %}
-{% endmacro %}
-
-{{ test.test() }}
