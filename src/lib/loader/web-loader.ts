@@ -7,7 +7,13 @@ type IWebTemplate = {
     options?:object;
 }
 
-class WebTemplate implements IWebTemplate{
+/**
+ * Loads template from a user defined function (made for the browser).
+ *
+ * @author Noel Schenk <schenknoel@gmail.com>
+ */
+
+export class WebTemplate implements IWebTemplate{
     name:string;
     source:string;
     options?:object;
