@@ -72,5 +72,5 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             .raw(', ').repr(this.getAttribute('ignore_strict_check'))
             .raw(', ').repr(env.isSandboxed())
             .raw(')');
-    };
+    }
 }
