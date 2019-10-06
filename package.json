@@ -27,7 +27,7 @@
   "scripts": {
     "precover": "rimraf coverage .nyc_output",
     "prepack": "npm run build && replace-in-file '__VERSION__' $npm_package_version 'dist/**' --verbose && npm run bundle",
-    "test": "npm run test:unit && npm run test:integration && npm run test:eslint",
+    "test": "npm run test:unit && npm run test:integration",
     "test:integration": "ts-node node_modules/tape/bin/tape 'test/tests/integration/test.ts' | tap-bail | tap-spec",
     "test:unit": "ts-node node_modules/tape/bin/tape 'test/tests/unit/**/test.ts' | tap-bail | tap-spec",
     "test:browser": "rimraf test/tests/browser/dist && (tsc --project test/tests/browser && node test/tests/browser/dist/test/tests/browser/test.js) | browserify - | tape-run --render='tap-spec'",
