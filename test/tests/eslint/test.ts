@@ -4,7 +4,8 @@ import path = require('path');
 tape('eslint', (test) => {
     const CLIEngine = require("eslint").CLIEngine;
     const cli = new CLIEngine();
-    const report = cli.executeOnFiles([path.join(path.resolve('.'),'src/**/*.ts')]);
+    const root = path.resolve('.');
+    const report = cli.executeOnFiles([path.join(root,'src/**/*.ts'), path.join(root,'test/**/*.ts')]);
     const formatter = cli.getFormatter();
     if(report.errorCount !== 0){
         test.fail(formatter(report.results))

@@ -16,10 +16,7 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true
-        }
+        "sourceType": "module"
     },
     "plugins": [
         "@typescript-eslint",
@@ -32,6 +29,7 @@
         "no-constant-condition": "off",
         "no-useless-escape": "off", //also checks normal strings
         "no-fallthrough": "off", //fails on switch fallthroughs
-        "no-prototype-builtins": "off" //should be fixed!
+        "no-prototype-builtins": "off", //should be fixed!
+        "no-empty": ["error", { "allowEmptyCatch": true }] //maybe this should be fixed
     }
 }

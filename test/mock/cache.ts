@@ -23,4 +23,4 @@ export class MockCache extends TwingCacheNull {
     getTimestamp(key: string) {
         return 0;
     }
-};
+}

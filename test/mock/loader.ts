@@ -17,4 +17,4 @@ export class MockLoader extends TwingLoaderNull {
     exists(name: string) {
         return true;
     }
-};
+}
