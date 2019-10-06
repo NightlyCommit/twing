@@ -1,0 +1,10 @@
+.idea
+.nyc_output
+dist
+coverage
+docs/.bundle
+docs/_site
+docs/vendor
+node_modules
+package-lock.json
+tmp

@@ -374,21 +374,21 @@ export abstract class TwingTemplate {
                         e.setSourceContext(source);
                     }
                 } else {
-                    e = new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, lineno, source, e);
+                    throw new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, lineno, source, e);
                 }
 
                 throw e;
             }
         }
-    };
+    }
 
     public traceableDisplayBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.displayBlock.bind(this), lineno, source);
-    };
+    }
 
     public traceableDisplayParentBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.displayParentBlock.bind(this), lineno, source);
-    };
+    }
 
     public traceableRenderBlock(lineno: number, source: TwingSource) {
         return this.traceableMethod(this.renderBlock.bind(this), lineno, source);

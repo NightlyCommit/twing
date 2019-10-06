@@ -60,7 +60,7 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
             //     throw new TwingErrorRuntime('The string to escape is not a valid UTF-8 string.');
             // }
 
-            string = string.replace(/[^a-zA-Z0-9,\._]/ug, function (matches: string) {
+            string = string.replace(/[^a-zA-Z0-9,._]/ug, function (matches: string) {
                 let char = matches;
 
                 /**
@@ -140,7 +140,7 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
             //     throw new TwingErrorRuntime('The string to escape is not a valid UTF-8 string.');
             // }
 
-            string = string.replace(/[^a-zA-Z0-9,\.\-_]/ug, function (matches: string) {
+            string = string.replace(/[^a-zA-Z0-9,.\-_]/ug, function (matches: string) {
                 /**
                  * This function is adapted from code coming from Zend Framework.
                  *
