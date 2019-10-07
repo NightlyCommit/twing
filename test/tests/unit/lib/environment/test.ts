@@ -1484,5 +1484,26 @@ BAROOF</FOO></foo>oof`);
         test.end();
     });
 
+    test.test('disabling the sandbox actually...disable the sandbox', function (test) {
+        let env = new TwingEnvironmentNode(new TwingLoaderArray({
+            index: '{{foo}}'
+        }), {
+            sandboxed: false
+        });
+
+        let ensureToStringAllowedSpy = sinon.spy(env, 'ensureToStringAllowed');
+        let checkSecuritySpy = sinon.spy(env, 'checkSecurity');
+
+        let actual = env.render('index', {
+            foo: 'foo'
+        });
+
+        test.true(ensureToStringAllowedSpy.notCalled, 'ensureToStringAllowed is not called');
+        test.true(checkSecuritySpy.notCalled, 'checkSecurity is not called');
+        test.same(actual, `foo`);
+
+        test.end();
+    });
+
     test.end();
 });
