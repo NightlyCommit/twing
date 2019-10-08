@@ -146,6 +146,10 @@ export default abstract class {
         return [];
     }
 
+    getSandboxSecurityPolicyTags(): string[] {
+        return [];
+    }
+
     getDescription(): string {
         return '<no description provided>';
     }
@@ -187,7 +191,7 @@ export default abstract class {
             let loader = new TwingLoaderArray(templates);
             let environment = new this._environmentConstructor(loader, Object.assign({}, {
                 cache: false,
-                sandbox_policy: new TwingSandboxSecurityPolicy([], this.getSandboxSecurityPolicyFilters(), new Map(), new Map(), this.getSandboxSecurityPolicyFunctions()),
+                sandbox_policy: new TwingSandboxSecurityPolicy(this.getSandboxSecurityPolicyTags(), this.getSandboxSecurityPolicyFilters(), new Map(), new Map(), this.getSandboxSecurityPolicyFunctions()),
                 strict_variables: true
             } as TwingEnvironmentOptions, this.getEnvironmentOptions()));
 
