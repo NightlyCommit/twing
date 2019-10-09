@@ -32,7 +32,7 @@
     "test:unit": "ts-node node_modules/tape/bin/tape 'test/tests/unit/**/test.ts' | tap-bail | tap-spec",
     "test:browser": "rimraf test/tests/browser/dist && (tsc --project test/tests/browser && node test/tests/browser/dist/test/tests/browser/test.js) | browserify - | tape-run --render='tap-spec'",
     "test:docs": "cd docs && bundle exec jekyll build",
-    "test:eslint": "ts-node node_modules/tape/bin/tape 'test/tests/eslint/**/test.ts' | tap-bail | tap-spec",
+    "test:qc": "ts-node node_modules/tape/bin/tape 'test/tests/qc/**/test.ts' | tap-bail | tap-spec",
     "cover": "nyc npm run test",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "npm run build:cjs && npm run build:es && npm run build:types",
