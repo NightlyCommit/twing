@@ -40,6 +40,7 @@ tape('compiler', (test) => {
 
         test.same(compiler.compile(node).repr({1: 'a', 'b': 2, 'c': '3'}).getSource(), '{"1": \`a\`, "b": 2, "c": \`3\`}', 'supports hashes');
         test.same(compiler.compile(node).repr(undefined).getSource(), 'undefined', 'supports undefined');
+        test.same(compiler.compile(node).repr(new Map([[0, 1], [1, 2]])).getSource(), 'new Map([[0, 1], [1, 2]])', 'supports ES6 maps');
 
         test.end();
     });

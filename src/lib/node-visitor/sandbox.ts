@@ -18,6 +18,10 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     }
 
     protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+        if (!env.isSandboxed()) {
+            return node;
+        }
+
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = true;
             this.tags = new Map();
@@ -62,10 +66,12 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
                     this.wrapNode(node, 'left');
                     this.wrapNode(node, 'right');
                 }
+
                 if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
                     this.wrapNode(node, 'node');
                     this.wrapArrayNode(node, 'arguments');
                 }
+
                 if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION) {
                     this.wrapArrayNode(node, 'arguments');
                 }
@@ -76,6 +82,10 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     }
 
     protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
+        if (!env.isSandboxed()) {
+            return node;
+        }
+
         if (node.getType() === TwingNodeType.MODULE) {
             this.inAModule = false;
 
