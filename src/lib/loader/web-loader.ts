@@ -45,12 +45,12 @@ export class TwingWebLoader extends TwingLoaderArray{
     }
 
     //use then before accessing TwingWebLoader after init
-    then(thisTwingLoader:TwingWebLoader, cb:(twingWebLoader:TwingWebLoader)=>void){
+    private then(thisTwingLoader:TwingWebLoader, cb:(twingWebLoader:TwingWebLoader)=>void){
         thisTwingLoader.isLoaded.then(()=>{
             cb(thisTwingLoader);
         });
     }
-    addTemplate(template:string, options:object = {}){
+    private addTemplate(template:string, options:object = {}){
         let webTemplate = new WebTemplate({name:"template_" + Math.floor(Math.random() * 1000), source:template, options:options}); //maybe use getTemplateHash instead of math.floor
         return this.preLoadTemplates([webTemplate]).then((templates)=>{
             templates.forEach(template=>{
