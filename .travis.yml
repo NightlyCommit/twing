@@ -31,7 +31,7 @@ jobs:
         - npm run test:docs
       install:
         - cd docs && bundle install --path ./vendor/bundle
-    - stage: test ESLint
+    - stage: test code quality
       node_js: "12"
       script:
-        - npm run test:eslint
+        - npm run test:qc
