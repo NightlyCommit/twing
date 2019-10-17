@@ -1,3 +1,7 @@
+3.0.3
+
+ * #441 empty tmp file in dist
+
 3.0.2
 
  * #432 Sandbox is always enabled, whatever the options passed to the environment
