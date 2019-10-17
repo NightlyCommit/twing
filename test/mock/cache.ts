@@ -3,11 +3,11 @@ import {MockTemplate} from "./template";
 
 export class MockCache extends TwingCacheNull {
     generateKey(name: string, className: string) {
-        return 'key'
+        return Promise.resolve('key');
     }
 
     write(key: string, content: string) {
-
+        return Promise.resolve();
     }
 
     load(key: string) {
@@ -15,12 +15,12 @@ export class MockCache extends TwingCacheNull {
             [0, MockTemplate]
         ]);
 
-        return () => {
+        return Promise.resolve(() => {
             return templates;
-        };
+        });
     }
 
     getTimestamp(key: string) {
-        return 0;
+        return Promise.resolve(0);
     }
 }

@@ -41,6 +41,17 @@ tape('TwingExtensionCore', (test) => {
 
         test.same(extension.getDefaultStrategy('foo'), 'html');
 
+        extension = new TwingExtensionCore('name');
+
+        test.same(extension.getDefaultStrategy('index.css'), 'css');
+        test.same(extension.getDefaultStrategy('index.css.twig'), 'css');
+        test.same(extension.getDefaultStrategy('index.html'), 'html');
+        test.same(extension.getDefaultStrategy('index.html.twig'), 'html');
+        test.same(extension.getDefaultStrategy('index.js'), 'js');
+        test.same(extension.getDefaultStrategy('index.js.twig'), 'js');
+        test.same(extension.getDefaultStrategy('index.txt'), false);
+        test.same(extension.getDefaultStrategy('index.txt.twig'), false);
+
         test.end();
     });
 

@@ -11,8 +11,7 @@ export class TwingNodeSandbox extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write("(")
-            .raw("() => {\n")
+            .write('await (async () => {\n')
             .indent()
             .write('let alreadySandboxed = this.env.isSandboxed();\n')
             .write("if (!alreadySandboxed) {\n")

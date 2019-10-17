@@ -22,7 +22,7 @@ tape('node/sandboxed', (test) => {
         let node = new TwingNodeSandbox(body, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `(() => {
+        test.same(compiler.compile(node).getSource(), `await (async () => {
     let alreadySandboxed = this.env.isSandboxed();
     if (!alreadySandboxed) {
         this.env.enableSandbox();

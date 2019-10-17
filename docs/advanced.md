@@ -107,7 +107,7 @@ let rot13 = require('rot13');
 
 // an anonymous function
 let filter = new TwingFilter('rot13', function (string) {
-    return rot13(string);
+    return Promise.resolve(rot13(string));
 });
 
 // or a simple JavaScript function
@@ -116,7 +116,7 @@ filter = new TwingFilter('rot13', rot13);
 // or a class static method
 class Rot13Handler {
     static handle(string) {
-        return rot13(string);
+        return Promise.resolve(rot13(string));
     }
 }
 
@@ -125,7 +125,7 @@ filter = new TwingFilter('rot13', Rot13Handler.handle);
 // or a class instance method
 class Rot13Handler {
     handle(string) {
-        return rot13(string);
+        return Promise.resolve(rot13(string));
     }
 }
 
@@ -182,7 +182,7 @@ let filter = new TwingFilter('rot13', function (env, string) {
     // get the current charset for instance
     let charset = env.getCharset();
 
-    return rot13(string);
+    return Promise.resolve(rot13(string));
 }, {needs_environment: true});
 ```
 
@@ -295,12 +295,12 @@ Tests allow you to create custom application specific logic for evaluating boole
 let twing = new TwingEnvironment(loader);
 let test = new TwingTest('red', function (value) {
     if (value.color && value.color === 'red') {
-        return true;
+        return Promise.resolve(true);
     }
     if (value.paint && value.paint === 'red') {
-        return true;
+        return Promise.resolve(true);
     }
-    return false;
+    return Promise.resolve(false);
 });
 twing.addTest(test);
 ```

@@ -2,6 +2,7 @@
 
 import {TwingCacheInterface} from "./cache-interface";
 import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-interface";
+import {TwingEscapingStrategyResolver} from "./environment";
 
 /**
  *  * debug: When set to true, it automatically set "auto_reload" to true as well (default to false).
@@ -21,7 +22,7 @@ export type TwingEnvironmentOptions = {
     cache?: TwingCacheInterface | false | string;
     auto_reload?: boolean;
     strict_variables?: boolean;
-    autoescape?: string | boolean | Function;
+    autoescape?: string | false | TwingEscapingStrategyResolver;
     source_map?: boolean | string;
     sandbox_policy?: TwingSandboxSecurityPolicyInterface;
     sandboxed?: boolean

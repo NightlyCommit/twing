@@ -7,15 +7,15 @@ import {DateTime} from "luxon";
 
 const Luxon = require('luxon');
 
-tape('date', (test) => {
+tape('date', async (test) => {
     Luxon.Settings.defaultZoneName = 'UTC';
 
     let env = new TwingEnvironmentNode(new TwingLoaderNull(), {});
 
-    test.true(date(env, 'now') instanceof Luxon.DateTime);
+    test.true(await date(env, 'now') instanceof Luxon.DateTime);
 
     try {
-        date(env, {} as any);
+        await date(env, {} as any);
 
         test.fail();
     }
@@ -23,9 +23,9 @@ tape('date', (test) => {
         test.same(e.message, 'Failed to parse date "[object Object]".');
     }
 
-    test.same(date(env, '2010-01-28T15:00:00', false).valueOf(), 1264690800000);
+    test.same((await date(env, '2010-01-28T15:00:00', false)).valueOf(), 1264690800000);
 
-    let dateTime: DateTime & {format: (f: string) => string} = date(env, '2010-01-28T15:00:00') as DateTime & {format: (f: string) => string};
+    let dateTime: DateTime & {format: (f: string) => string} = (await date(env, '2010-01-28T15:00:00')) as DateTime & {format: (f: string) => string};
 
     test.same(dateTime.format('H'), formatDateTime(dateTime, 'H'));
 

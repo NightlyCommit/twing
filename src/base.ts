@@ -11,7 +11,6 @@ export {TwingExtensionCore,} from "./lib/extension/core";
 export {TwingExtensionInterface} from "./lib/extension-interface";
 export {TwingExtensionSet} from "./lib/extension-set";
 export {TwingExtension} from "./lib/extension";
-export {TwingFileExtensionEscapingStrategy} from "./lib/file-extension-escaping-strategy";
 export {TwingFilter} from "./lib/filter";
 export {TwingFunction} from "./lib/function";
 export {TwingLexer} from "./lib/lexer";

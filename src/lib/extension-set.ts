@@ -19,10 +19,7 @@ export class TwingExtensionSet {
     private unaryOperators: Map<string, TwingOperator> = new Map();
     private binaryOperators: Map<string, TwingOperator> = new Map();
     private tokenParsers: Map<string, TwingTokenParserInterface> = new Map();
-    private functionCallbacks: Array<Function> = [];
-    private filterCallbacks: Array<Function> = [];
     private sourceMapNodeFactories: Map<TwingNodeType, TwingSourceMapNodeFactory> = new Map();
-    private globals: Map<any, any>;
 
     readonly extensions: Map<string, TwingExtensionInterface>;
 
@@ -199,19 +196,7 @@ export class TwingExtensionSet {
             }
         }
 
-        for (let callback of this.functionCallbacks) {
-            let function_ = callback(name);
-
-            if (function_ !== false) {
-                return function_;
-            }
-        }
-
         return null;
-    }
-
-    registerUndefinedFunctionCallback(callable: Function) {
-        this.functionCallbacks.push(callable);
     }
 
     addFilter(filter: TwingFilter) {
@@ -237,12 +222,9 @@ export class TwingExtensionSet {
     /**
      * Get a filter by name.
      *
-     * Subclasses may override this method and load filters differently;
-     * so no list of filters is available.
-     *
      * @param {string} name The filter name
      *
-     * @return Twig_Filter|false A Twig_Filter instance or false if the filter does not exist
+     * @return {TwingFilter|false} A TwingFilter instance or false if the filter does not exist
      */
     getFilter(name: string): TwingFilter {
         if (!this.initialized) {
@@ -282,19 +264,7 @@ export class TwingExtensionSet {
             }
         }
 
-        for (let callback of this.filterCallbacks) {
-            let filter = callback.call(name);
-
-            if (filter !== false) {
-                return filter;
-            }
-        }
-
         return null;
-    }
-
-    registerUndefinedFilterCallback(callable: Function) {
-        this.filterCallbacks.push(callable);
     }
 
     addNodeVisitor(visitor: TwingNodeVisitorInterface) {

@@ -6,14 +6,14 @@ import {iterate} from "./iterate";
  * @param {*} hash
  * @param {number} size
  * @param {boolean} preserveKeys
- * @returns {Array<Map<any, any>>}
+ * @returns {Promise<Array<Map<any, any>>>}
  */
-export function chunk(hash: any, size: number, preserveKeys: boolean = false): Array<Map<any, any>> {
+export async function chunk(hash: any, size: number, preserveKeys: boolean = false): Promise<Array<Map<any, any>>> {
     let result: Array<Map<any, any>> = [];
     let count = 0;
     let currentMap: Map<any, any>;
 
-    iterate(hash, (key: any, value: any) => {
+   await iterate(hash, (key: any, value: any) => {
         if (!currentMap) {
             currentMap = new Map();
 
@@ -28,6 +28,8 @@ export function chunk(hash: any, size: number, preserveKeys: boolean = false): A
             count = 0;
             currentMap = null;
         }
+
+        return Promise.resolve();
     });
 
     return result;

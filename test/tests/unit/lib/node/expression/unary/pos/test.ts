@@ -20,7 +20,7 @@ tape('node/expression/unary/pos', (test) => {
         let expr = new TwingNodeExpressionConstant(1, 1, 1);
         let node = new TwingNodeExpressionUnaryPos(expr, 1, 1);
 
-        test.same(compiler.compile(node).getSource(), ' +1');
+        test.same(compiler.compile(node).getSource(), '+(1)');
 
         test.end();
 

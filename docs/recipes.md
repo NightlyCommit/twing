@@ -154,30 +154,6 @@ The output will be similar to:
 
 In the inner loop, the `loop.parent` variable is used to access the outer context. So, the index of the current `topic` defined in the outer for loop is accessible via the `loop.parent.loop.index` variable.
 
-## Defining undefined Functions and Filters on the Fly
-
-When a function (or a filter) is not defined, Twing defaults to throw a `TwingErrorSyntax` errot. However, it can also call a `callback` (any valid JavaScript callable) which should return a function (or a filter).
-
-For filters, register callbacks with `registerUndefinedFilterCallback()`. For functions, use `registerUndefinedFunctionCallback()`:
-
-````javascript
-// auto-register all global JavaScript functions as Twing functions
-// don't try this at home as it's not secure at all!
-twing.registerUndefinedFunctionCallback(function (name) {
-    if (typeof global.name === 'function') {
-        return new TwingFunction(name, name);
-    }
-
-    return false;
-});
-````
-
-If the callable is not able to return a valid function (or filter), it must return `false`.
-
-If you register more than one callback, Twing will call them in turn until one does not return `false`.
-
-> As the resolution of functions and filters is done during compilation, there is no overhead when registering these callbacks.
-
 ## Validating the Template Syntax
 
 When template code is provided by a third-party (through a web interface for instance), it might be interesting to validate the template syntax before saving it. If the template code is stored in a `template` variable, here is how you can do it::

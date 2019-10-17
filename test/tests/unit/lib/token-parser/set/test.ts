@@ -31,7 +31,7 @@ tape('token-parser/set', (test) => {
                     test.fail();
                 }
                 catch (e) {
-                    test.same(e.message, 'When using set, you must have the same number of variables and assignments at line 1.');
+                    test.same(e.message, 'When using set, you must have the same number of variables and assignments in "" at line 1.');
                 }
 
                 test.end();
@@ -60,7 +60,7 @@ tape('token-parser/set', (test) => {
                     test.fail();
                 }
                 catch (e) {
-                    test.same(e.message, 'When using set with a block, you cannot have a multi-target at line 1.');
+                    test.same(e.message, 'When using set with a block, you cannot have a multi-target in "" at line 1.');
                 }
 
                 test.end();

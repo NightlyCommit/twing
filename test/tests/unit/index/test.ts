@@ -16,7 +16,6 @@ tape('main and browser indexes', (test) => {
         'TwingExtension',
         'TwingExtensionCore',
         'TwingExtensionSet',
-        'TwingFileExtensionEscapingStrategy',
         'TwingFilter',
         'TwingFunction',
         'TwingLexer',

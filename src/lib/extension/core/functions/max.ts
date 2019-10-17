@@ -1,6 +1,6 @@
 import {iteratorToArray} from "../../../helpers/iterator-to-array";
 
-export function max(...values: any[]) {
+export function max(...values: any[]): Promise<any> {
     if (values.length === 1) {
         values = values[0];
     }
@@ -11,5 +11,5 @@ export function max(...values: any[]) {
         return a < b ? 1 : -1;
     });
 
-    return array[0];
+    return Promise.resolve(array[0]);
 }

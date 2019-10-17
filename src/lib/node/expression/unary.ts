@@ -1,6 +1,5 @@
 import {TwingNodeExpression} from "../expression";
 import {TwingNode, TwingNodeType} from "../../node";
-
 import {TwingCompiler} from "../../compiler";
 
 export abstract class TwingNodeExpressionUnary extends TwingNodeExpression {
@@ -15,9 +14,12 @@ export abstract class TwingNodeExpressionUnary extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.raw(' ');
         this.operator(compiler);
-        compiler.subcompile(this.getNode('node'));
+
+        compiler
+            .raw('(')
+            .subcompile(this.getNode('node'))
+            .raw(')');
     }
 
     operator(compiler: TwingCompiler): TwingCompiler {

@@ -1,9 +1,9 @@
 import * as tape from 'tape';
 import {column} from "../../../../../../../../src/lib/extension/core/filters/column";
 
-tape('column', (test) => {
+tape('column', async (test) => {
     try {
-        column('foo', 'bar');
+        await column('foo', 'bar');
 
         test.fail('Should throw an error');
     } catch (e) {

@@ -2,7 +2,7 @@ import TestBase from "../../../TestBase";
 
 export default class extends TestBase {
     getDescription() {
-        return '"include" function with ignore_missing and missing included template in included template';
+        return '"include" function with ignore_missing and missing template in included template';
     }
 
     getTemplates() {

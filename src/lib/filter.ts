@@ -1,19 +1,22 @@
 import {TwingNodeExpressionFilter} from "./node/expression/filter";
 import {TwingNode} from "./node";
 import {TwingNodeExpressionConstant} from "./node/expression/constant";
-import {TwingCallableWrapperOptions, TwingCallableWrapper, TwingCallableArgument} from "./callable-wrapper";
-
-type TwingFilterCallable = (...args: any[]) => any;
+import {
+    TwingCallableWrapperOptions,
+    TwingCallableWrapper,
+    TwingCallableArgument,
+    TwingCallable
+} from "./callable-wrapper";
 
 export type TwingFilterOptions = TwingCallableWrapperOptions & {
     pre_escape?: string,
     preserves_safety?: Array<string>
 }
 
-export class TwingFilter extends TwingCallableWrapper {
+export class TwingFilter extends TwingCallableWrapper<any> {
     readonly options: TwingFilterOptions;
 
-    constructor(name: string, callable: TwingFilterCallable, acceptedArguments: TwingCallableArgument[], options: TwingFilterOptions = {}) {
+    constructor(name: string, callable: TwingCallable<any>, acceptedArguments: TwingCallableArgument[], options: TwingFilterOptions = {}) {
         super(name, callable, acceptedArguments);
 
         this.options.pre_escape = null;

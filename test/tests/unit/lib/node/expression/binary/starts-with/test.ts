@@ -21,7 +21,7 @@ tape('node/expression/binary/starts-with', (test) => {
         let node = new TwingNodeExpressionBinaryStartsWith([left, right], 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), '(() => {let left = 1; let right = 2; return typeof left === \'string\' && typeof right === \'string\' && (right.length < 1 || left.startsWith(right));})()');
+        test.same(compiler.compile(node).getSource(), 'await (async () => {let left = 1; let right = 2; return typeof left === \'string\' && typeof right === \'string\' && (right.length < 1 || left.startsWith(right));})()');
 
         test.end();
     });

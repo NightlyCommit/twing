@@ -1,6 +1,5 @@
 import {TwingEnvironment} from "../../../environment";
 import {isNullOrUndefined} from "util";
-import {TwingExtensionCore} from "../../../extension/core";
 
 const locutusNumberFormat = require('locutus/php/strings/number_format');
 
@@ -17,9 +16,9 @@ const locutusNumberFormat = require('locutus/php/strings/number_format');
  * @param {string} decimalPoint the character(s) to use for the decimal point
  * @param {string} thousandSep the character(s) to use for the thousands separator
  *
- * @returns string The formatted number
+ * @returns {Promise<string>} The formatted number
  */
-export function numberFormat(env: TwingEnvironment, number: any, decimal: number, decimalPoint: string, thousandSep: string) {
+export function numberFormat(env: TwingEnvironment, number: any, decimal: number, decimalPoint: string, thousandSep: string): Promise<string> {
     let coreExtension = env.getCoreExtension();
     let defaults = coreExtension.getNumberFormat();
 
@@ -35,5 +34,5 @@ export function numberFormat(env: TwingEnvironment, number: any, decimal: number
         thousandSep = defaults[2] as string;
     }
 
-    return locutusNumberFormat(number, decimal, decimalPoint, thousandSep);
+    return Promise.resolve(locutusNumberFormat(number, decimal, decimalPoint, thousandSep));
 }

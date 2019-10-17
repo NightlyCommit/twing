@@ -92,7 +92,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
             } else {
                 if (this.getAttribute('safe')) {
                     compiler
-                        .raw("(() => {let tmp = ")
+                        .raw("await (async () => {let tmp = ")
                         .subcompile(this.getNode('values'))
                         .raw("; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})()")
                     ;

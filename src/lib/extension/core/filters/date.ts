@@ -16,9 +16,9 @@ import {date as createDate} from "../functions/date";
  * @param {string|null} format The target format, null to use the default
  * @param {string|null|boolean} timezone The target timezone, null to use the default, false to leave unchanged
  *
- * @return string The formatted date
+ * @return {Promise<string>} The formatted date
  */
-export function date(env: TwingEnvironment, date: DateTime | Duration | string, format: string = null, timezone: string | null | false = null) {
+export function date(env: TwingEnvironment, date: DateTime | Duration | string, format: string = null, timezone: string | null | false = null): Promise<string> {
     if (format === null) {
         let coreExtension = env.getCoreExtension();
 
@@ -27,11 +27,11 @@ export function date(env: TwingEnvironment, date: DateTime | Duration | string, 
         format = date instanceof Duration ? formats[1] : formats[0];
     }
 
-    date = createDate(env, date, timezone);
+    return createDate(env, date, timezone).then((date) => {
+        if (date instanceof Duration) {
+            return Promise.resolve(formatDuration(date, format));
+        }
 
-    if (date instanceof Duration) {
-        return formatDuration(date, format);
-    }
-
-    return formatDateTime(date, format);
+        return Promise.resolve(formatDateTime(date, format));
+    });
 }

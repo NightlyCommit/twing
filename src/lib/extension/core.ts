@@ -105,7 +105,6 @@ import {column} from "./core/filters/column";
 import {filter} from "./core/filters/filter";
 import {map} from "./core/filters/map";
 import {reduce} from "./core/filters/reduce";
-import {TwingFileExtensionEscapingStrategy} from "../file-extension-escaping-strategy";
 import {TwingTokenParserAutoEscape} from "../token-parser/auto-escape";
 import {TwingTokenParserSandbox} from "../token-parser/sandbox";
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
@@ -127,18 +126,20 @@ import {TwingSourceMapNodeFactory} from "../source-map/node-factory";
 import {TwingNodeExpressionTestConstant} from "../node/expression/test/constant";
 import {TwingNodeVisitorMacroAutoImport} from "../node-visitor/macro-auto-import";
 import {TwingTokenParserLine} from "../token-parser/line";
+import {extname, basename} from "path";
+import {TwingEscapingStrategyResolver} from "../environment";
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
     private numberFormat: Array<number | string> = [0, '.', ','];
     private timezone: string = null;
     private escapers: Map<string, Function> = new Map();
-    private defaultStrategy: string | boolean | Function;
+    private defaultStrategy: string | false | TwingEscapingStrategyResolver;
 
     /**
-     * @param {string | boolean | Function} defaultStrategy An escaping strategy
+     * @param {string | false | TwingEscapingStrategyResolver} defaultStrategy An escaping strategy
      */
-    constructor(defaultStrategy: string | boolean | Function = 'html') {
+    constructor(defaultStrategy: string | false | TwingEscapingStrategyResolver = 'html') {
         super();
 
         this.setDefaultStrategy(defaultStrategy);
@@ -147,37 +148,51 @@ export class TwingExtensionCore extends TwingExtension {
     /**
      * Sets the default strategy to use when not defined by the user.
      *
-     * The strategy can be a valid PHP callback that takes the template
-     * name as an argument and returns the strategy to use.
-     *
-     * @param {string|boolean|Function} defaultStrategy An escaping strategy
+     * @param {string | false | TwingEscapingStrategyResolver} defaultStrategy An escaping strategy
      */
-    setDefaultStrategy(defaultStrategy: string | boolean | Function) {
+    setDefaultStrategy(defaultStrategy: string | false | TwingEscapingStrategyResolver) {
         if (defaultStrategy === 'name') {
-            defaultStrategy = TwingFileExtensionEscapingStrategy.guess;
+            defaultStrategy = (name: string) => {
+                let extension = extname(name);
+
+                if (extension === '.twig') {
+                    name = basename(name, extension);
+
+                    extension = extname(name);
+                }
+
+                switch (extension) {
+                    case '.js':
+                        return 'js';
+
+                    case '.css':
+                        return 'css';
+
+                    case '.txt':
+                        return false;
+
+                    default:
+                        return 'html';
+                }
+            };
         }
 
         this.defaultStrategy = defaultStrategy;
     }
 
     /**
-     * Gets the default strategy to use when not defined by the user.
+     * Gets the default escaping strategy.
      *
-     * @param {string|boolean} name The template name
+     * @param {string} name The template name
      *
-     * @returns {string|boolean} The default strategy to use for the template
+     * @returns {string | false} The default strategy to use for the template
      */
-    getDefaultStrategy(name: string | boolean): string {
-        let result: string;
-
-        // disable string callables to avoid calling a function named html or js, or any other upcoming escaping strategy
+    getDefaultStrategy(name: string): string | false {
         if (typeof this.defaultStrategy === 'function') {
             return this.defaultStrategy(name);
         }
 
-        result = this.defaultStrategy as string;
-
-        return result;
+        return this.defaultStrategy;
     }
 
     /**
@@ -365,9 +380,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'array'},
                 {name: 'arrow'}
             ]),
-            new TwingFilter('first', firstFilter, [], {
-                needs_environment: true
-            }),
+            new TwingFilter('first', firstFilter, []),
             new TwingFilter('format', format, []),
             new TwingFilter('join', join, [
                 {name: 'glue', defaultValue: ''},
@@ -377,9 +390,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'options', defaultValue: null}
             ]),
             new TwingFilter('keys', arrayKeys, []),
-            new TwingFilter('last', last, [], {
-                needs_environment: true
-            }),
+            new TwingFilter('last', last, []),
             new TwingFilter('length', length, [], {
                 needs_environment: true
             }),
@@ -424,9 +435,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'start'},
                 {name: 'length', defaultValue: null},
                 {name: 'preserve_keys', defaultValue: false}
-            ], {
-                needs_environment: true
-            }),
+            ]),
             new TwingFilter('sort', sort, []),
             new TwingFilter('spaceless', spaceless, [], {
                 is_safe: ['html']

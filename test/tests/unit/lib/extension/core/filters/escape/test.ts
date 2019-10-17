@@ -167,75 +167,75 @@ let getEnvironment = function () {
 };
 
 tape('escaping', (test) => {
-    test.test('htmlEscapingConvertsSpecialChars', (test) => {
+    test.test('htmlEscapingConvertsSpecialChars', async (test) => {
         for (let key in htmlSpecialChars) {
             let value = htmlSpecialChars[key];
 
-            test.same(escape(getEnvironment(), key, 'html'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getEnvironment(), key, 'html'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
-    test.test('htmlAttributeEscapingConvertsSpecialChars', (test) => {
+    test.test('htmlAttributeEscapingConvertsSpecialChars', async (test) => {
         for (let key in htmlAttrSpecialChars) {
             let value = htmlAttrSpecialChars[key];
 
-            test.same(escape(getEnvironment(), key, 'html_attr'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getEnvironment(), key, 'html_attr'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
-    test.test('javascriptEscapingConvertsSpecialChars', (test) => {
+    test.test('javascriptEscapingConvertsSpecialChars', async (test) => {
         for (let key in jsSpecialChars) {
             let value = jsSpecialChars[key];
 
-            test.same(escape(getEnvironment(), key, 'js'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getEnvironment(), key, 'js'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
-    test.test('javascriptEscapingReturnsStringIfZeroLength', (test) => {
-        test.same(escape(getEnvironment(), '', 'js'), '', 'Succeed at escaping: ""');
+    test.test('javascriptEscapingReturnsStringIfZeroLength', async (test) => {
+        test.same(await escape(getEnvironment(), '', 'js'), '', 'Succeed at escaping: ""');
 
         test.end();
     });
 
-    test.test('javascriptEscapingReturnsStringIfContainsOnlyDigits', (test) => {
-        test.same(escape(getEnvironment(), '123', 'js'), '123', 'Succeed at escaping: "123"');
+    test.test('javascriptEscapingReturnsStringIfContainsOnlyDigits', async (test) => {
+        test.same(await escape(getEnvironment(), '123', 'js'), '123', 'Succeed at escaping: "123"');
 
         test.end();
     });
 
-    test.test('cssEscapingConvertsSpecialChars', (test) => {
+    test.test('cssEscapingConvertsSpecialChars', async (test) => {
         for (let key in cssSpecialChars) {
             let value = cssSpecialChars[key];
 
-            test.same(escape(getEnvironment(), key, 'css'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getEnvironment(), key, 'css'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
-    test.test('cssEscapingReturnsStringIfZeroLength', (test) => {
-        test.same(escape(getEnvironment(), '', 'css'), '', 'Succeed at escaping: ""');
+    test.test('cssEscapingReturnsStringIfZeroLength', async (test) => {
+        test.same(await escape(getEnvironment(), '', 'css'), '', 'Succeed at escaping: ""');
 
         test.end();
     });
 
-    test.test('cssEscapingReturnsStringIfContainsOnlyDigits', (test) => {
-        test.same(escape(getEnvironment(), '123', 'css'), '123', 'Succeed at escaping: "123"');
+    test.test('cssEscapingReturnsStringIfContainsOnlyDigits', async (test) => {
+        test.same(await escape(getEnvironment(), '123', 'css'), '123', 'Succeed at escaping: "123"');
 
         test.end();
     });
 
-    test.test('urlEscapingConvertsSpecialChars', (test) => {
+    test.test('urlEscapingConvertsSpecialChars', async (test) => {
         for (let key in urlSpecialChars) {
             let value = urlSpecialChars[key];
 
-            test.same(escape(getEnvironment(), key, 'url'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getEnvironment(), key, 'url'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
@@ -249,7 +249,7 @@ tape('escaping', (test) => {
      * Only testing the first few 2 ranges on this prot. function as that's all these
      * other range tests require.
      */
-    test.test('unicodeCodepointConversionToUtf8', (test) => {
+    test.test('unicodeCodepointConversionToUtf8', async (test) => {
         let expected = ' ~ޙ';
         let codepoints = [0x20, 0x7e, 0x799];
         let result = '';
@@ -263,7 +263,7 @@ tape('escaping', (test) => {
         test.end();
     });
 
-    test.test('javascriptEscapingEscapesOwaspRecommendedRanges', (test) => {
+    test.test('javascriptEscapingEscapesOwaspRecommendedRanges', async (test) => {
         let immune = [',', '.', '_']; // Exceptions to escaping ranges
 
         for (let chr = 0; chr < 0xFF; ++chr) {
@@ -272,14 +272,14 @@ tape('escaping', (test) => {
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(escape(getEnvironment(), literal, 'js'), literal);
+                test.same(await escape(getEnvironment(), literal, 'js'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
                 if (immune.includes(literal)) {
-                    test.same(escape(getEnvironment(), literal, 'js'), literal);
+                    test.same(await escape(getEnvironment(), literal, 'js'), literal);
                 } else {
-                    test.notSame(escape(getEnvironment(), literal, 'js'), literal);
+                    test.notSame(await escape(getEnvironment(), literal, 'js'), literal);
                 }
             }
         }
@@ -287,7 +287,7 @@ tape('escaping', (test) => {
         test.end();
     });
 
-    test.test('htmlAttributeEscapingEscapesOwaspRecommendedRanges', (test) => {
+    test.test('htmlAttributeEscapingEscapesOwaspRecommendedRanges', async (test) => {
         let immune = [',', '.', '-', '_']; // Exceptions to escaping ranges
 
         for (let chr = 0; chr < 0xFF; ++chr) {
@@ -296,14 +296,14 @@ tape('escaping', (test) => {
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(escape(getEnvironment(), literal, 'html_attr'), literal);
+                test.same(await escape(getEnvironment(), literal, 'html_attr'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
                 if (immune.includes(literal)) {
-                    test.same(escape(getEnvironment(), literal, 'html_attr'), literal);
+                    test.same(await escape(getEnvironment(), literal, 'html_attr'), literal);
                 } else {
-                    test.notSame(escape(getEnvironment(), literal, 'html_attr'), literal);
+                    test.notSame(await escape(getEnvironment(), literal, 'html_attr'), literal);
                 }
             }
         }
@@ -311,25 +311,25 @@ tape('escaping', (test) => {
         test.end();
     });
 
-    test.test('cssEscapingEscapesOwaspRecommendedRanges', (test) => {
+    test.test('cssEscapingEscapesOwaspRecommendedRanges', async (test) => {
         for (let chr = 0; chr < 0xFF; ++chr) {
             if (chr >= 0x30 && chr <= 0x39
                 || chr >= 0x41 && chr <= 0x5A
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(escape(getEnvironment(), literal, 'css'), literal);
+                test.same(await escape(getEnvironment(), literal, 'css'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
-                test.notSame(escape(getEnvironment(), literal, 'css'), literal);
+                test.notSame(await escape(getEnvironment(), literal, 'css'), literal);
             }
         }
 
         test.end();
     });
 
-    test.test('customEscaper', (test) => {
+    test.test('customEscaper', async (test) => {
         let customEscaperCases: [string, string | number, string][] = [
             ['fooUTF-8', 'foo', 'foo'],
             ['UTF-8', null, 'foo'],
@@ -341,15 +341,15 @@ tape('escaping', (test) => {
 
             twing.getCoreExtension().setEscaper('foo', foo_escaper_for_test);
 
-            test.same(escape(twing, customEscaperCase[1], customEscaperCase[2]), customEscaperCase[0]);
+            test.same(await escape(twing, customEscaperCase[1], customEscaperCase[2]), customEscaperCase[0]);
         }
 
         test.end();
     });
 
-    test.test('customUnknownEscaper', (test) => {
+    test.test('customUnknownEscaper', async (test) => {
         try {
-            escape(new MockEnvironment(new MockLoader()), 'foo', 'bar');
+            await escape(new MockEnvironment(new MockLoader()), 'foo', 'bar');
 
             test.fail();
         } catch (e) {

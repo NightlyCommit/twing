@@ -24,28 +24,32 @@ const explode = require('locutus/php/strings/explode');
  * @param {string} delimiter The delimiter
  * @param {number} limit The limit
  *
- * @returns {Array<string>} The split string as an array
+ * @returns {Promise<Array<string>>} The split string as an array
  */
-export function split(env: TwingEnvironment, value: string, delimiter: string, limit: number) {
-    if (delimiter) {
-        return !limit ? explode(delimiter, value) : explode(delimiter, value, limit);
-    }
+export function split(env: TwingEnvironment, value: string, delimiter: string, limit: number): Promise<Array<string>> {
+    let _do = (): Array<string> => {
+        if (delimiter) {
+            return !limit ? explode(delimiter, value) : explode(delimiter, value, limit);
+        }
 
-    if (!limit || limit <= 1) {
-        return value.match(/.{1,1}/ug)
-    }
+        if (!limit || limit <= 1) {
+            return value.match(/.{1,1}/ug)
+        }
 
-    let length = value.length;
+        let length = value.length;
 
-    if (length < limit) {
-        return [value];
-    }
+        if (length < limit) {
+            return [value];
+        }
 
-    let r = [];
+        let r = [];
 
-    for (let i = 0; i < length; i += limit) {
-        r.push(value.substr(i, limit));
-    }
+        for (let i = 0; i < length; i += limit) {
+            r.push(value.substr(i, limit));
+        }
 
-    return r;
+        return r;
+    };
+
+    return Promise.resolve(_do());
 }

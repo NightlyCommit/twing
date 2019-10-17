@@ -1,6 +1,6 @@
 import {iteratorToMap} from "../../../helpers/iterator-to-map";
 
-export function map(map: any, callback: Function) {
+export function map(map: any, callback: Function): Promise<Map<any, any>> {
     let result: Map<any, any> = new Map();
 
     map = iteratorToMap(map);
@@ -11,5 +11,5 @@ export function map(map: any, callback: Function) {
         result.set(k, v);
     }
 
-    return result;
+    return Promise.resolve(result);
 }

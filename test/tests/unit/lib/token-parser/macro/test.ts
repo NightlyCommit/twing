@@ -34,7 +34,7 @@ tape('token-parser/macro', (test) => {
                 test.fail();
             }
             catch (e) {
-                test.same(e.message, 'Expected endmacro for macro "foo" (but "bar" given) at line 1.');
+                test.same(e.message, 'Expected endmacro for macro "foo" (but "bar" given) in "" at line 1.');
             }
 
             test.end();
