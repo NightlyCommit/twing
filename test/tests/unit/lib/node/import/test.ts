@@ -26,7 +26,7 @@ tape('node/import', (test) => {
         let node = new TwingNodeImport(macro, var_, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, null, 1);
+        test.same(compiler.compile(node).getSource(), `aliases.proxy[\`macro\`] = this.aliases.proxy[\`macro\`] = await this.loadTemplate(\`foo.twig\`, 1);
 `);
 
         test.end();

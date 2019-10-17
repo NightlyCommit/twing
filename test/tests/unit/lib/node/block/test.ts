@@ -23,12 +23,10 @@ tape('node/block', (test) => {
         let node = new TwingNodeBlock('foo', body, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `block_foo(context, blocks = new Map()) {
-    let macros = this.macros.clone();
+        test.same(compiler.compile(node).getSource(), `async (context, blocks = new Map()) => {
+    let aliases = this.aliases.clone();
     this.echo(\`foo\`);
-}
-
-`);
+}`);
 
         test.end();
     });

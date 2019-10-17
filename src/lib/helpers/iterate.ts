@@ -1,21 +1,24 @@
+export type IterateCallback = (k: any, v: any) => Promise<void>;
+
 /**
  * Executes the provided function once for each element of an iterable.
  *
  * @param {*} it An iterable
- * @param {Function} cb Function to execute for each element, taking a key and a value as arguments
- * @return void
+ * @param {IterateCallback} cb Callback to execute for each element, taking a key and a value as arguments
+ *
+ * @return {void}
  */
-export function iterate(it: any, cb: Function): void {
+export async function iterate(it: any, cb: IterateCallback): Promise<void> {
     if (it.entries) {
         for (let [k, v] of it.entries()) {
-            cb(k, v);
+            await cb(k, v);
         }
     }
     else if (typeof it[Symbol.iterator] === 'function') {
         let i: number = 0;
 
         for (let value of it) {
-            cb(i++, value);
+            await cb(i++, value);
         }
     }
     else if (typeof it['next'] === 'function') {
@@ -23,12 +26,12 @@ export function iterate(it: any, cb: Function): void {
         let next: any;
 
         while ((next = it.next()) && !next.done) {
-            cb(i++, next.value);
+            await cb(i++, next.value);
         }
     }
     else {
         for (let k in it) {
-            cb(k, it[k]);
+            await cb(k, it[k]);
         }
     }
 }

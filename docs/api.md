@@ -43,17 +43,20 @@ JavaScript cache library.
 
 ## Rendering Templates
 
-To load a template from a Twing environment, call the ``load()`` function which
-returns a ``TwingTemplateWrapper`` instance:
+To load a template from a Twing environment, call the ``load()`` function which returns a ``TwingTemplate`` instance:
 
 ```javascript
-let template = twing.load('index.html');
+twing.load('index.html').then((template) => {
+    // ...
+});
 ```
 
 To render the template with some variables, call the ``render()`` function:
 
 ```javascript
-template.render({'the': 'variables', 'go': 'here'});
+template.render({'the': 'variables', 'go': 'here'}).then((output) => {
+    // ...
+});
 ```
 
 > The ``display()`` method is a shortcut to output the template directly. See [Output buffering](#output-buffering) section for more details.
@@ -61,14 +64,18 @@ template.render({'the': 'variables', 'go': 'here'});
 You can also load and render the template in one fell swoop:
 
 ```javascript
-twing.render('index.html', {'the': 'variables', 'go': 'here'});
+twing.render('index.html', {'the': 'variables', 'go': 'here'}).then((output) => {
+    // ...
+});
 ```
 
 If a template defines blocks, they can be rendered individually via the
 ``renderBlock()`` call:
 
 ```javascript
-template.renderBlock('block_name', {'the': 'variables', 'go': 'here'});
+template.renderBlock('block_name', {'the': 'variables', 'go': 'here'}).then((output) => {
+    // ...
+});
 ```
 
 ## Events
@@ -219,7 +226,9 @@ let loader = new TwingLoaderArray({
 });
 let twing = new TwingEnvironment(loader);
 
-twing.render('index.html', {'name': 'Fabien'});
+twing.render('index.html', {'name': 'Fabien'}).then((output) => {
+    // ...
+});
 ```
 {% endraw %}
 
@@ -248,7 +257,9 @@ let loader2 = new TwingLoaderArray({
 
 let loader = new TwingLoaderChain([loader1, loader2]);
 
-let twing = new TwingEnvironment(loader);
+let twing = new TwingEnvironment(loader).then((output) => {
+    // ...
+});
 ```
 {% endraw %}
 
@@ -266,335 +277,17 @@ template from the above example, Twing will load it with ``loader2`` but the
 
 All loaders must implement the ``TwingLoaderInterface`` declared in `lib/loader-interface.d.ts`:
 
-```typescript
-interface TwingLoaderInterface {
-    /**
-     * Returns the source context for a given template logical name.
-     *
-     * @param {string} name The template logical name
-     *
-     * @returns TwingSource
-     *
-     * @throws TwingErrorLoader When name is not found
-     */
-    getSourceContext(name: string): TwingSource;
-
-    /**
-     * Gets the cache key to use for the cache for a given template name.
-     *
-     * @param {string} name The name of the template to load
-     *
-     * @returns string The cache key
-     *
-     * @throws TwingErrorLoader When name is not found
-     */
-    getCacheKey(name: string): string;
-
-    /**
-     * Returns true if the template is still fresh.
-     *
-     * @param {string} name The template name
-     * @param {number} time Timestamp of the last modification time of the
-     * cached template
-     *
-     * @returns boolean true if the template is fresh, false otherwise
-     *
-     * @throws TwingErrorLoader When name is not found
-     */
-    isFresh(name: string, time: number): boolean;
-
-    /**
-     * Check if we have the source code of a template, given its name.
-     *
-     * @param {string} name The name of the template to check if we can load
-     *
-     * @returns boolean If the template source code is handled by this loader or not
-     */
-    exists(name: string): boolean;
-    
-    /**
-     * Resolve the path of a template, given its name, whatever it means in the context of the loader.
-     *
-     * @param {string} name The name of the template to resolve
-     *
-     * @returns {string} The resolved path of the template
-     */
-    resolve(name: string): string;
-}
-```
-
-The `isFresh()` method must return `true` if the current cached template
-is still fresh, given the last modification time, or `false` otherwise.
+The `isFresh()` method must return `true` if the current cached template is still fresh, given the last modification time, or `false` otherwise.
 
 The `getSourceContext()` method must return an instance of `TwingSource`.
 
 ## Using Extensions
 
-Twing extensions are packages that add new features to Twing. Using an
-extension is as simple as using the `addExtension()` method:
+Twing extensions are packages that add new features to Twing. Using an extension is as simple as using the `addExtension()` method:
 
 ```javascript
 twing.addExtension(new TwingExtensionSandbox());
 ```
-
-Twing comes bundled with the following extensions:
-
-* *TwingExtensionCore*: Defines all the core features of Twing.
-
-* *TwingExtensionEscaper*: Adds automatic output-escaping and the possibility
-  to escape/unescape blocks of code.
-
-* *TwingExtensionSandbox*: Adds a sandbox mode to the default Twing
-  environment, making it safe to evaluate untrusted code.
-
-* *TwingExtensionProfiler*: Enabled the built-in Twing profiler.
-
-* *TwingExtensionOptimizer*: Optimizes the node tree before compilation.
-
-The core, escaper, and optimizer extensions do not need to be added to the
-Twing environment, as they are registered by default.
-
-## Built-in Extensions
-
-This section describes the features added by the built-in extensions.
-
-> Read the chapter about extending Twing to learn how to create your own
-extensions.
-
-### Core Extension
-
-The ``core`` extension defines all the core features of Twig:
-
-* Tags
-* Filters
-* Functions
-* Tests
-
-### Escaper Extension
-
-The ``escaper`` extension adds automatic output escaping to Twing. It defines a
-tag, ``autoescape``, and a filter, ``raw``.
-
-When creating the escaper extension, you can switch on or off the global
-output escaping strategy:
-
-```javascript
-let escaper = new TwingExtensionEscaper('html');
-twing.addExtension(escaper);
-```
-
-If set to ``html``, all variables in templates are escaped (using the ``html``
-escaping strategy), except those using the ``raw`` filter:
-
-{% raw  %}
-```twig
-{{ article.to_html|raw }}
-```
-{% endraw  %}
-
-You can also change the escaping mode locally by using the ``autoescape`` tag:
-
-{% raw  %}
-```twig
-{% autoescape 'html' %}
-    {{ var }}
-    {{ var|raw }}      {# var won't be escaped #}
-    {{ var|escape }}   {# var won't be double-escaped #}
-{% endautoescape %}
-```
-{% endraw  %}
-
-> The ``autoescape`` tag has no effect on included files.
-
-The escaping rules are implemented as follows:
-
-* Literals (integers, booleans, arrays, ...) used in the template directly as
-  variables or filter arguments are never automatically escaped:
-
-{% raw  %}
-```twig
-{{ "Twing<br />" }} {# won't be escaped #}
-
-{% set text = "Twing<br />" %}
-{{ text }} {# will be escaped #}
-```
-{% endraw  %}
-
-
-* Expressions which the result is always a literal or a variable marked safe
-  are never automatically escaped:
-
-{% raw  %}
-```twig
-{{ foo ? "Twing<br />" : "<br />Twing" }} {# won't be escaped #}
-
-{% set text = "Twing<br />" %}
-{{ foo ? text : "<br />Twing" }} {# will be escaped #}
-
-{% set text = "Twing<br />" %}
-{{ foo ? text|raw : "<br />Twing" }} {# won't be escaped #}
-
-{% set text = "Twing<br />" %}
-{{ foo ? text|escape : "<br />Twing" }} {# the result of the expression won't be escaped #}
-```
-{% endraw  %}
-
-* Objects with a `toString` method are converted to strings and escaped.
-
-* Escaping is applied before printing, after any other filter is applied:
-
-{% raw  %}
-```twig
-{{ var|upper }} {# is equivalent to {{ var|upper|escape }} #}
-```
-{% endraw  %}
-
-* The `raw` filter should only be used at the end of the filter chain:
-
-{% raw  %}
-```twig
-{{ var|raw|upper }} {# will be escaped #}
-
-{{ var|upper|raw }} {# won't be escaped #}
-```
-{% endraw  %}
-
-* Automatic escaping is not applied if the last filter in the chain is marked
-  safe for the current context (e.g. ``html`` or ``js``). ``escape`` and
-  ``escape('html')`` are marked safe for HTML, ``escape('js')`` is marked
-  safe for JavaScript, ``raw`` is marked safe for everything.
-
-{% raw  %}
-```twig
-{% autoescape 'js' %}
-    {{ var|escape('html') }} {# will be escaped for HTML and JavaScript #}
-    {{ var }} {# will be escaped for JavaScript #}
-    {{ var|escape('js') }} {# won't be double-escaped #}
-{% endautoescape %}
-```
-{% endraw  %}
-
-{% raw  %}
-> Note that autoescaping has some limitations as escaping is applied on
-expressions after evaluation. For instance, when working with
-concatenation, ``{{ foo|raw ~ bar }}`` won't give the expected result as
-escaping is applied on the result of the concatenation, not on the
-individual variables (so, the ``raw`` filter won't have any effect here).
-{% endraw  %}
-
-### Sandbox Extension
-
-The ``sandbox`` extension can be used to evaluate untrusted code. Access to
-unsafe attributes and methods is prohibited. The sandbox security is managed
-by a policy instance. By default, Twing comes with one policy class:
-``TwingSandboxSecurityPolicy``. This class allows you to white-list some
-tags, filters, properties, and methods:
-
-```javascript
-let tags = ['if'];
-let filters = ['upper'];
-let methods = new Map([
-    ['Article', ['getTitle', 'getBody']],
-]);
-let properties = new Map([
-    ['Article', ['title', 'body']],
-]);
-let functions = ['range'];
-let policy = new TwingSandboxSecurityPolicy(tags, filters, methods, properties, functions);
-```
-
-With the previous configuration, the security policy will only allow usage of
-the ``if`` tag, and the ``upper`` filter. Moreover, the templates will only be
-able to call the ``getTitle()`` and ``getBody()`` methods on ``Article``
-objects, and the ``title`` and ``body`` public properties. Everything else
-won't be allowed and will generate a ``TwingSandboxSecurityError`` exception.
-
-The policy object is the first argument of the sandbox constructor:
-
-```javascript
-let sandbox = new TwingExtensionSandbox(policy);
-twing.addExtension(sandbox);
-```
-
-By default, the sandbox mode is disabled and should be enabled when including
-untrusted template code by using the ``sandbox`` tag:
-
-{% raw  %}
-```twig
-{% sandbox %}
-    {% include 'user.html' %}
-{% endsandbox %}
-```
-{% endraw  %}
-
-You can sandbox all templates by passing ``true`` as the second argument of
-the extension constructor:
-
-```javascript
-let sandbox = new TwingExtensionSandbox(policy, true);
-````
-
-### Profiler Extension
-
-The ``profiler`` extension enables a profiler for Twing templates; it should
-only be used on your development machines as it adds some overhead:
-
-```javascript
-let profile = new TwingProfilerProfile();
-twing.addExtension(new TwingExtensionProfiler(profile));
-
-let dumper = new TwingProfilerDumperText();
-let dump = dumper.dump(profile);
-```
-
-A profile contains information about time and memory consumption for template,
-block, and macro executions.
-
-You can also dump the data in a `Blackfire.io <https://blackfire.io/>`_
-compatible format:
-
-```javascript
-let dumper = new TwingProfilerDumperBlackfire();
-fs.writeFileSync('/path/to/profile.prof', dumper.dump(profile));
-```
-
-Upload the profile to visualize it (create a `free account
-<https://blackfire.io/signup>`_ first):
-
-```bash
-blackfire --slot=7 upload /path/to/profile.prof
-```
-
-### Optimizer Extension
-
-The ``optimizer`` extension optimizes the node tree before compilation:
-
-```javascript
-twing.addExtension(new TwingExtensionOptimizer());
-```
-
-By default, all optimizations are turned on. You can select the ones you want
-to enable by passing them to the constructor:
-
-```javascript
-let optimizer = new TwingExtensionOptimizer(TwingNodeVisitorOptimizer.OPTIMIZE_FOR);
-
-twing.addExtension(optimizer);
-```
-
-Twing supports the following optimizations:
-
-* ``TwingNodeVisitorOptimizer.OPTIMIZE_ALL``, enables all optimizations
-  (this is the default value).
-* ``TwingNodeVisitorOptimizer.OPTIMIZE_NONE``, disables all optimizations.
-  This reduces the compilation time, but it can increase the execution time
-  and the consumed memory.
-* ``TwingNodeVisitorOptimizer.OPTIMIZE_FOR``, optimizes the ``for`` tag by
-  removing the ``loop`` variable creation whenever possible.
-* ``TwingNodeVisitorOptimizer.OPTIMIZE_RAW_FILTER``, removes the ``raw``
-  filter whenever possible.
-* ``TwingNodeVisitorOptimizer.OPTIMIZE_VAR_ACCESS``, simplifies the creation
-  and access of variables in the compiled templates whenever possible.
 
 ## Exceptions
 

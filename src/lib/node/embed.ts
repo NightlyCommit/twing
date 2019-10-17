@@ -12,10 +12,8 @@ export class TwingNodeEmbed extends TwingNodeInclude {
 
     protected addGetTemplate(compiler: TwingCompiler) {
         compiler
-            .raw('this.loadTemplate(')
+            .raw('await this.loadTemplate(')
             .string(this.getAttribute('name'))
-            .raw(', ')
-            .repr(this.getTemplateName())
             .raw(', ')
             .repr(this.getTemplateLine())
             .raw(', ')

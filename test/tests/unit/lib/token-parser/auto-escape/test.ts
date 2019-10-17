@@ -31,7 +31,7 @@ tape('token-parser/auto-escape', (test) => {
                 test.fail();
             }
             catch (e) {
-                test.same(e.message, 'An escaping strategy must be a string or false at line 1.');
+                test.same(e.message, 'An escaping strategy must be a string or false in "" at line 1.');
             }
 
             test.end();

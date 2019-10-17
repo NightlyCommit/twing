@@ -1,5 +1,6 @@
 import TestBase from "../../../TestBase";
 import {TwingMarkup} from "../../../../../../src/lib/markup";
+import {TwingEnvironmentOptions} from "../../../../../../src/lib/environment-options";
 
 export default class extends TestBase {
     getDescription() {
@@ -22,7 +23,7 @@ export default class extends TestBase {
     }
 
 
-    getEnvironmentOptions() {
+    getEnvironmentOptions(): TwingEnvironmentOptions {
         return {
             autoescape: false
         };

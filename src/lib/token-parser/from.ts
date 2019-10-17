@@ -40,7 +40,7 @@ export class TwingTokenParserFrom extends TwingTokenParser {
         let node = new TwingNodeImport(macro, expr, token.line, token.column, this.getTag());
 
         for (let [name, alias] of targets) {
-            this.parser.addImportedSymbol('function', alias, `macro_${name}`, expr);
+            this.parser.addImportedSymbol('function', alias, name, expr);
         }
 
         return node;

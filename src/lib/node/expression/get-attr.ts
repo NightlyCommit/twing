@@ -38,7 +38,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             let var_ = compiler.getVarName();
 
             compiler
-                .raw('(() => {let ' + var_ + ' = ')
+                .raw('await (async () => {let ' + var_ + ' = ')
                 .subcompile(this.getNode('node'))
                 .raw('; return this.get(')
                 .raw(var_)
@@ -50,7 +50,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             return;
         }
 
-        compiler.raw(`this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.source)(this.env, `);
+        compiler.raw(`await this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.getSourceContext())(this.env, `);
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);

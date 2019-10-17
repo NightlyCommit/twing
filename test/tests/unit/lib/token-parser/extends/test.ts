@@ -25,7 +25,7 @@ tape('token-parser/extends', (test) => {
 
                 test.fail();
             } catch (e) {
-                test.same(e.message, 'Multiple extends tags are forbidden at line 1.');
+                test.same(e.message, 'Multiple extends tags are forbidden in "" at line 1.');
             }
 
             test.end();

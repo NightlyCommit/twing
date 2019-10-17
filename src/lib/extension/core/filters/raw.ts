@@ -5,8 +5,8 @@ import {TwingMarkup} from "../../../markup";
  *
  * @param {string | TwingMarkup} string A variable
  *
- * @return string
+ * @return {Promise<string>}
  */
-export function raw(string: string | TwingMarkup) {
-    return string.toString();
+export function raw(string: string | TwingMarkup): Promise<string> {
+    return Promise.resolve(string.toString());
 }

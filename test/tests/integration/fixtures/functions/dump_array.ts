@@ -1,4 +1,5 @@
 import TestBase from "../../TestBase";
+import {TwingEnvironmentOptions} from "../../../../../src/lib/environment-options";
 
 export default class extends TestBase {
     getDescription() {
@@ -26,7 +27,7 @@ array(3) {
 `;
     }
 
-    getEnvironmentOptions() {
+    getEnvironmentOptions(): TwingEnvironmentOptions {
         return {
             debug: true,
             autoescape: false

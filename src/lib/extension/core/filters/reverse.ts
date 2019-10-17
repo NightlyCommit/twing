@@ -11,12 +11,12 @@ const esrever = require('esrever');
  * @param {string | Map<*, *>} item A traversable instance, or a string
  * @param {boolean} preserveKeys Whether to preserve key or not
  *
- * @returns The reversed input
+ * @returns {Promise<string | Map<any, any>>} The reversed input
  */
-export function reverse(env: TwingEnvironment, item: any, preserveKeys: boolean = false): string | Map<any, any> {
+export function reverse(env: TwingEnvironment, item: any, preserveKeys: boolean = false): Promise<string | Map<any, any>> {
     if (typeof item === 'string') {
-        return esrever.reverse(item);
+        return Promise.resolve(esrever.reverse(item));
     } else {
-        return reverseHelper(iteratorToMap(item as Map<any, any>), preserveKeys);
+        return Promise.resolve(reverseHelper(iteratorToMap(item as Map<any, any>), preserveKeys));
     }
 }

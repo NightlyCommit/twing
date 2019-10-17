@@ -1,9 +1,9 @@
 import * as tape from 'tape';
 import {sort} from "../../../../../../../../src/lib/extension/core/filters/sort";
 
-tape('sort', (test) => {
+tape('sort', async (test) => {
     try {
-        sort(5 as any);
+        await sort(5 as any);
 
         test.fail();
     }

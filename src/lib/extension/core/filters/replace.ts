@@ -10,14 +10,22 @@ const strtr = require('locutus/php/strings/strtr');
  * @param {string} str String to replace in
  * @param {Array<string>|Map<string, string>} from Replace values
  *
- * @returns {string}
+ * @returns {Promise<string>}
  */
-export function replace(str: string, from: any) {
-    if (isTraversable(from)) {
-        from = iteratorToHash(from);
-    } else if (typeof from !== 'object') {
-        throw new TwingErrorRuntime(`The "replace" filter expects an hash or "Iterable" as replace values, got "${typeof from}".`);
-    }
+export function replace(str: string, from: any): Promise<string> {
+    let _do = (): string => {
+        if (isTraversable(from)) {
+            from = iteratorToHash(from);
+        } else if (typeof from !== 'object') {
+            throw new TwingErrorRuntime(`The "replace" filter expects an hash or "Iterable" as replace values, got "${typeof from}".`);
+        }
 
-    return strtr(str, from);
+        return strtr(str, from);
+    };
+
+    try {
+        return Promise.resolve(_do());
+    } catch (e) {
+        return Promise.reject(e);
+    }
 }

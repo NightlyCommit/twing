@@ -5,7 +5,7 @@ import {readFileSync} from 'fs';
 import {TwingTokenParser} from "../../../../../src/lib/token-parser";
 import {Token, TokenType} from "twig-lexer";
 import {TwingNode, TwingNodeType} from "../../../../../src/lib/node";
-import {TwingEnvironment, TwingTemplateConstructor} from "../../../../../src/lib/environment";
+import {TwingEnvironment} from "../../../../../src/lib/environment";
 import {TwingExtension} from "../../../../../src/lib/extension";
 import {TwingFilter} from "../../../../../src/lib/filter";
 import {TwingOperator, TwingOperatorAssociativity, TwingOperatorType} from "../../../../../src/lib/operator";
@@ -80,6 +80,7 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     getFilters() {
         return [
             new TwingFilter('foo_filter', () => {
+                return Promise.resolve();
             }, [])
         ];
     }
@@ -87,15 +88,14 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
     getTests() {
         return [
             new TwingTest('foo_test', () => {
-                return true;
+                return Promise.resolve(true);
             }, []),
         ];
     }
 
     getFunctions() {
         return [
-            new TwingFunction('foo_function', () => {
-            }, []),
+            new TwingFunction('foo_function', () => Promise.resolve(), []),
         ];
     }
 
@@ -110,15 +110,13 @@ class TwingTestsEnvironmentTestExtension extends TwingExtension {
 class TwingTestsEnvironmentTestExtensionRegression extends TwingTestsEnvironmentTestExtension {
     getFilters() {
         return [
-            new TwingFilter('foo_filter', () => {
-            }, [])
+            new TwingFilter('foo_filter', () => Promise.resolve(), [])
         ];
     }
 
     getFunctions() {
         return [
-            new TwingFunction('foo_function', () => {
-            }, [])
+            new TwingFunction('foo_function', () => Promise.resolve(), [])
         ];
     }
 }
@@ -152,14 +150,14 @@ class TwingTestsEnvironmentParserError extends TwingParser {
 function getMockLoader(templateName: string, templateContent: string) {
     let loader = new MockLoader();
 
-    sinon.stub(loader, 'getSourceContext').withArgs(templateName).returns(new TwingSource(templateContent, templateName));
-    sinon.stub(loader, 'getCacheKey').withArgs(templateName).returns(templateName);
+    sinon.stub(loader, 'getSourceContext').withArgs(templateName).returns(Promise.resolve(new TwingSource(templateContent, templateName)));
+    sinon.stub(loader, 'getCacheKey').withArgs(templateName).returns(Promise.resolve(templateName));
 
     return loader;
 }
 
 tape('environment', (test) => {
-    test.test('autoescapeOption', (test) => {
+    test.test('autoescapeOption', async (test) => {
         let loader = new TwingLoaderArray({
             'html': '{{ foo }} {{ foo }}',
             'js': '{{ bar }} {{ bar }}',
@@ -171,15 +169,16 @@ tape('environment', (test) => {
             autoescape: escapingStrategyCallback
         });
 
-        test.same(twing.render('html', {'foo': 'foo<br/ >'}), 'foo&lt;br/ &gt; foo&lt;br/ &gt;');
-        test.same(twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\u003Cbr\\/\\u0020\\u003E foo\\u003Cbr\\/\\u0020\\u003E');
+        test.same(await twing.render('html', {'foo': 'foo<br/ >'}), 'foo&lt;br/ &gt; foo&lt;br/ &gt;');
+        test.same(await twing.render('js', {'bar': 'foo<br/ >'}), 'foo\\u003Cbr\\/\\u0020\\u003E foo\\u003Cbr\\/\\u0020\\u003E');
 
         test.end();
     });
 
-    test.test('globals', (test) => {
+    test.test('globals', async (test) => {
         let loader = new MockLoader();
-        sinon.stub(loader, 'getSourceContext').returns(new TwingSource('', ''));
+
+        sinon.stub(loader, 'getSourceContext').returns(Promise.resolve(new TwingSource('', '')));
 
         // globals can be added after calling getGlobals
         let twing = new TwingEnvironmentNode(loader);
@@ -193,7 +192,7 @@ tape('environment', (test) => {
         twing = new TwingEnvironmentNode(loader);
         twing.addGlobal('foo', 'foo');
         twing.getGlobals();
-        twing.loadTemplate('index');
+        await twing.loadTemplate('index');
         twing.addGlobal('foo', 'bar');
         globals = twing.getGlobals();
         test.same(globals.get('foo'), 'bar');
@@ -213,7 +212,7 @@ tape('environment', (test) => {
         twing.addGlobal('foo', 'foo');
         twing.getGlobals();
         twing.getFunctions();
-        twing.loadTemplate('index');
+        await twing.loadTemplate('index');
         twing.addGlobal('foo', 'bar');
         globals = twing.getGlobals();
         test.same(globals.get('foo'), 'bar');
@@ -221,15 +220,16 @@ tape('environment', (test) => {
         twing = new TwingEnvironmentNode(arrayLoader);
         twing.getGlobals();
         twing.addGlobal('foo', 'bar');
-        let template = twing.loadTemplate('index');
-        test.same(template.render({}), 'bar');
+        let template = await twing.loadTemplate('index');
+        test.same(await template.render({}), 'bar');
 
         // globals cannot be added after a template has been loaded
         twing = new TwingEnvironmentNode(loader);
         twing.addGlobal('foo', 'foo');
         twing.getGlobals();
         twing.addGlobal('foo', 'bar');
-        twing.loadTemplate('index');
+        await twing.loadTemplate('index');
+
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
@@ -242,6 +242,7 @@ tape('environment', (test) => {
         twing.addGlobal('foo', 'foo');
         twing.getGlobals();
         twing.getFunctions();
+
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
@@ -254,7 +255,8 @@ tape('environment', (test) => {
         twing.addGlobal('foo', 'foo');
         twing.getGlobals();
         twing.getFunctions();
-        twing.loadTemplate('index');
+        await twing.loadTemplate('index');
+
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
@@ -264,7 +266,8 @@ tape('environment', (test) => {
 
         // test adding globals after a template has been loaded without call to getGlobals
         twing = new TwingEnvironmentNode(loader);
-        twing.loadTemplate('index');
+        await twing.loadTemplate('index');
+
         try {
             twing.addGlobal('bar', 'bar');
             test.fail();
@@ -275,7 +278,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('testExtensionsAreNotInitializedWhenRenderingACompiledTemplate', (test) => {
+    test.test('testExtensionsAreNotInitializedWhenRenderingACompiledTemplate', async (test) => {
         let cache = new TwingCacheFilesystem(tmp.dirSync().name);
         let options = {cache: cache, auto_reload: false, debug: false};
 
@@ -283,31 +286,36 @@ tape('environment', (test) => {
         let loader = new TwingLoaderArray({index: '{{ foo }}'});
         let twing = new MockEnvironment(loader, options);
 
-        let key = cache.generateKey('index', twing.getTemplateHash('index'));
-        cache.write(key, twing.compileSource(new TwingSource('{{ foo }}', 'index')));
+        let key = await cache.generateKey('index', await twing.getTemplateHash('index'));
+        await cache.write(key, twing.compileSource(new TwingSource('{{ foo }}', 'index')));
 
         // render template
-        let output = twing.render('index', {foo: 'bar'});
+        let output = await twing.render('index', {foo: 'bar'});
+
         test.same(output, 'bar');
 
         test.end();
     });
 
-    test.test('autoReloadCacheMiss', (test) => {
+    test.test('autoReloadCacheMiss', async (test) => {
         let templateName = 'autoReloadCacheMiss';
         let templateContent = 'autoReloadCacheMiss';
 
         let cache = new MockCache();
         let loader = getMockLoader(templateName, templateContent);
-        let twing = new MockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
+        let twing = new MockEnvironment(loader, {
+            cache: cache,
+            auto_reload: true,
+            debug: false
+        });
 
-        let generateKeyStub = sinon.stub(cache, 'generateKey').returns('key');
-        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(0);
+        let generateKeyStub = sinon.stub(cache, 'generateKey').returns(Promise.resolve('key'));
+        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(Promise.resolve(0));
         let writeSpy = sinon.spy(cache, 'write');
         let loadSpy = sinon.spy(cache, 'load');
-        let isFreshStub = sinon.stub(loader, 'isFresh').returns(false);
+        let isFreshStub = sinon.stub(loader, 'isFresh').returns(Promise.resolve(false));
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         sinon.assert.calledOnce(generateKeyStub);
         sinon.assert.calledOnce(getTimestampStub);
@@ -319,7 +327,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('autoReloadCacheHit', (test) => {
+    test.test('autoReloadCacheHit', async (test) => {
         let templateName = 'autoReloadCacheHit';
         let templateContent = 'autoReloadCacheHit';
 
@@ -327,13 +335,13 @@ tape('environment', (test) => {
         let loader = getMockLoader(templateName, templateContent);
         let twing = new MockEnvironment(loader, {cache: cache, auto_reload: true, debug: false});
 
-        let generateKeyStub = sinon.stub(cache, 'generateKey').returns('key');
-        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(0);
+        let generateKeyStub = sinon.stub(cache, 'generateKey').returns(Promise.resolve('key'));
+        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(Promise.resolve(0));
         let writeSpy = sinon.spy(cache, 'write');
         let loadSpy = sinon.spy(cache, 'load');
-        let isFreshStub = sinon.stub(loader, 'isFresh').returns(true);
+        let isFreshStub = sinon.stub(loader, 'isFresh').returns(Promise.resolve(true));
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         test.same(generateKeyStub.callCount, 1, 'generateKey should be called once');
         test.same(getTimestampStub.callCount, 1, 'getTimestamp should be called once');
@@ -344,7 +352,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('autoReloadOutdatedCacheHit', (test) => {
+    test.test('autoReloadOutdatedCacheHit', async (test) => {
         let templateName = 'autoReloadOutdatedCacheHit';
         let templateContent = 'autoReloadOutdatedCacheHit';
 
@@ -354,13 +362,13 @@ tape('environment', (test) => {
 
         let now = new Date();
 
-        let generateKeyStub = sinon.stub(cache, 'generateKey').returns('key');
-        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(now);
+        let generateKeyStub = sinon.stub(cache, 'generateKey').returns(Promise.resolve('key'));
+        let getTimestampStub = sinon.stub(cache, 'getTimestamp').returns(Promise.resolve(now));
         let writeSpy = sinon.spy(cache, 'write');
         let loadSpy = sinon.spy(cache, 'load');
-        let isFreshStub = sinon.stub(loader, 'isFresh').returns(false);
+        let isFreshStub = sinon.stub(loader, 'isFresh').returns(Promise.resolve(false));
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         sinon.assert.calledOnce(generateKeyStub);
         sinon.assert.calledOnce(getTimestampStub);
@@ -372,7 +380,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('sourceMapChangeCacheMiss', (test) => {
+    test.test('sourceMapChangeCacheMiss', async (test) => {
         let templateName = 'sourceMapChangeCacheMiss';
         let templateContent = 'sourceMapChangeCacheMiss';
 
@@ -387,7 +395,7 @@ tape('environment', (test) => {
         let secondKey: string = null;
 
         sinon.stub(cache, 'generateKey').callsFake((name, className) => {
-            return className;
+            return Promise.resolve(className);
         });
         sinon.stub(cache, 'load').callsFake((key) => {
             if (firstKey) {
@@ -396,26 +404,26 @@ tape('environment', (test) => {
                 firstKey = key;
             }
 
-            return () => {
+            return Promise.resolve(() => {
                 return new Map();
-            }
+            });
         });
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         twing = new TwingEnvironmentNode(loader, {
             cache: cache,
             source_map: false
         });
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         test.notEquals(firstKey, secondKey);
 
         test.end();
     });
 
-    test.test('autoescapeChangeCacheMiss', (test) => {
+    test.test('autoescapeChangeCacheMiss', async (test) => {
         let templateName = 'autoescapeChangeCacheMiss';
         let templateContent = 'autoescapeChangeCacheMiss';
 
@@ -430,7 +438,7 @@ tape('environment', (test) => {
         let secondKey: string = null;
 
         sinon.stub(cache, 'generateKey').callsFake((name, className) => {
-            return className;
+            return Promise.resolve(className);
         });
         sinon.stub(cache, 'load').callsFake((key) => {
             if (firstKey) {
@@ -439,20 +447,19 @@ tape('environment', (test) => {
                 firstKey = key;
             }
 
-            return () => {
+            return Promise.resolve(() => {
                 return new Map()
-
-            }
+            });
         });
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         twing = new TwingEnvironmentNode(loader, {
             cache: cache,
             autoescape: false
         });
 
-        twing.loadTemplate(templateName);
+        await twing.loadTemplate(templateName);
 
         test.notEquals(firstKey, secondKey);
 
@@ -523,7 +530,6 @@ tape('environment', (test) => {
         twing.addExtension(extension, 'foo');
 
         test.same(twing.getExtension('foo'), extension);
-        test.true(twing.isTemplateFresh('page', new Date().getTime(), null));
 
         test.end();
     });
@@ -544,7 +550,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('debug', (test) => {
+    test.test('debug', async (test) => {
         class CustomEnvironment extends TwingEnvironmentNode {
             getTemplateHash(name: string, index: number, from: TwingSource) {
                 return super.getTemplateHash(name, index, from);
@@ -555,21 +561,21 @@ tape('environment', (test) => {
             debug: false
         });
 
-        let templateClass = env.getTemplateHash('foo', undefined, undefined);
+        let templateClass = await env.getTemplateHash('foo', undefined, undefined);
 
-        test.test('enable', (test) => {
+        test.test('enable', async (test) => {
             env.enableDebug();
 
             test.true(env.isDebug());
-            test.notSame(env.getTemplateHash('foo', undefined, undefined), templateClass);
+            test.notSame(await env.getTemplateHash('foo', undefined, undefined), templateClass);
             test.end();
         });
 
-        test.test('disable', (test) => {
+        test.test('disable', async (test) => {
             env.disableDebug();
 
             test.false(env.isDebug());
-            test.same(env.getTemplateHash('foo', undefined, undefined), templateClass);
+            test.same(await env.getTemplateHash('foo', undefined, undefined), templateClass);
             test.end();
         });
 
@@ -599,7 +605,7 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('strict_variables', (test) => {
+    test.test('strict_variables', async (test) => {
         class CustomEnvironment extends TwingEnvironmentNode {
             getTemplateHash(name: string, index: number, from: TwingSource) {
                 return super.getTemplateHash(name, index, from);
@@ -610,21 +616,21 @@ tape('environment', (test) => {
             strict_variables: false
         });
 
-        let templateClass = env.getTemplateHash('foo', undefined, undefined);
+        let templateClass = await env.getTemplateHash('foo', undefined, undefined);
 
-        test.test('enable', (test) => {
+        test.test('enable', async (test) => {
             env.enableStrictVariables();
 
             test.true(env.isStrictVariables());
-            test.notSame(env.getTemplateHash('foo', undefined, undefined), templateClass);
+            test.notSame(await env.getTemplateHash('foo', undefined, undefined), templateClass);
             test.end();
         });
 
-        test.test('disable', (test) => {
+        test.test('disable', async (test) => {
             env.disableStrictVariables();
 
             test.false(env.isStrictVariables());
-            test.same(env.getTemplateHash('foo', undefined, undefined), templateClass);
+            test.same(await env.getTemplateHash('foo', undefined, undefined), templateClass);
             test.end();
         });
 
@@ -646,21 +652,13 @@ tape('environment', (test) => {
 
             test.true(env.getCache(false) instanceof MockCache);
 
-            try {
-                env.setCache({} as any);
-
-                test.fail();
-            } catch (e) {
-                test.same(e.message, 'Cache can only be a string, false or a TwingCacheInterface implementation.');
-            }
-
             test.end();
         });
 
         test.end();
     });
 
-    test.test('display', (test) => {
+    test.test('display', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({
             index: 'bar'
         }));
@@ -679,41 +677,41 @@ tape('environment', (test) => {
             return true;
         };
 
-        env.display('index');
+        await env.display('index');
     });
 
-    test.test('load', (test) => {
+    test.test('load', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({
             index: 'bar'
         }));
 
         let template = new MockTemplate(env);
 
-        test.true(env.load(template));
-        test.true(env.load('index'));
+        test.true(await env.load(template));
+        test.true(await env.load('index'));
 
         test.end();
     });
 
-    test.test('loadTemplate', (test) => {
+    test.test('loadTemplate', async (test) => {
         let env = new MockEnvironment(new TwingLoaderArray({index: 'foo'}), {
             cache: new MockCache()
         });
 
-        let template = env.loadTemplate('index');
+        let template = await env.loadTemplate('index');
 
         test.true(template instanceof MockTemplate);
 
         test.end();
     });
 
-    test.test('resolveTemplate', (test) => {
+    test.test('resolveTemplate', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({
             index: '{{ foo'
         }));
 
         try {
-            env.resolveTemplate('index', new TwingSource('', 'index'));
+            await env.resolveTemplate('index', new TwingSource('', 'index'));
 
             test.fail();
         } catch (e) {
@@ -721,7 +719,7 @@ tape('environment', (test) => {
         }
 
         try {
-            env.resolveTemplate('missing', new TwingSource('', 'index'));
+            await env.resolveTemplate('missing', new TwingSource('', 'index'));
 
             test.fail();
         } catch (e) {
@@ -814,50 +812,12 @@ tape('environment', (test) => {
         test.end();
     });
 
-    test.test('undefinedFilterCallbacks', (test) => {
-        let env = new TwingEnvironmentNode(new TwingLoaderArray({
-            index: 'foo'
-        }));
-
-        let fakeFilter = {};
-
-        let cb = () => {
-            return fakeFilter;
-        };
-
-        env.registerUndefinedFilterCallback(cb);
-
-        test.same(env.getFilter('fake'), fakeFilter);
-
-        test.end();
-    });
-
-    test.test('undefinedFunctionCallbacks', (test) => {
-        let env = new TwingEnvironmentNode(new TwingLoaderArray({
-            index: 'foo'
-        }));
-
-        let fakeFunction = {};
-
-        let cb = () => {
-            return fakeFunction;
-        };
-
-        env.registerUndefinedFunctionCallback(cb);
-
-        test.same(env.getFunction('fake'), fakeFunction);
-
-        test.end();
-    });
-
     test.test('should emit events', (test) => {
-        test.test('template', (test) => {
+        test.test('template', async (test) => {
             let env = new TwingEnvironmentNode(new TwingLoaderArray({
                 index: '{% include "foo" %}',
                 foo: 'Foo'
-            }), {
-                cache: 'tmp/rftg'
-            });
+            }));
 
             let templates: string[] = [];
 
@@ -865,7 +825,7 @@ tape('environment', (test) => {
                 templates.push(name);
             });
 
-            env.render('index');
+            await env.render('index');
 
             test.same(templates, [
                 'index',
@@ -888,7 +848,7 @@ tape('environment', (test) => {
         let colorSource = join(fixturesPath, 'css', 'partial/color.css.twig');
         let backgroundSource = join(fixturesPath, 'css', 'partial/background.css.twig');
 
-        test.test('when source_map is set to true', (test) => {
+        test.test('when source_map is set to true', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
                 source_map: true
             });
@@ -901,7 +861,7 @@ tape('environment', (test) => {
             // 6    display: block;
             // 7}
 
-            env.render('css/index.css.twig', {
+            await env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1033,12 +993,12 @@ tape('environment', (test) => {
             test.end();
         });
 
-        test.test('when source_map is set to false', (test) => {
+        test.test('when source_map is set to false', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
                 source_map: false
             });
 
-            env.render('css/index.css.twig', {
+            await env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1049,7 +1009,7 @@ tape('environment', (test) => {
             test.end();
         });
 
-        test.test('when source_map is a string', (test) => {
+        test.test('when source_map is a string', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
                 source_map: 'foo'
             });
@@ -1062,7 +1022,7 @@ tape('environment', (test) => {
             // 6    display: block;
             // 7}
 
-            env.render('css/index.css.twig', {
+            await env.render('css/index.css.twig', {
                 align: 'right'
             });
 
@@ -1194,28 +1154,28 @@ tape('environment', (test) => {
             test.end();
         });
 
-        test.test('handle templates compiled without source map support', (test) => {
+        test.test('handle templates compiled without source map support', async (test) => {
             class CustomTemplate extends TwingTemplate {
                 getTemplateName() {
                     return 'foo';
                 }
 
                 doDisplay() {
-
+                    return Promise.resolve();
                 }
             }
 
             class CustomCache extends TwingCacheNull {
                 generateKey(name: string, className: string) {
-                    return className;
+                    return Promise.resolve(className);
                 }
 
                 load(key: string) {
-                    return () => {
+                    return Promise.resolve(() => {
                         return new Map([
                             [0, CustomTemplate]
                         ]);
-                    };
+                    });
                 }
             }
 
@@ -1224,7 +1184,7 @@ tape('environment', (test) => {
                 cache: new CustomCache()
             });
 
-            env.render('css/index.css.twig');
+            await env.render('css/index.css.twig');
 
             let sourceMap = env.getSourceMap();
 
@@ -1232,7 +1192,7 @@ tape('environment', (test) => {
             test.end();
         });
 
-        test.test('with spaceless tag', (test) => {
+        test.test('with spaceless tag', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
                 source_map: true
             });
@@ -1245,7 +1205,7 @@ tape('environment', (test) => {
             // 5.    <foo><FOO>FOO
             // 5.BAROOF</FOO></foo>oof
 
-            let render = env.render('spaceless/index.html.twig', {
+            let render = await env.render('spaceless/index.html.twig', {
                 bar: 'bar'
             });
 
@@ -1382,21 +1342,21 @@ BAROOF</FOO></foo>oof`);
         test.end();
     });
 
-    test.test('createTemplate', (test) => {
+    test.test('createTemplate', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({}));
 
-        let template = env.createTemplate('foo');
+        let template = await env.createTemplate('foo');
 
         test.same(template.getTemplateName(), '__string_template__2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae');
 
-        template = env.createTemplate('foo', 'foo.twig');
+        template = await env.createTemplate('foo', 'foo.twig');
 
         test.same(template.getTemplateName(), 'foo.twig (string template 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae)');
 
         test.end();
     });
 
-    test.test('registerTemplatesModule', (test) => {
+    test.test('registerTemplatesModule', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({
             foo: ''
         }));
@@ -1406,7 +1366,8 @@ BAROOF</FOO></foo>oof`);
         env.registerTemplatesModule((c) => {
             return new Map([
                 [0, class extends c {
-                    doDisplay(context: {}, blocks: Map<string, Array<any>>): void {
+                    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+                        return Promise.resolve();
                     }
 
                     getTemplateName() {
@@ -1414,7 +1375,8 @@ BAROOF</FOO></foo>oof`);
                     }
                 }],
                 [1, class extends c {
-                    doDisplay(context: {}, blocks: Map<string, Array<any>>): void {
+                    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+                        return Promise.resolve();
                     }
 
                     getTemplateName() {
@@ -1424,8 +1386,8 @@ BAROOF</FOO></foo>oof`);
             ])
         }, 'foo');
 
-        let actualTemplate = env.loadTemplate('foo');
-        let actualEmbeddedTemplate = env.loadTemplate('foo', 1);
+        let actualTemplate = await env.loadTemplate('foo');
+        let actualEmbeddedTemplate = await env.loadTemplate('foo', 1);
 
         test.true(loaderSpy.notCalled, 'Loader should not be queried');
         test.equal(actualTemplate.getTemplateName(), 'main', 'Main template should be loaded successfully');
@@ -1500,7 +1462,7 @@ BAROOF</FOO></foo>oof`);
         test.end();
     });
 
-    test.test('disabling the sandbox actually...disable the sandbox', function (test) {
+    test.test('disabling the sandbox actually...disable the sandbox', async (test) => {
         let env = new TwingEnvironmentNode(new TwingLoaderArray({
             index: '{{foo}}'
         }), {
@@ -1510,7 +1472,7 @@ BAROOF</FOO></foo>oof`);
         let ensureToStringAllowedSpy = sinon.spy(env, 'ensureToStringAllowed');
         let checkSecuritySpy = sinon.spy(env, 'checkSecurity');
 
-        let actual = env.render('index', {
+        let actual = await env.render('index', {
             foo: 'foo'
         });
 

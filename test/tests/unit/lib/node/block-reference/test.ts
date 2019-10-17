@@ -17,7 +17,7 @@ tape('node/block-reference', (test) => {
         let node = new TwingNodeBlockReference('foo', 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.traceableDisplayBlock(1, this.source)(\'foo\', context.clone(), blocks);
+        test.same(compiler.compile(node).getSource(), `await this.traceableDisplayBlock(1, this.getSourceContext())(\'foo\', context.clone(), blocks);
 `);
 
         test.end();

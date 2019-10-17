@@ -31,7 +31,7 @@ tape('node/with', (test) => {
 
         test.same(compiler.compile(node).getSource(), `let __internal_fooVar = \`bar\`;
 if (typeof (__internal_fooVar) !== 'object') {
-    throw new this.RuntimeError('Variables passed to the "with" tag must be a hash.', 1, this.source);
+    throw new this.RuntimeError('Variables passed to the "with" tag must be a hash.', 1, this.getSourceContext());
 }
 context.set('_parent', context.clone());
 context = new this.Context(this.env.mergeGlobals(this.merge(context, this.convertToMap(__internal_fooVar))));

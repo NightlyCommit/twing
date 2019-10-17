@@ -2,8 +2,8 @@
  * Return the absolute value of a number.
  *
  * @param {number} x
- * @returns {number}
+ * @returns {Promise<number>}
  */
-export function abs(x: number) {
-    return Math.abs(x);
+export function abs(x: number): Promise<number> {
+    return Promise.resolve(Math.abs(x));
 }

@@ -1,9 +1,10 @@
 import {TwingCacheInterface} from "../cache-interface";
 import {TwingTemplatesModule} from "../environment";
+import {stat, writeFile, rename, unlink} from "fs";
+import {dirname, join, resolve as resolvePath, extname} from "path";
+import {ensureDir} from "fs-extra";
 
-let fs = require('fs-extra');
-let path = require('path');
-let tmp = require('tmp');
+let {tmpName} = require('tmp');
 
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
@@ -11,82 +12,86 @@ const hex = require('crypto-js/enc-hex');
 /**
  * Implements a cache on the filesystem.
  *
- * @author Andrew Tch <andrew@noop.lv>
+ * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingCacheFilesystem implements TwingCacheInterface {
-    TwingCacheInterfaceImpl: TwingCacheInterface;
-
     private directory: string;
-    private options: number;
 
     /**
-     * @param directory {string} The root cache directory
-     * @param options {number} A set of options
+     * @param {string} directory The root cache directory
      */
-    constructor(directory: string, options: number = 0) {
+    constructor(directory: string) {
         this.directory = directory;
-        this.options = options;
-        this.TwingCacheInterfaceImpl = this;
     }
 
-    generateKey(name: string, className: string) {
+    generateKey(name: string, className: string): Promise<string> {
         let hash: string = hex.stringify(sha256(className));
 
-        return path.join(
+        return Promise.resolve(join(
             this.directory,
             hash[0] + hash[1],
             hash + '.js'
-        );
+        ));
     }
 
-    load(key: string): TwingTemplatesModule {
-        let result;
-        let modulePath: string = path.resolve(key);
+    load(key: string): Promise<TwingTemplatesModule> {
+        let modulePath: string = resolvePath(key);
 
-        if (fs.pathExistsSync(modulePath)) {
-            let cache = require.cache;
+        return new Promise((resolve) => {
+            stat(modulePath, (err) => {
+                if (err) {
+                    resolve(() => new Map);
+                } else {
+                    let cache = require.cache;
 
-            delete cache[modulePath];
+                    delete cache[modulePath];
 
-            result = require(modulePath);
-        }
-        else {
-            result = () => {
-                return new Map();
-            };
-        }
-
-        return result;
-    }
-
-    write(key: string, content: string) {
-        let dir = path.dirname(key);
-
-        fs.ensureDirSync(dir);
-
-        let tmpFile = tmp.tmpNameSync({
-            dir: dir,
-            postfix: path.extname(key)
+                    resolve(require(modulePath));
+                }
+            })
         });
-
-        try {
-            fs.writeFileSync(tmpFile, content);
-            fs.renameSync(tmpFile, key);
-
-            return;
-        }
-        catch (e) {
-            throw new Error(`Failed to write cache file "${key}".`);
-        }
     }
 
-    getTimestamp(key: string) {
-        if (!fs.pathExistsSync(key)) {
-            return 0;
-        }
+    write(key: string, content: string): Promise<void> {
+        let directory = dirname(key);
 
-        let stat = fs.statSync(key);
+        return ensureDir(directory).then(() => {
+            return new Promise((resolve, reject) => {
+                tmpName({
+                    dir: directory,
+                    postfix: extname(key)
+                }, (err: any, tmpFile: string) => {
+                    writeFile(tmpFile, content, (err) => {
+                        let error = new Error(`Failed to write cache file "${key}".`);
 
-        return stat.mtimeMs;
+                        if (err) {
+                            reject(error);
+                        } else {
+                            rename(tmpFile, key, (err) => {
+                                if (err) {
+                                    unlink(tmpFile, () => {
+                                        reject(error);
+                                    })
+                                } else {
+                                    resolve();
+                                }
+                            })
+                        }
+                    });
+                })
+            });
+        });
+    }
+
+    getTimestamp(key: string): Promise<number> {
+        return new Promise<number>((resolve) => {
+            stat(key, (err, stats) => {
+                if (err) {
+                    resolve(0);
+                } else {
+                    resolve(stats.mtimeMs);
+                }
+            });
+        });
     }
 }

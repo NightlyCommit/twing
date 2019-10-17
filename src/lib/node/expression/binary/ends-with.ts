@@ -4,7 +4,7 @@ import {TwingCompiler} from "../../../compiler";
 export class TwingNodeExpressionBinaryEndsWith extends TwingNodeExpressionBinary {
     compile(compiler: TwingCompiler) {
         compiler
-            .raw('(() => {')
+            .raw('await (async () => {')
             .raw(`let left = `)
             .subcompile(this.getNode('left'))
             .raw('; ')

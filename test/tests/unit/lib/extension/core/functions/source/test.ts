@@ -5,26 +5,24 @@ import {TwingEnvironmentNode} from "../../../../../../../../src/lib/environment/
 import {TwingLoaderArray} from "../../../../../../../../src/lib/loader/array";
 import {TwingSource} from "../../../../../../../../src/lib/source";
 
-tape('source', (test) => {
+tape('source', async (test) => {
     let loader = new TwingLoaderArray({});
     let env = new TwingEnvironmentNode(loader);
 
     try {
-        source(env, new TwingSource('', 'index'), 'foo', false);
-    }
-    catch (e) {
+        await source(env, new TwingSource('', 'index'), 'foo', false);
+    } catch (e) {
         test.same(e.name, 'TwingErrorLoader');
         test.same(e.message, 'Template "foo" is not defined in "index".');
     }
 
-    test.equals(source(env, new TwingSource('', 'index'), 'foo', true), null);
+    test.equals(await source(env, new TwingSource('', 'index'), 'foo', true), null);
 
-    sinon.stub(loader, 'getSourceContext').throws(new Error('foo'));
+    sinon.stub(loader, 'getSourceContext').returns(Promise.reject(new Error('foo')));
 
     try {
-        source(env, new TwingSource('', 'index'), 'foo', false);
-    }
-    catch (e) {
+        await source(env, new TwingSource('', 'index'), 'foo', false);
+    } catch (e) {
         test.same(e.name, 'Error');
         test.same(e.message, 'foo');
     }

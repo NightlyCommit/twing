@@ -10,21 +10,21 @@ import {fill as fillHelper} from "../../../helpers/fill";
  * @param {any} fill A value used to fill missing items
  * @param {boolean} preserveKeys
  *
- * @returns Map<any, any>[]
+ * @returns Promise<Map<any, any>[]>
  */
-export function batch(items: any[], size: number, fill: any = null, preserveKeys: boolean = true): Map<any, any>[] {
+export function batch(items: any[], size: number, fill: any = null, preserveKeys: boolean = true): Promise<Map<any, any>[]> {
     if (isNullOrUndefined(items)) {
-        return [];
+        return Promise.resolve([]);
     }
 
-    let chunks: Array<Map<any, any>> = chunk(items, size, preserveKeys);
+    return chunk(items, size, preserveKeys).then((chunks) => {
+        if (fill !== null && chunks.length) {
+            let last = chunks.length - 1;
+            let lastChunk: Map<any, any> = chunks[last];
 
-    if (fill !== null && chunks.length) {
-        let last = chunks.length - 1;
-        let lastChunk: Map<any, any> = chunks[last];
+            fillHelper(lastChunk, size, fill);
+        }
 
-        fillHelper(lastChunk, size, fill);
-    }
-
-    return chunks;
+        return chunks;
+    });
 }

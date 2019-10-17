@@ -52,28 +52,17 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.source = this.getSourceContext();
-                this.macros = new this.Context();
-                let macros = new this.Context();
+                this.sourceContext = new this.Source(\`\`, \`foo.twig\`, \`\`);
 
-                this.parent = false;
-
-                this.blocks = new Map([
-                ]);
+                let aliases = new this.Context();
             }
 
-            doDisplay(context, blocks = new Map()) {
-                let macros = this.macros.clone();
+            async doDisplay(context, blocks = new Map()) {
+                let aliases = this.aliases.clone();
+
                 this.echo(\`foo\`);
             }
 
-            getTemplateName() {
-                return \`foo.twig\`;
-            }
-
-            getSourceContext() {
-                return new this.Source(\`\`, \`foo.twig\`, \`\`);
-            }
         }],
     ]);
 };`);
@@ -104,37 +93,30 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.source = this.getSourceContext();
-                this.macros = new this.Context();
-                let macros = new this.Context();
+                this.sourceContext = new this.Source(\`\`, \`foo.twig\`, \`\`);
 
-                this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
-
-                this.blocks = new Map([
-                ]);
+                let aliases = new this.Context();
             }
 
             doGetParent(context) {
-                return \`layout.twig\`;
+                return this.loadTemplate(\`layout.twig\`, 1).then((parent) => {
+                    this.parent = parent;
+
+                    return parent;
+                });
             }
 
-            doDisplay(context, blocks = new Map()) {
-                let macros = this.macros.clone();
-                macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
-                this.parent.display(context, this.merge(this.blocks, blocks));
-            }
+            async doDisplay(context, blocks = new Map()) {
+                let aliases = this.aliases.clone();
 
-            getTemplateName() {
-                return \`foo.twig\`;
+                aliases.proxy[\`macro\`] = this.aliases.proxy[\`macro\`] = await this.loadTemplate(\`foo.twig\`, 2);
+                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks));
             }
 
             isTraitable() {
                 return false;
             }
 
-            getSourceContext() {
-                return new this.Source(\`\`, \`foo.twig\`, \`\`);
-            }
         }],
     ]);
 };`);
@@ -161,7 +143,7 @@ tape('node/module', (test) => {
             let extends_ = new TwingNodeExpressionConditional(
                 new TwingNodeExpressionConstant(true, 2, 1),
                 new TwingNodeExpressionConstant('foo', 2, 1),
-                new TwingNodeExpressionConstant('foo', 2, 1),
+                new TwingNodeExpressionConstant('bar', 2, 1),
                 2, 1
             );
 
@@ -182,35 +164,26 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.source = this.getSourceContext();
-                this.macros = new this.Context();
-                let macros = new this.Context();
+                this.sourceContext = new this.Source(\`{{ foo }}\`, \`foo.twig\`, \`\`);
 
-                this.blocks = new Map([
-                ]);
+                let aliases = new this.Context();
             }
 
             doGetParent(context) {
-                return this.loadTemplate(((true) ? (\`foo\`) : (\`foo\`)), \`foo.twig\`, 2);
+                return this.loadTemplate(((true) ? (\`foo\`) : (\`bar\`)), 2);
             }
 
-            doDisplay(context, blocks = new Map()) {
-                let macros = this.macros.clone();
+            async doDisplay(context, blocks = new Map()) {
+                let aliases = this.aliases.clone();
+
                 context.proxy[\`foo\`] = \`foo\`;
-                this.getParent(context).display(context, this.merge(this.blocks, blocks));
-            }
-
-            getTemplateName() {
-                return \`foo.twig\`;
+                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks));
             }
 
             isTraitable() {
                 return false;
             }
 
-            getSourceContext() {
-                return new this.Source(\`{{ foo }}\`, \`foo.twig\`, \`\`);
-            }
         }],
     ]);
 };`);

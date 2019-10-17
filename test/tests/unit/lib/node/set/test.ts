@@ -90,7 +90,7 @@ context.proxy[\`foo\`] = (() => {let tmp = this.getAndCleanOutputBuffer(); retur
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `context.proxy[\`foo\`] = (() => {let tmp = \`foo\`; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
+            test.same(compiler.compile(node).getSource(), `context.proxy[\`foo\`] = await (async () => {let tmp = \`foo\`; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
 `);
 
             test.end();

@@ -1,9 +1,9 @@
 import * as tape from 'tape';
 import {trim} from "../../../../../../../../src/lib/extension/core/filters/trim";
 
-tape('trim', (test) => {
+tape('trim', async (test) => {
     try {
-        trim('foo', '0', 'bar');
+        await trim('foo', '0', 'bar');
 
         test.fail();
     }

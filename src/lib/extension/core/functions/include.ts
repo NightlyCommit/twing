@@ -21,13 +21,13 @@ import {isPlainObject} from "../../../helpers/is-plain-object";
  * @param {boolean} ignoreMissing Whether to ignore missing templates or not
  * @param {boolean} sandboxed Whether to sandbox the template or not
  *
- * @returns {string} The rendered template
+ * @returns {Promise<string>} The rendered template
  */
-export function include(env: TwingEnvironment, context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): string {
+export function include(env: TwingEnvironment, context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): Promise<string> {
     let alreadySandboxed = env.isSandboxed();
 
     if (!isPlainObject(variables) && !isTraversable(variables)) {
-        throw new TwingErrorRuntime(`Variables passed to the "include" function or tag must be iterable, got "${!isNullOrUndefined(variables) ? typeof variables : variables}".`, -1, from);
+        return Promise.reject(new TwingErrorRuntime(`Variables passed to the "include" function or tag must be iterable, got "${!isNullOrUndefined(variables) ? typeof variables : variables}".`, -1, from));
     }
 
     variables = iteratorToMap(variables);
@@ -42,41 +42,43 @@ export function include(env: TwingEnvironment, context: any, from: TwingSource, 
         }
     }
 
-    let loaded = null;
-
     if (typeof templates === 'string' || templates instanceof TwingTemplate) {
         templates = new Map([[0, templates]]);
     }
 
-    try {
-        loaded = env.resolveTemplate([...templates.values()], from);
-    } catch (e) {
-        if (e instanceof TwingErrorLoader) {
-            if ((e.getSourceContext().getName() !== from.getName()) || !ignoreMissing) {
-                if (sandboxed && !alreadySandboxed) {
-                    env.disableSandbox();
-                }
-
-                throw e;
-            }
-        } else {
-            if (sandboxed && !alreadySandboxed) {
-                env.disableSandbox();
-            }
-
-            throw e;
-        }
-    }
-
-    let result;
-
-    try {
-        result = loaded ? loaded.render(variables) : '';
-    } finally {
-        if (!alreadySandboxed) {
+    let restoreSandbox = (): void => {
+        if (sandboxed && !alreadySandboxed) {
             env.disableSandbox();
         }
-    }
+    };
 
-    return result;
+    let resolveTemplate = (templates: Map<number, string | TwingTemplate>): Promise<TwingTemplate> => {
+        return env.resolveTemplate([...templates.values()], from).catch((e) => {
+            restoreSandbox();
+
+            if (e instanceof TwingErrorLoader) {
+                if (!ignoreMissing) {
+                    throw e;
+                } else {
+                    return null;
+                }
+            } else {
+                throw e;
+            }
+        });
+    };
+
+    return resolveTemplate(templates).then((template) => {
+        let promise = template ? template.render(variables) : Promise.resolve('');
+
+        return promise.then((result) => {
+            restoreSandbox();
+
+            return result;
+        }).catch((e) => {
+            restoreSandbox();
+
+            throw e;
+        });
+    });
 }

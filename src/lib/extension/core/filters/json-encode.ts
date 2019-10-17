@@ -5,7 +5,7 @@ import {iteratorToArray} from "../../../helpers/iterator-to-array";
 
 const locutusJsonEncode = require('locutus/php/json/json_encode');
 
-export function jsonEncode(value: any): string {
+export function jsonEncode(value: any): Promise<string> {
     if (isMap(value)) {
         if (isPureArray(value)) {
             value = iteratorToArray(value);
@@ -14,5 +14,5 @@ export function jsonEncode(value: any): string {
         }
     }
 
-    return locutusJsonEncode(value);
+    return Promise.resolve(locutusJsonEncode(value));
 }

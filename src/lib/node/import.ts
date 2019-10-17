@@ -26,14 +26,14 @@ export class TwingNodeImport extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write('macros.proxy[')
+            .write('aliases.proxy[')
             .repr(this.getNode('var').getAttribute('name'))
             .raw('] = ')
         ;
 
         if (this.getAttribute('global')) {
             compiler
-                .raw('this.macros.proxy[')
+                .raw('this.aliases.proxy[')
                 .repr(this.getNode('var').getAttribute('name'))
                 .raw('] = ')
             ;
@@ -43,10 +43,8 @@ export class TwingNodeImport extends TwingNode {
             compiler.raw('this');
         } else {
             compiler
-                .raw('this.loadTemplate(')
+                .raw('await this.loadTemplate(')
                 .subcompile(this.getNode('expr'))
-                .raw(', ')
-                .repr(this.getTemplateName())
                 .raw(', ')
                 .repr(this.getTemplateLine())
                 .raw(')')

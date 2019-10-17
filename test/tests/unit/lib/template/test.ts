@@ -1,6 +1,6 @@
 import * as tape from 'tape';
 import {TwingOutputBuffering} from "../../../../../src/lib/output-buffering";
-import {TwingTemplate} from "../../../../../src/lib/template";
+import {TwingTemplate, TwingTemplateBlocksMap} from "../../../../../src/lib/template";
 import {TwingEnvironmentNode} from "../../../../../src/lib/environment/node";
 import {TwingLoaderArray} from "../../../../../src/lib/loader/array";
 import {TwingLoaderChain} from "../../../../../src/lib/loader/chain";
@@ -16,26 +16,42 @@ class TwingTestTemplateTemplate extends TwingTemplate {
         super(new TwingEnvironmentNode(new TwingLoaderArray({
             foo: '{% block foo %}foo{% endblock %}'
         })));
+
+        this.sourceContext = new TwingSource('', 'foo');
     }
 
     setEnv(env: TwingEnvironment) {
         this.env = env;
     }
 
-    getTemplateName() {
-        return 'foo';
+    displayWithErrorHandling(context: any, blocks: TwingTemplateBlocksMap) {
+        return super.displayWithErrorHandling(context, blocks);
     }
 
-    displayWithErrorHandling(context: any, blocks: Map<string, Array<any>>) {
-        super.displayWithErrorHandling(context, blocks);
-    }
-
-    doDisplay(context: {}, blocks: Map<string, Array<any>>): void {
+    doDisplay(context: {}, blocks: TwingTemplateBlocksMap): Promise<void> {
         TwingOutputBuffering.echo('foo');
+
+        return Promise.resolve();
     }
 
-    doGetParent(context: any): TwingTemplate | string | false {
+    doGetParent(context: any): Promise<TwingTemplate | string | false> {
         return super.doGetParent(context);
+    }
+
+    displayParentBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<void> {
+        return super.displayParentBlock(name, context, blocks);
+    }
+
+    displayBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<void> {
+        return super.displayBlock(name, context, blocks, useBlocks);
+    }
+
+    renderParentBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<string> {
+        return super.renderParentBlock(name, context, blocks);
+    }
+
+    renderBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<string> {
+        return super.renderBlock(name, context, blocks, useBlocks);
     }
 }
 
@@ -50,8 +66,10 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
         return 'foo';
     }
 
-    doDisplay(context: {}, blocks: Map<string, Array<any>>): void {
-        this.loadTemplate('not_found', 'foo');
+    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+        return this.loadTemplate('not_found').then(() => {
+            return;
+        });
     }
 
     getSourceContext() {
@@ -60,72 +78,75 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
 }
 
 tape('template', function (test) {
-    test.test('toString', function (test) {
-        let template = new TwingTestTemplateTemplate();
-
-        test.same(template.toString(), template.getTemplateName());
-
-        test.end();
-    });
-
     test.test('getSourceContext', function (test) {
         let template = new TwingTestTemplateTemplate();
 
-        test.same(template.getSourceContext(), new TwingSource('', template.getTemplateName()));
+        test.same(template.getSourceContext(), new TwingSource('', 'foo'));
 
         test.end();
     });
 
-    test.test('getParent', function (test) {
+    test.test('getParent', async (test) => {
         let template = new TwingTestTemplateTemplate();
         let stub = sinon.stub(template, 'doGetParent');
 
-        stub.returns(false);
+        stub.returns(Promise.resolve(false));
 
-        test.same(template.getParent(), false);
+        test.same(await template.getParent(), false);
 
-        stub.returns('foo');
+        stub.returns(Promise.resolve('foo'));
 
-        test.true(template.getParent() instanceof TwingTemplate);
+        test.true(await template.getParent() instanceof TwingTemplate);
 
-        stub.returns('bar');
-
-        test.throws(function () {
-            template.getParent();
-        });
-
-        stub.throws();
-
-        test.throws(function () {
-            template.getParent();
-        });
-
-        test.end();
-    });
-
-    test.test('displayParentBlock', function (test) {
-        let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'getParent');
-
-        stub.returns(false);
-
-        test.throws(function () {
-            template.displayParentBlock('foo', {});
-        });
-
-        test.end();
-    });
-
-    test.test('displayBlock', function (test) {
-        let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'getParent');
-
-        stub.returns(false);
+        stub.returns(Promise.resolve('bar'));
 
         try {
-            template.displayBlock('foo', {});
+            await template.getParent();
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Template "bar" is not defined in "foo".');
         }
-        catch (e) {
+
+        stub.returns(Promise.reject(new Error('foo')));
+
+        try {
+            await template.getParent();
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'foo');
+        }
+
+        test.end();
+    });
+
+    test.test('displayParentBlock', async (test) => {
+        let template = new TwingTestTemplateTemplate();
+        let stub = sinon.stub(template, 'getParent');
+
+        stub.returns(Promise.resolve(false));
+
+        try {
+            await template.displayParentBlock('foo', {});
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'The template has no parent and no traits defining the "foo" block in "foo".');
+        }
+
+        test.end();
+    });
+
+    test.test('displayBlock', async (test) => {
+        let template = new TwingTestTemplateTemplate();
+        let stub = sinon.stub(template, 'getParent');
+
+        stub.returns(Promise.resolve(false));
+
+        try {
+            await template.displayBlock('foo', {});
+        } catch (e) {
             test.true(e instanceof TwingErrorRuntime);
             test.same(e.rawMessage, 'Block "foo" on template "foo" does not exist.')
         }
@@ -133,42 +154,40 @@ tape('template', function (test) {
         test.end();
     });
 
-    test.test('renderParentBlock', function (test) {
+    test.test('renderParentBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
         let stub = sinon.stub(template, 'doGetParent');
 
-        stub.returns('foo');
+        stub.returns(Promise.resolve('foo'));
 
-        test.same(template.renderParentBlock('foo', {}, new Map()), 'foo');
-        test.same(template.renderParentBlock('foo', {}), 'foo');
+        test.same(await template.renderParentBlock('foo', {}, new Map()), 'foo');
+        test.same(await template.renderParentBlock('foo', {}), 'foo');
 
         test.end();
     });
 
-    test.test('loadTemplate', function (test) {
+    test.test('loadTemplate', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
         template.setEnv(null);
 
         try {
-            template.loadTemplate('foo');
+            await template.loadTemplate('foo');
 
             test.fail('should throw an Error');
-        }
-        catch (e) {
+        } catch (e) {
             test.true(e instanceof Error);
             test.same(e.message, 'Cannot read property \'loadTemplate\' of null')
         }
 
-        test.test('should return an error with full source information when templateName is set', (test) => {
+        test.test('should return an error with full source information when templateName is set', async (test) => {
             let template = new TwingTestTemplateTemplateWithInvalidLoadTemplate();
 
             try {
-                template.display({});
+                await template.display({});
 
                 test.fail('should throw an Error');
-            }
-            catch (e) {
+            } catch (e) {
                 test.true(e instanceof TwingErrorLoader);
                 test.same(e.message, 'Template "not_found" is not defined in "foo".');
                 test.same(e.getSourceContext(), new TwingSource('code', 'foo', 'path'));
@@ -180,49 +199,47 @@ tape('template', function (test) {
         test.end();
     });
 
-    test.test('doGetParent', function (test) {
+    test.test('doGetParent', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
-        test.equals(template.doGetParent('foo'), false);
+        test.equals(await template.doGetParent('foo'), false);
 
         test.end();
     });
 
-    test.test('display', function (test) {
+    test.test('display', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
         try {
-            template.display(null);
+            await template.display(null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Argument 1 passed to TwingTemplate::display() must be an iterator, null given');
         }
 
         test.end();
     });
 
-    test.test('displayWithErrorHandling', function (test) {
+    test.test('displayWithErrorHandling', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
         TwingOutputBuffering.obStart();
-        template.displayWithErrorHandling({}, undefined);
+
+        await template.displayWithErrorHandling({}, undefined);
+
         let content = TwingOutputBuffering.obGetContents();
 
         test.same(content, 'foo');
 
-        test.test('should rethrow native error as TwingErrorRuntime', (test) => {
-            sinon.stub(template, 'doDisplay').callsFake(() => {
-                throw new Error('foo error');
-            });
+        test.test('should rethrow native error as TwingErrorRuntime', async (test) => {
+            sinon.stub(template, 'doDisplay').returns(Promise.reject(new Error('foo error')));
 
             try {
-                template.displayWithErrorHandling({}, new Map());
+                await template.displayWithErrorHandling({}, new Map());
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.constructor.name, 'TwingErrorRuntime');
                 test.same(e.message, 'An exception has been thrown during the rendering of a template ("foo error") in "foo".');
             }
@@ -233,15 +250,14 @@ tape('template', function (test) {
         test.end();
     });
 
-    test.test('traceableMethod', function (test) {
+    test.test('traceableMethod', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
         try {
-            template.traceableMethod(() => {
-                throw new Error('foo error');
+            await template.traceableMethod(() => {
+                return Promise.reject(new Error('foo error'));
             }, 1, new TwingSource('', 'foo'))();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'An exception has been thrown during the rendering of a template ("foo error") in "foo" at line 1.');
             test.same(e.constructor.name, 'TwingErrorRuntime');
         }
@@ -249,55 +265,55 @@ tape('template', function (test) {
         test.end();
     });
 
-    test.test('traceableDisplayBlock', function (test) {
+    test.test('traceableDisplayBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'displayBlock');
+        let stub = sinon.stub(template, 'displayBlock').returns(Promise.resolve());
 
-        template.traceableDisplayBlock(1, null)();
+        await template.traceableDisplayBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call displayBlock once');
 
         test.end();
     });
 
-    test.test('traceableDisplayParentBlock', function (test) {
+    test.test('traceableDisplayParentBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'displayParentBlock');
+        let stub = sinon.stub(template, 'displayParentBlock').returns(Promise.resolve());
 
-        template.traceableDisplayParentBlock(1, null)();
+        await template.traceableDisplayParentBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call displayParentBlock once');
 
         test.end();
     });
 
-    test.test('traceableRenderBlock', function (test) {
+    test.test('traceableRenderBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'renderBlock');
+        let stub = sinon.stub(template, 'renderBlock').returns(Promise.resolve(''));
 
-        template.traceableRenderBlock(1, null)();
+        await template.traceableRenderBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call renderBlock once');
 
         test.end();
     });
 
-    test.test('traceableRenderParentBlock', function (test) {
+    test.test('traceableRenderParentBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'renderParentBlock');
+        let stub = sinon.stub(template, 'renderParentBlock').returns(Promise.resolve(''));
 
-        template.traceableRenderParentBlock(1, null)();
+        await template.traceableRenderParentBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call renderParentBlock once');
 
         test.end();
     });
 
-    test.test('traceableHasBlock', function (test) {
+    test.test('traceableHasBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'hasBlock');
+        let stub = sinon.stub(template, 'hasBlock').returns(Promise.resolve(true));
 
-        template.traceableHasBlock(1, null)();
+        await template.traceableHasBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call hasBlock once');
 

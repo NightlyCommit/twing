@@ -1,3 +1,3 @@
-export function even(value: any): boolean {
-    return value % 2 === 0;
+export function even(value: any): Promise<boolean> {
+    return Promise.resolve(value % 2 === 0);
 }

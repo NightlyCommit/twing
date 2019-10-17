@@ -1,9 +1,9 @@
 import * as tape from "tape";
 import {merge} from "../../../../../../../../src/lib/extension/core/filters/merge";
 
-tape('merge', (test) => {
+tape('merge', async (test) => {
     try {
-        merge(null, new Map());
+        await merge(null, new Map());
 
         test.fail();
     } catch (e) {
@@ -11,7 +11,7 @@ tape('merge', (test) => {
     }
 
     try {
-        merge(new Map(), null);
+        await merge(new Map(), null);
 
         test.fail();
     } catch (e) {
@@ -19,7 +19,7 @@ tape('merge', (test) => {
     }
 
     try {
-        merge(undefined, new Map());
+        await merge(undefined, new Map());
 
         test.fail();
     } catch (e) {
@@ -27,7 +27,7 @@ tape('merge', (test) => {
     }
 
     try {
-        merge(new Map(), undefined);
+        await merge(new Map(), undefined);
 
         test.fail();
     } catch (e) {
@@ -35,7 +35,7 @@ tape('merge', (test) => {
     }
 
     try {
-        merge('a' as any, new Map());
+        await merge('a' as any, new Map());
 
         test.fail();
     } catch (e) {
@@ -43,14 +43,14 @@ tape('merge', (test) => {
     }
 
     try {
-        merge(new Map(), 'a' as any);
+        await merge(new Map(), 'a' as any);
 
         test.fail();
     } catch (e) {
         test.same(e.message, 'The merge filter only works with arrays or "Traversable", got "string" as second argument.');
     }
 
-    test.same(merge(new Map([[0, 'a']]), new Map([[0, 'b']])), new Map([[0, 'a'], [1, 'b']]));
+    test.same(await merge(new Map([[0, 'a']]), new Map([[0, 'b']])), new Map([[0, 'a'], [1, 'b']]));
 
     test.end();
 });
