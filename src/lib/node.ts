@@ -36,6 +36,7 @@ export enum TwingNodeType {
     IMPORT = 'import',
     INCLUDE = 'include',
     INLINE_PRINT = 'inline_print',
+    LINE = 'line',
     MACRO = 'macro',
     MODULE = 'module',
     PRINT = 'print',

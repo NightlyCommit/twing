@@ -126,6 +126,7 @@ import {TwingSourceMapNodeFactorySpaceless} from "../source-map/node-factory/spa
 import {TwingSourceMapNodeFactory} from "../source-map/node-factory";
 import {TwingNodeExpressionTestConstant} from "../node/expression/test/constant";
 import {TwingNodeVisitorMacroAutoImport} from "../node-visitor/macro-auto-import";
+import {TwingTokenParserLine} from "../token-parser/line";
 
 export class TwingExtensionCore extends TwingExtension {
     private dateFormats: Array<string> = ['F j, Y H:i', '%d days'];
@@ -281,6 +282,7 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingTokenParserIf(),
             new TwingTokenParserImport(),
             new TwingTokenParserInclude(),
+            new TwingTokenParserLine(),
             new TwingTokenParserMacro(),
             new TwingTokenParserSandbox(),
             new TwingTokenParserSet(),
