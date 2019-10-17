@@ -22,7 +22,7 @@ try {
 }
 catch (e) {
     if (e instanceof this.SandboxSecurityError) {
-        e.setSourceContext(this.source);
+        e.setSourceContext(this.getSourceContext());
 
         if (e instanceof this.SandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
             e.setTemplateLine(tags.get(e.getTagName()));

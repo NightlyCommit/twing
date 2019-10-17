@@ -95,22 +95,20 @@ let varDump = function (...args: any[]): string {
     return output.join('');
 };
 
-export function dump(context: any, ...vars: Array<any>): string {
-    let dump: string;
-
+export function dump(context: any, ...vars: Array<any>): Promise<string> {
     if (vars.length < 1) {
         let vars_: Map<any, any> = new Map();
 
-        iterate(context, (key: any, value: any) => {
+        return iterate(context, (key: any, value: any): Promise<void> => {
             if (!(value instanceof TwingTemplate)) {
                 vars_.set(key, value);
             }
-        });
 
-        dump = varDump(vars_);
-    } else {
-        dump = varDump(...vars);
+            return;
+        }).then(() => {
+            return varDump(vars_);
+        });
     }
 
-    return dump;
+    return Promise.resolve(varDump(...vars));
 }

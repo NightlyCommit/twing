@@ -5,18 +5,9 @@ Introduction
 
 This is the documentation for Twing, the TypeScript-written Node.js implementation of the [Twig Language][language-reference-url].
 
-The key-features are...
-
-* *Fast*: Twing compiles templates down to plain optimized JavaScript code. The overhead compared to regular JavaScript code was reduced to the very minimum.
-
-* *Secure*: Twing has a sandbox mode to evaluate untrusted template code. This allows Twing to be used as a template language for applications where users
-  may modify the template design.
-
-* *Flexible*: Twing is powered by a flexible lexer and parser. This allows the developer to define their own custom tags and filters, and to create their own DSL.
-
 ## Prerequisites
 
-Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** to enjoy the best performance possible.
+Twing needs at least **node.js 8.0.0** to run.
 
 ## Installation
 
@@ -36,25 +27,26 @@ let loader = new TwingLoaderArray({
 });
 let twing = new TwingEnvironment(loader);
 
-let output = twing.render('index.twig', {name: 'Fabien'});
+twing.render('index.twig', {name: 'Fabien'}).then((output) => {
+    // do something with the output
+});
 ```
 
-Twing uses a loader (`TwingLoaderArray`) to locate templates, and an
-environment (`TwingEnvironment`) to store the configuration.
+Twing uses a loader (`TwingLoaderArray`) to locate templates, and an environment (`TwingEnvironment`) to store the configuration.
 
-The `render()` method loads the template passed as a first argument and
-renders it with the variables passed as a second argument.
+The `render()` method loads the template passed as a first argument and renders it with the variables passed as a second argument.
 
-As templates are generally stored on the filesystem, Twing also comes with a
-filesystem loader:
+As templates are generally stored on the filesystem, Twing also comes with a filesystem loader:
 
 ```js
 const {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 
 let loader = new TwingLoaderFilesystem('/path/to/templates');
-let twing = new TwingEnvironment(loader);
+let environment = new TwingEnvironment(loader);
 
-let ouput = twing.render('index.html', {'name': 'Fabien'});
+environment.render('index.twig', {name: 'Fabien'}).then((output) => {
+    // do something with the output
+});
 ```
 
 ### Real-world example using Express
@@ -79,12 +71,16 @@ _Credit for this example goes to [stela5](https://github.com/stela5)._
         let twing = new TwingEnvironment(loader);
         
         app.get('/', function (req, res) {
-          res.end(twing.render('index.twig', {'name': 'World'}));
-        })
+          twing.render('index.twig', {'name': 'World'}).then((output) => {
+              res.end(output);
+          });
+        });
         
-        app.get('/name/:name', function (req, res) {
-          res.end(twing.render('index.twig', req.params));
-        })
+        app.get('/name/:name', function (req, res) {      
+          twing.render('index.twig', req.params).then((output) => {
+            res.end(output);
+          });
+        });
         
         app.listen(port, () => {
           console.log('Node.js Express server listening on port '+port);

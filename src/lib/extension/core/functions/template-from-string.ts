@@ -1,3 +1,6 @@
+import {TwingEnvironment} from "../../../environment";
+import {TwingTemplate} from "../../../template";
+
 /**
  * Loads a template from a string.
  *
@@ -9,11 +12,8 @@
  * @param {string} template A template as a string or object implementing toString()
  * @param {string} name An optional name for the template to be used in error messages
  *
- * @returns TwingTemplate
+ * @returns {Promise<TwingTemplate>}
  */
-import {TwingEnvironment} from "../../../environment";
-import {TwingTemplate} from "../../../template";
-
-export function templateFromString(env: TwingEnvironment, template: string, name: string = null): TwingTemplate {
+export function templateFromString(env: TwingEnvironment, template: string, name: string = null): Promise<TwingTemplate> {
     return env.createTemplate(template, name);
 }

@@ -17,9 +17,9 @@ import {isPlainObject} from "../../../helpers/is-plain-object";
  * @param {*} thing An iterable
  * @param {*} columnKey The column key
  *
- * @return Array<any> The array of values
+ * @return {Promise<Array<any>>} The array of values
  */
-export function column(thing: any, columnKey: any) {
+export function column(thing: any, columnKey: any): Promise<Array<any>> {
     let map: Map<any, any>;
 
     if (!isTraversable(thing) || isPlainObject(thing)) {
@@ -40,5 +40,5 @@ export function column(thing: any, columnKey: any) {
         }
     }
 
-    return result;
+    return Promise.resolve(result);
 }

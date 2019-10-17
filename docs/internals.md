@@ -122,33 +122,12 @@ module.exports = (TwingTemplate) => {
             constructor(env) {
                 super(env);
     
-                this.source = this.getSourceContext();
-    
-                this.parent = false;
-    
-                this.blocks = new Map([
-                ]);
+                this.sourceContext = new this.Source(``, `index`, ``);
             }
     
-            doDisplay(context, blocks = new Map()) {
+            async doDisplay(context, blocks = new Map()) {
                 this.echo(`Hello `);
-                this.echo(this.env.getFilter('escape').traceableCallable(1, this.source)(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
-            }
-    
-            getTemplateName() {
-                return `index`;
-            }
-    
-            getSourceMapSource() {
-                return this.env.getLoader().resolve(`index`);
-            }
-    
-            isTraitable() {
-                return false;
-            }
-    
-            getSourceContext() {
-                return new this.Source(``, `index`, ``);
+                this.echo(await this.env.getFilter('escape').traceableCallable(1, this.getSourceContext())(...[this.env, (context.has(`name`) ? context.get(`name`) : null), `html`, null, true]));
             }
         }],
     ]);

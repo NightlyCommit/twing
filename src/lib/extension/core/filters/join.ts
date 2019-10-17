@@ -19,37 +19,41 @@ import {iteratorToArray} from "../../../helpers/iterator-to-array";
  * @param {string} glue The separator
  * @param {string | null} and The separator for the last pair
  *
- * @returns {string} The concatenated string
+ * @returns {Promise<string>} The concatenated string
  */
-export function join(value: any, glue: string = '', and: string = null) {
-    if (isNullOrUndefined(value)) {
-        return '';
-    }
+export function join(value: any, glue: string = '', and: string = null): Promise<string> {
+    let _do = (): string => {
+        if (isNullOrUndefined(value)) {
+            return '';
+        }
 
-    if (isTraversable(value)) {
-        value = iteratorToArray(value, false);
+        if (isTraversable(value)) {
+            value = iteratorToArray(value, false);
 
-        // this is ugly but we have to ensure that each element of the array is rendered as PHP would render it
-        // this is mainly useful for booleans that are not rendered the same way in PHP and JavaScript
-        let safeValue = value.map(function (item: any) {
-            if (typeof item === 'boolean') {
-                return (item === true) ? '1' : ''
+            // this is ugly but we have to ensure that each element of the array is rendered as PHP would render it
+            // this is mainly useful for booleans that are not rendered the same way in PHP and JavaScript
+            let safeValue = value.map(function (item: any) {
+                if (typeof item === 'boolean') {
+                    return (item === true) ? '1' : ''
+                }
+
+                return item;
+            });
+
+
+            if (and === null || and === glue) {
+                return safeValue.join(glue);
             }
 
-            return item;
-        });
+            if (safeValue.length === 1) {
+                return safeValue[0];
+            }
 
-
-        if (and === null || and === glue) {
-            return safeValue.join(glue);
+            return safeValue.slice(0, -1).join(glue) + and + safeValue[safeValue.length - 1];
         }
 
-        if (safeValue.length === 1) {
-            return safeValue[0];
-        }
+        return '';
+    };
 
-        return safeValue.slice(0, -1).join(glue) + and + safeValue[safeValue.length - 1];
-    }
-
-    return '';
+    return Promise.resolve(_do());
 }

@@ -136,7 +136,7 @@ tape('extension-set', (test) => {
         test.test('already registered', (test) => {
             let extensionSet = new TwingExtensionSet();
 
-            let test_ = new TwingTest('foo', () => true, []);
+            let test_ = new TwingTest('foo', () => Promise.resolve(true), []);
 
             extensionSet.addTest(test_);
 
@@ -157,7 +157,7 @@ tape('extension-set', (test) => {
             extensionSet.getTests();
 
             try {
-                extensionSet.addTest(new TwingTest('foo', () => true, []));
+                extensionSet.addTest(new TwingTest('foo', () => Promise.resolve(true), []));
 
                 test.fail();
             } catch (e) {
@@ -183,8 +183,7 @@ tape('extension-set', (test) => {
         test.test('already registered', (test) => {
             let extensionSet = new TwingExtensionSet();
 
-            let filter = new TwingFilter('foo', () => {
-            }, []);
+            let filter = new TwingFilter('foo', () => Promise.resolve(), []);
 
             extensionSet.addFilter(filter);
 
@@ -205,8 +204,7 @@ tape('extension-set', (test) => {
             extensionSet.getFilters();
 
             try {
-                extensionSet.addFilter(new TwingFilter('foo', () => {
-                }, []));
+                extensionSet.addFilter(new TwingFilter('foo', () => Promise.resolve(), []));
 
                 test.fail();
             } catch (e) {
@@ -228,22 +226,6 @@ tape('extension-set', (test) => {
         test.end();
     });
 
-    test.test('getFilter', (test) => {
-        test.test('with filter callback returning false', (test) => {
-            let extensionSet = new TwingExtensionSet();
-
-            extensionSet.registerUndefinedFilterCallback(() => {
-                return false;
-            });
-
-            test.same(extensionSet.getFilter('foo'), null);
-
-            test.end();
-        });
-
-        test.end();
-    });
-
     test.test('addTest', (test) => {
         test.test('initialized', (test) => {
             let extensionSet = new TwingExtensionSet();
@@ -251,7 +233,7 @@ tape('extension-set', (test) => {
             extensionSet.getFunctions();
 
             try {
-                extensionSet.addTest(new TwingTest('foo', () => true, []));
+                extensionSet.addTest(new TwingTest('foo', () => Promise.resolve(true), []));
 
                 test.fail();
             } catch (e) {
@@ -268,8 +250,7 @@ tape('extension-set', (test) => {
         test.test('already registered', (test) => {
             let extensionSet = new TwingExtensionSet();
 
-            let function_ = new TwingFunction('foo', () => {
-            }, []);
+            let function_ = new TwingFunction('foo', () => Promise.resolve(), []);
 
             extensionSet.addFunction(function_);
 
@@ -290,8 +271,7 @@ tape('extension-set', (test) => {
             extensionSet.getFunctions();
 
             try {
-                extensionSet.addFunction(new TwingFunction('foo', () => {
-                }, []));
+                extensionSet.addFunction(new TwingFunction('foo', () => Promise.resolve(), []));
 
                 test.fail();
             } catch (e) {
@@ -310,22 +290,6 @@ tape('extension-set', (test) => {
         extensionSet.getFunctions();
 
         test.true(extensionSet.isInitialized());
-
-        test.end();
-    });
-
-    test.test('getFunction', (test) => {
-        test.test('with function callback returning false', (test) => {
-            let extensionSet = new TwingExtensionSet();
-
-            extensionSet.registerUndefinedFunctionCallback(() => {
-                return false;
-            });
-
-            test.same(extensionSet.getFunction('foo'), null);
-
-            test.end();
-        });
 
         test.end();
     });

@@ -15,7 +15,7 @@ That's what Twing is. A maintainability-first engine that pass 100% of the TwigP
 
 ## Prerequisites
 
-Twing needs at least **node.js 6.0.0** to run but it is highly recommended to use **node.js 8.x** or higher to enjoy the best performance possible.
+Twing needs at least **node.js 8.0.0** to run.
 
 ## Installation
 
@@ -33,7 +33,9 @@ let loader = new TwingLoaderArray({
 });
 let twing = new TwingEnvironment(loader);
 
-let output = twing.render('index.twig', {name: 'Fabien'});
+twing.render('index.twig', {name: 'Fabien'}).then((output) => {
+    // do something with the output
+});
 ```
 
 ## Usage with Express

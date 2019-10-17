@@ -2,7 +2,7 @@ import * as tape from 'tape';
 import {CoreTestIterator} from "../../test";
 import {arrayKeys} from "../../../../../../../../src/lib/extension/core/filters/array-keys";
 
-tape('array-keys', (test) => {
+tape('array-keys', async (test) => {
     let map = new Map([
         [1, 'a'],
         [2, 'b'],
@@ -18,7 +18,7 @@ tape('array-keys', (test) => {
     ];
 
     for (let arrayKeyCase of arrayKeyCases) {
-        test.same(arrayKeys(arrayKeyCase[1]), arrayKeyCase[0]);
+        test.same(await arrayKeys(arrayKeyCase[1]), arrayKeyCase[0]);
     }
 
     test.end();

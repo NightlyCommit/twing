@@ -30,7 +30,7 @@ export class TwingNodeMacro extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write(`macro_${this.getAttribute('name')}(`)
+            .raw(`async (`)
         ;
 
         let count = this.getNode('arguments').getNodes().size;
@@ -53,9 +53,9 @@ export class TwingNodeMacro extends TwingNode {
 
         compiler
             .raw('...__varargs__')
-            .raw(") {\n")
+            .raw(") => {\n")
             .indent()
-            .write('let macros = this.macros.clone();\n')
+            .write('let aliases = this.aliases.clone();\n')
             .write("let context = new this.Context(this.env.mergeGlobals(new Map([\n")
             .indent()
         ;
@@ -115,7 +115,7 @@ export class TwingNodeMacro extends TwingNode {
             .write('}\n')
             .write('return result;\n')
             .outdent()
-            .write("}\n\n")
+            .write("}")
         ;
     }
 }

@@ -15,20 +15,12 @@ import {TwingNodeMacro} from "../node/macro";
 import {TwingNode} from "../node";
 import {Token, TokenType} from "twig-lexer";
 
-const varValidator = require('var-validator');
-
 export class TwingTokenParserMacro extends TwingTokenParser {
     parse(token: Token): TwingNode {
         let lineno = token.line;
         let columnno = token.column;
         let stream = this.parser.getStream();
         let name = stream.expect(TokenType.NAME).value;
-        let safeName = name;
-
-        if (!varValidator.isValid(name)) {
-            safeName = Buffer.from(name).toString('hex');
-        }
-
         let macroArguments = this.parser.parseArguments(true, true);
 
         stream.expect(TokenType.TAG_END);
@@ -54,7 +46,7 @@ export class TwingTokenParserMacro extends TwingTokenParser {
             [0, body]
         ]);
 
-        this.parser.setMacro(name, new TwingNodeMacro(safeName, new TwingNodeBody(nodes), macroArguments, lineno, columnno, this.getTag()));
+        this.parser.setMacro(name, new TwingNodeMacro(name, new TwingNodeBody(nodes), macroArguments, lineno, columnno, this.getTag()));
 
         return null;
     }

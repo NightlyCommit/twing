@@ -19,7 +19,7 @@ tape('node/expression/filter/default', (test) => {
 
             let compiler = new TwingCompiler(new TwingEnvironmentNode(new TwingLoaderArray({})));
 
-            test.same(compiler.compile(node).getSource(), `(((context.has(\`foo\`))) ? (this.env.getFilter('default').traceableCallable(1, this.source)(...[(context.has(\`foo\`) ? context.get(\`foo\`) : null)])) : (\`\`))`);
+            test.same(compiler.compile(node).getSource(), `(((context.has(\`foo\`))) ? (await this.env.getFilter('default').traceableCallable(1, this.getSourceContext())(...[(context.has(\`foo\`) ? context.get(\`foo\`) : null)])) : (\`\`))`);
 
             test.end();
         });

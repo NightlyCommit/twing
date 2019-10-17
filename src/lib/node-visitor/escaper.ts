@@ -5,7 +5,6 @@ import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
 import {TwingNodeTraverser} from "../node-traverser";
 import {TwingNodeExpressionConstant} from "../node/expression/constant";
 import {TwingNodeExpression} from "../node/expression";
-
 import {TwingNodeExpressionFilter} from "../node/expression/filter";
 import {TwingNodePrint} from "../node/print";
 import {TwingNodeDo} from "../node/do";
@@ -17,7 +16,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private blocks: Map<string, any> = new Map();
     private safeAnalysis: TwingNodeVisitorSafeAnalysis;
     private traverser: TwingNodeTraverser;
-    private defaultStrategy: string | Function | false = false;
+    private defaultStrategy: string | false = false;
     private safeVars: Array<TwingNode> = [];
 
     constructor() {

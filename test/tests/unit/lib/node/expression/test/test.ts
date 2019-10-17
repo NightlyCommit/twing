@@ -7,8 +7,8 @@ import {MockEnvironment} from "../../../../../../mock/environment";
 import {TwingTest} from "../../../../../../../src/lib/test";
 import {MockCompiler} from "../../../../../../mock/compiler";
 
-function twig_tests_test_barbar(string: string, arg1: any = null, arg2: any = null, args: any[] = []): boolean {
-    return true;
+function twig_tests_test_barbar(string: string, arg1: any = null, arg2: any = null, args: any[] = []) {
+    return Promise.resolve(true);
 }
 
 function createTest(node: TwingNode, name: string, args: Map<any, any> = new Map()) {
@@ -41,9 +41,7 @@ tape('node/expression/test', (test) => {
             is_variadic: true,
             needs_context: true
         }));
-        environment.addTest(new TwingTest('anonymous', function () {
-            return true;
-        }, []));
+        environment.addTest(new TwingTest('anonymous', () => Promise.resolve(true), []));
 
         let compiler = new MockCompiler(environment);
 
@@ -52,7 +50,7 @@ tape('node/expression/test', (test) => {
                 [0, new TwingNodeExpressionConstant('foo', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'anonymous\').traceableCallable(1, this.source)(...[\`foo\`, \`foo\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'anonymous\').traceableCallable(1, this.getSourceContext())(...[\`foo\`, \`foo\`])');
 
             test.end();
         });
@@ -62,13 +60,13 @@ tape('node/expression/test', (test) => {
 
             let node = createTest(string, 'barbar');
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`])');
 
             node = createTest(string, 'barbar', new Map([
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
 
             node = createTest(string, 'barbar', new Map<any, TwingNode>([
                 [0, new TwingNodeExpressionConstant('1', 1, 1)],
@@ -77,7 +75,7 @@ tape('node/expression/test', (test) => {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'this.env.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
             test.end();
         });

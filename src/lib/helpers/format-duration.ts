@@ -11,9 +11,9 @@ const padStart = function (value: number, length: number, padString: string): st
 };
 
 /**
- *
  * @param {"luxon".luxon.Duration} duration
  * @param {string} format
+ *
  * @returns {string} The formatted interval.
  */
 export function formatDuration(duration: Duration, format: string): string {

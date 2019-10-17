@@ -4,12 +4,12 @@ import {TwingCallableWrapper} from "../../../../../src/lib/callable-wrapper";
 import {TwingError} from "../../../../../src/lib/error";
 import {TwingSource} from "../../../../../src/lib/source";
 
-tape('traceableCallable', (test: Test) => {
-    test.test('should update TwingError errors', (test: Test) => {
-        class Foo extends TwingCallableWrapper {
+tape('traceableCallable', (test) => {
+    test.test('should update TwingError errors', async (test) => {
+        class Foo extends TwingCallableWrapper<any> {
             constructor() {
                 super('foo', () => {
-                    throw new TwingError('foo error');
+                    return Promise.reject(new TwingError('foo error'));
                 }, [])
             }
         }
@@ -17,7 +17,7 @@ tape('traceableCallable', (test: Test) => {
         let foo = new Foo();
 
         try {
-            foo.traceableCallable(1, new TwingSource('', 'foo'))();
+            await foo.traceableCallable(1, new TwingSource('', 'foo'))();
 
             test.fail();
         }
@@ -30,8 +30,8 @@ tape('traceableCallable', (test: Test) => {
         test.end();
     });
 
-    test.test('should let other errors untouched', (test: Test) => {
-        class Foo extends TwingCallableWrapper {
+    test.test('should let other errors untouched', async (test) => {
+        class Foo extends TwingCallableWrapper<any> {
             constructor() {
                 super('foo', () => {
                     throw new Error('foo error');
@@ -42,7 +42,7 @@ tape('traceableCallable', (test: Test) => {
         let foo = new Foo();
 
         try {
-            foo.traceableCallable(1, null)();
+            await foo.traceableCallable(1, null)();
 
             test.fail();
         }

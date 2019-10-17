@@ -20,9 +20,9 @@ BAR FOO
 `;
     }
 
-    getContext() {
+    async getContext() {
         return {
-            foo: this.env.loadTemplate('foo.twig')
+            foo: await this.env.loadTemplate('foo.twig')
         }
     }
 }

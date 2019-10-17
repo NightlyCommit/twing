@@ -2,22 +2,21 @@ import * as tape from 'tape';
 import {Test} from "tape";
 import {stub} from "sinon";
 import {TwingCacheFilesystem} from "../../../../../../src/lib/cache/filesystem";
+import * as fs from "fs";
+import {join, resolve} from "path";
 
-const nodePath = require('path');
-const fs = require('fs-extra');
-
-let fixturesPath = nodePath.resolve('test/tests/unit/lib/cache/filesystem/fixtures');
+let fixturesPath = resolve('test/tests/unit/lib/cache/filesystem/fixtures');
 
 tape('cache filesystem', (test: Test) => {
     let cache = new TwingCacheFilesystem(fixturesPath);
 
-    test.test('load', (test) => {
-        test.same(cache.load('unknown')(null), new Map());
+    test.test('load', async (test) => {
+        test.same((await cache.load('unknown'))(null), new Map());
 
-        test.test('should bypass require cache', (test) => {
-            let load1 = cache.load(nodePath.join(fixturesPath, 'template.js'));
-            let load2 = cache.load(nodePath.join(fixturesPath, 'template.js'));
-            let load3 = cache.load(nodePath.join(fixturesPath, 'template.js'));
+        test.test('should bypass require cache', async (test) => {
+            let load1 = await cache.load(join(fixturesPath, 'template.js'));
+            let load2 = await cache.load(join(fixturesPath, 'template.js'));
+            let load3 = await cache.load(join(fixturesPath, 'template.js'));
 
             test.same(load1(null), 1);
             test.same(load2(null), 1);
@@ -29,13 +28,13 @@ tape('cache filesystem', (test: Test) => {
         test.end();
     });
 
-    test.test('write', function(test) {
-        let stubWriteFileSync = stub(fs, 'writeFileSync');
-
-        stubWriteFileSync.throws();
+    test.test('write', async (test) => {
+        let writeFileStub = stub(fs, 'writeFile').callsFake((path, data, cb) => {
+            return cb(new Error('foo'));
+        });
 
         try {
-            cache.write('foo', null);
+            await cache.write('foo', null);
 
             test.fail();
         }
@@ -43,29 +42,44 @@ tape('cache filesystem', (test: Test) => {
             test.same(e.message, 'Failed to write cache file "foo".');
         }
 
-        stubWriteFileSync.restore();
+        writeFileStub.restore();
+
+        let renameStub = stub(fs, 'rename').callsFake((oldPath, newPath, cb) => {
+            return cb(new Error('foo'));
+        });
+
+        try {
+            await cache.write('foo', null);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Failed to write cache file "foo".');
+        }
+
+        renameStub.restore();
 
         test.end();
     });
 
-    test.test('getTimestamp', function(test) {
-        let stubStatSync = stub(fs, 'statSync');
-
-        stubStatSync.returns({
-            mtimeMs: 1
+    test.test('getTimestamp', async (test) => {
+        let statStub = stub(fs, 'stat').callsFake((path, cb) => {
+            return cb(null, {
+                mtimeMs: 1
+            });
         });
 
-        test.equals(cache.getTimestamp(__filename), 1);
+        test.same(await cache.getTimestamp(__filename), 1);
 
-        stubStatSync.restore();
+        statStub.restore();
 
-        let stubPathExistsSync = stub(fs, 'pathExistsSync');
+        statStub = stub(fs, 'stat').callsFake((path, cb) => {
+            return cb(new Error('foo'));
+        });
 
-        stubPathExistsSync.returns(false);
+        test.same(await cache.getTimestamp(__filename), 0);
 
-        test.false(cache.getTimestamp(__filename));
-
-        stubPathExistsSync.restore();
+        statStub.restore();
 
         test.end();
     });

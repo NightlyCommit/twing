@@ -9,8 +9,8 @@ const words = require('capitalize');
  * @param {TwingEnvironment} env
  * @param {string | TwingMarkup} string A string
  *
- * @returns {string} The capitalized string
+ * @returns {Promise<string>} The capitalized string
  */
-export function capitalize(env: TwingEnvironment, string: string | TwingMarkup) {
-    return words(string.toString());
+export function capitalize(env: TwingEnvironment, string: string | TwingMarkup): Promise<string> {
+    return Promise.resolve(words(string.toString()));
 }

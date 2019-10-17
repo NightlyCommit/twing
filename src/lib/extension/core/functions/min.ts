@@ -1,6 +1,6 @@
 import {iteratorToArray} from "../../../helpers/iterator-to-array";
 
-export function min(...values: Array<any>) {
+export function min(...values: Array<any>): Promise<any> {
     if (values.length === 1) {
         values = values[0];
     }
@@ -9,5 +9,5 @@ export function min(...values: Array<any>) {
 
     array.sort();
 
-    return array[0];
+    return Promise.resolve(array[0]);
 }

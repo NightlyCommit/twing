@@ -32,7 +32,7 @@
     "test:unit": "ts-node node_modules/tape/bin/tape 'test/tests/unit/**/test.ts' | tap-bail | tap-spec",
     "test:browser": "rimraf test/tests/browser/dist && (tsc --project test/tests/browser && node test/tests/browser/dist/test/tests/browser/test.js) | browserify - | tape-run --render='tap-spec'",
     "test:docs": "cd docs && bundle exec jekyll build",
-    "test:eslint": "ts-node node_modules/tape/bin/tape 'test/tests/eslint/**/test.ts' | tap-bail | tap-spec",
+    "test:qc": "ts-node node_modules/tape/bin/tape 'test/tests/qc/**/test.ts' | tap-bail | tap-spec",
     "cover": "nyc npm run test",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "npm run build:cjs && npm run build:es && npm run build:types",
@@ -68,10 +68,10 @@
     "source-map": "^0.6.1",
     "tmp": "0.0.33",
     "twig-lexer": "^0.6.3",
-    "utf8-binary-cutter": "^0.9.2",
-    "var-validator": "0.0.3"
+    "utf8-binary-cutter": "^0.9.2"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.0",
     "@types/locutus": "0.0.5",
     "@types/node": "^9.3.0",
     "@types/sinon": "^4.3.3",

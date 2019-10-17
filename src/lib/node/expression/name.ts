@@ -66,7 +66,7 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
                     .string(name)
                     .raw(' does not exist.\', ')
                     .repr(this.lineno)
-                    .raw(', this.source); })()')
+                    .raw(', this.getSourceContext()); })()')
                     .raw(')')
                 ;
             }

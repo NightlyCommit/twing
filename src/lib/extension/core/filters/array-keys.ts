@@ -12,12 +12,12 @@ import {iteratorToMap} from "../../../helpers/iterator-to-map";
  *  {% endfor %}
  * </pre>
  *
- * @param {Array<*>} array An array
+ * @param {Array<any>} array An array
  *
- * @returns {Array<*>} The keys
+ * @returns {Promise<Array<any>>} The keys
  */
 
-export function arrayKeys(array: Array<any>) {
+export function arrayKeys(array: Array<any>): Promise<Array<any>> {
     let traversable;
 
     if (isNullOrUndefined(array)) {
@@ -26,5 +26,5 @@ export function arrayKeys(array: Array<any>) {
         traversable = iteratorToMap(array);
     }
 
-    return [...traversable.keys()];
+    return Promise.resolve([...traversable.keys()]);
 }

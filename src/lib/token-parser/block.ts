@@ -17,8 +17,6 @@ import {Token, TokenType} from "twig-lexer";
  *  {% endblock %}
  * </pre>
  */
-const varValidator = require('var-validator');
-
 export class TwingTokenParserBlock extends TwingTokenParser {
     parse(token: Token): TwingNode {
         let lineno = token.line;
@@ -26,17 +24,11 @@ export class TwingTokenParserBlock extends TwingTokenParser {
         let stream = this.parser.getStream();
         let name = stream.expect(TokenType.NAME).value;
 
-        let safeName = name;
-
-        if (!varValidator.isValid(name)) {
-            safeName = Buffer.from(name).toString('hex');
-        }
-
         if (this.parser.hasBlock(name)) {
             throw new TwingErrorSyntax(`The block '${name}' has already been defined line ${this.parser.getBlock(name).getTemplateLine()}.`, stream.getCurrent().line, stream.getSourceContext());
         }
 
-        let block = new TwingNodeBlock(safeName, new TwingNode(new Map()), lineno, columnno);
+        let block = new TwingNodeBlock(name, new TwingNode(new Map()), lineno, columnno);
 
         this.parser.setBlock(name, block);
         this.parser.pushLocalScope();

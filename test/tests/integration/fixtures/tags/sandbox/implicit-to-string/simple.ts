@@ -1,4 +1,5 @@
 import TestBase from "../../../../TestBase";
+import {TwingEnvironmentOptions} from "../../../../../../../src/lib/environment-options";
 
 export default class extends TestBase {
     getDescription() {
@@ -19,7 +20,7 @@ export default class extends TestBase {
         return 'TwingSandboxSecurityNotAllowedMethodError: Calling "toString" method on a "Object" is not allowed in "foo.twig" at line 2.';
     }
 
-    getEnvironmentOptions() {
+    getEnvironmentOptions(): TwingEnvironmentOptions {
         return {
             autoescape: false
         };

@@ -2,11 +2,11 @@ import * as tape from 'tape';
 import {TwingLoaderNull} from "../../../../../../src/lib/loader/null";
 
 tape('loader array', (test) => {
-    test.test('getSourceContext', (test) => {
+    test.test('getSourceContext', async (test) => {
         let loader = new TwingLoaderNull();
 
         try {
-            loader.getSourceContext('foo', null);
+            await loader.getSourceContext('foo', null);
 
             test.fail();
         }
@@ -17,34 +17,34 @@ tape('loader array', (test) => {
         test.end();
     });
 
-    test.test('exists', (test) => {
+    test.test('exists', async (test) => {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.exists('foo', null), false);
+        test.same(await loader.exists('foo', null), false);
 
         test.end();
     });
 
-    test.test('getCacheKey', (test) => {
+    test.test('getCacheKey', async (test) => {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.getCacheKey('foo', null), 'foo');
+        test.same(await loader.getCacheKey('foo', null), 'foo');
 
         test.end();
     });
 
-    test.test('isFresh', (test) => {
+    test.test('isFresh', async (test) => {
         let loader = new TwingLoaderNull();
 
-        test.true(loader.isFresh('foo', new Date().getTime(), null));
+        test.true(await loader.isFresh('foo', new Date().getTime(), null));
 
         test.end();
     });
 
-    test.test('resolve', (test) => {
+    test.test('resolve', async (test) => {
         let loader = new TwingLoaderNull();
 
-        test.same(loader.resolve('foo', null), 'foo');
+        test.same(await loader.resolve('foo', null), 'foo');
 
         test.end();
     });

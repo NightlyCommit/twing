@@ -30,6 +30,7 @@
         "no-useless-escape": "off", //also checks normal strings
         "no-fallthrough": "off", //fails on switch fallthroughs
         "no-prototype-builtins": "off", //should be fixed!
-        "no-empty": ["error", { "allowEmptyCatch": true }] //maybe this should be fixed
+        "no-empty": ["error", { "allowEmptyCatch": true }], //maybe this should be fixed
+        "require-atomic-updates": "off" // this is the test suite purpose to check that a code works as expected, not the purpose of code quality check
     }
 }
