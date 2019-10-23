@@ -8,25 +8,23 @@ import {TwingErrorLoader} from "../error/loader";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderNull implements TwingLoaderInterface {
-    TwingLoaderInterfaceImpl: TwingLoaderInterface;
-
-    exists(name: string, from: TwingSource): boolean {
-        return false;
+    exists(name: string, from: TwingSource): Promise<boolean> {
+        return Promise.resolve(false);
     }
 
-    getCacheKey(name: string, from: TwingSource): string {
-        return name;
+    getCacheKey(name: string, from: TwingSource): Promise<string> {
+        return Promise.resolve(name);
     }
 
-    getSourceContext(name: string, from: TwingSource): TwingSource {
+    getSourceContext(name: string, from: TwingSource): Promise<TwingSource> {
         throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
     }
 
-    isFresh(name: string, time: number, from: TwingSource): boolean {
-        return true;
+    isFresh(name: string, time: number, from: TwingSource): Promise<boolean> {
+        return Promise.resolve(true);
     }
 
-    resolve(name: string, from: TwingSource): string {
-        return name;
+    resolve(name: string, from: TwingSource): Promise<string> {
+        return Promise.resolve(name);
     }
 }

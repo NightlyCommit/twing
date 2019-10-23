@@ -25,12 +25,12 @@ tape('TwingError', (test) => {
 
         error = new TwingError('foo');
 
-        test.same(error.getSourceContext(), null);
+        test.same(error.getSourceContext(), undefined);
 
         test.end();
     });
 
-    test.test('twingExceptionGuessWithMissingVarAndArrayLoader', (test) => {
+    test.test('twingExceptionGuessWithMissingVarAndArrayLoader', async (test) => {
         let loader = new TwingLoaderArray({
             'base.html': '{% block content %}{% endblock %}',
             'index.html': `{% extends 'base.html' %}
@@ -48,10 +48,10 @@ tape('TwingError', (test) => {
             cache: false
         });
 
-        let template = twing.loadTemplate('index.html');
+        let template = await twing.loadTemplate('index.html');
 
         try {
-            template.render({});
+            await template.render({});
 
             test.fail();
         }
@@ -65,7 +65,7 @@ tape('TwingError', (test) => {
         test.end();
     });
 
-    test.test('twingExceptionGuessWithExceptionAndArrayLoader', (test) => {
+    test.test('twingExceptionGuessWithExceptionAndArrayLoader', async (test) => {
         let loader = new TwingLoaderArray({
             'base.html': '{% block content %}{% endblock %}',
             'index.html': `{% extends 'base.html' %}
@@ -83,10 +83,10 @@ tape('TwingError', (test) => {
             cache: false
         });
 
-        let template = twing.loadTemplate('index.html');
+        let template = await twing.loadTemplate('index.html');
 
         try {
-            template.render({
+            await template.render({
                 foo: new TwingTestsErrorTestFoo()
             });
 
@@ -102,7 +102,7 @@ tape('TwingError', (test) => {
         test.end();
     });
 
-    test.test('twingExceptionGuessWithMissingVarAndFilesystemLoader', (test) => {
+    test.test('twingExceptionGuessWithMissingVarAndFilesystemLoader', async (test) => {
         let loader = new TwingLoaderFilesystem(path.resolve('test/tests/integration/fixtures/errors'));
 
         let twing = new TwingEnvironmentNode(loader, {
@@ -111,10 +111,10 @@ tape('TwingError', (test) => {
             cache: false
         });
 
-        let template = twing.loadTemplate('index.html');
+        let template = await twing.loadTemplate('index.html');
 
         try {
-            template.render({});
+            await template.render({});
 
             test.fail();
         }
@@ -128,7 +128,7 @@ tape('TwingError', (test) => {
         test.end();
     });
 
-    test.test('twingExceptionAddsFileAndLine', (test) => {
+    test.test('twingExceptionAddsFileAndLine', async (test) => {
         let erroredTemplates = [
             {
                 templates: {
@@ -187,10 +187,10 @@ tape('TwingError', (test) => {
                 cache: false
             });
 
-            let template = twing.loadTemplate('index');
+            let template = await twing.loadTemplate('index');
 
             try {
-                template.render({});
+                await template.render({});
 
                 test.fail();
             }
@@ -202,7 +202,7 @@ tape('TwingError', (test) => {
             }
 
             try {
-                template.render({
+                await template.render({
                     foo: new TwingTestsErrorTestFoo()
                 });
 
@@ -223,10 +223,6 @@ tape('TwingError', (test) => {
         let error = new TwingError('foo', -1, new TwingSource('', 'bar'));
 
         error.setSourceContext(null);
-
-        test.equal(error.getSourceContext(), null);
-
-        error.setSourceContext();
 
         test.equal(error.getSourceContext(), null);
 

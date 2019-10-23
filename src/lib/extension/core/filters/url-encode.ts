@@ -8,9 +8,9 @@ const http_build_query = require('locutus/php/url/http_build_query');
  *
  * @param {string|{}} url A URL or a hash of query parameters
  *
- * @returns {string} The URL encoded value
+ * @returns {Promise<string>} The URL encoded value
  */
-export function urlEncode(url: string | {}): string {
+export function urlEncode(url: string | {}): Promise<string> {
     if (typeof url !== 'string') {
         if (isTraversable(url)) {
             url = iteratorToHash(url);
@@ -18,8 +18,8 @@ export function urlEncode(url: string | {}): string {
 
         let builtUrl: string = http_build_query(url, '', '&');
 
-        return builtUrl.replace(/\+/g, '%20');
+        return Promise.resolve(builtUrl.replace(/\+/g, '%20'));
     }
 
-    return encodeURIComponent(url);
+    return Promise.resolve(encodeURIComponent(url));
 }

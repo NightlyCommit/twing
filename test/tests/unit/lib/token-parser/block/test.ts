@@ -31,7 +31,7 @@ tape('token-parser/block', (test) => {
 
                 test.fail();
             } catch (e) {
-                test.same(e.message, 'Expected endblock for block "foo" (but "bar" given) at line 1.');
+                test.same(e.message, 'Expected endblock for block "foo" (but "bar" given) in "" at line 1.');
             }
 
             test.end();

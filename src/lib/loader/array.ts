@@ -10,13 +10,9 @@ import {iteratorToMap} from "../helpers/iterator-to-map";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingLoaderArray implements TwingLoaderInterface {
-    TwingLoaderInterfaceImpl: TwingLoaderInterface;
-
     private templates: Map<string, string>;
 
     constructor(templates: any) {
-        this.TwingLoaderInterfaceImpl = this;
-
         this.templates = iteratorToMap(templates);
     }
 
@@ -24,35 +20,41 @@ export class TwingLoaderArray implements TwingLoaderInterface {
         this.templates.set(name, template);
     }
 
-    getSourceContext(name: string, from: TwingSource): TwingSource {
-        if (!this.exists(name, from)) {
-            throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
-        }
+    getSourceContext(name: string, from: TwingSource): Promise<TwingSource> {
+        return this.exists(name, from).then((exists) => {
+            if (!exists) {
+                throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
+            }
 
-        return new TwingSource(this.templates.get(name), name);
+            return new TwingSource(this.templates.get(name), name);
+        });
     }
 
-    exists(name: string, from: TwingSource) {
-        return this.templates.has(name);
+    exists(name: string, from: TwingSource): Promise<boolean> {
+        return Promise.resolve(this.templates.has(name));
     }
 
-    getCacheKey(name: string, from: TwingSource): string {
-        if (!this.exists(name, from)) {
-            throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
-        }
+    getCacheKey(name: string, from: TwingSource): Promise<string> {
+        return this.exists(name, from).then((exists) => {
+            if (!exists) {
+                throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
+            }
 
-        return name + ':' + this.templates.get(name);
+            return name + ':' + this.templates.get(name);
+        });
     }
 
-    isFresh(name: string, time: number, from: TwingSource): boolean {
-        if (!this.exists(name, from)) {
-            throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
-        }
+    isFresh(name: string, time: number, from: TwingSource): Promise<boolean> {
+        return this.exists(name, from).then((exists) => {
+            if (!exists) {
+                throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
+            }
 
-        return true;
+            return true;
+        });
     }
 
-    resolve(name: string, from: TwingSource): string {
-        return name;
+    resolve(name: string, from: TwingSource): Promise<string> {
+        return Promise.resolve(name);
     }
 }

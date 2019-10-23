@@ -31,7 +31,7 @@ let getParser = function () {
     let parser = new TwingParser(testEnv);
 
     parser.setParent(new TwingNode());
-    parser['stream'] = new TwingTokenStream([]);
+    parser['stream'] = new TwingTokenStream([], new TwingSource('', 'foo'));
 
     return parser;
 };
@@ -54,16 +54,13 @@ class TwingTestExpressionParserExtension extends TwingExtension {
 
     getFunctions() {
         return [
-            new TwingFunction('deprecated', () => {
-            }, [], {
+            new TwingFunction('deprecated', () => Promise.resolve(), [], {
                 deprecated: '1'
             }),
-            new TwingFunction('deprecated_with_version', () => {
-            }, [], {
+            new TwingFunction('deprecated_with_version', () => Promise.resolve(), [], {
                 deprecated: '1'
             }),
-            new TwingFunction('deprecated_with_alternative', () => {
-            }, [], {
+            new TwingFunction('deprecated_with_alternative', () => Promise.resolve(), [], {
                 deprecated: '1',
                 alternative: 'alternative'
             })
@@ -72,24 +69,19 @@ class TwingTestExpressionParserExtension extends TwingExtension {
 
     getTests() {
         return [
-            new TwingTest('foo bar', () => {
-                return true;
-            }, [])
+            new TwingTest('foo bar', () => Promise.resolve(true), [])
         ]
     }
 
     getFilters() {
         return [
-            new TwingFilter('deprecated', () => {
-            }, [], {
+            new TwingFilter('deprecated', () => Promise.resolve(), [], {
                 deprecated: '1'
             }),
-            new TwingFilter('deprecated_with_version', () => {
-            }, [], {
+            new TwingFilter('deprecated_with_version', () => Promise.resolve(), [], {
                 deprecated: '1'
             }),
-            new TwingFilter('deprecated_with_alternative', () => {
-            }, [], {
+            new TwingFilter('deprecated_with_alternative', () => Promise.resolve(), [], {
                 deprecated: '1',
                 alternative: 'alternative'
             })
@@ -169,13 +161,17 @@ tape('parser', (test) => {
             new Token(TokenType.NAME, 'foo', 1, 0),
             new Token(TokenType.TAG_END, '', 1, 0),
             new Token(TokenType.EOF, '', 1, 0),
-        ]);
+        ], new TwingSource('', 'foo'));
 
         let parser = new TwingParser(testEnv);
 
-        test.throws(function () {
+        try {
             parser.parse(stream);
-        }, /Unknown "foo" tag\. Did you mean "for" at line 1\?/);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Unknown "foo" tag. Did you mean "for" in "foo" at line 1?');
+        }
 
         test.end();
     });
@@ -186,13 +182,17 @@ tape('parser', (test) => {
             new Token(TokenType.NAME, 'foobar', 1, 0),
             new Token(TokenType.TAG_END, '', 1, 0),
             new Token(TokenType.EOF, '', 1, 0),
-        ]);
+        ], new TwingSource('', 'foo'));
 
         let parser = new TwingParser(testEnv);
 
-        test.throws(function () {
+        try {
             parser.parse(stream);
-        }, /Unknown "foobar" tag at line 1\./);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'Unknown "foobar" tag in "foo" at line 1.');
+        }
 
         test.end();
     });
@@ -226,7 +226,7 @@ tape('parser', (test) => {
 
             test.fail();
         } catch (e) {
-            test.same(e.message, 'A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag at line 1?');
+            test.same(e.message, 'A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag in "foo" at line 1?');
         }
 
         test.end();
@@ -237,9 +237,13 @@ tape('parser', (test) => {
 
         let bomData = String.fromCharCode(0xEF, 0xBB, 0xBF);
 
-        test.throws(function () {
+        try {
             parser.filterBodyNodes(new TwingNodeText(bomData + 'not empty', 1, 0));
-        }, /A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag at line 1\?/);
+
+            test.fail();
+        } catch (e) {
+            test.same(e.message, 'A template that extends another one cannot include content outside Twig blocks. Did you forget to put the content inside a {% block %} tag in "foo" at line 1?');
+        }
 
         for (let emptyNode of getFilterBodyNodesWithBOMData()) {
             test.same(null, parser.filterBodyNodes(new TwingNodeText(bomData + emptyNode, 1, 0)));
@@ -305,11 +309,11 @@ tape('parser', (test) => {
                 new Token(TokenType.TAG_START, '', 1, 0),
                 new Token(TokenType.VARIABLE_START, '', 1, 0),
                 new Token(TokenType.TAG_END, '', 1, 0)
-            ]));
+            ], new TwingSource('', 'foo')));
 
             test.fail();
         } catch (e) {
-            test.same(e.message, 'A block must start with a tag name at line 1.');
+            test.same(e.message, 'A block must start with a tag name in "foo" at line 1.');
         }
 
         test.end();
@@ -327,7 +331,7 @@ tape('parser', (test) => {
         stub.throws(new Error('foo'));
 
         try {
-            parser.parse(new TwingTokenStream([]));
+            parser.parse(new TwingTokenStream([], new TwingSource('', 'foo')));
 
             test.fail()
         } catch (e) {
@@ -338,12 +342,12 @@ tape('parser', (test) => {
         stub.throws(new TwingErrorSyntax('foo.'));
 
         try {
-            parser.parse(new TwingTokenStream([]));
+            parser.parse(new TwingTokenStream([], new TwingSource('', 'foo')));
 
             test.fail()
         } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'foo.');
+            test.same(e.message, 'foo in "foo".');
         }
 
         test.end();
@@ -361,27 +365,27 @@ tape('parser', (test) => {
                 new Token(TokenType.TAG_START, '{%', 1, 0),
                 new Token(TokenType.NAME, 'foo', 1, 0),
                 new Token(TokenType.TAG_END, '{', 1, 0)
-            ]), [false, () => {
+            ], new TwingSource('', 'foo')), [false, () => {
                 return false;
             }]);
 
             test.fail()
         } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'Unexpected "foo" tag at line 1');
+            test.same(e.message, 'Unexpected "foo" tag in "foo" at line 1');
         }
 
         try {
             parser.parse(new TwingTokenStream([
                 new Token(-999 as any, null, 1, 0)
-            ]), ['foo', () => {
+            ], new TwingSource('', 'foo')), ['foo', () => {
                 return false;
             }]);
 
             test.fail()
         } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'Lexer or parser ended up in unsupported state at line 1.');
+            test.same(e.message, 'Lexer or parser ended up in unsupported state in "foo" at line 1.');
         }
 
         test.end();
@@ -422,7 +426,7 @@ tape('parser', (test) => {
             new Token(TokenType.TEXT, 'test', 1, 0),
             new Token(TokenType.COMMENT_END, '', 1, 0),
             new Token(TokenType.EOF, '', 1, 0),
-        ]));
+        ], new TwingSource('', 'foo')));
 
         let body = node.getNode('body');
 
@@ -459,8 +463,7 @@ tape('parser', (test) => {
                 parser.parse(env.tokenize(source));
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
                 test.same(e.message, templateAndMessage[1]);
             }
@@ -582,8 +585,7 @@ tape('parser', (test) => {
                 parser.parse(env.tokenize(source));
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
                 test.same(e.message, templateAndMessage[1]);
             }
@@ -603,8 +605,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unexpected token "string" of value "b" ("end of print statement" expected) in "index" at line 1.');
         }
@@ -681,8 +682,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Arguments must be separated by a comma. Unexpected token "operator" of value "=" ("punctuation" expected with value ",") in "index" at line 1.');
         }
@@ -701,8 +701,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Arguments must be separated by a comma. Unexpected token "operator" of value "=" ("punctuation" expected with value ",") in "index" at line 1.');
         }
@@ -721,8 +720,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'An argument must be a name. Unexpected token "string" of value "a" ("name" expected) in "index" at line 1.');
         }
@@ -748,8 +746,7 @@ tape('parser', (test) => {
                 parser.parse(stream);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
                 test.same(e.message, 'A default value for an argument must be a constant (a boolean, a string, a number, or an array) in "index" at line 1.');
             }
@@ -794,8 +791,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "cycl" function. Did you mean "cycle" in "index" at line 1?');
         }
@@ -814,8 +810,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "foobar" function in "index" at line 1.');
         }
@@ -834,8 +829,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "lowe" filter. Did you mean "lower" in "index" at line 1?');
         }
@@ -854,8 +848,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "foobar" filter in "index" at line 1.');
         }
@@ -874,8 +867,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "nul" test. Did you mean "null" in "index" at line 1?');
         }
@@ -894,8 +886,7 @@ tape('parser', (test) => {
             parser.parse(stream);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.name, 'TwingErrorSyntax');
             test.same(e.message, 'Unknown "foobar" test in "index" at line 1.');
         }
@@ -935,7 +926,7 @@ tape('parser', (test) => {
             new Token(TokenType.PUNCTUATION, '(', 1, 1),
             new Token(TokenType.PUNCTUATION, ')', 1, 1),
             new Token(TokenType.VARIABLE_END, null, 1, 1)
-        ]);
+        ], new TwingSource('', 'foo'));
 
         Reflect.set(parser, 'stream', stream);
 
@@ -944,10 +935,9 @@ tape('parser', (test) => {
                 parser.getFunctionNode('attribute', 1, 1);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'The "attribute" function takes at least two arguments (the variable and the attributes) at line 1.');
+                test.same(e.message, 'The "attribute" function takes at least two arguments (the variable and the attributes) in "foo" at line 1.');
             }
 
             test.end();
@@ -960,7 +950,7 @@ tape('parser', (test) => {
                 new Token(TokenType.PUNCTUATION, '(', 1, 1),
                 new Token(TokenType.PUNCTUATION, ')', 1, 1),
                 new Token(TokenType.VARIABLE_END, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             Reflect.set(parser, 'stream', stream);
 
@@ -970,10 +960,9 @@ tape('parser', (test) => {
                 parser.getFunctionNode('parent', 1, 1);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'Calling "parent" outside a block is forbidden at line 1.');
+                test.same(e.message, 'Calling "parent" outside a block is forbidden in "foo" at line 1.');
             }
 
             test.end();
@@ -1053,7 +1042,7 @@ tape('parser', (test) => {
             let stream = new TwingTokenStream([
                 new Token(TokenType.PUNCTUATION, '{', 1, 1),
                 new Token(TokenType.OPERATOR, 'foo', 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new TwingParser(env);
 
@@ -1063,10 +1052,9 @@ tape('parser', (test) => {
                 parser.parseHashExpression();
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'A hash key must be a quoted string, a number, a name, or an expression enclosed in parentheses (unexpected token "operator" of value "foo" at line 1.');
+                test.same(e.message, 'A hash key must be a quoted string, a number, a name, or an expression enclosed in parentheses (unexpected token "operator" of value "foo" in "foo" at line 1.');
             }
 
             test.end();
@@ -1083,7 +1071,7 @@ tape('parser', (test) => {
                 new Token(TokenType.PUNCTUATION, '.', 1, 1),
                 new Token(TokenType.STRING, 'bar', 1, 1),
                 new Token(TokenType.EOF, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new TwingParser(env);
 
@@ -1093,10 +1081,9 @@ tape('parser', (test) => {
                 parser.parseSubscriptExpression(new TwingNodeExpressionConstant('foo', 1, 1));
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'Expected name or number at line 1.');
+                test.same(e.message, 'Expected name or number in "foo" at line 1.');
             }
 
             test.end();
@@ -1115,7 +1102,7 @@ tape('parser', (test) => {
                 new Token(TokenType.NAME, 'foo', 1, 1),
                 new Token(TokenType.NAME, 'bar2', 1, 1),
                 new Token(TokenType.EOF, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new TwingParser(env);
 
@@ -1125,10 +1112,9 @@ tape('parser', (test) => {
                 parser.parseTestExpression(new TwingNodeExpressionConstant(1, 1, 1));
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'Unknown "foo bar2" test. Did you mean "foo bar" at line 1?');
+                test.same(e.message, 'Unknown "foo bar2" test. Did you mean "foo bar" in "foo" at line 1?');
             }
 
             test.end();
@@ -1147,7 +1133,7 @@ tape('parser', (test) => {
                 new Token(TokenType.OPERATOR, '=', 1, 1),
                 new Token(TokenType.NUMBER, '5', 1, 1),
                 new Token(TokenType.PUNCTUATION, ')', 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new TwingParser(env);
 
@@ -1157,10 +1143,9 @@ tape('parser', (test) => {
                 parser.parseArguments(true);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.name, 'TwingErrorSyntax');
-                test.same(e.message, 'A parameter name must be a string, "TwingNodeExpressionConstant" given at line 1.');
+                test.same(e.message, 'A parameter name must be a string, "TwingNodeExpressionConstant" given in "foo" at line 1.');
             }
 
             test.end();
@@ -1219,7 +1204,7 @@ tape('parser', (test) => {
                 new Token(TokenType.PUNCTUATION, '(', 1, 1),
                 new Token(TokenType.STRING, 'bar', 1, 1),
                 new Token(TokenType.EOF, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new Parser(env);
 
@@ -1239,7 +1224,7 @@ tape('parser', (test) => {
                 new Token(TokenType.PUNCTUATION, ')', 1, 1),
                 new Token(TokenType.STRING, '=>', 1, 1),
                 new Token(TokenType.EOF, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new Parser(env);
 
@@ -1259,7 +1244,7 @@ tape('parser', (test) => {
                 new Token(TokenType.PUNCTUATION, ')', 1, 1),
                 new Token(TokenType.ARROW, '=>', 1, 1),
                 new Token(TokenType.EOF, null, 1, 1)
-            ]);
+            ], new TwingSource('', 'foo'));
 
             let parser = new Parser(env);
 
@@ -1270,7 +1255,7 @@ tape('parser', (test) => {
 
                 test.fail('should throw an error');
             } catch (e) {
-                test.same(e.getMessage(), 'Unexpected token "string" of value "bar" at line 1.');
+                test.same(e.getMessage(), 'Unexpected token "string" of value "bar" in "foo" at line 1.');
             }
 
             test.end();

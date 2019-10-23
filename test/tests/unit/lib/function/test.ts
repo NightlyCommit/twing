@@ -4,8 +4,7 @@ import {TwingNode} from "../../../../../src/lib/node";
 
 tape('function', (test) => {
     test.test('getSafe', (test) => {
-        let function_ = new TwingFunction('foo', () => {
-        }, [], {
+        let function_ = new TwingFunction('foo', () => Promise.resolve(), [], {
             is_safe_callback: () => {
                 return 'html'
             }

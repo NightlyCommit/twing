@@ -10,18 +10,22 @@
  *
  * @param value A variable
  *
- * @return {boolean} true if the value is traversable
+ * @return {Promise<boolean>} true if the value is traversable
  */
-export function iterable(value: any) {
-    // for Twig, a string is not traversable
-    if (typeof value === 'string') {
+export function iterable(value: any): Promise<boolean> {
+    let _do = (): boolean => {
+        // for Twig, a string is not traversable
+        if (typeof value === 'string') {
+            return false;
+        }
+
+        if (typeof value[Symbol.iterator] === 'function') {
+            return true;
+        }
+
+        // in PHP objects are not iterable so we have to ensure that the test reflects that
         return false;
-    }
+    };
 
-    if (typeof value[Symbol.iterator] === 'function') {
-        return true;
-    }
-
-    // in PHP objects are not iterable so we have to ensure that the test reflects that
-    return false;
+    return Promise.resolve(_do());
 }

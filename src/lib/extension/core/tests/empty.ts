@@ -16,17 +16,17 @@ const isPlainObject = require('is-plain-object');
  *
  * @returns {boolean} true if the value is empty, false otherwise
  */
-export function empty(value: any): boolean {
+export function empty(value: any): Promise<boolean> {
     if (value === null || value === undefined) {
-        return true;
+        return Promise.resolve(true);
     }
 
     if (typeof value === 'string') {
-        return value.length < 1;
+        return Promise.resolve(value.length < 1);
     }
 
     if (typeof value[Symbol.iterator] === 'function') {
-        return value[Symbol.iterator]().next().done === true;
+        return Promise.resolve(value[Symbol.iterator]().next().done === true);
     }
 
     if (isPlainObject(value)) {
@@ -34,7 +34,7 @@ export function empty(value: any): boolean {
             return empty(value.toString());
         }
         else {
-            return iteratorToArray(value).length < 1;
+            return Promise.resolve(iteratorToArray(value).length < 1);
         }
     }
 
@@ -42,5 +42,5 @@ export function empty(value: any): boolean {
         return empty(value.toString());
     }
 
-    return value === false;
+    return Promise.resolve(value === false);
 }

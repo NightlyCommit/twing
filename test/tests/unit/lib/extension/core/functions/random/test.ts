@@ -7,7 +7,7 @@ import {iconv} from "../../../../../../../../src/lib/helpers/iconv";
 
 const getrandmax = require('locutus/php/math/getrandmax');
 
-tape('random', (test) => {
+tape('random', async (test) => {
     let randomFunctionTestData: [any, Map<any, any>, number][] = [
         [ // array
             new Map([[0, 'apple'], [1, 'orange'], [2, 'citrus']]),
@@ -62,17 +62,17 @@ tape('random', (test) => {
         for (let i = 0; i < 100; i++) {
             let max = data[2];
             let values = [...data[1].values()];
-            let randomValue = random(env, data[0], max);
+            let randomValue = await random(env, data[0], max);
 
             test.true(values.includes(randomValue), `${randomValue} is among ${values}`);
         }
     }
 
-    test.test('without parameter', (test) => {
+    test.test('without parameter', async (test) => {
         let max = getrandmax();
 
         for (let i = 0; i < 100; i++) {
-            let val = random(new MockEnvironment(new MockLoader()));
+            let val = await random(new MockEnvironment(new MockLoader()));
 
             test.true((typeof val === 'number') && val >= 0 && val <= max);
         }
@@ -80,22 +80,22 @@ tape('random', (test) => {
         test.end();
     });
 
-    test.test('randomFunctionReturnsAsIs', (test) => {
-        test.same(random(new MockEnvironment(new MockLoader()), ''), '');
-        test.same(random(new MockEnvironment(new MockLoader(), {
+    test.test('randomFunctionReturnsAsIs', async (test) => {
+        test.same(await random(new MockEnvironment(new MockLoader()), ''), '');
+        test.same(await random(new MockEnvironment(new MockLoader(), {
             charset: 'null'
         }), ''), '');
 
         let instance = {};
 
-        test.same(random(new MockEnvironment(new MockLoader()), instance), instance);
+        test.same(await random(new MockEnvironment(new MockLoader()), instance), instance);
 
         test.end();
     });
 
-    test.test('randomFunctionOfEmptyArrayThrowsException', (test) => {
+    test.test('randomFunctionOfEmptyArrayThrowsException', async (test) => {
         try {
-            random(new MockEnvironment(new MockLoader()), []);
+            await random(new MockEnvironment(new MockLoader()), []);
 
             test.fail();
         } catch (e) {
@@ -105,7 +105,7 @@ tape('random', (test) => {
         test.end();
     });
 
-    test.test('randomFunctionOnNonUTF8String', (test) => {
+    test.test('randomFunctionOnNonUTF8String', async (test) => {
         let twing = new MockEnvironment(new MockLoader());
 
         twing.setCharset('ISO-8859-1');
@@ -113,7 +113,7 @@ tape('random', (test) => {
         let text = iconv('UTF-8', 'ISO-8859-1', Buffer.from('Äé'));
 
         for (let i = 0; i < 30; i++) {
-            let rand = random(twing, text);
+            let rand = await random(twing, text);
             test.true(['Ä', 'é'].includes(iconv('ISO-8859-1', 'UTF-8', rand).toString()));
         }
 

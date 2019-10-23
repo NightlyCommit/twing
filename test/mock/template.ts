@@ -16,6 +16,7 @@ export class MockTemplate extends TwingTemplate {
         return 'foo.html.twig';
     }
 
-    doDisplay(context: {}, blocks: Map<string, Array<any>>): void {
+    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+        return Promise.resolve();
     }
 }

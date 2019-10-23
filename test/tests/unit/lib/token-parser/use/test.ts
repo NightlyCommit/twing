@@ -28,7 +28,7 @@ tape('token-parser/use', (test) => {
                 test.fail();
             }
             catch (e) {
-                test.same(e.message, 'The template references in a "use" statement must be a string at line 1.')
+                test.same(e.message, 'The template references in a "use" statement must be a string in "" at line 1.')
             }
 
             test.end();

@@ -1,4 +1,4 @@
-export function merge(iterable1: Map<any, any>, iterable2: Map<any, any>): Map<any, any> {
+export function merge<V>(iterable1: Map<any, V>, iterable2: Map<any, V>): Map<any, V> {
     let result = new Map();
 
     let index = 0;

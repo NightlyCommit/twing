@@ -23,7 +23,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             ;
         }
         else {
-            compiler.raw(`this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.source)(...`);
+            compiler.raw(`await this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.getSourceContext())(...`);
         }
 
         this.compileArguments(compiler);
@@ -57,7 +57,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 compiler.raw(', ');
             }
 
-            compiler.raw('this.source');
+            compiler.raw('this.getSourceContext()');
 
             first = false;
         }
@@ -209,7 +209,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 return parameter instanceof TwingNode;
             });
 
-            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : this.getTemplateLine(), new TwingSource('', this.getTemplateName()));
+            throw new TwingErrorSyntax(`Unknown argument${parameters.size > 1 ? 's' : ''} "${[...parameters.keys()].join('", "')}" for ${callType} "${callName}(${names.join(', ')})".`, unknownParameter ? unknownParameter.getTemplateLine() : this.getTemplateLine());
         }
 
         return arguments_;

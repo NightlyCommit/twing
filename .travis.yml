@@ -1,7 +1,5 @@
 language: node_js
 node_js:
-  - "6"
-  - "7"
   - "8"
   - "9"
   - "10"
@@ -31,7 +29,7 @@ jobs:
         - npm run test:docs
       install:
         - cd docs && bundle install --path ./vendor/bundle
-    - stage: test ESLint
+    - stage: test code quality
       node_js: "12"
       script:
-        - npm run test:eslint
+        - npm run test:qc

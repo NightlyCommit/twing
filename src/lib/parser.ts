@@ -421,9 +421,9 @@ export class TwingParser {
         // check that the body does not contain non-empty output nodes
         if ((node.getType() === TwingNodeType.TEXT && !ctypeSpace(node.getAttribute('data'))) ||
             ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS))) {
-            let nodeData: string = node.getAttribute('data') as string;
+            if (node.toString().indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
+                let nodeData: string = node.getAttribute('data') as string;
 
-            if (nodeData.indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 let trailingData = nodeData.substring(3);
 
                 if (trailingData === '' || ctypeSpace(trailingData)) {
@@ -890,15 +890,9 @@ export class TwingParser {
             }
 
             if ((node.getType() === TwingNodeType.EXPRESSION_NAME) && this.getImportedSymbol('template', node.getAttribute('name'))) {
-                const varValidator = require('var-validator');
-
                 let name = arg.getAttribute('value');
 
-                if (!varValidator.isValid(name)) {
-                    name = Buffer.from(name).toString('hex');
-                }
-
-                node = new TwingNodeExpressionMethodCall(node, 'macro_' + name, arguments_, lineno, columnno);
+                node = new TwingNodeExpressionMethodCall(node, name, arguments_, lineno, columnno);
                 node.setAttribute('safe', true);
 
                 return node;

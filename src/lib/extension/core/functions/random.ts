@@ -20,65 +20,69 @@ const array_rand = require('locutus/php/array/array_rand');
  *
  * @throws TwingErrorRuntime when values is an empty array (does not apply to an empty string which is returned as is)
  *
- * @returns {*} A random value from the given sequence
+ * @returns {Promise<any>} A random value from the given sequence
  */
 export function random(env: TwingEnvironment, values: any = null, max: number = null): any {
-    if (values === null) {
-        return max === null ? mt_rand() : mt_rand(0, max);
-    }
+    let _do = (): any => {
+        if (values === null) {
+            return max === null ? mt_rand() : mt_rand(0, max);
+        }
 
-    if (typeof values === 'number') {
-        let min: number;
+        if (typeof values === 'number') {
+            let min: number;
 
-        if (max === null) {
-            if (values < 0) {
-                max = 0;
-                min = values;
+            if (max === null) {
+                if (values < 0) {
+                    max = 0;
+                    min = values;
+                } else {
+                    max = values;
+                    min = 0;
+                }
             } else {
-                max = values;
-                min = 0;
+                min = values;
             }
-        } else {
-            min = values;
+
+            return mt_rand(min, max);
         }
 
-        return mt_rand(min, max);
-    }
-
-    if (typeof values === 'string') {
-        values = Buffer.from(values);
-    }
-
-    if (Buffer.isBuffer(values)) {
-        if (values.toString() === '') {
-            return '';
+        if (typeof values === 'string') {
+            values = Buffer.from(values);
         }
 
-        let charset = env.getCharset();
+        if (Buffer.isBuffer(values)) {
+            if (values.toString() === '') {
+                return '';
+            }
 
-        if (charset !== 'UTF-8') {
-            values = iconv(charset, 'UTF-8', values);
+            let charset = env.getCharset();
+
+            if (charset !== 'UTF-8') {
+                values = iconv(charset, 'UTF-8', values);
+            }
+
+            // unicode split
+            values = runes(values.toString());
+
+            if (charset !== 'UTF-8') {
+                values = values.map(function (value: string) {
+                    return iconv('UTF-8', charset, Buffer.from(value));
+                });
+            }
+        } else if (isTraversable(values)) {
+            values = iteratorToArray(values);
         }
 
-        // unicode split
-        values = runes(values.toString());
-
-        if (charset !== 'UTF-8') {
-            values = values.map(function (value: string) {
-                return iconv('UTF-8', charset, Buffer.from(value));
-            });
+        if (!Array.isArray(values)) {
+            return values;
         }
-    } else if (isTraversable(values)) {
-        values = iteratorToArray(values);
-    }
 
-    if (!Array.isArray(values)) {
-        return values;
-    }
+        if (values.length < 1) {
+            throw new TwingErrorRuntime('The random function cannot pick from an empty array.');
+        }
 
-    if (values.length < 1) {
-        throw new TwingErrorRuntime('The random function cannot pick from an empty array.');
-    }
+        return values[array_rand(values, 1)];
+    };
 
-    return values[array_rand(values, 1)];
+    return Promise.resolve(_do());
 }

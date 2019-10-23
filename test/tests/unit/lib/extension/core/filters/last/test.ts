@@ -1,10 +1,8 @@
 import * as tape from 'tape';
-import {MockEnvironment} from "../../../../../../../mock/environment";
-import {MockLoader} from "../../../../../../../mock/loader";
 import {CoreTestIterator} from "../../test";
 import {last} from "../../../../../../../../src/lib/extension/core/filters/last";
 
-tape('last', (test) => {
+tape('last', async (test) => {
     let i = new Map([
         [1, 'a'],
         [2, 'b'],
@@ -20,9 +18,7 @@ tape('last', (test) => {
     ];
 
     for (let twingLastCase of twingLastCases) {
-        let twing = new MockEnvironment(new MockLoader());
-
-        test.same(last(twing, twingLastCase[1]), twingLastCase[0]);
+        test.same(await last(twingLastCase[1]), twingLastCase[0]);
     }
 
     test.end();

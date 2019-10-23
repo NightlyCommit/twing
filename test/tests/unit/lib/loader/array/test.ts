@@ -2,36 +2,36 @@ import * as tape from 'tape';
 import {TwingLoaderArray} from "../../../../../../src/lib/loader/array";
 
 tape('loader array', (test) => {
-    test.test('constructor', (test) => {
+    test.test('constructor', async (test) => {
         let loader = new TwingLoaderArray({
             foo: 'bar',
             bar: 'foo'
         });
 
-        test.true(loader.exists('foo', null));
-        test.true(loader.exists('bar', null));
+        test.true(await loader.exists('foo', null));
+        test.true(await loader.exists('bar', null));
 
         loader = new TwingLoaderArray(new Map([
             ['foo', 'bar'],
             ['bar', 'foo']
         ]));
 
-        test.true(loader.exists('foo', null));
-        test.true(loader.exists('bar', null));
+        test.true(await loader.exists('foo', null));
+        test.true(await loader.exists('bar', null));
 
         loader = new TwingLoaderArray(1);
 
-        test.false(loader.exists('foo', null));
-        test.false(loader.exists('bar', null));
+        test.false(await loader.exists('foo', null));
+        test.false(await loader.exists('bar', null));
 
         test.end();
     });
 
-    test.test('getSourceContextWhenTemplateDoesNotExist', (test) => {
+    test.test('getSourceContextWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderArray({});
 
         try {
-            loader.getSourceContext('foo', null);
+            await loader.getSourceContext('foo', null);
 
             test.fail();
         }
@@ -42,45 +42,45 @@ tape('loader array', (test) => {
         test.end();
     });
 
-    test.test('getCacheKey', (test) => {
+    test.test('getCacheKey', async (test) => {
         let loader = new TwingLoaderArray({
             foo: 'bar'
         });
 
-        test.same(loader.getCacheKey('foo', null), 'foo:bar');
+        test.same(await loader.getCacheKey('foo', null), 'foo:bar');
 
         test.end();
     });
 
-    test.test('getCacheKeyWhenTemplateHasDuplicateContent', (test) => {
+    test.test('getCacheKeyWhenTemplateHasDuplicateContent', async (test) => {
         let loader = new TwingLoaderArray({
             foo: 'bar',
             baz: 'bar'
         });
 
-        test.same(loader.getCacheKey('foo', null), 'foo:bar');
-        test.same(loader.getCacheKey('baz', null), 'baz:bar');
+        test.same(await loader.getCacheKey('foo', null), 'foo:bar');
+        test.same(await loader.getCacheKey('baz', null), 'baz:bar');
 
         test.end();
     });
 
-    test.test('getCacheKeyIsProtectedFromEdgeCollisions', (test) => {
+    test.test('getCacheKeyIsProtectedFromEdgeCollisions', async (test) => {
         let loader = new TwingLoaderArray({
             foo__: 'bar',
             foo: '__bar'
         });
 
-        test.same(loader.getCacheKey('foo__', null), 'foo__:bar');
-        test.same(loader.getCacheKey('foo', null), 'foo:__bar');
+        test.same(await loader.getCacheKey('foo__', null), 'foo__:bar');
+        test.same(await loader.getCacheKey('foo', null), 'foo:__bar');
 
         test.end();
     });
 
-    test.test('getCacheKeyWhenTemplateDoesNotExist', (test) => {
+    test.test('getCacheKeyWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderArray({});
 
         try {
-            loader.getCacheKey('foo', null);
+            await loader.getCacheKey('foo', null);
 
             test.fail();
         }
@@ -91,30 +91,31 @@ tape('loader array', (test) => {
         test.end();
     });
 
-    test.test('setTemplate', (test) => {
+    test.test('setTemplate', async (test) => {
         let loader = new TwingLoaderArray({});
+
         loader.setTemplate('foo', 'bar');
 
-        test.same(loader.getSourceContext('foo', null).getCode(), 'bar');
+        test.same((await loader.getSourceContext('foo', null)).getCode(), 'bar');
 
         test.end();
     });
 
-    test.test('isFresh', (test) => {
+    test.test('isFresh', async (test) => {
         let loader = new TwingLoaderArray({
             foo: 'bar'
         });
 
-        test.true(loader.isFresh('foo', new Date().getTime(), null));
+        test.true(await loader.isFresh('foo', new Date().getTime(), null));
 
         test.end();
     });
 
-    test.test('isFreshWhenTemplateDoesNotExist', (test) => {
+    test.test('isFreshWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderArray({});
 
         try {
-            loader.isFresh('foo', new Date().getTime(), null);
+            await loader.isFresh('foo', new Date().getTime(), null);
 
             test.fail();
         }

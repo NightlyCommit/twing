@@ -8,9 +8,7 @@ import {TwingSource} from "./source";
 export class TwingError extends Error {
     private lineno: number | boolean;
     private rawMessage: string = null;
-    private sourceName: string = null;
-    private sourcePath: string = null;
-    private sourceCode: string = null;
+    private source: TwingSource = null;
     private previous: Error = null;
 
     protected type: string;
@@ -26,22 +24,8 @@ export class TwingError extends Error {
         }
 
         this.rawMessage = message;
-
-        let name: string;
-
-        if (source === null) {
-            name = null;
-        } else if (!(source instanceof TwingSource)) {
-            name = source;
-        } else {
-            name = source.getName();
-
-            this.sourceCode = source.getCode();
-            this.sourcePath = source.getPath();
-        }
-
         this.lineno = lineno;
-        this.sourceName = name;
+        this.source = source;
 
         this.updateRepr();
     }
@@ -82,23 +66,17 @@ export class TwingError extends Error {
     /**
      * Gets the source context of the Twig template where the error occurred.
      *
-     * @return TwingSource|null
+     * @return {TwingSource}
      */
     getSourceContext() {
-        return this.sourceName ? new TwingSource(this.sourceCode, this.sourceName, this.sourcePath) : null;
+        return this.source;
     }
 
     /**
      * Sets the source context of the Twig template where the error occurred.
      */
-    setSourceContext(source: TwingSource = null) {
-        if (source === null) {
-            this.sourceCode = this.sourceName = this.sourcePath = null;
-        } else {
-            this.sourceCode = source.getCode();
-            this.sourceName = source.getName();
-            this.sourcePath = source.getPath();
-        }
+    setSourceContext(source: TwingSource) {
+        this.source = source;
 
         this.updateRepr();
     }
@@ -126,8 +104,8 @@ export class TwingError extends Error {
             questionMark = true;
         }
 
-        if (this.sourceName) {
-            this.message += ` in "${this.sourceName}"`;
+        if (this.source) {
+            this.message += ` in "${this.source.getName()}"`;
         }
 
         if (this.lineno && this.lineno >= 0) {

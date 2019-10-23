@@ -39,22 +39,22 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     }
 
     compileTemplateCall(compiler: TwingCompiler, method: string): TwingCompiler {
+        compiler.write('await ');
+
         if (!this.hasNode('template')) {
-            compiler.write('this');
+            compiler.raw('this');
         }
         else {
             compiler
-                .write('this.loadTemplate(')
+                .raw('(await this.loadTemplate(')
                 .subcompile(this.getNode('template'))
                 .raw(', ')
-                .repr(this.getTemplateName())
-                .raw(', ')
                 .repr(this.getTemplateLine())
-                .raw(')')
+                .raw('))')
             ;
         }
 
-        compiler.raw(`.${method}(${this.getTemplateLine()}, this.source)`);
+        compiler.raw(`.${method}(${this.getTemplateLine()}, this.getSourceContext())`);
 
         this.compileBlockArguments(compiler);
 

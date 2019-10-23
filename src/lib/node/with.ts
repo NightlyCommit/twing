@@ -29,7 +29,7 @@ export class TwingNodeWith extends TwingNode {
                 .indent()
                 .write('throw new this.RuntimeError(\'Variables passed to the "with" tag must be a hash.\', ')
                 .repr(this.getTemplateLine())
-                .raw(", this.source);\n")
+                .raw(", this.getSourceContext());\n")
                 .outdent()
                 .write("}\n")
             ;

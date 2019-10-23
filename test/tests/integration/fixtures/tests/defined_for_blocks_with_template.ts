@@ -28,10 +28,10 @@ ok
 `;
     }
 
-    getContext() {
+    async getContext() {
         return {
-            included_loaded: this.env.load('included.twig'),
-            included_loaded_internal: this.env.loadTemplate('included.twig')
+            included_loaded: await this.env.load('included.twig'),
+            included_loaded_internal: await this.env.loadTemplate('included.twig')
         }
     }
 }

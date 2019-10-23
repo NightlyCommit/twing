@@ -39,7 +39,7 @@ let arrayInheritanceTests = new Map([
 ]);
 
 tape('loader filesystem', (test) => {
-    test.test('getSourceContext', (test) => {
+    test.test('getSourceContext', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve('test/tests/integration/fixtures', path);
         };
@@ -47,40 +47,40 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem();
 
         try {
-            loader.getSourceContext('errors/index.html', null);
+            await loader.getSourceContext('errors/index.html', null);
         } catch (err) {
             test.true(err instanceof TwingErrorLoader);
             test.same(err.getMessage(), `Unable to find template "errors/index.html".`);
         }
 
-        let source = loader.getSourceContext('errors/index.html', new TwingSource('', '', resolvePath('foo.html')));
+        let source = await loader.getSourceContext('errors/index.html', new TwingSource('', '', resolvePath('foo.html')));
 
         test.same(source.getName(), resolvePath('errors/index.html'));
         test.same(source.getPath(), source.getName());
 
-        source = loader.getSourceContext('../errors/index.html', new TwingSource('', '', resolvePath('foo/bar.html')));
+        source = await loader.getSourceContext('../errors/index.html', new TwingSource('', '', resolvePath('foo/bar.html')));
 
         test.same(source.getName(), resolvePath('errors/index.html'));
         test.same(source.getPath(), source.getName());
 
         try {
-            loader.getSourceContext('foo', new TwingSource('', '', 'foo/bar/index.html'));
+            await loader.getSourceContext('foo', new TwingSource('', 'foo/bar', 'foo/bar/index.html'));
         } catch (err) {
             test.true(err instanceof TwingErrorLoader);
-            test.same(err.getMessage(), `Unable to find template "foo/bar/foo".`);
+            test.same(err.getMessage(), `Unable to find template "foo/bar/foo" in "foo/bar".`);
         }
 
-        test.test('use error cache on subsequent calls', (test) => {
+        test.test('use error cache on subsequent calls', async (test) => {
             let validateNameSpy = sinon.spy(loader, 'validateName');
 
             try {
-                loader.getSourceContext('foo', new TwingSource('', ''));
+                await loader.getSourceContext('foo', new TwingSource('', ''));
             } catch (e) {
 
             }
 
             try {
-                loader.getSourceContext('foo', new TwingSource('', ''));
+                await loader.getSourceContext('foo', new TwingSource('', ''));
             } catch (e) {
 
             }
@@ -110,7 +110,7 @@ tape('loader filesystem', (test) => {
         test.end();
     });
 
-    test.test('findTemplate', (test) => {
+    test.test('findTemplate', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve(fixturesPath, path);
         };
@@ -123,22 +123,22 @@ tape('loader filesystem', (test) => {
 
         let loader = new CustomLoader();
 
-        test.same(loader.findTemplate(resolvePath('named/index.html'), false, undefined), resolvePath('named/index.html'));
-        test.same(loader.findTemplate(resolvePath('named'), false, undefined), null);
+        test.same(await loader.findTemplate(resolvePath('named/index.html'), false, undefined), resolvePath('named/index.html'));
+        test.same(await loader.findTemplate(resolvePath('named'), false, undefined), null);
 
         try {
-            loader.findTemplate(resolvePath('named'), undefined, undefined);
+            await loader.findTemplate(resolvePath('named'), undefined, undefined);
         } catch (err) {
             test.true(err instanceof TwingErrorLoader);
             test.same(err.getMessage(), `Unable to find template "${resolvePath('named')}".`);
         }
 
-        test.test('find-template-with-error-cache', (test) => {
-            loader.findTemplate('non-existing', false, null);
+        test.test('find-template-with-error-cache', async (test) => {
+            await loader.findTemplate('non-existing', false, null);
 
             let spy = sinon.spy(loader, 'validateName');
 
-            test.same(loader.findTemplate('non-existing', false, null), null);
+            test.same(await loader.findTemplate('non-existing', false, null), null);
             test.same(spy.callCount, 0);
 
             spy.restore();
@@ -149,57 +149,20 @@ tape('loader filesystem', (test) => {
         test.end();
     });
 
-    test.test('find-template-with-cache', (test) => {
+    test.test('find-template-with-cache', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve(fixturesPath, path);
         };
 
         let loader = new TwingLoaderFilesystem();
-        let namedSource = loader.getSourceContext('named/index.html', new TwingSource('', '', resolvePath('index.html'))).getCode();
+        let namedSource = (await loader.getSourceContext('named/index.html', new TwingSource('', '', resolvePath('index.html')))).getCode();
 
         test.same(namedSource, "named path\n");
 
         test.end();
     });
 
-    test.test('load-template-and-render-block-with-cache', (test) => {
-        let resolvePath = (path: string) => {
-            return nodePath.resolve(fixturesPath, path);
-        };
-
-        let loader = new TwingLoaderFilesystem();
-
-        let twing = new TwingEnvironmentNode(loader);
-
-        let template = twing.loadTemplate('../themes/theme1/blocks.html.twig', 0, new TwingSource('', '', resolvePath('normal/index.html')));
-
-        test.same(template.renderBlock('b1', {}), 'block from theme 1');
-
-        template = twing.loadTemplate('../themes/theme3/blocks.html.twig', 0, new TwingSource('', '', resolvePath('normal/index.html')));
-
-        test.same(template.renderBlock('b2', {}), 'block from theme 3');
-
-        test.end();
-    });
-
-    test.test('array-inheritance', (test) => {
-        let resolvePath = (path: string) => {
-            return nodePath.resolve(nodePath.join(fixturesPath, 'inheritance'), path);
-        };
-
-        for (let [testMessage, arrayInheritanceTest] of arrayInheritanceTests) {
-            let templateName = resolvePath(arrayInheritanceTest[0]);
-            let loader = new TwingLoaderFilesystem();
-            let twing = new TwingEnvironmentNode(loader);
-            let template = twing.loadTemplate(templateName);
-
-            test.same(template.renderBlock('body', {}), 'VALID Child', testMessage);
-        }
-
-        test.end();
-    });
-
-    test.test('should normalize template name', (test) => {
+    test.test('should normalize template name', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve(fixturesPath, path);
         };
@@ -222,13 +185,22 @@ tape('loader filesystem', (test) => {
         ];
 
         for (let name of names) {
-            test.same(loader.getSourceContext(name, new TwingSource('', '', resolvePath('foo.html'))), new TwingSource('named path\n', resolvePath('named/index.html'), resolvePath('named/index.html')));
+            test.same(await loader.getSourceContext(name, new TwingSource('', '', resolvePath('foo.html'))), new TwingSource('named path\n', resolvePath('named/index.html'), resolvePath('named/index.html')));
+        }
+
+        try {
+            await loader.getSourceContext(null, null);
+
+            test.fail();
+        }
+        catch (e) {
+            test.true(e.message.startsWith('Unable to find template ""'));
         }
 
         test.end();
     });
 
-    test.test('exists', (test) => {
+    test.test('exists', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve('test/tests/unit/lib/loader/filesystem/fixtures', path);
         };
@@ -236,27 +208,27 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem();
         let source = new TwingSource('', '', resolvePath('index.html'));
 
-        test.equals(loader.exists('normal/index.html', source), true);
-        test.equals(loader.exists('foo', source), false);
+        test.equals(await loader.exists('normal/index.html', source), true);
+        test.equals(await loader.exists('foo', source), false);
 
-        loader.getSourceContext('normal/index.html', source);
+        await loader.getSourceContext('normal/index.html', source);
 
         let spy = sinon.spy(loader, 'findTemplate');
-        let exists = loader.exists('normal/index.html', source);
+        let exists = await loader.exists('normal/index.html', source);
 
         test.equals(exists, true);
         test.same(spy.callCount, 0);
 
-        test.equals(loader.exists('normal/index.html', null), false);
-        test.equals(loader.exists("foo\0.twig", source), false);
-        test.equals(loader.exists('@foo', source), false);
-        test.equals(loader.exists('foo', source), false);
-        test.equals(loader.exists('@foo/bar.twig', source), false);
+        test.equals(await loader.exists('normal/index.html', null), false);
+        test.equals(await loader.exists("foo\0.twig", source), false);
+        test.equals(await loader.exists('@foo', source), false);
+        test.equals(await loader.exists('foo', source), false);
+        test.equals(await loader.exists('@foo/bar.twig', source), false);
 
         test.end();
     });
 
-    test.test('isFresh', (test) => {
+    test.test('isFresh', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve('test/tests/unit/lib/loader/filesystem/fixtures', path);
         };
@@ -264,12 +236,12 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem();
         let source = new TwingSource('', '', resolvePath('index.html'));
 
-        test.true(loader.isFresh('normal/index.html', new Date().getTime(), source));
+        test.true(await loader.isFresh('normal/index.html', new Date().getTime(), source));
 
         test.end();
     });
 
-    test.test('resolve', (test) => {
+    test.test('resolve', async (test) => {
         let resolvePath = (path: string) => {
             return nodePath.resolve('test/tests/unit/lib/loader/filesystem/fixtures', path);
         };
@@ -277,8 +249,8 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem();
         let source = new TwingSource('', '', resolvePath('index.html'));
 
-        test.same(loader.resolve('normal/index.html', source), resolvePath('normal/index.html'));
-        test.same(loader.resolve(resolvePath('normal/index.html'), null), resolvePath('normal/index.html'));
+        test.same(await loader.resolve('normal/index.html', source), resolvePath('normal/index.html'));
+        test.same(await loader.resolve(resolvePath('normal/index.html'), null), resolvePath('normal/index.html'));
 
         test.end();
     });

@@ -66,7 +66,7 @@ tape('node/for', (test) => {
 
             test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
-(() => {
+await (async () => {
     let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
@@ -77,7 +77,7 @@ tape('node/for', (test) => {
     }
 })();
 
-this.iterate(context.get('_seq'), (__key__, __value__) => {
+await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`key\`] = __key__;
     context.proxy[\`item\`] = __value__;
     this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
@@ -121,7 +121,7 @@ this.iterate(context.get('_seq'), (__key__, __value__) => {
 
             test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
-(() => {
+await (async () => {
     let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
@@ -146,7 +146,7 @@ if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-this.iterate(context.get('_seq'), (__key__, __value__) => {
+await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
     this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
@@ -201,7 +201,7 @@ this.iterate(context.get('_seq'), (__key__, __value__) => {
 
             test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
-(() => {
+await (async () => {
     let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
@@ -218,7 +218,7 @@ context.set('loop', new Map([
   ['index', 1],
   ['first', true]
 ]));
-this.iterate(context.get('_seq'), (__key__, __value__) => {
+await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
     if (true) {
@@ -270,7 +270,7 @@ this.iterate(context.get('_seq'), (__key__, __value__) => {
 
             test.same(compiler.compile(node).getSource(), `context.set('_parent', context.clone());
 
-(() => {
+await (async () => {
     let c = this.ensureTraversable((context.has(\`items\`) ? context.get(\`items\`) : null));
 
     if (c === context) {
@@ -296,7 +296,7 @@ if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_
     loop.set('length', length);
     loop.set('last', (length === 1));
 }
-this.iterate(context.get('_seq'), (__key__, __value__) => {
+await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
     this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));

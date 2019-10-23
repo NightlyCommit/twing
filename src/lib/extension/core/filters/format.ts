@@ -1,5 +1,5 @@
 const sprintf = require('locutus/php/strings/sprintf');
 
-export function format(...args: any[]) {
-    return sprintf(...args);
+export function format(...args: any[]): Promise<string> {
+    return Promise.resolve(sprintf(...args));
 }

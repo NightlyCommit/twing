@@ -17,9 +17,9 @@ import {TwingErrorRuntime} from "../../../error/runtime";
  * @param {Map<any, any>} iterable1 A map
  * @param {Map<any, any>} iterable2 A map
  *
- * @return {Map<any, any>} The merged map
+ * @return {Promise<Map<any, any>>} The merged map
  */
-export function merge(iterable1: Map<any, any>, iterable2: Map<any, any>): Map<any, any> {
+export function merge(iterable1: Map<any, any>, iterable2: Map<any, any>): Promise<Map<any, any>> {
     if (isNullOrUndefined(iterable1) || (!isTraversable(iterable1) && (typeof iterable1 !== 'object'))) {
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(iterable1) ? typeof iterable1 : iterable1}" as first argument.`);
     }
@@ -28,5 +28,5 @@ export function merge(iterable1: Map<any, any>, iterable2: Map<any, any>): Map<a
         throw new TwingErrorRuntime(`The merge filter only works with arrays or "Traversable", got "${!isNullOrUndefined(iterable2) ? typeof iterable2 : iterable2}" as second argument.`);
     }
 
-    return mergeHelper(iterable1, iterable2);
+    return Promise.resolve(mergeHelper(iterable1, iterable2));
 }

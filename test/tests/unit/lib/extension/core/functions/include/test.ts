@@ -6,11 +6,11 @@ import {include} from "../../../../../../../../src/lib/extension/core/functions/
 import {TwingLoaderRelativeFilesystem} from "../../../../../../../../src/lib/loader/relative-filesystem";
 import {resolve} from "path";
 
-tape('include', (test) => {
+tape('include', async (test) => {
     let env = new TwingEnvironmentNode(new TwingLoaderArray({}));
 
     try {
-        include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true);
+        await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true);
 
         test.fail();
     }
@@ -20,7 +20,7 @@ tape('include', (test) => {
     }
 
     try {
-        include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', 'bar', true, false, true);
+        await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', 'bar', true, false, true);
 
         test.fail();
     }
@@ -31,12 +31,12 @@ tape('include', (test) => {
     env = new TwingEnvironmentNode(new TwingLoaderArray({foo: 'bar'}));
     env.enableSandbox();
 
-    test.same(include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true), 'bar');
+    test.same(await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true), 'bar');
 
-    test.test('supports being called with a source', (test) => {
+    test.test('supports being called with a source', async (test) => {
         env = new TwingEnvironmentNode(new TwingLoaderRelativeFilesystem());
 
-        test.same(include(env, new Map(), new TwingSource('code', 'name', resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig', {}), 'foo');
+        test.same(await include(env, new Map(), new TwingSource('code', 'name', resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig', {}), 'foo');
 
         test.end();
     });

@@ -1,14 +1,14 @@
 import * as tape from 'tape';
+import * as sinon from "sinon";
+import {resolve, join} from "path";
+
 import {TwingLoaderChain} from "../../../../../../src/lib/loader/chain";
 import {TwingLoaderArray} from "../../../../../../src/lib/loader/array";
 import {TwingLoaderFilesystem} from "../../../../../../src/lib/loader/filesystem";
 import {TwingErrorLoader} from "../../../../../../src/lib/error/loader";
 import {TwingError} from "../../../../../../src/lib/error";
 
-const nodePath = require('path');
-const sinon = require('sinon');
-
-let fixturesPath = nodePath.resolve('test/tests/integration/fixtures');
+let fixturesPath = resolve('test/tests/integration/fixtures');
 
 tape('loader chain', (test) => {
     test.test('constructor', (test) => {
@@ -30,94 +30,109 @@ tape('loader chain', (test) => {
             new TwingLoaderFilesystem([fixturesPath]),
         ]);
 
-        test.equals(loader.getSourceContext('foo', null).getName(), 'foo');
-        test.same(loader.getSourceContext('foo', null).getPath(), '');
+        test.test('foo', (test) => {
+            loader.getSourceContext('foo', null).then((source) => {
+                test.same(source.getName(), 'foo');
+                test.same(source.getPath(), '');
+                test.end();
+            });
+        });
 
-        test.equals(loader.getSourceContext('errors/index.html', null).getName(), 'errors/index.html');
-        test.same(loader.getSourceContext('errors/index.html', null).getPath(), '');
-        test.equals(loader.getSourceContext('errors/index.html', null).getCode(), 'baz');
+        test.test('errors/index.html', (test) => {
+            loader.getSourceContext('errors/index.html', null).then((source) => {
+                test.same(source.getName(), 'errors/index.html');
+                test.same(source.getPath(), '');
+                test.same(source.getCode(), 'baz');
+                test.end();
+            });
+        });
 
-        test.equals(loader.getSourceContext('errors/base.html', null).getName(), 'errors/base.html');
-        test.equals(nodePath.resolve(loader.getSourceContext('errors/base.html', null).getPath()), nodePath.join(fixturesPath, 'errors/base.html'));
-        test.notEquals(loader.getSourceContext('errors/base.html', null).getCode(), 'baz');
+        test.test('errors/base.html', (test) => {
+            loader.getSourceContext('errors/base.html', null).then((source) => {
+                test.same(source.getName(), 'errors/base.html');
+                test.same(source.getPath(), join(fixturesPath, 'errors/base.html'));
+                test.notSame(source.getCode(), 'baz');
+                test.end();
+            });
+        });
 
-        let loader2 = new TwingLoaderArray({'foo': 'bar'});
+        test.test('constructs error message based on loaders that throw loader errors', (test) => {
+            let loader2 = new TwingLoaderArray({});
 
-        let stub = sinon.stub(loader2, 'getSourceContext').throws(new TwingErrorLoader('foo', 1, null));
+            sinon.stub(loader2, 'exists').returns(Promise.resolve(true));
+            sinon.stub(loader2, 'getSourceContext').returns(Promise.reject(new TwingErrorLoader('foo', 1, null)));
 
-        loader = new TwingLoaderChain([
-            loader2
-        ]);
+            loader = new TwingLoaderChain([
+                loader2
+            ]);
 
-        try {
-            loader.getSourceContext('foo', null);
+            loader.getSourceContext('foo', null)
+                .then(() => {
+                    test.fail();
+                    test.end();
+                })
+                .catch((e) => {
+                    test.same(e.message, 'Template "foo" is not defined (foo at line 1).');
+                    test.end();
+                });
+        });
 
-            test.fail();
-        }
-        catch (e) {
-            test.same(e.message, 'Template "foo" is not defined (foo at line 1).');
-        }
+        test.test('does not construct error message based on loaders that throw non-loader errors', (test) => {
+            let loader2 = new TwingLoaderArray({});
 
-        stub.restore();
+            sinon.stub(loader2, 'exists').returns(Promise.resolve(true));
+            sinon.stub(loader2, 'getSourceContext').returns(Promise.reject(new Error('foo')));
 
-        loader2 = new TwingLoaderArray({'foo': 'bar'});
+            loader = new TwingLoaderChain([
+                loader2
+            ]);
 
-        stub = sinon.stub(loader2, 'getSourceContext').throws(new Error('foo'));
-
-        loader = new TwingLoaderChain([
-            loader2
-        ]);
-
-        try {
-            loader.getSourceContext('foo', null);
-
-            test.fail();
-        }
-        catch (e) {
-            test.same(e.message, 'Template "foo" is not defined.');
-        }
-
-        stub.restore();
-
-        test.end();
+            loader.getSourceContext('foo', null)
+                .then(() => {
+                    test.fail();
+                    test.end();
+                })
+                .catch((e) => {
+                    test.same(e.message, 'Template "foo" is not defined.');
+                    test.end();
+                });
+        });
     });
 
-    test.test('getSourceContextWhenTemplateDoesNotExist', (test) => {
+    test.test('getSourceContextWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderChain([]);
 
         try {
-            loader.getSourceContext('foo', null);
+            await loader.getSourceContext('foo', null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined.');
         }
 
         test.end();
     });
 
-    test.test('getCacheKey', (test) => {
+    test.test('getCacheKey', async (test) => {
         let loader = new TwingLoaderChain([
             new TwingLoaderArray({'foo': 'bar'}),
             new TwingLoaderArray({'foo': 'foobar', 'bar': 'foo'}),
         ]);
 
-        test.equals(loader.getCacheKey('foo', null), 'foo:bar');
-        test.equals(loader.getCacheKey('bar', null), 'bar:foo');
+        test.equals(await loader.getCacheKey('foo', null), 'foo:bar');
+        test.equals(await loader.getCacheKey('bar', null), 'bar:foo');
 
-        let stub = sinon.stub(loader, 'getCacheKey').throws(new TwingErrorLoader('foo', 1, null));
+        let stub = sinon.stub(loader, 'getCacheKey').returns(Promise.reject(new TwingErrorLoader('foo', 1, null)));
 
         loader = new TwingLoaderChain([
             loader
         ]);
 
         try {
-            loader.getCacheKey('foo', null);
+            await loader.getCacheKey('foo', null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined (TwingLoaderChain: foo at line 1).');
         }
 
@@ -125,18 +140,17 @@ tape('loader chain', (test) => {
 
         let loader2 = new TwingLoaderArray({'foo': 'bar'});
 
-        stub = sinon.stub(loader2, 'getCacheKey').throws(new Error('foo'));
+        stub = sinon.stub(loader2, 'getCacheKey').returns(Promise.reject(new Error('foo')));
 
         loader = new TwingLoaderChain([
             loader2
         ]);
 
         try {
-            loader.getCacheKey('foo', null);
+            await loader.getCacheKey('foo', null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined.');
         }
 
@@ -145,15 +159,14 @@ tape('loader chain', (test) => {
         test.end();
     });
 
-    test.test('getCacheKeyWhenTemplateDoesNotExist', (test) => {
+    test.test('getCacheKeyWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderChain([]);
 
         try {
-            loader.getCacheKey('foo', null);
+            await loader.getCacheKey('foo', null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined.');
         }
 
@@ -164,9 +177,11 @@ tape('loader chain', (test) => {
         let loader = new TwingLoaderChain([]);
         loader.addLoader(new TwingLoaderArray({'foo': 'bar'}));
 
-        test.equals(loader.getSourceContext('foo', null).getCode(), 'bar');
+        loader.getSourceContext('foo', null).then((source) => {
+            test.equals(source.getCode(), 'bar');
 
-        test.end();
+            test.end();
+        });
     });
 
     test.test('getLoaders', (test) => {
@@ -183,64 +198,99 @@ tape('loader chain', (test) => {
 
     test.test('exists', (test) => {
         let loader1 = new TwingLoaderArray({});
-        sinon.stub(loader1, 'exists').returns(false);
-        sinon.stub(loader1, 'getSourceContext');
+        let loader1ExistsStub = sinon.stub(loader1, 'exists').returns(Promise.resolve(false));
+        let loader1GetSourceContextSpy = sinon.spy(loader1, 'getSourceContext');
 
         let loader2 = new TwingLoaderArray({});
-        sinon.stub(loader2, 'exists').returns(true);
-        sinon.stub(loader2, 'getSourceContext');
+        let loader2ExistsStub = sinon.stub(loader2, 'exists').returns(Promise.resolve(true));
+        let loader2GetSourceContextSpy = sinon.spy(loader2, 'getSourceContext');
 
-        let loader = new TwingLoaderChain([]);
-        loader.addLoader(loader1);
-        loader.addLoader(loader2);
+        let loader3 = new TwingLoaderArray({});
+        let loader3ExistsStub = sinon.stub(loader3, 'exists').returns(Promise.resolve(true));
+        let loader3GetSourceContextSpy = sinon.spy(loader3, 'getSourceContext');
 
-        test.true(loader.exists('foo', null));
+        test.test('resolves to true as soon as a loader resolves to true', async (test) => {
+            let loader = new TwingLoaderChain([
+                loader1,
+                loader2,
+                loader3
+            ]);
 
-        sinon.assert.calledOnce(loader1['exists']);
-        sinon.assert.notCalled(loader1['getSourceContext']);
+            test.true(await loader.exists('foo', null));
+            test.same(loader1ExistsStub.callCount, 1, 'loader 1 exists is called once');
+            test.same(loader2ExistsStub.callCount, 1, 'loader 2 exists is called once');
+            test.same(loader3ExistsStub.callCount, 0, 'loader 3 exists is not called');
+            test.same(loader1GetSourceContextSpy.callCount, 0, 'loader 1 getSourceContext is not called');
+            test.same(loader2GetSourceContextSpy.callCount, 0, 'loader 2 getSourceContext is not called');
+            test.same(loader3GetSourceContextSpy.callCount, 0, 'loader 3 getSourceContext is not called');
 
-        sinon.assert.calledOnce(loader2['exists']);
-        sinon.assert.notCalled(loader2['getSourceContext']);
+            loader1ExistsStub.restore();
+            loader2ExistsStub.restore();
+            loader3ExistsStub.restore();
 
-        loader1 = new TwingLoaderArray({});
-        let loader1ExistsStub = sinon.stub(loader1, 'exists');
+            test.end();
+        });
 
-        loader2 = new TwingLoaderArray({});
-        let loader2ExistsStub = sinon.stub(loader2, 'exists');
+        test.test('resolves to false is all loaders resolve to false', async (test) => {
+            let loader = new TwingLoaderChain([
+                loader1,
+                loader2
+            ]);
 
-        loader = new TwingLoaderChain([]);
-        loader.addLoader(loader1);
-        loader.addLoader(loader2);
+            loader1ExistsStub = sinon.stub(loader1, 'exists').returns(Promise.resolve(false));
+            loader2ExistsStub = sinon.stub(loader2, 'exists').returns(Promise.resolve(false));
 
-        test.false(loader.exists('missing', null));
-        test.false(loader.exists('missing', null));
-        test.equals(loader1ExistsStub.callCount, 1);
-        test.equals(loader2ExistsStub.callCount, 1);
+            test.false(await loader.exists('foo', null));
+
+            loader1ExistsStub.restore();
+            loader2ExistsStub.restore();
+
+            test.end();
+        });
+
+        test.test('hits cache on subsequent calls', async (test) => {
+            let loader = new TwingLoaderChain([
+                new TwingLoaderArray({
+                    foo: 'foo'
+                })
+            ]);
+
+            let spy = sinon.spy(loader.getLoaders()[0], 'exists');
+
+            await loader.exists('foo', null);
+            await loader.exists('foo', null);
+
+            test.true(spy.calledOnce);
+
+            spy.restore();
+
+            test.end();
+        });
+
 
         test.end();
     });
 
-    test.test('isFresh', (test) => {
+    test.test('isFresh', async (test) => {
         let loader = new TwingLoaderChain([
             new TwingLoaderArray({'foo': 'bar'}),
             new TwingLoaderArray({'foo': 'foobar', 'bar': 'foo'}),
         ]);
 
-        test.equals(loader.isFresh('foo', 0, null), true);
-        test.equals(loader.isFresh('bar', 0, null), true);
+        test.equals(await loader.isFresh('foo', 0, null), true);
+        test.equals(await loader.isFresh('bar', 0, null), true);
 
-        let stub = sinon.stub(loader, 'isFresh').throws(new TwingErrorLoader('foo', 1, null));
+        let stub = sinon.stub(loader, 'isFresh').returns(Promise.reject(new TwingErrorLoader('foo', 1, null)));
 
         loader = new TwingLoaderChain([
             loader
         ]);
 
         try {
-            loader.isFresh('foo', 0, null);
+            await loader.isFresh('foo', 0, null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined (TwingLoaderChain: foo at line 1).');
         }
 
@@ -248,18 +298,17 @@ tape('loader chain', (test) => {
 
         let loader2 = new TwingLoaderArray({'foo': 'bar'});
 
-        stub = sinon.stub(loader2, 'isFresh').throws(new Error('foo'));
+        stub = sinon.stub(loader2, 'isFresh').returns(Promise.reject(new Error('foo')));
 
         loader = new TwingLoaderChain([
             loader2
         ]);
 
         try {
-            loader.isFresh('foo', 0, null);
+            await loader.isFresh('foo', 0, null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.same(e.message, 'Template "foo" is not defined.');
         }
 
@@ -268,18 +317,18 @@ tape('loader chain', (test) => {
         test.end();
     });
 
-    test.test('resolve', (test) => {
+    test.test('resolve', async (test) => {
         let loader = new TwingLoaderChain([
             new TwingLoaderArray({'foo': 'bar'}),
             new TwingLoaderArray({'bar': 'foo'}),
         ]);
 
-        test.equals(loader.resolve('bar', null), 'bar');
+        test.equals(await loader.resolve('bar', null), 'bar');
 
-        test.test('when some loaders throw an error', (test) => {
+        test.test('when some loaders throw an error', async (test) => {
             let loader1 = new TwingLoaderArray({});
-            sinon.stub(loader1, 'resolve').throws(new TwingError('foo'));
-            sinon.stub(loader1, 'exists').returns(true);
+            sinon.stub(loader1, 'resolve').returns(Promise.reject(new TwingError('foo')));
+            sinon.stub(loader1, 'exists').returns(Promise.resolve(true));
 
             let loader2 = new TwingLoaderArray({'bar': 'foo'});
 
@@ -288,19 +337,19 @@ tape('loader chain', (test) => {
                 loader2
             ]);
 
-            test.equals(loader.resolve('bar', null), 'bar');
+            test.equals(await loader.resolve('bar', null), 'bar');
 
             test.end();
         });
 
-        test.test('when all loaders throw loader-related errors', (test) => {
+        test.test('when all loaders throw loader-related errors', async (test) => {
             let loader1 = new TwingLoaderArray({});
-            sinon.stub(loader1, 'resolve').throws(new TwingErrorLoader('foo', 1, null));
-            sinon.stub(loader1, 'exists').returns(true);
+            sinon.stub(loader1, 'resolve').returns(Promise.reject(new TwingErrorLoader('foo', 1, null)));
+            sinon.stub(loader1, 'exists').returns(Promise.resolve(true));
 
             let loader2 = new TwingLoaderArray({});
-            sinon.stub(loader2, 'resolve').throws(new TwingErrorLoader('bar', 1, null));
-            sinon.stub(loader2, 'exists').returns(true);
+            sinon.stub(loader2, 'resolve').returns(Promise.reject(new TwingErrorLoader('bar', 1, null)));
+            sinon.stub(loader2, 'exists').returns(Promise.resolve(true));
 
             loader = new TwingLoaderChain([
                 loader1,
@@ -308,25 +357,24 @@ tape('loader chain', (test) => {
             ]);
 
             try {
-                loader.resolve('foo', null);
+                await loader.resolve('foo', null);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.message, 'Template "foo" is not defined (TwingLoaderArray: foo at line 1, TwingLoaderArray: bar at line 1).');
             }
 
             test.end();
         });
 
-        test.test('when all loaders throw non loader-related errors', (test) => {
+        test.test('when all loaders throw non loader-related errors', async (test) => {
             let loader1 = new TwingLoaderArray({});
-            sinon.stub(loader1, 'resolve').throws(new TwingError('foo'));
-            sinon.stub(loader1, 'exists').returns(true);
+            sinon.stub(loader1, 'resolve').returns(Promise.reject(new TwingError('foo')));
+            sinon.stub(loader1, 'exists').returns(Promise.resolve(true));
 
             let loader2 = new TwingLoaderArray({});
-            sinon.stub(loader2, 'resolve').throws(new TwingError('bar'));
-            sinon.stub(loader2, 'exists').returns(true);
+            sinon.stub(loader2, 'resolve').returns(Promise.reject(new TwingError('bar')));
+            sinon.stub(loader2, 'exists').returns(Promise.resolve(true));
 
             loader = new TwingLoaderChain([
                 loader1,
@@ -334,11 +382,10 @@ tape('loader chain', (test) => {
             ]);
 
             try {
-                loader.resolve('foo', null);
+                await loader.resolve('foo', null);
 
                 test.fail();
-            }
-            catch (e) {
+            } catch (e) {
                 test.same(e.message, 'Template "foo" is not defined.');
             }
 

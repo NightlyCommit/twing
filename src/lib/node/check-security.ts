@@ -68,7 +68,7 @@ export class TwingNodeCheckSecurity extends TwingNode {
             .indent()
             .write("if (e instanceof this.SandboxSecurityError) {\n")
             .indent()
-            .write("e.setSourceContext(this.source);\n\n")
+            .write("e.setSourceContext(this.getSourceContext());\n\n")
             .write("if (e instanceof this.SandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {\n")
             .indent()
             .write("e.setTemplateLine(tags.get(e.getTagName()));\n")

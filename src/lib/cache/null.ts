@@ -7,26 +7,21 @@ import {TwingTemplatesModule} from "../environment";
  * @author Eric MORAND <eric.morand@gmail.com>
  */
 export class TwingCacheNull implements TwingCacheInterface {
-    TwingCacheInterfaceImpl: TwingCacheInterface;
-
-    constructor() {
-        this.TwingCacheInterfaceImpl = this;
+    generateKey(name: string, className: string): Promise<string> {
+        return Promise.resolve('');
     }
 
-    generateKey(name: string, className: string): string {
-        return '';
+    write(key: string, content: string): Promise<void> {
+        return Promise.resolve();
     }
 
-    write(key: string, content: string) {
-    }
-
-    load(key: string): TwingTemplatesModule {
-        return () => {
+    load(key: string): Promise<TwingTemplatesModule> {
+        return Promise.resolve(() => {
             return new Map();
-        };
+        });
     }
 
-    getTimestamp(key: string): number {
-        return 0;
+    getTimestamp(key: string): Promise<number> {
+        return Promise.resolve(0);
     }
 }

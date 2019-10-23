@@ -1,3 +1,3 @@
-export function nullTest(value: any): boolean {
-    return value === null;
+export function nullTest(value: any): Promise<boolean> {
+    return Promise.resolve(value === null);
 }

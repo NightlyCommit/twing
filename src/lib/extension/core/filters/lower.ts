@@ -7,8 +7,8 @@ import {TwingMarkup} from "../../../markup";
  * @param {TwingEnvironment} env
  * @param {string | TwingMarkup} string A string
  *
- * @returns {string} The lowercased string
+ * @returns {Promise<string>} The lowercased string
  */
-export function lower(env: TwingEnvironment, string: string | TwingMarkup) {
-    return string.toString().toLowerCase();
+export function lower(env: TwingEnvironment, string: string | TwingMarkup): Promise<string> {
+    return Promise.resolve(string.toString().toLowerCase());
 }

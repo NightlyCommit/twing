@@ -6,15 +6,14 @@ import {slice as sliceHelper} from "../../../helpers/slice";
 /**
  * Slices a variable.
  *
- * @param {TwingEnvironment} env
  * @param item A variable
  * @param {number} start Start of the slice
  * @param {number} length Size of the slice
  * @param {boolean} preserveKeys Whether to preserve key or not (when the input is an object)
  *
- * @returns The sliced variable
+ * @returns {Promise<string | Map<any, any>>} The sliced variable
  */
-export function slice(env: TwingEnvironment, item: any, start: number, length: number = null, preserveKeys: boolean = false): string | Map<any, any> {
+export function slice(item: any, start: number, length: number = null, preserveKeys: boolean = false): Promise<string | Map<any, any>> {
     if (isTraversable(item)) {
         let iterableItem = iteratorToMap(item);
 
@@ -22,7 +21,7 @@ export function slice(env: TwingEnvironment, item: any, start: number, length: n
             length = iterableItem.size - start;
         }
 
-        return sliceHelper(iterableItem, start, length, preserveKeys);
+        return Promise.resolve(sliceHelper(iterableItem, start, length, preserveKeys));
     }
 
     item = '' + (item ? item : '');
@@ -31,5 +30,5 @@ export function slice(env: TwingEnvironment, item: any, start: number, length: n
         length = item.length - start;
     }
 
-    return item.substr(start, length);
+    return Promise.resolve(item.substr(start, length));
 }

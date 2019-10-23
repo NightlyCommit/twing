@@ -23,7 +23,7 @@ class TestIterator {
 }
 
 tape('each', (test) => {
-    test.test('supports arrays', (test) => {
+    test.test('supports arrays', async (test) => {
         let actual: any = {};
         let expected = {
             0: 'a',
@@ -31,8 +31,10 @@ tape('each', (test) => {
             2: 1
         };
 
-        iterate(['a', 'b', 1], function (key: number, value: any) {
+        await iterate(['a', 'b', 1], function (key: number, value: any) {
             actual[key] = value;
+
+            return Promise.resolve();
         });
 
         test.same(actual, expected, 'should support arrays');
@@ -40,15 +42,17 @@ tape('each', (test) => {
         test.end();
     });
 
-    test.test('supports iterators', (test) => {
+    test.test('supports iterators', async (test) => {
         let actual: any = {};
         let expected = {
             0: 10,
             1: 11
         };
 
-        iterate(new TestIterator(), function (key: number, value: any) {
+        await iterate(new TestIterator(), function (key: number, value: any) {
             actual[key] = value;
+
+            return Promise.resolve();
         });
 
         test.same(actual, expected, 'should support iterators');
@@ -56,7 +60,7 @@ tape('each', (test) => {
         test.end();
     });
 
-    test.test('supports hashes', (test) => {
+    test.test('supports hashes', async (test) => {
         let actual: any = {};
         let expected = {
             0: 'a',
@@ -64,8 +68,10 @@ tape('each', (test) => {
             'c': 'd'
         };
 
-        iterate(expected, function (key: any, value: any) {
+        await iterate(expected, function (key: any, value: any) {
             actual[key] = value;
+
+            return Promise.resolve();
         });
 
         test.same(actual, expected, 'should support hashes');
@@ -73,7 +79,7 @@ tape('each', (test) => {
         test.end();
     });
 
-    test.test('supports maps', (test) => {
+    test.test('supports maps', async (test) => {
         let actual: any = {};
         let expected = {
             0: 'a',
@@ -81,8 +87,10 @@ tape('each', (test) => {
             'd': 1
         };
 
-        iterate(new Map<any, any>([[0, 'a'], ['b', 'c'], ['d', 1]]), function (key: any, value: any) {
+        await iterate(new Map<any, any>([[0, 'a'], ['b', 'c'], ['d', 1]]), function (key: any, value: any) {
             actual[key] = value;
+
+            return Promise.resolve();
         });
 
         test.same(actual, expected, 'should support maps');

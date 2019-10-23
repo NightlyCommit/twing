@@ -1,10 +1,8 @@
 import * as tape from 'tape';
 import {CoreTestIterator} from "../../test";
-import {MockEnvironment} from "../../../../../../../mock/environment";
-import {MockLoader} from "../../../../../../../mock/loader";
 import {slice} from "../../../../../../../../src/lib/extension/core/filters/slice";
 
-tape('sliceFilter', (test) => {
+tape('sliceFilter', async (test) => {
     let i = new Map([
         ['a', 1],
         ['b', 2],
@@ -27,9 +25,7 @@ tape('sliceFilter', (test) => {
     ];
 
     for (let sliceFilterCase of sliceFilterCases) {
-        let twing = new MockEnvironment(new MockLoader());
-
-        let actual = slice(twing, sliceFilterCase[1], sliceFilterCase[2], sliceFilterCase[3], sliceFilterCase[4]);
+        let actual = await slice(sliceFilterCase[1], sliceFilterCase[2], sliceFilterCase[3], sliceFilterCase[4]);
 
         test.same(actual, sliceFilterCase[0]);
     }

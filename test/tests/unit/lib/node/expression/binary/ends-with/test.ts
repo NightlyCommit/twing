@@ -21,7 +21,7 @@ tape('node/expression/binary/ends-with', (test) => {
         let node = new TwingNodeExpressionBinaryEndsWith([left, right], 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), '(() => {let left = 1; let right = 2; return typeof left === \'string\' && typeof right === \'string\' && (right.length < 1 || left.endsWith(right));})()');
+        test.same(compiler.compile(node).getSource(), 'await (async () => {let left = 1; let right = 2; return typeof left === \'string\' && typeof right === \'string\' && (right.length < 1 || left.endsWith(right));})()');
 
         test.end();
     });

@@ -3,18 +3,18 @@ import {TwingLoaderNull} from "../../src/lib/loader/null";
 
 export class MockLoader extends TwingLoaderNull {
     getSourceContext(name: string) {
-        return new TwingSource('', '', '');
+        return Promise.resolve(new TwingSource('', '', ''));
     }
 
     getCacheKey(name: string) {
-        return '';
+        return Promise.resolve('');
     }
 
     isFresh(name: string, time: number) {
-        return true;
+        return Promise.resolve(true);
     }
 
     exists(name: string) {
-        return true;
+        return Promise.resolve(true);
     }
 }
