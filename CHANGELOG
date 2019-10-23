@@ -1,3 +1,8 @@
+3.1.0
+
+ * #424 Add support for the line tag
+ * #435 Rename "eslint" test suite to "code quality"
+
 3.0.3
 
  * #441 empty tmp file in dist
