@@ -67,7 +67,7 @@
     "merge": "^1.2.1",
     "object-hash": "^1.2.0",
     "pad": "^2.0.3",
-    "parse-function": "^5.2.3",
+    "parse-function": "5.2.x",
     "regex-parser": "^2.2.8",
     "runes": "^0.4.3",
     "snake-case": "^2.1.0",
