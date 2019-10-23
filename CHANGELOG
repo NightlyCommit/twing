@@ -1,3 +1,7 @@
+2.3.7
+
+ * #445 Cannot find module 'parse-function/dist/index' (Twing 2.3.6)
+
 2.3.6
 
  * #385 Get rid of most constructor.name usage
