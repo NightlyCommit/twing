@@ -1,3 +1,8 @@
+3.1.0
+
+ * #424 Add support for the line tag
+ * #435 Rename "eslint" test suite to "code quality"
+
 3.0.2
 
  * #432 Sandbox is always enabled, whatever the options passed to the environment
