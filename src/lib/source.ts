@@ -1,12 +1,10 @@
 export class TwingSource {
     private readonly code: string;
     private readonly name: string;
-    private readonly path: string;
 
-    constructor(code: string, name: string, path: string = '') {
+    constructor(code: string, name: string) {
         this.code = code;
-        this.name = name as string;
-        this.path = path;
+        this.name = name;
     }
 
     getCode() {
@@ -15,9 +13,5 @@ export class TwingSource {
 
     getName() {
         return this.name;
-    }
-
-    getPath() {
-        return this.path;
     }
 }

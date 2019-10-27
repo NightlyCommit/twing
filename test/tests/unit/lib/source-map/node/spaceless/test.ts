@@ -6,14 +6,14 @@ import {TwingSourceMapNodeSpaceless} from "../../../../../../../src/lib/source-m
 tape('source-map/node/spaceless', (test) => {
     class ChildSourceMapNode extends TwingSourceMapNode {
         constructor(content: string) {
-            super(1, 0, new TwingSource('foo', 'foo.twig', 'foo.twig'), 'text');
+            super(1, 0, new TwingSource('foo', 'foo.twig'), 'text');
 
             this._content = content;
         }
     }
 
     test.test('should handle edge trimmjng and spaces between tags', (test) => {
-        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig', 'foo.twig'));
+        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig'));
 
         spacelessNode.addChild(new ChildSourceMapNode(' '));
         spacelessNode.addChild(new ChildSourceMapNode('\n'));
@@ -43,7 +43,7 @@ tape('source-map/node/spaceless', (test) => {
     });
 
     test.test('should support having only empty children', (test) => {
-        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig', 'foo.twig'));
+        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig'));
 
         spacelessNode.addChild(new ChildSourceMapNode(' \n'));
         spacelessNode.addChild(new ChildSourceMapNode(' '));
@@ -55,7 +55,7 @@ tape('source-map/node/spaceless', (test) => {
     });
 
     test.test('should support not having children', (test) => {
-        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig', 'foo.twig'));
+        let spacelessNode = new TwingSourceMapNodeSpaceless(1, 0, new TwingSource('foo', 'foo.twig'));
 
         test.same(spacelessNode.toSourceNode().toString(), '');
 

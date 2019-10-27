@@ -73,7 +73,7 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
     }
 
     getSourceContext() {
-        return new TwingSource('code', 'foo', 'path');
+        return new TwingSource('code', 'path');
     }
 }
 
@@ -189,8 +189,8 @@ tape('template', function (test) {
                 test.fail('should throw an Error');
             } catch (e) {
                 test.true(e instanceof TwingErrorLoader);
-                test.same(e.message, 'Template "not_found" is not defined in "foo".');
-                test.same(e.getSourceContext(), new TwingSource('code', 'foo', 'path'));
+                test.same(e.message, 'Template "not_found" is not defined in "path".');
+                test.same(e.getSourceContext(), new TwingSource('code', 'path'));
             }
 
             test.end();

@@ -989,7 +989,7 @@ tape('parser', (test) => {
                     new Token(TokenType.PUNCTUATION, '(', 1, 1),
                     new Token(TokenType.PUNCTUATION, ')', 1, 1),
                     new Token(TokenType.VARIABLE_END, null, 1, 1)
-                ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
+                ], new TwingSource('', testCase[1] ? 'index.html.twig' : 'index'));
 
                 Reflect.set(parser, 'stream', stream);
 
@@ -1173,7 +1173,7 @@ tape('parser', (test) => {
                 let stream = new TwingTokenStream([
                     new Token(TokenType.NAME, testCase[0], 1, 1),
                     new Token(TokenType.EOF, null, 1, 1)
-                ], new TwingSource('', 'index', testCase[1] ? 'index.html.twig' : undefined));
+                ], new TwingSource('', testCase[1] ? 'index.html.twig' : 'index'));
 
                 Reflect.set(parser, 'stream', stream);
 

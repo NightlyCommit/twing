@@ -13,8 +13,7 @@ tape('include', async (test) => {
         await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true);
 
         test.fail();
-    }
-    catch (e) {
+    } catch (e) {
         test.same(e.name, 'TwingErrorLoader');
         test.same(e.message, 'Template "foo" is not defined in "index.twig".');
     }
@@ -23,8 +22,7 @@ tape('include', async (test) => {
         await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', 'bar', true, false, true);
 
         test.fail();
-    }
-    catch (e) {
+    } catch (e) {
         test.same(e.message, 'Variables passed to the "include" function or tag must be iterable, got "string" in "index.twig".');
     }
 
@@ -36,7 +34,7 @@ tape('include', async (test) => {
     test.test('supports being called with a source', async (test) => {
         env = new TwingEnvironmentNode(new TwingLoaderRelativeFilesystem());
 
-        test.same(await include(env, new Map(), new TwingSource('code', 'name', resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig', {}), 'foo');
+        test.same(await include(env, new Map(), new TwingSource('code', resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig', {}), 'foo');
 
         test.end();
     });
