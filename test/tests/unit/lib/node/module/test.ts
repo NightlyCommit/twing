@@ -52,7 +52,7 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.sourceContext = new this.Source(\`\`, \`foo.twig\`, \`\`);
+                this.sourceContext = new this.Source(\`\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }
@@ -93,7 +93,7 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.sourceContext = new this.Source(\`\`, \`foo.twig\`, \`\`);
+                this.sourceContext = new this.Source(\`\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }
@@ -164,7 +164,7 @@ tape('node/module', (test) => {
             constructor(env) {
                 super(env);
 
-                this.sourceContext = new this.Source(\`{{ foo }}\`, \`foo.twig\`, \`\`);
+                this.sourceContext = new this.Source(\`{{ foo }}\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }

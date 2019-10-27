@@ -80,8 +80,7 @@ tape('loader filesystem', (test) => {
         let path = nodePath.resolve('test/tests/integration/fixtures');
         let loader = new CustomLoader([path]);
 
-        test.same((await loader.getSourceContext('errors/index.html', null)).getName(), 'errors/index.html');
-        test.same(nodePath.resolve((await loader.getSourceContext('errors/index.html', null)).getPath()), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
+        test.same((await loader.getSourceContext('errors/index.html', null)).getName(), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
 
         try {
             await loader.getSourceContext('@foo/bar', null);
@@ -294,7 +293,7 @@ tape('loader filesystem', (test) => {
         ];
 
         for (let name of names) {
-            test.same(await loader.getSourceContext(name, null), new TwingSource('named path\n', name, nodePath.resolve(fixturesPath, 'named/index.html')));
+            test.same(await loader.getSourceContext(name, null), new TwingSource('named path\n', nodePath.resolve(fixturesPath, 'named/index.html')));
         }
 
         try {

@@ -53,21 +53,19 @@ tape('loader filesystem', (test) => {
             test.same(err.getMessage(), `Unable to find template "errors/index.html".`);
         }
 
-        let source = await loader.getSourceContext('errors/index.html', new TwingSource('', '', resolvePath('foo.html')));
+        let source = await loader.getSourceContext('errors/index.html', new TwingSource('', resolvePath('foo.html')));
 
         test.same(source.getName(), resolvePath('errors/index.html'));
-        test.same(source.getPath(), source.getName());
 
-        source = await loader.getSourceContext('../errors/index.html', new TwingSource('', '', resolvePath('foo/bar.html')));
+        source = await loader.getSourceContext('../errors/index.html', new TwingSource('', resolvePath('foo/bar.html')));
 
         test.same(source.getName(), resolvePath('errors/index.html'));
-        test.same(source.getPath(), source.getName());
 
         try {
-            await loader.getSourceContext('foo', new TwingSource('', 'foo/bar', 'foo/bar/index.html'));
+            await loader.getSourceContext('foo', new TwingSource('', 'foo/bar/index.html'));
         } catch (err) {
             test.true(err instanceof TwingErrorLoader);
-            test.same(err.getMessage(), `Unable to find template "foo/bar/foo" in "foo/bar".`);
+            test.same(err.getMessage(), `Unable to find template "foo/bar/foo" in "foo/bar/index.html".`);
         }
 
         test.test('use error cache on subsequent calls', async (test) => {
@@ -93,13 +91,13 @@ tape('loader filesystem', (test) => {
         test.end();
     });
 
-    test.test('security', (test) => {
+    test.test('security', async (test) => {
         for (let securityTest of securityTests) {
             let template = securityTest[0];
             let loader = new TwingLoaderFilesystem();
 
             try {
-                loader.getCacheKey(template, null);
+                await loader.getCacheKey(template, null);
 
                 test.fail();
             } catch (e) {
@@ -155,7 +153,7 @@ tape('loader filesystem', (test) => {
         };
 
         let loader = new TwingLoaderFilesystem();
-        let namedSource = (await loader.getSourceContext('named/index.html', new TwingSource('', '', resolvePath('index.html')))).getCode();
+        let namedSource = (await loader.getSourceContext('named/index.html', new TwingSource('', resolvePath('index.html')))).getCode();
 
         test.same(namedSource, "named path\n");
 
@@ -185,7 +183,7 @@ tape('loader filesystem', (test) => {
         ];
 
         for (let name of names) {
-            test.same(await loader.getSourceContext(name, new TwingSource('', '', resolvePath('foo.html'))), new TwingSource('named path\n', resolvePath('named/index.html'), resolvePath('named/index.html')));
+            test.same(await loader.getSourceContext(name, new TwingSource('', resolvePath('foo.html'))), new TwingSource('named path\n', resolvePath('named/index.html')));
         }
 
         try {
@@ -206,7 +204,7 @@ tape('loader filesystem', (test) => {
         };
 
         let loader = new TwingLoaderFilesystem();
-        let source = new TwingSource('', '', resolvePath('index.html'));
+        let source = new TwingSource('', resolvePath('index.html'));
 
         test.equals(await loader.exists('normal/index.html', source), true);
         test.equals(await loader.exists('foo', source), false);
@@ -234,7 +232,7 @@ tape('loader filesystem', (test) => {
         };
 
         let loader = new TwingLoaderFilesystem();
-        let source = new TwingSource('', '', resolvePath('index.html'));
+        let source = new TwingSource('', resolvePath('index.html'));
 
         test.true(await loader.isFresh('normal/index.html', new Date().getTime(), source));
 
@@ -247,7 +245,7 @@ tape('loader filesystem', (test) => {
         };
 
         let loader = new TwingLoaderFilesystem();
-        let source = new TwingSource('', '', resolvePath('index.html'));
+        let source = new TwingSource('', resolvePath('index.html'));
 
         test.same(await loader.resolve('normal/index.html', source), resolvePath('normal/index.html'));
         test.same(await loader.resolve(resolvePath('normal/index.html'), null), resolvePath('normal/index.html'));

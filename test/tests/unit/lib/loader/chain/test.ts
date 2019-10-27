@@ -33,7 +33,6 @@ tape('loader chain', (test) => {
         test.test('foo', (test) => {
             loader.getSourceContext('foo', null).then((source) => {
                 test.same(source.getName(), 'foo');
-                test.same(source.getPath(), '');
                 test.end();
             });
         });
@@ -41,7 +40,6 @@ tape('loader chain', (test) => {
         test.test('errors/index.html', (test) => {
             loader.getSourceContext('errors/index.html', null).then((source) => {
                 test.same(source.getName(), 'errors/index.html');
-                test.same(source.getPath(), '');
                 test.same(source.getCode(), 'baz');
                 test.end();
             });
@@ -49,8 +47,7 @@ tape('loader chain', (test) => {
 
         test.test('errors/base.html', (test) => {
             loader.getSourceContext('errors/base.html', null).then((source) => {
-                test.same(source.getName(), 'errors/base.html');
-                test.same(source.getPath(), join(fixturesPath, 'errors/base.html'));
+                test.same(source.getName(), join(fixturesPath, 'errors/base.html'));
                 test.notSame(source.getCode(), 'baz');
                 test.end();
             });

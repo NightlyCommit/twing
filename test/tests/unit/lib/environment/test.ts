@@ -737,7 +737,7 @@ tape('environment', (test) => {
 
         env.setParser(new TwingTestsEnvironmentParserBar(env));
 
-        test.true(env.parse(env.tokenize(new TwingSource('foo', 'index', ''))));
+        test.true(env.parse(env.tokenize(new TwingSource('foo', 'index'))));
 
         test.end();
     });
@@ -749,7 +749,7 @@ tape('environment', (test) => {
 
         env.setLexer(new TwingTestsEnvironmentLexerBar(env));
 
-        test.true(env.tokenize(new TwingSource('foo', 'index', '')).getCurrent().test(TokenType.TEXT, 'bar'));
+        test.true(env.tokenize(new TwingSource('foo', 'index')).getCurrent().test(TokenType.TEXT, 'bar'));
 
         test.end();
     });
@@ -759,7 +759,7 @@ tape('environment', (test) => {
             index: 'foo'
         }));
 
-        let source = new TwingSource('{{ foo', 'index', '');
+        let source = new TwingSource('{{ foo', 'index');
 
         try {
             env.compileSource(source);
@@ -771,7 +771,7 @@ tape('environment', (test) => {
 
         env.setParser(new TwingTestsEnvironmentParserError(env));
 
-        source = new TwingSource('{{ foo.bar }}', 'index', '');
+        source = new TwingSource('{{ foo.bar }}', 'index');
 
         try {
             env.compileSource(source);
@@ -1323,14 +1323,14 @@ BAROOF</FOO></foo>oof`);
             test.end();
         });
 
-        test.test('handle templates coming from non-filesystem loader', (test) => {
+        test.test('handle templates coming from non-filesystem loader', async (test) => {
             let env = new TwingEnvironmentNode(new TwingLoaderArray({
                 index: 'FOO'
             }), {
                 source_map: true
             });
 
-            env.render('index');
+            await env.render('index');
 
             let sourceMap = env.getSourceMap();
 
