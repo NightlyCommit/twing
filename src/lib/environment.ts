@@ -897,10 +897,16 @@ return module.exports;
     enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource) {
         TwingOutputBuffering.obStart();
 
-        let sourcePath = path.relative('.', source.getPath());
+        let sourcePath: string;
 
-        if (typeof this.sourceMap === 'string') {
-            sourcePath = path.join(this.sourceMap, sourcePath);
+        if (source.getPath()) {
+            sourcePath = path.relative('.', source.getPath());
+
+            if (typeof this.sourceMap === 'string') {
+                sourcePath = path.join(this.sourceMap, sourcePath);
+            }
+        } else {
+            sourcePath = source.getName();
         }
 
         source = new TwingSource(source.getCode(), source.getName(), sourcePath);
