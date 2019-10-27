@@ -1363,6 +1363,22 @@ BAROOF</FOO></foo>oof`);
             test.end();
         });
 
+        test.test('handle templates coming from non-filesystem loader', (test) => {
+            let env = new TwingEnvironmentNode(new TwingLoaderArray({
+                index: 'FOO'
+            }), {
+                source_map: true
+            });
+
+            env.render('index');
+
+            let sourceMap = env.getSourceMap();
+
+            test.true(sourceMap);
+
+            test.end();
+        });
+
         test.end();
     });
 
