@@ -74,9 +74,9 @@ export class TwingSourceMapNode {
         }
 
         // source-map@6 types are faulty, we have to force-type chunks as any
-        let sourceNode = new SourceNode(this._line, this._column, this._source.getPath(), chunks as any, this._name);
+        let sourceNode = new SourceNode(this._line, this._column, this._source.getName(), chunks as any, this._name);
 
-        sourceNode.setSourceContent(this._source.getPath(), this._source.getCode());
+        sourceNode.setSourceContent(this._source.getName(), this._source.getCode());
 
         for (let child of this._children) {
             sourceNode.add(child.toSourceNode() as any);

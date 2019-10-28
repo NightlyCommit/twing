@@ -4,7 +4,7 @@ import {TwingSourceMapNode} from "../../../../../../src/lib/source-map/node";
 
 tape('source-map/node', (test) => {
     test.test('constructor', (test) => {
-        let source = new TwingSource('source', 'source.twig', 'source.twig');
+        let source = new TwingSource('source', 'source.twig');
         let node = new TwingSourceMapNode(1, 2, source, 'name');
 
         test.same(node.line, 1);
