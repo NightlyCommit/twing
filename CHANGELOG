@@ -1,3 +1,7 @@
+3.1.1
+
+ * #450 Getting the source map of a template loaded from an array loader throws an error
+
 3.1.0
 
  * #424 Add support for the line tag

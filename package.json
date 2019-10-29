@@ -10,7 +10,7 @@
     "twig-engine",
     "typescript"
   ],
-  "version": "3.1.0",
+  "version": "3.1.1",
   "homepage": "http://NightlyCommit.github.io/twing",
   "license": "BSD-2-Clause",
   "repository": {
