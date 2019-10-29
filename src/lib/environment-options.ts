@@ -23,7 +23,7 @@ export type TwingEnvironmentOptions = {
     auto_reload?: boolean;
     strict_variables?: boolean;
     autoescape?: string | false | TwingEscapingStrategyResolver;
-    source_map?: boolean | string;
+    source_map?: boolean;
     sandbox_policy?: TwingSandboxSecurityPolicyInterface;
     sandboxed?: boolean
 }
