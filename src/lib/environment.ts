@@ -58,7 +58,7 @@ export abstract class TwingEnvironment extends EventEmitter {
     private extensionSet: TwingExtensionSet = null;
     private optionsHash: string;
     private sourceMapNode: TwingSourceMapNode;
-    private sourceMap: boolean | string;
+    private sourceMap: boolean;
     private autoescape: string | false | TwingEscapingStrategyResolver;
     private coreExtension: TwingExtensionCore;
     private sandboxed: boolean;
@@ -922,10 +922,6 @@ return module.exports;
 
         if (path.isAbsolute(sourceName)) {
             sourceName = path.relative('.', sourceName);
-        }
-
-        if (typeof this.sourceMap === 'string') {
-            sourceName = path.join(this.sourceMap, sourceName);
         }
 
         source = new TwingSource(source.getCode(), sourceName);
