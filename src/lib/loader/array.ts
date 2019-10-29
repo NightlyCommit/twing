@@ -14,10 +14,11 @@ export class TwingLoaderArray implements TwingLoaderInterface {
 
     private templates: Map<string, string>;
 
-    constructor(templates: any) {
+    constructor(templates?: any) {
         this.TwingLoaderInterfaceImpl = this;
-
-        this.templates = iteratorToMap(templates);
+        if(templates != undefined){
+            this.templates = iteratorToMap(templates);
+        }
     }
 
     setTemplate(name: string, template: string) {
