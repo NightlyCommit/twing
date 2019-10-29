@@ -80,9 +80,9 @@ template.renderBlock('block_name', {'the': 'variables', 'go': 'here'}).then((out
 
 ## Events
 
-### twing.on('template', function(name) {})
+### twing.on('template', (name: string, from: TwingSource) => {})
 
-When a template is encountered, Twing environment emits a `template` event with the name of the encountered template.
+When a template is encountered, Twing environment emits a `template` event with the name of the encountered template and the source of the template that initiated the loading.
 
 ## Environment Options
 

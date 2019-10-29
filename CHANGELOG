@@ -1,3 +1,10 @@
+4.0.0
+
+ * #452 Remove support for sourceMap environment option being a string
+ * #451 Remove TwingSource path property entirely
+ * #347 Async function support
+ * #288 Custom asynchronous loader
+
 3.1.1
 
  * #450 Getting the source map of a template loaded from an array loader throws an error
