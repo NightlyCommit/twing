@@ -123,9 +123,9 @@ The following options are available:
 
   A flag that indicates which optimizations to apply (default to `-1` -- all optimizations are enabled; set it to `0` to disable).
   
-* `source_map` *string* or *boolean* (defaults to `false`)
+* `source_map` *boolean* (defaults to `false`)
   
-  If set to a *string* or `true`, Twing will add source map support to the compiled template. The source map can then be retrieved after the rendering by calling `TwingEnvironment.getSourceMap()` method. If set to a *string*, specifies the intended location of the output file. Strongly recommended when outputting source maps so that they can properly refer back to their intended files.
+  If set to `true`, Twing will add source map support to the compiled template. The source map can then be retrieved after the rendering by calling `TwingEnvironment.getSourceMap()` method.
   
 ## Loaders
 
