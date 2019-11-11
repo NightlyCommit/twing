@@ -16,7 +16,8 @@ export default class extends TestBase {
 {{ to_string_able|length }}
 {{ countable|length }}
 {{ null|length }}
-{{ non_countable|length }}`
+{{ non_countable|length }}
+{{ empty_array|length }}`
         };
     }
 
@@ -29,6 +30,7 @@ export default class extends TestBase {
 42
 0
 1
+0
 `;
     }
 
@@ -43,6 +45,7 @@ export default class extends TestBase {
             non_countable: {
                 toString: '' // ensure that toString is not callable
             },
+            empty_array: []
         } as any
     }
 }

@@ -2,33 +2,27 @@ import {TwingEnvironment} from "../../../environment";
 import {isNullOrUndefined} from "util";
 
 /**
- * Returns the length of a variable.
+ * Returns the length of a thing.
  *
  * @param {TwingEnvironment} env A TwingEnvironment instance
- * @param thing A variable
+ * @param {any} thing A thing
  *
- * @returns {Promise<number>} The length of the value
+ * @returns {Promise<number>} The length of the thing
  */
 export function length(env: TwingEnvironment, thing: any): Promise<number> {
-    let _do = (): number => {
-        if (isNullOrUndefined(thing)) {
-            return 0;
-        }
+    let length: number;
 
-        if (thing.length) {
-            return thing.length;
-        }
+    if (isNullOrUndefined(thing)) {
+        length = 0;
+    } else if (thing.length !== undefined) {
+        length = thing.length;
+    } else if (thing.size !== undefined) {
+        length = thing.size;
+    } else if (thing.toString && (typeof thing.toString === 'function')) {
+        length = thing.toString().length;
+    } else {
+        length = 1;
+    }
 
-        if (thing.size) {
-            return thing.size;
-        }
-
-        if (thing.toString && (typeof thing.toString === 'function')) {
-            return thing.toString().length;
-        }
-
-        return 1;
-    };
-
-    return Promise.resolve(_do());
+    return Promise.resolve(length);
 }
