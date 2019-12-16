@@ -1,3 +1,8 @@
+4.0.2
+
+ * #466 - min function does not working as expected
+ * #469 - concatenation using ~ outputs "undefined" (variables)
+
 4.0.1
 
  * #462 length filter does't work as expected on empty array
