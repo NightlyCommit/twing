@@ -8,12 +8,19 @@ export default class extends TestBase {
     getTemplates() {
         return {
             'index.twig': `
-{{ "i like Twing."|capitalize }}`
+{{ "i like Twing."|capitalize }}
+{{ undef|capitalize }}`
         };
     }
 
     getExpected() {
         return `
 I like Twing.`;
+    }
+
+    getContext(): any {
+        return {
+            undef: undefined
+        };
     }
 }

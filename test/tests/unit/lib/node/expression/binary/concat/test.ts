@@ -21,7 +21,7 @@ tape('node/expression/binary/concat', (test) => {
         let node = new TwingNodeExpressionBinaryConcat([left, right], 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), '(1 + 2)');
+        test.same(compiler.compile(node).getSource(), '(this.concatenate(1, 2))');
 
         test.end();
     });
