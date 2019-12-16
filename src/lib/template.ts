@@ -27,6 +27,7 @@ import {parseRegex} from "./helpers/parse-regex";
 import {constant} from "./helpers/constant";
 import {get} from "./helpers/get";
 import {include} from "./extension/core/functions/include";
+import {isNullOrUndefined} from "util";
 
 type TwingTemplateMacrosMap = Map<string, TwingTemplateMacroHandler>;
 type TwingTemplateAliasesMap = TwingContext<string, TwingTemplate>;
@@ -527,6 +528,18 @@ export abstract class TwingTemplate {
 
     protected get isIn(): (a: any, b: any) => boolean {
         return isIn;
+    }
+
+    protected concatenate(object1: any, object2: any): string {
+        if (isNullOrUndefined(object1)) {
+            object1 = '';
+        }
+
+        if (isNullOrUndefined(object2)) {
+            object2 = '';
+        }
+
+        return String(object1) + String(object2);
     }
 
     protected get iterate(): (it: any, cb: IterateCallback) => Promise<void> {

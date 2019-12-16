@@ -9,7 +9,13 @@ export class TwingNodeExpressionBinaryConcat extends TwingNodeExpressionBinary {
         this.type = TwingNodeType.EXPRESSION_BINARY_CONCAT;
     }
 
-    operator(compiler: TwingCompiler) {
-        return compiler.raw('+');
+    compile(compiler: TwingCompiler) {
+        compiler
+            .raw('(this.concatenate(')
+            .subcompile(this.getNode('left'))
+            .raw(', ')
+            .subcompile(this.getNode('right'))
+            .raw('))')
+        ;
     }
 }
