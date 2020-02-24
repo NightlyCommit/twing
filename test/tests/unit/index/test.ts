@@ -31,6 +31,7 @@ tape('main and browser indexes', (test) => {
         'TwingNodeBlockReference',
         'TwingNodeBody',
         'TwingNodeCheckSecurity',
+        'TwingNodeComment',
         'TwingNodeDeprecated',
         'TwingNodeDo',
         'TwingNodeEmbed',
