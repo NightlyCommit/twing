@@ -25,6 +25,7 @@ export {TwingNodeBlock} from "./lib/node/block";
 export {TwingNodeBody} from "./lib/node/body";
 export {TwingNodeCaptureInterface} from "./lib/node-capture-interface";
 export {TwingNodeCheckSecurity} from "./lib/node/check-security";
+export {TwingNodeComment} from "./lib/node/comment";
 export {TwingNodeDeprecated} from "./lib/node/deprecated";
 export {TwingNodeDo} from "./lib/node/do";
 export {TwingNodeEmbed} from "./lib/node/embed";
