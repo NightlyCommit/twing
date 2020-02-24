@@ -18,7 +18,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
         return this.findTemplate(name, true, from).then((path) => {
             return new Promise((resolve, reject) => {
                 readFile(path, 'UTF-8', (err, data) => {
-                    resolve(new TwingSource(data, path))
+                    resolve(new TwingSource(data, name, path))
                 })
             });
         });
