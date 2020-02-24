@@ -55,11 +55,13 @@ tape('loader filesystem', (test) => {
 
         let source = await loader.getSourceContext('errors/index.html', new TwingSource('', resolvePath('foo.html')));
 
-        test.same(source.getName(), resolvePath('errors/index.html'));
+        test.same(source.getName(), 'errors/index.html');
+        test.same(source.getFQN(), resolvePath('errors/index.html'));
 
         source = await loader.getSourceContext('../errors/index.html', new TwingSource('', resolvePath('foo/bar.html')));
 
-        test.same(source.getName(), resolvePath('errors/index.html'));
+        test.same(source.getName(), '../errors/index.html');
+        test.same(source.getFQN(), resolvePath('errors/index.html'));
 
         try {
             await loader.getSourceContext('foo', new TwingSource('', 'foo/bar/index.html'));
@@ -168,22 +170,22 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem();
 
         let names = [
-            'named/index.html',
-            'named//index.html',
-            'named///index.html',
-            '../fixtures/named/index.html',
-            '..//fixtures//named//index.html',
-            '..///fixtures///named///index.html',
-            'named\\index.html',
-            'named\\\\index.html',
-            'named\\\\\\index.html',
-            '..\\fixtures\\named\\index.html',
-            '..\\\\fixtures\\\\named\\\\index.html',
-            '..\\\\\\fixtures\\named\\\\\\index.html',
+            ['named/index.html', 'named/index.html'],
+            ['named//index.html', 'named/index.html'],
+            ['named///index.html', 'named/index.html'],
+            ['../fixtures/named/index.html', '../fixtures/named/index.html'],
+            ['..//fixtures//named//index.html', '../fixtures/named/index.html'],
+            ['..///fixtures///named///index.html', '../fixtures/named/index.html'],
+            ['named\\index.html', 'named/index.html'],
+            ['named\\\\index.html', 'named/index.html'],
+            ['named\\\\\\index.html', 'named/index.html'],
+            ['..\\fixtures\\named\\index.html', '../fixtures/named/index.html'],
+            ['..\\\\fixtures\\\\named\\\\index.html', '../fixtures/named/index.html'],
+            ['..\\\\\\fixtures\\named\\\\\\index.html', '../fixtures/named/index.html']
         ];
 
-        for (let name of names) {
-            test.same(await loader.getSourceContext(name, new TwingSource('', resolvePath('foo.html'))), new TwingSource('named path\n', resolvePath('named/index.html')));
+        for (let [name, expected] of names) {
+            test.same(await loader.getSourceContext(name, new TwingSource('', resolvePath('foo.html'))), new TwingSource('named path\n', name, resolvePath(expected)));
         }
 
         try {

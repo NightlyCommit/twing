@@ -5,7 +5,7 @@ import {readFileSync} from 'fs';
 import {TwingTokenParser} from "../../../../../src/lib/token-parser";
 import {Token, TokenType} from "twig-lexer";
 import {TwingNode, TwingNodeType} from "../../../../../src/lib/node";
-import {TwingEnvironment} from "../../../../../src/lib/environment";
+import {TwingEnvironment, TwingTemplatesModule} from "../../../../../src/lib/environment";
 import {TwingExtension} from "../../../../../src/lib/extension";
 import {TwingFilter} from "../../../../../src/lib/filter";
 import {TwingOperator, TwingOperatorAssociativity, TwingOperatorType} from "../../../../../src/lib/operator";
@@ -850,7 +850,8 @@ tape('environment', (test) => {
 
         test.test('when source_map is set to true', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
-                source_map: true
+                source_map: true,
+                cache: 'tmp/sm'
             });
 
             // 1.foo {
@@ -874,6 +875,8 @@ tape('environment', (test) => {
             let mappings: MappingItem[] = [];
 
             consumer.eachMapping((mapping: MappingItem) => {
+                console.warn(mapping);
+
                 mappings.push({
                     source: mapping.source,
                     generatedLine: mapping.generatedLine,
@@ -1025,7 +1028,7 @@ tape('environment', (test) => {
                     return Promise.resolve(className);
                 }
 
-                load(key: string) {
+                load(key: string): Promise<TwingTemplatesModule> {
                     return Promise.resolve(() => {
                         return new Map([
                             [0, CustomTemplate]

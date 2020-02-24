@@ -918,13 +918,13 @@ return module.exports;
     enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource) {
         TwingOutputBuffering.obStart();
 
-        let sourceName = source.getName();
+        let sourceFQN = source.getFQN();
 
-        if (path.isAbsolute(sourceName)) {
-            sourceName = path.relative('.', sourceName);
+        if (path.isAbsolute(sourceFQN)) {
+            sourceFQN = path.relative('.', sourceFQN);
         }
 
-        source = new TwingSource(source.getCode(), sourceName);
+        source = new TwingSource(source.getCode(), sourceFQN);
 
         let factory = this.getSourceMapNodeFactory(nodeType);
 

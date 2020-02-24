@@ -4,6 +4,9 @@ import {TwingErrorLoader} from "../../../../../../src/lib/error/loader";
 import {TwingSource} from "../../../../../../src/lib/source";
 import * as fs from "fs";
 import {stub} from "sinon";
+import {TwingEnvironmentNode} from "../../../../../../src/lib/environment/node";
+import {TwingCacheInterface} from "../../../../../../src/lib/cache-interface";
+import {TwingCacheFilesystem} from "../../../../../../src/lib/cache/filesystem";
 
 const nodePath = require('path');
 const os = require('os');
@@ -79,8 +82,10 @@ tape('loader filesystem', (test) => {
 
         let path = nodePath.resolve('test/tests/integration/fixtures');
         let loader = new CustomLoader([path]);
+        let source = await loader.getSourceContext('errors/index.html', null);
 
-        test.same((await loader.getSourceContext('errors/index.html', null)).getName(), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
+        test.same(source.getName(), 'errors/index.html');
+        test.same(source.getFQN(), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
 
         try {
             await loader.getSourceContext('@foo/bar', null);
@@ -278,22 +283,22 @@ tape('loader filesystem', (test) => {
         let loader = new TwingLoaderFilesystem(fixturesPath);
 
         let names = [
-            'named/index.html',
-            'named//index.html',
-            'named///index.html',
-            '../fixtures/named/index.html',
-            '..//fixtures//named//index.html',
-            '..///fixtures///named///index.html',
-            'named\\index.html',
-            'named\\\\index.html',
-            'named\\\\\\index.html',
-            '..\\fixtures\\named\\index.html',
-            '..\\\\fixtures\\\\named\\\\index.html',
-            '..\\\\\\fixtures\\named\\\\\\index.html',
+            ['named/index.html', 'named/index.html'],
+            ['named//index.html', 'named/index.html'],
+            ['named///index.html', 'named/index.html'],
+            ['../fixtures/named/index.html', '../fixtures/named/index.html'],
+            ['..//fixtures//named//index.html', '../fixtures/named/index.html'],
+            ['..///fixtures///named///index.html', '../fixtures/named/index.html'],
+            ['named\\index.html', 'named/index.html'],
+            ['named\\\\index.html', 'named/index.html'],
+            ['named\\\\\\index.html', 'named/index.html'],
+            ['..\\fixtures\\named\\index.html', '../fixtures/named/index.html'],
+            ['..\\\\fixtures\\\\named\\\\index.html', '../fixtures/named/index.html'],
+            ['..\\\\\\fixtures\\named\\\\\\index.html', '../fixtures/named/index.html']
         ];
 
-        for (let name of names) {
-            test.same(await loader.getSourceContext(name, null), new TwingSource('named path\n', nodePath.resolve(fixturesPath, 'named/index.html')));
+        for (let [name, expected] of names) {
+            test.same(await loader.getSourceContext(name, null), new TwingSource('named path\n', name, nodePath.resolve(fixturesPath, expected)));
         }
 
         try {
@@ -452,6 +457,20 @@ tape('loader filesystem', (test) => {
 
             test.end();
         });
+
+        test.end();
+    });
+
+    test.test('supports relative embed', async (test) => {
+        let loader = new TwingLoaderFilesystem(fixturesPath);
+        let env = new TwingEnvironmentNode(loader);
+
+        let spy = sinon.spy(env.getCache(false) as TwingCacheInterface, 'generateKey');
+
+        let output = await env.render('embed/index.html.twig');
+
+        test.same(output, 'Hello world!Hello world!');
+        test.same(spy.callCount, 2);
 
         test.end();
     });

@@ -122,7 +122,8 @@ tape('TwingError', (test) => {
             test.true(e instanceof TwingErrorRuntime);
             test.same(e.getMessage(), `Variable \`foo\` does not exist in "${path.resolve('test/tests/integration/fixtures/errors/index.html')}" at line 3.`);
             test.same(e.getTemplateLine(), 3);
-            test.same(e.getSourceContext().getName(), path.resolve('test/tests/integration/fixtures/errors/index.html'));
+            test.same(e.getSourceContext().getName(), 'index.html');
+            test.same(e.getSourceContext().getFQN(), path.resolve('test/tests/integration/fixtures/errors/index.html'));
         }
 
         test.end();
