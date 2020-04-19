@@ -52,5 +52,11 @@ tape('merge', async (test) => {
 
     test.same(await merge(new Map([[0, 'a']]), new Map([[0, 'b']])), new Map([[0, 'a'], [1, 'b']]));
 
+    try {
+        test.same(await merge({foo: 'Foo'}, new Map([[0, 'b']])), new Map([[0, 'a'], [1, 'b']]));
+    } catch (e) {
+        test.fail(e);
+    }
+
     test.end();
 });
