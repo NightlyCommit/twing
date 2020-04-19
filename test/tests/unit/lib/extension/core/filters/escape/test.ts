@@ -330,10 +330,10 @@ tape('escaping', (test) => {
     });
 
     test.test('customEscaper', async (test) => {
-        let customEscaperCases: [string, string | number, string][] = [
-            ['fooUTF-8', 'foo', 'foo'],
-            ['UTF-8', null, 'foo'],
-            ['42UTF-8', 42, 'foo'],
+        let customEscaperCases: [string, string | number, string, string][] = [
+            ['fooUTF-8', 'foo', 'foo', 'UTF-8'],
+            ['UTF-8', null, 'foo', 'UTF-8'],
+            ['42UTF-8', 42, 'foo', undefined],
         ];
 
         for (let customEscaperCase of customEscaperCases) {
@@ -341,7 +341,7 @@ tape('escaping', (test) => {
 
             twing.getCoreExtension().setEscaper('foo', foo_escaper_for_test);
 
-            test.same(await escape(twing, customEscaperCase[1], customEscaperCase[2]), customEscaperCase[0]);
+            test.same(await escape(twing, customEscaperCase[1], customEscaperCase[2], customEscaperCase[3]), customEscaperCase[0]);
         }
 
         test.end();

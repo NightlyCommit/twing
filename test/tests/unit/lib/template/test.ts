@@ -20,6 +20,10 @@ class TwingTestTemplateTemplate extends TwingTemplate {
         this.sourceContext = new TwingSource('', 'foo');
     }
 
+    getEnv(): TwingEnvironment {
+        return this.env;
+    }
+
     setEnv(env: TwingEnvironment) {
         this.env = env;
     }
@@ -78,6 +82,14 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
 }
 
 tape('template', function (test) {
+    test.test('environment accessor', function (test) {
+        let template = new TwingTestTemplateTemplate();
+
+        test.same(template.environment, template.getEnv());
+
+        test.end();
+    });
+
     test.test('getSourceContext', function (test) {
         let template = new TwingTestTemplateTemplate();
 

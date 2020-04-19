@@ -377,15 +377,13 @@ export class TwingParser {
             return null;
         };
 
+        result = testImportedSymbol(this.importedSymbols[0]);
+
+        // if the symbol does not exist in the current scope (0), try in the main/global scope (last index)
         let length = this.importedSymbols.length;
 
-        if (length > 0) {
-            result = testImportedSymbol(this.importedSymbols[0]);
-
-            // if the symbol does not exist in the current scope (0), try in the main/global scope (last index)
-            if (!result && (length > 1)) {
-                result = testImportedSymbol(this.importedSymbols[length - 1]);
-            }
+        if (!result && (length > 1)) {
+            result = testImportedSymbol(this.importedSymbols[length - 1]);
         }
 
         return result;
@@ -1231,7 +1229,7 @@ export class TwingParser {
         if (function_.isDeprecated()) {
             let message = `Twing Function "${function_.getName()}" is deprecated`;
 
-            if (typeof function_.getDeprecatedVersion() !== 'boolean') {
+            if (function_.getDeprecatedVersion() !== true) {
                 message += ` since version ${function_.getDeprecatedVersion()}`;
             }
 
@@ -1263,7 +1261,7 @@ export class TwingParser {
         if (filter.isDeprecated()) {
             let message = `Twing Filter "${filter.getName()}" is deprecated`;
 
-            if (typeof filter.getDeprecatedVersion() !== 'boolean') {
+            if (filter.getDeprecatedVersion() !== true) {
                 message += ` since version ${filter.getDeprecatedVersion()}`;
             }
 

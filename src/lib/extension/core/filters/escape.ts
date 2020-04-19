@@ -44,23 +44,12 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
             charset = env.getCharset();
         }
 
-        let regExp: RegExp = /^[.\s\S]/u;
-
         switch (strategy) {
             case 'html':
                 return htmlspecialchars(string);
             case 'js':
                 // escape all non-alphanumeric characters
                 // into their \x or \uHHHH representations
-                // if (charset !== 'UTF-8') {
-                //     string = iconv(charset, 'UTF-8', string).toString();
-                // }
-
-                // unit: no test case for this
-                // if ((strlen(string) === 0) ? false : !regExp.test(string)) {
-                //     throw new TwingErrorRuntime('The string to escape is not a valid UTF-8 string.');
-                // }
-
                 string = string.replace(/[^a-zA-Z0-9,._]/ug, function (matches: string) {
                     let char = matches;
 
@@ -93,21 +82,8 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
                     return sprintf('\\u%04s\\u%04s', char.substr(0, 4), char.substr(4, 4));
                 });
 
-                // if (charset !== 'UTF-8') {
-                //     string = iconv('UTF-8', charset, string).toString();
-                // }
-
                 return string;
             case 'css':
-                // if (charset !== 'UTF-8') {
-                //     string = iconv(charset, 'UTF-8', string).toString();
-                // }
-
-                // unit: no test case for this
-                // if ((strlen(string) === 0) ? false : !regExp.test(string)) {
-                //     throw new TwingErrorRuntime('The string to escape is not a valid UTF-8 string.');
-                // }
-
                 string = string.replace(/[^a-zA-Z0-9]/ug, function (matches: string) {
                     let char = matches;
 
@@ -126,21 +102,8 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
                     return '\\' + ltrim(bin2hex(char).toUpperCase(), '0') + ' ';
                 });
 
-                // if (charset !== 'UTF-8') {
-                //     string = iconv('UTF-8', charset, string).toString();
-                // }
-
                 return string;
             case 'html_attr':
-                // if (charset !== 'UTF-8') {
-                //     string = iconv(charset, 'UTF-8', string).toString();
-                // }
-
-                // unit: no test case for this
-                // if ((strlen(string) === 0) ? false : !regExp.test(string)) {
-                //     throw new TwingErrorRuntime('The string to escape is not a valid UTF-8 string.');
-                // }
-
                 string = string.replace(/[^a-zA-Z0-9,.\-_]/ug, function (matches: string) {
                     /**
                      * This function is adapted from code coming from Zend Framework.
@@ -194,10 +157,6 @@ export function escape(env: TwingEnvironment, string: any, strategy: string = 'h
                      */
                     return `&#x${hex};`;
                 });
-
-                // if (charset !== 'UTF-8') {
-                //     string = iconv('UTF-8', charset, string).toString();
-                // }
 
                 return string;
             case 'url':

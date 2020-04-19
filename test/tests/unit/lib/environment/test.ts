@@ -29,6 +29,7 @@ import {TwingTemplate} from "../../../../../src/lib/template";
 import {MappingItem, SourceMapConsumer} from "source-map";
 import {TwingLoaderFilesystem} from "../../../../../src/lib/loader/filesystem";
 import {TwingNodeText} from "../../../../../src/lib/node/text";
+import {TwingSandboxSecurityPolicy} from "../../../../../src/lib/sandbox/security-policy";
 
 const tmp = require('tmp');
 
@@ -875,8 +876,6 @@ tape('environment', (test) => {
             let mappings: MappingItem[] = [];
 
             consumer.eachMapping((mapping: MappingItem) => {
-                console.warn(mapping);
-
                 mappings.push({
                     source: mapping.source,
                     generatedLine: mapping.generatedLine,
@@ -1337,6 +1336,29 @@ BAROOF</FOO></foo>oof`);
         test.true(ensureToStringAllowedSpy.notCalled, 'ensureToStringAllowed is not called');
         test.true(checkSecuritySpy.notCalled, 'checkSecurity is not called');
         test.same(actual, `foo`);
+
+        test.end();
+    });
+
+    test.test('checkSecurity', (test) => {
+        test.test('doesnt\'t trigger the security policy when sandboxing is disabled', (test) => {
+            const fooPolicy = new TwingSandboxSecurityPolicy();
+
+            let env = new TwingEnvironmentNode(new TwingLoaderArray({
+                index: '{{foo}}'
+            }), {
+                sandboxed: false,
+                sandbox_policy: fooPolicy
+            });
+
+            let checkSecuritySpy = sinon.spy(fooPolicy, 'checkSecurity');
+
+            env.checkSecurity([], [], []);
+
+            test.true(checkSecuritySpy.notCalled);
+
+            test.end();
+        });
 
         test.end();
     });

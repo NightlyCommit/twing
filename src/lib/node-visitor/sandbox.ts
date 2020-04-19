@@ -5,7 +5,6 @@ import {TwingNodeCheckSecurity} from "../node/check-security";
 import {TwingNodeCheckToString} from "../node/check-to-string";
 
 export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
-    private inAModule: boolean = false;
     private tags: Map<string, TwingNode>;
     private filters: Map<string, TwingNode>;
     private functions: Map<string, TwingNode>;
@@ -23,13 +22,12 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         }
 
         if (node.getType() === TwingNodeType.MODULE) {
-            this.inAModule = true;
             this.tags = new Map();
             this.filters = new Map();
             this.functions = new Map();
 
             return node;
-        } else if (this.inAModule) {
+        } else {
             // look for tags
             if (node.getNodeTag() && !(this.tags.has(node.getNodeTag()))) {
                 this.tags.set(node.getNodeTag(), node);
@@ -87,8 +85,6 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
         }
 
         if (node.getType() === TwingNodeType.MODULE) {
-            this.inAModule = false;
-
             let nodes = new Map();
             let i: number = 0;
 
@@ -96,7 +92,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             nodes.set(i++, node.getNode('display_start'));
 
             node.getNode('constructor_end').setNode('_security_check', new TwingNode(nodes));
-        } else if (this.inAModule) {
+        } else {
             if (node.getType() === TwingNodeType.PRINT || node.getType() === TwingNodeType.SET) {
                 this.needsToStringWrap = false;
             }

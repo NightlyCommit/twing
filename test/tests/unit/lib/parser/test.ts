@@ -55,7 +55,7 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     getFunctions() {
         return [
             new TwingFunction('deprecated', () => Promise.resolve(), [], {
-                deprecated: '1'
+                deprecated: true
             }),
             new TwingFunction('deprecated_with_version', () => Promise.resolve(), [], {
                 deprecated: '1'
@@ -63,7 +63,7 @@ class TwingTestExpressionParserExtension extends TwingExtension {
             new TwingFunction('deprecated_with_alternative', () => Promise.resolve(), [], {
                 deprecated: '1',
                 alternative: 'alternative'
-            })
+            }),
         ];
     }
 
@@ -76,7 +76,7 @@ class TwingTestExpressionParserExtension extends TwingExtension {
     getFilters() {
         return [
             new TwingFilter('deprecated', () => Promise.resolve(), [], {
-                deprecated: '1'
+                deprecated: true
             }),
             new TwingFilter('deprecated_with_version', () => Promise.resolve(), [], {
                 deprecated: '1'
@@ -974,10 +974,10 @@ tape('parser', (test) => {
             env.addExtension(new TwingTestExpressionParserExtension(), 'foo');
 
             let testCases: [string, boolean, string][] = [
-                ['deprecated', false, 'Twing Function "deprecated" is deprecated since version 1 in "index" at line 1.'],
+                ['deprecated', false, 'Twing Function "deprecated" is deprecated in "index" at line 1.'],
                 ['deprecated_with_version', false, 'Twing Function "deprecated_with_version" is deprecated since version 1 in "index" at line 1.'],
                 ['deprecated_with_alternative', false, 'Twing Function "deprecated_with_alternative" is deprecated since version 1. Use "alternative" instead in "index" at line 1.'],
-                ['deprecated', true, 'Twing Function "deprecated" is deprecated since version 1 in "index.html.twig" at line 1.']
+                ['deprecated', true, 'Twing Function "deprecated" is deprecated in "index.html.twig" at line 1.']
             ];
 
             let parser = new TwingParser(env);
@@ -998,7 +998,7 @@ tape('parser', (test) => {
                 process.stdout.write = (chunk: string | Buffer): boolean => {
                     process.stdout.write = originalWrite;
 
-                    test.same(chunk, testCase[2]);
+                    test.same(chunk, testCase[2], testCase[0]);
 
                     return true;
                 };
@@ -1161,10 +1161,10 @@ tape('parser', (test) => {
             env.addExtension(new TwingTestExpressionParserExtension(), 'foo');
 
             let testCases: [string, boolean, string][] = [
-                ['deprecated', false, 'Twing Filter "deprecated" is deprecated since version 1 in "index" at line 1.'],
+                ['deprecated', false, 'Twing Filter "deprecated" is deprecated in "index" at line 1.'],
                 ['deprecated_with_version', false, 'Twing Filter "deprecated_with_version" is deprecated since version 1 in "index" at line 1.'],
                 ['deprecated_with_alternative', false, 'Twing Filter "deprecated_with_alternative" is deprecated since version 1. Use "alternative" instead in "index" at line 1.'],
-                ['deprecated', true, 'Twing Filter "deprecated" is deprecated since version 1 in "index.html.twig" at line 1.']
+                ['deprecated', true, 'Twing Filter "deprecated" is deprecated in "index.html.twig" at line 1.']
             ];
 
             let parser = new TwingParser(env);
@@ -1182,7 +1182,7 @@ tape('parser', (test) => {
                 process.stdout.write = (chunk: Buffer | string): boolean => {
                     process.stdout.write = originalWrite;
 
-                    test.same(chunk, testCase[2]);
+                    test.same(chunk, testCase[2], testCase[0]);
 
                     return true;
                 };
