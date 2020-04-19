@@ -16,7 +16,7 @@ export class TwingNodeExpressionArrowFunction extends TwingNodeExpression {
     }
 
     compile(compiler: TwingCompiler) {
-        compiler.raw('(');
+        compiler.raw('async (');
 
         let i: number = 0;
 

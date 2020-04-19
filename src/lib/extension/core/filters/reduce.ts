@@ -1,11 +1,11 @@
 import {iteratorToMap} from "../../../helpers/iterator-to-map";
 
-export function reduce(map: any, callback: Function, initial: any = null): Promise<string> {
+export function reduce(map: any, callback: (accumulator: any, currentValue: any) => any, initial: any = null): Promise<string> {
     map = iteratorToMap(map);
 
-    let values: any[] = Array.from(map.values());
+    let values: any[] = [...map.values()];
 
     return Promise.resolve(values.reduce((previousValue: any, currentValue: any): any => {
-        return callback(previousValue, currentValue);
+        return (async () => callback(await previousValue, currentValue))();
     }, initial));
 }
