@@ -5,6 +5,19 @@ export default class extends TestBase {
         return '"map" filter';
     }
 
+    getContext(): any {
+        return {
+            peoples: [
+                {
+                    first_name: 'Bob'
+                },
+                {
+                    first_name: 'Patrick'
+                }
+            ]
+        };
+    }
+
     getTemplates() {
         return {
             'index.twig': `
@@ -21,6 +34,8 @@ export default class extends TestBase {
 {% for k, v in [1, 2]|map(item => item + 2 ) -%}
     {{ k }} = {{ v }}
 {% endfor %}
+
+{{ peoples|map(people => people.first_name)|join(', ') }}
 `
         };
     }
@@ -35,6 +50,8 @@ b = 2*
 
 0 = 3
 1 = 4
+
+Bob, Patrick
 `;
     }
 }
