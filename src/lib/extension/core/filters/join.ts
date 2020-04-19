@@ -28,7 +28,7 @@ export function join(value: any, glue: string = '', and: string = null): Promise
         }
 
         if (isTraversable(value)) {
-            value = iteratorToArray(value, false);
+            value = iteratorToArray(value);
 
             // this is ugly but we have to ensure that each element of the array is rendered as PHP would render it
             // this is mainly useful for booleans that are not rendered the same way in PHP and JavaScript
@@ -39,7 +39,6 @@ export function join(value: any, glue: string = '', and: string = null): Promise
 
                 return item;
             });
-
 
             if (and === null || and === glue) {
                 return safeValue.join(glue);

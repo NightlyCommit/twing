@@ -16,6 +16,8 @@ export default class extends TestBase {
 
 {{ {0: "apple", "1": "banana", 2: "peach", 3: "plum"}|json_encode|raw }}
 {{ {1: "apple", "2": "banana", 3: "peach", 4: "plum"}|json_encode|raw }}
+
+{{ _context|json_encode|raw }}
 `
         };
     }
@@ -29,6 +31,8 @@ export default class extends TestBase {
 
 ["apple","banana","peach","plum"]
 {"1":"apple","2":"banana","3":"peach","4":"plum"}
+
+{"foo":"foo","map":{"message":"Hello, world!"},"global":"global"}
 `;
     }
 

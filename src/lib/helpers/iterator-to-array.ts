@@ -1,4 +1,4 @@
-export function iteratorToArray(value: any, useKeys: boolean = false): Array<any> {
+export function iteratorToArray(value: any): Array<any> {
     if (Array.isArray(value)) {
         return value
     }
@@ -16,7 +16,6 @@ export function iteratorToArray(value: any, useKeys: boolean = false): Array<any
             }
         }
         else if (typeof value['next'] === 'function') {
-            let i: number = 0;
             let next: any;
 
             while ((next = value.next()) && !next.done) {

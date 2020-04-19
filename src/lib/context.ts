@@ -23,7 +23,7 @@ export class TwingContext<K, V> {
     }
 
     [Symbol.iterator](): IterableIterator<[K, V]> {
-        return this._container.entries();
+        return this._container[Symbol.iterator]();
     }
 
     entries(): IterableIterator<[K, V]> {
