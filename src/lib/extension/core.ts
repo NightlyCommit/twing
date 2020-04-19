@@ -110,7 +110,6 @@ import {TwingTokenParserSandbox} from "../token-parser/sandbox";
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingNodeVisitorEscaper} from "../node-visitor/escaper";
 import {TwingNodeVisitorSandbox} from "../node-visitor/sandbox";
-import {TwingNodeVisitorOptimizer} from "../node-visitor/optimizer";
 import {range} from "./core/functions/range";
 import {constant} from "./core/functions/constant";
 import {cycle} from "./core/functions/cycle";
@@ -318,7 +317,6 @@ export class TwingExtensionCore extends TwingExtension {
         return [
             new TwingNodeVisitorEscaper(),
             new TwingNodeVisitorMacroAutoImport(),
-            new TwingNodeVisitorOptimizer(),
             new TwingNodeVisitorSandbox()
         ];
     }

@@ -8,12 +8,10 @@ import {TwingNodeExpressionMethodCall} from "../node/expression/method-call";
 import {TwingNodeExpressionArray} from "../node/expression/array";
 
 export class TwingNodeVisitorMacroAutoImport extends TwingBaseNodeVisitor {
-    private inAModule: boolean = false;
     private hasMacroCalls: boolean = false;
 
     public doEnterNode(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() == TwingNodeType.MODULE) {
-            this.inAModule = true;
             this.hasMacroCalls = false;
         }
 
@@ -22,12 +20,10 @@ export class TwingNodeVisitorMacroAutoImport extends TwingBaseNodeVisitor {
 
     public doLeaveNode(node: TwingNode, env: TwingEnvironment) {
         if (node.getType() == TwingNodeType.MODULE) {
-            this.inAModule = false;
-
             if (this.hasMacroCalls) {
                 node.getNode('constructor_end').setNode('_auto_macro_import', new TwingNodeImport(new TwingNodeExpressionName('_self', 0, 0), new TwingNodeExpressionAssignName('_self', 0, 0), 0, 0, 'import', true));
             }
-        } else if (this.inAModule) {
+        } else {
             if ((node.getType() == TwingNodeType.EXPRESSION_GET_ATTR) && (node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME) && (node.getNode('node').getAttribute('name') === '_self') && (node.getNode('attribute').getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
                 this.hasMacroCalls = true;
 

@@ -68,6 +68,10 @@ export abstract class TwingTemplate {
         this.macroHandlers = new Map();
     }
 
+    get environment(): TwingEnvironment {
+        return this.env;
+    }
+
     /**
      * Returns the template name.
      *
@@ -151,7 +155,7 @@ export abstract class TwingTemplate {
      *
      * @returns {Promise<void>}
      */
-    protected displayBlock(name: string, context: any, blocks: TwingTemplateBlocksMap = new Map(), useBlocks = true): Promise<void> {
+    protected displayBlock(name: string, context: any, blocks: TwingTemplateBlocksMap, useBlocks: boolean): Promise<void> {
         return this.getBlocks().then((ownBlocks) => {
             let blockHandler: TwingTemplateBlockHandler;
 
@@ -292,15 +296,13 @@ export abstract class TwingTemplate {
             promise = this.env.resolveTemplate([...templates.values()], this.getSourceContext());
         }
 
-        return promise.catch((e) => {
-            if (e instanceof TwingError) {
-                if (e.getTemplateLine() !== -1) {
-                    throw e;
-                }
+        return promise.catch((e: TwingError) => {
+            if (e.getTemplateLine() !== -1) {
+                throw e;
+            }
 
-                if (line) {
-                    e.setTemplateLine(line);
-                }
+            if (line) {
+                e.setTemplateLine(line);
             }
 
             throw e;
@@ -428,10 +430,20 @@ export abstract class TwingTemplate {
         }
     }
 
+    /**
+     * @param lineno
+     * @param source
+     * @deprecated
+     */
     public traceableDisplayBlock(lineno: number, source: TwingSource): TwingTemplateTraceableMethod<void> {
         return this.traceableMethod(this.displayBlock.bind(this), lineno, source);
     }
 
+    /**
+     * @param lineno
+     * @param source
+     * @deprecated
+     */
     public traceableDisplayParentBlock(lineno: number, source: TwingSource): TwingTemplateTraceableMethod<void> {
         return this.traceableMethod(this.displayParentBlock.bind(this), lineno, source);
     }
@@ -510,11 +522,9 @@ export abstract class TwingTemplate {
 
     protected get include(): (context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number) => Promise<string> {
         return (context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number): Promise<string> => {
-            return include(this.env, context, from, templates, variables, withContext, ignoreMissing).catch((e) => {
-                if (e instanceof TwingError) {
-                    if (e.getTemplateLine() === -1) {
-                        e.setTemplateLine(line);
-                    }
+            return include(this.env, context, from, templates, variables, withContext, ignoreMissing).catch((e: TwingError) => {
+                if (e.getTemplateLine() === -1) {
+                    e.setTemplateLine(line);
                 }
 
                 throw e;

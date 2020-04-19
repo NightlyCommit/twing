@@ -25,16 +25,8 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     compile(compiler: TwingCompiler) {
         if (this.getAttribute('is_defined_test')) {
             this.compileTemplateCall(compiler, 'traceableHasBlock');
-        }
-        else {
-            if (this.getAttribute('output')) {
-                this
-                    .compileTemplateCall(compiler, `traceableDisplayBlock`)
-                    .raw(";\n");
-            }
-            else {
-                this.compileTemplateCall(compiler, 'traceableRenderBlock');
-            }
+        } else {
+            this.compileTemplateCall(compiler, 'traceableRenderBlock');
         }
     }
 
@@ -43,8 +35,7 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
 
         if (!this.hasNode('template')) {
             compiler.raw('this');
-        }
-        else {
+        } else {
             compiler
                 .raw('(await this.loadTemplate(')
                 .subcompile(this.getNode('template'))

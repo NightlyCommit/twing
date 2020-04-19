@@ -35,10 +35,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         rootPath = (rootPath === null ? process.cwd() : rootPath);
 
         this.rootPath = resolvePath(rootPath);
-
-        if (paths) {
-            this.setPaths(paths);
-        }
+        this.setPaths(paths);
     }
 
     /**

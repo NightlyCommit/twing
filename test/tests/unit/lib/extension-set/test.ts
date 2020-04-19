@@ -12,6 +12,7 @@ import {Token} from "twig-lexer";
 import {TwingNode} from "../../../../../src/lib/node";
 import {TwingBaseNodeVisitor} from "../../../../../src/lib/base-node-visitor";
 import {TwingEnvironment} from "../../../../../src/lib/environment";
+import {spy} from "sinon";
 
 class TwingTestExtensionSetExtension extends TwingExtension {
     getOperators() {
@@ -402,6 +403,20 @@ tape('extension-set', (test) => {
         extensionSet.getSourceMapNodeFactories();
 
         test.true(extensionSet.isInitialized());
+
+        test.test('on subsequent calls, don\'t initialize extensions', (test) => {
+            let fooExtension = new TwingExtension();
+            let getFiltersSpy = spy(fooExtension, 'getFilters');
+
+            extensionSet = new TwingExtensionSet();
+            extensionSet.addExtension(fooExtension, 'foo');
+            extensionSet.getSourceMapNodeFactories();
+            extensionSet.getSourceMapNodeFactories();
+
+            test.same(getFiltersSpy.callCount, 1);
+
+            test.end();
+        });
 
         test.end();
     });

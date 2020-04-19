@@ -16,7 +16,7 @@ export type TwingCallableWrapperOptions = {
     is_variadic?: boolean;
     is_safe?: Array<any>;
     is_safe_callback?: Function;
-    deprecated?: string;
+    deprecated?: boolean | string;
     alternative?: string;
     expression_factory?: Function;
 }
@@ -76,12 +76,10 @@ export abstract class TwingCallableWrapper<T> {
         let callable = this.callable;
 
         return function () {
-            return (callable.apply(null, arguments) as Promise<T>).catch((e) => {
-                if (e instanceof TwingError) {
-                    if (e.getTemplateLine() === -1) {
-                        e.setTemplateLine(lineno);
-                        e.setSourceContext(source);
-                    }
+            return (callable.apply(null, arguments) as Promise<T>).catch((e: TwingError) => {
+                if (e.getTemplateLine() === -1) {
+                    e.setTemplateLine(lineno);
+                    e.setSourceContext(source);
                 }
 
                 throw e;

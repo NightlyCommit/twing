@@ -1,5 +1,8 @@
 import * as tape from 'tape';
 import {dump} from "../../../../../../../../src/lib/extension/core/functions/dump";
+import {TwingTemplate} from "../../../../../../../../src/lib/template";
+import {TwingEnvironmentNode} from "../../../../../../../../src/lib/environment/node";
+import {TwingLoaderArray} from "../../../../../../../../src/lib/loader/array";
 
 tape('dump', async (test) => {
     test.same(await dump({}, null), `NULL
@@ -49,6 +52,16 @@ string(3) "bar"
 `);
 
     test.same(await dump({}, new Date(0, 0, 0, 0, 0, 0, 0)), `array(0) {
+}
+`);
+
+    class FooTemplate extends TwingTemplate {
+        protected doDisplay(context: any, blocks: Map<string, [TwingTemplate, string]>): Promise<void> {
+            return undefined;
+        }
+    }
+
+    test.same(await dump({foo: new FooTemplate(new TwingEnvironmentNode(new TwingLoaderArray({})))}), `array(0) {
 }
 `);
 
