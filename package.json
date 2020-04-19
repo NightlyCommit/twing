@@ -67,7 +67,7 @@
     "snake-case": "^2.1.0",
     "source-map": "^0.6.1",
     "tmp": "0.0.33",
-    "twig-lexer": "^0.7.1",
+    "twig-lexer": "^0.7.2",
     "utf8-binary-cutter": "^0.9.2"
   },
   "devDependencies": {

@@ -10,12 +10,6 @@ export default class extends TestBase {
         return 'backticks';
     }
 
-    getEnvironmentOptions(): TwingEnvironmentOptions {
-        return {
-            debug: true
-        };
-    }
-
     getTemplates() {
         return {
             'index.twig': `{# Foo \`bar\` #}
