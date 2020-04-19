@@ -1,3 +1,12 @@
+4.0.4
+
+ * #486 "iterable1 is not iterable" error when merging into a hash
+ * #485 Twing render output is incorrect when \ (backslash) is present in source twig file(s)
+ * #484 String interpolation doesn't work for string with double and single quotes
+ * #483 The property object is async but the filter callback is sync
+ * #480 `json_encode` cannot serialize `_context`
+ * #449 Environment is not publicly available in TwingTemplate
+
 4.0.3
 
  * #474 Issues with embed tag
