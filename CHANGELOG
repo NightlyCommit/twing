@@ -1,3 +1,7 @@
+4.0.6
+
+* #495 Relative filesystem loader fails to resolve template included from a relatively resolved template
+
 4.0.5
 
  *#493 Chain loader fails to resolve when it contains more than one sub-loader
