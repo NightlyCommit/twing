@@ -1,3 +1,7 @@
+4.0.5
+
+ *#493 Chain loader fails to resolve when it contains more than one sub-loader
+
 4.0.4
 
  * #486 "iterable1 is not iterable" error when merging into a hash
