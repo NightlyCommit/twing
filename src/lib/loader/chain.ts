@@ -167,14 +167,14 @@ export class TwingLoaderChain implements TwingLoaderInterface {
         });
     }
 
-    resolve(name: string, from: TwingSource): Promise<string> {
+    resolve(name: string, from: TwingSource, shouldThrow: boolean = true): Promise<string> {
         let exceptions: Array<string> = [];
 
         let resolveAtIndex = (index: number): Promise<string> => {
             if (index < this.loaders.length) {
                 let loader = this.loaders[index];
 
-                return loader.resolve(name, from).catch((e) => {
+                return loader.resolve(name, from, true).catch((e) => {
                     if (e instanceof TwingErrorLoader) {
                         exceptions.push(loader.constructor.name + ': ' + e.message);
                     }
@@ -190,7 +190,12 @@ export class TwingLoaderChain implements TwingLoaderInterface {
             if (resolvedName) {
                 return resolvedName;
             } else {
-                throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
+                if (shouldThrow) {
+                    throw new TwingErrorLoader(`Template "${name}" is not defined${exceptions.length ? ' (' + exceptions.join(', ') + ')' : ''}.`, -1, from);
+                }
+                else {
+                    return null;
+                }
             }
         });
     }
