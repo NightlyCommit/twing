@@ -129,7 +129,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     private resolvePath(name: string, from: TwingSource): string {
         if (name && from && !isAbsolutePath(name)) {
-            name = joinPath(dirname(from.getName()), name);
+            name = joinPath(dirname(from.getFQN()), name);
         }
 
         return name;

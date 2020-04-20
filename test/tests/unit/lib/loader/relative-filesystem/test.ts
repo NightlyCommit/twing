@@ -2,7 +2,6 @@ import * as tape from 'tape';
 import {TwingLoaderRelativeFilesystem as TwingLoaderFilesystem} from "../../../../../../src/lib/loader/relative-filesystem";
 import {TwingErrorLoader} from "../../../../../../src/lib/error/loader";
 import {TwingSource} from "../../../../../../src/lib/source";
-import {TwingEnvironmentNode} from "../../../../../../src/lib/environment/node";
 
 const nodePath = require('path');
 const sinon = require('sinon');
@@ -146,6 +145,12 @@ tape('loader filesystem', (test) => {
             test.end();
         });
 
+        test.test('ddd', async (test) => {
+            test.same(await loader.resolve('partial.html.twig', new TwingSource('', 'index.html.twig', 'test/tests/unit/lib/loader/relative-filesystem/fixtures/index.html.twig')), nodePath.resolve('test/tests/unit/lib/loader/relative-filesystem/fixtures/partial.html.twig'));
+
+            test.end();
+        });
+
         test.end();
     });
 
@@ -192,8 +197,7 @@ tape('loader filesystem', (test) => {
             await loader.getSourceContext(null, null);
 
             test.fail();
-        }
-        catch (e) {
+        } catch (e) {
             test.true(e.message.startsWith('Unable to find template ""'));
         }
 
