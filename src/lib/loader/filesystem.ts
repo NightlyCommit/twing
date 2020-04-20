@@ -312,7 +312,7 @@ export class TwingLoaderFilesystem implements TwingLoaderInterface {
         return isAbsolutePath(file);
     }
 
-    resolve(name: string, from: TwingSource): Promise<string> {
-        return this.findTemplate(name, false, from);
+    resolve(name: string, from: TwingSource, shouldThrow: boolean = false): Promise<string> {
+        return this.findTemplate(name, shouldThrow, from);
     }
 }

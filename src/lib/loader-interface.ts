@@ -55,8 +55,9 @@ export interface TwingLoaderInterface {
      *
      * @param {string} name The name of the template to resolve
      * @param {TwingSource} from The source that initiated the template loading
+     * @param {boolean} shouldThrow
      *
      * @returns {Promise<string>} The resolved path of the template
      */
-    resolve(name: string, from: TwingSource): Promise<string>;
+    resolve(name: string, from: TwingSource, shouldThrow?: boolean): Promise<string>;
 }

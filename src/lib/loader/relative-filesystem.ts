@@ -123,8 +123,8 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
         }
     }
 
-    resolve(name: string, from: TwingSource): Promise<string> {
-        return this.findTemplate(name, false, from);
+    resolve(name: string, from: TwingSource, shouldThrow: boolean = false): Promise<string> {
+        return this.findTemplate(name, shouldThrow, from);
     }
 
     private resolvePath(name: string, from: TwingSource): string {

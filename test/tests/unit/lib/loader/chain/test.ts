@@ -340,6 +340,20 @@ tape('loader chain', (test) => {
             test.end();
         });
 
+        test.test('when a filesystem loader throws an error in findTemplate', async (test) => {
+            let loader1 = new TwingLoaderFilesystem('.');
+            let loader2 = new TwingLoaderArray({'bar': 'foo'});
+
+            loader = new TwingLoaderChain([
+                loader1,
+                loader2
+            ]);
+
+            test.equals(await loader.resolve('bar', null), 'bar');
+
+            test.end();
+        });
+
         test.test('when all loaders throw loader-related errors', async (test) => {
             let loader1 = new TwingLoaderArray({});
             sinon.stub(loader1, 'resolve').returns(Promise.reject(new TwingErrorLoader('foo', 1, null)));
@@ -361,6 +375,18 @@ tape('loader chain', (test) => {
             } catch (e) {
                 test.same(e.message, 'Template "foo" is not defined (TwingLoaderArray: foo at line 1, TwingLoaderArray: bar at line 1).');
             }
+
+            test.test('and shouldThrow is set to false', async (test) => {
+                try {
+                    await loader.resolve('foo', null, false);
+
+                    test.pass();
+                } catch (e) {
+                    test.fail();
+                }
+
+                test.end();
+            });
 
             test.end();
         });
