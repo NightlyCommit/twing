@@ -17,7 +17,7 @@ tape('node/flush', (test) => {
         let node = new TwingNodeFlush(1, 1, 'foo');
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.flushOutputBuffer();
+        test.same(compiler.compile(node).getSource(), `outputBuffer.flush();
 `);
 
         test.end();

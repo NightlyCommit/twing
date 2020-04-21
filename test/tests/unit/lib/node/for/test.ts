@@ -80,7 +80,7 @@ await (async () => {
 await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`key\`] = __key__;
     context.proxy[\`item\`] = __value__;
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 });
 (() => {
     let parent = context.get('_parent');
@@ -149,7 +149,7 @@ if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_
 await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     (() => {
         let loop = context.get('loop');
         loop.set('index0', loop.get('index0') + 1);
@@ -222,7 +222,7 @@ await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
     if (true) {
-        this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+        outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
         (() => {
             let loop = context.get('loop');
             loop.set('index0', loop.get('index0') + 1);
@@ -299,7 +299,7 @@ if ((typeof context.get('_seq') === 'object') && this.isCountable(context.get('_
 await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
     context.set('_iterated',  true);
     (() => {
         let loop = context.get('loop');
@@ -314,7 +314,7 @@ await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     })();
 });
 if (context.get('_iterated') === false) {
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 (() => {
     let parent = context.get('_parent');

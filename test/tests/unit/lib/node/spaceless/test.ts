@@ -30,9 +30,9 @@ tape('node/spaceless', (test) => {
         let node = new TwingNodeSpaceless(body, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.startOutputBuffer();
-this.echo(\`<div>   <div>   foo   </div>   </div>\`);
-this.echo(this.getAndCleanOutputBuffer().replace(/>\\s+</g, '><').trim());
+        test.same(compiler.compile(node).getSource(), `outputBuffer.start();
+outputBuffer.echo(\`<div>   <div>   foo   </div>   </div>\`);
+outputBuffer.echo(outputBuffer.getAndClean().replace(/>\\s+</g, '><').trim());
 `);
 
         test.end();

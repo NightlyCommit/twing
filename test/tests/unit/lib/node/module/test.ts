@@ -57,10 +57,10 @@ tape('node/module', (test) => {
                 let aliases = new this.Context();
             }
 
-            async doDisplay(context, blocks = new Map()) {
+            async doDisplay(context, outputBuffer, blocks = new Map()) {
                 let aliases = this.aliases.clone();
 
-                this.echo(\`foo\`);
+                outputBuffer.echo(\`foo\`);
             }
 
         }],
@@ -106,11 +106,11 @@ tape('node/module', (test) => {
                 });
             }
 
-            async doDisplay(context, blocks = new Map()) {
+            async doDisplay(context, outputBuffer, blocks = new Map()) {
                 let aliases = this.aliases.clone();
 
                 aliases.proxy[\`macro\`] = this.aliases.proxy[\`macro\`] = await this.loadTemplate(\`foo.twig\`, 2);
-                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks));
+                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks), outputBuffer);
             }
 
             isTraitable() {
@@ -173,11 +173,11 @@ tape('node/module', (test) => {
                 return this.loadTemplate(((true) ? (\`foo\`) : (\`bar\`)), 2);
             }
 
-            async doDisplay(context, blocks = new Map()) {
+            async doDisplay(context, outputBuffer, blocks = new Map()) {
                 let aliases = this.aliases.clone();
 
                 context.proxy[\`foo\`] = \`foo\`;
-                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks));
+                await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks), outputBuffer);
             }
 
             isTraitable() {

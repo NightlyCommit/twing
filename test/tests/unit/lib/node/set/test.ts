@@ -72,9 +72,9 @@ tape('node/set', (test) => {
 
             let node = new TwingNodeSet(true, namesNode, valuesNode, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `this.startOutputBuffer();
-this.echo(\`foo\`);
-context.proxy[\`foo\`] = (() => {let tmp = this.getAndCleanOutputBuffer(); return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
+            test.same(compiler.compile(node).getSource(), `outputBuffer.start();
+outputBuffer.echo(\`foo\`);
+context.proxy[\`foo\`] = (() => {let tmp = outputBuffer.getAndClean(); return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})();
 `);
 
             test.end();

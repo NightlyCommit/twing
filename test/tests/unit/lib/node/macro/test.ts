@@ -37,7 +37,7 @@ tape('node/macro', (test) => {
         let node = new TwingNodeMacro('foo', body, arguments_, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `async (__foo__ = null, __bar__ = \`Foo\`, ...__varargs__) => {
+        test.same(compiler.compile(node).getSource(), `async (outputBuffer, __foo__ = null, __bar__ = \`Foo\`, ...__varargs__) => {
     let aliases = this.aliases.clone();
     let context = new this.Context(this.env.mergeGlobals(new Map([
         [\`foo\`, __foo__],
@@ -49,18 +49,18 @@ tape('node/macro', (test) => {
     let result;
     let error;
 
-    this.startOutputBuffer();
+    outputBuffer.start();
     try {
-        this.echo(\`foo\`);
+        outputBuffer.echo(\`foo\`);
 
-        let tmp = this.getOutputBufferContent();
+        let tmp = outputBuffer.getContents();
         result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());
     }
     catch (e) {
         error = e;
     }
 
-    this.endAndCleanOutputBuffer();
+    outputBuffer.endAndClean();
 
     if (error) {
         throw error;

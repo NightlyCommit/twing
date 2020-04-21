@@ -278,6 +278,19 @@ tape('node/expression/call', (test) => {
 
         test.same(compiler.getSource(), 'foo(...[])');
 
+        test.test('supports needs_output_buffer', (test) => {
+            let node = new Callable(new Map(), new Map<string, any>([
+                ['callable', 'foo'],
+                ['needs_output_buffer', true]
+            ]));
+
+            compiler.compile(node);
+
+            test.same(compiler.getSource(), 'foo(...[outputBuffer])');
+
+            test.end();
+        });
+
         test.end();
     });
 

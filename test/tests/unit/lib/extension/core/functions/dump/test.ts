@@ -3,6 +3,7 @@ import {dump} from "../../../../../../../../src/lib/extension/core/functions/dum
 import {TwingTemplate} from "../../../../../../../../src/lib/template";
 import {TwingEnvironmentNode} from "../../../../../../../../src/lib/environment/node";
 import {TwingLoaderArray} from "../../../../../../../../src/lib/loader/array";
+import {TwingOutputBuffer} from "../../../../../../../../src/lib/output-buffer";
 
 tape('dump', async (test) => {
     test.same(await dump({}, null), `NULL
@@ -56,7 +57,7 @@ string(3) "bar"
 `);
 
     class FooTemplate extends TwingTemplate {
-        protected doDisplay(context: any, blocks: Map<string, [TwingTemplate, string]>): Promise<void> {
+        protected doDisplay(context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]>): Promise<void> {
             return undefined;
         }
     }

@@ -11,7 +11,7 @@ export class TwingNodeFlush extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write("this.flushOutputBuffer();\n")
+            .write("outputBuffer.flush();\n")
         ;
     }
 }

@@ -8,6 +8,7 @@ import {isTraversable} from "../../../helpers/is-traversable";
 import {TwingErrorRuntime} from "../../../error/runtime";
 import {isNullOrUndefined} from "util";
 import {isPlainObject} from "../../../helpers/is-plain-object";
+import {TwingOutputBuffer} from "../../../output-buffer";
 
 /**
  * Renders a template.
@@ -15,6 +16,7 @@ import {isPlainObject} from "../../../helpers/is-plain-object";
  * @param {TwingEnvironment} env
  * @param {any} context
  * @param {TwingSource} from
+ * @param {TwingOutputBuffer} outputBuffer
  * @param {string | Map<number, string | TwingTemplate>} templates The template to render or an array of templates to try consecutively
  * @param {any} variables The variables to pass to the template
  * @param {boolean} withContext
@@ -23,7 +25,7 @@ import {isPlainObject} from "../../../helpers/is-plain-object";
  *
  * @returns {Promise<string>} The rendered template
  */
-export function include(env: TwingEnvironment, context: any, from: TwingSource, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): Promise<string> {
+export function include(env: TwingEnvironment, context: any, from: TwingSource, outputBuffer: TwingOutputBuffer, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): Promise<string> {
     let alreadySandboxed = env.isSandboxed();
 
     if (!isPlainObject(variables) && !isTraversable(variables)) {
@@ -69,7 +71,7 @@ export function include(env: TwingEnvironment, context: any, from: TwingSource, 
     };
 
     return resolveTemplate(templates).then((template) => {
-        let promise = template ? template.render(variables) : Promise.resolve('');
+        let promise = template ? template.render(variables, outputBuffer) : Promise.resolve('');
 
         return promise.then((result) => {
             restoreSandbox();

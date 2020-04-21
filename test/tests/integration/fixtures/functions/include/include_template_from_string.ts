@@ -1,6 +1,12 @@
 import TestBase from "../../../TestBase";
 
 export default class extends TestBase {
+    getEnvironmentOptions(): any {
+        return {
+            cache: 'tmp/itfs'
+        };
+    }
+
     getDescription() {
         return '"template_from_string" function works in an "include"';
     }

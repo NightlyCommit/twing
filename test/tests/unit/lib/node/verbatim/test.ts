@@ -20,7 +20,7 @@ tape('node/verbatim', (test) => {
         let node = new TwingNodeVerbatim('foo', 1, 1, 'verbatim');
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(\`foo\`);
 `);
 
         test.end();

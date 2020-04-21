@@ -5,12 +5,13 @@ import {TwingSource} from "../../../../../../../../src/lib/source";
 import {include} from "../../../../../../../../src/lib/extension/core/functions/include";
 import {TwingLoaderRelativeFilesystem} from "../../../../../../../../src/lib/loader/relative-filesystem";
 import {resolve} from "path";
+import {TwingOutputBuffer} from "../../../../../../../../src/lib/output-buffer";
 
 tape('include', async (test) => {
     let env = new TwingEnvironmentNode(new TwingLoaderArray({}));
 
     try {
-        await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true);
+        await include(env, new Map(), new TwingSource('', 'index.twig'), null, 'foo', {}, true, false, true);
 
         test.fail();
     } catch (e) {
@@ -19,7 +20,7 @@ tape('include', async (test) => {
     }
 
     try {
-        await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', 'bar', true, false, true);
+        await include(env, new Map(), new TwingSource('', 'index.twig'), null, 'foo', 'bar', true, false, true);
 
         test.fail();
     } catch (e) {
@@ -29,12 +30,12 @@ tape('include', async (test) => {
     env = new TwingEnvironmentNode(new TwingLoaderArray({foo: 'bar'}));
     env.enableSandbox();
 
-    test.same(await include(env, new Map(), new TwingSource('', 'index.twig'), 'foo', {}, true, false, true), 'bar');
+    test.same(await include(env, new Map(), new TwingSource('', 'index.twig'), new TwingOutputBuffer(), 'foo', {}, true, false, true), 'bar');
 
     test.test('supports being called with a source', async (test) => {
         env = new TwingEnvironmentNode(new TwingLoaderRelativeFilesystem());
 
-        test.same(await include(env, new Map(), new TwingSource('code', resolve('test/tests/unit/lib/extension/core/index.twig')), 'templates/foo.twig', {}), 'foo');
+        test.same(await include(env, new Map(), new TwingSource('code', resolve('test/tests/unit/lib/extension/core/index.twig')), new TwingOutputBuffer(), 'templates/foo.twig', {}), 'foo');
 
         test.end();
     });

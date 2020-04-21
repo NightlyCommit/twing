@@ -104,7 +104,7 @@ export {TwingNodeVerbatim} from "./lib/node/verbatim";
 export {TwingNodeWith} from "./lib/node/with";
 export {TwingNode} from "./lib/node";
 export {TwingOperator,TwingOperatorType, TwingOperatorAssociativity} from "./lib/operator";
-export {TwingOutputBuffering, TwingOutputHandler} from "./lib/output-buffering";
+export {TwingOutputBuffer, TwingOutputHandler} from "./lib/output-buffer";
 export {TwingParser} from "./lib/parser";
 export {TwingSandboxSecurityError} from "./lib/sandbox/security-error";
 export {TwingSandboxSecurityNotAllowedFilterError} from "./lib/sandbox/security-not-allowed-filter-error";

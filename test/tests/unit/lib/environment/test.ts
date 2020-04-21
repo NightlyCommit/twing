@@ -30,6 +30,7 @@ import {MappingItem, SourceMapConsumer} from "source-map";
 import {TwingLoaderFilesystem} from "../../../../../src/lib/loader/filesystem";
 import {TwingNodeText} from "../../../../../src/lib/node/text";
 import {TwingSandboxSecurityPolicy} from "../../../../../src/lib/sandbox/security-policy";
+import {TwingOutputBuffer} from "../../../../../src/lib/output-buffer";
 import {TwingLoaderRelativeFilesystem} from "../../../../../src/lib/loader/relative-filesystem";
 
 const tmp = require('tmp');
@@ -852,8 +853,7 @@ tape('environment', (test) => {
 
         test.test('when source_map is set to true', async (test) => {
             let env = new TwingEnvironmentNode(loader, {
-                source_map: true,
-                cache: 'tmp/sm'
+                source_map: true
             });
 
             // 1.foo {
@@ -1224,7 +1224,7 @@ BAROOF</FOO></foo>oof`);
         env.registerTemplatesModule((c) => {
             return new Map([
                 [0, class extends c {
-                    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+                    doDisplay(context: {}, outputBuffer: TwingOutputBuffer, blocks: Map<string, Array<any>>): Promise<void> {
                         return Promise.resolve();
                     }
 
@@ -1233,7 +1233,7 @@ BAROOF</FOO></foo>oof`);
                     }
                 }],
                 [1, class extends c {
-                    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+                    doDisplay(context: {}, outputBuffer: TwingOutputBuffer, blocks: Map<string, Array<any>>): Promise<void> {
                         return Promise.resolve();
                     }
 

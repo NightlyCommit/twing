@@ -29,7 +29,7 @@ tape('node/autoescape', (test) => {
         let node = new TwingNodeAutoEscape(true, body, 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(\`foo\`);
 `);
 
         test.end();
