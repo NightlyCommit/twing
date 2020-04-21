@@ -21,7 +21,7 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
         compiler
             .raw(`await this.traceableRenderParentBlock(${this.getTemplateLine()}, this.getSourceContext())(`)
             .string(name)
-            .raw(', context, blocks)')
+            .raw(', context, outputBuffer, blocks)')
         ;
     }
 }

@@ -10,7 +10,7 @@ tape('node/embed', (test) => {
         let node = new TwingNodeEmbed('foo', 1, new TwingNodeExpressionConstant('bar', 1, 1), false, false, 1, 1, 'embed');
         let compiler = new TwingCompiler(new TwingEnvironmentNode(new TwingLoaderArray({})));
 
-        test.same(compiler.compile(node).getSource(), `this.echo(await this.include(context, this.getSourceContext(), await this.loadTemplate(\`foo\`, 1, 1), \`bar\`, true, false, 1));
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, await this.loadTemplate(\`foo\`, 1, 1), \`bar\`, true, false, 1));
 `);
 
         test.end();

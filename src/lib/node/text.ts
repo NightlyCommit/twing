@@ -16,7 +16,7 @@ export class TwingNodeText extends TwingNode implements TwingNodeOutputInterface
     compile(compiler: TwingCompiler) {
         compiler
             .addSourceMapEnter(this)
-            .write('this.echo(')
+            .write('outputBuffer.echo(')
             .string(this.getAttribute('data'))
             .raw(");\n")
             .addSourceMapLeave()

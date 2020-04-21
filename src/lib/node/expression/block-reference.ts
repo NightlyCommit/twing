@@ -24,13 +24,13 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
 
     compile(compiler: TwingCompiler) {
         if (this.getAttribute('is_defined_test')) {
-            this.compileTemplateCall(compiler, 'traceableHasBlock');
+            this.compileTemplateCall(compiler, 'traceableHasBlock', false);
         } else {
-            this.compileTemplateCall(compiler, 'traceableRenderBlock');
+            this.compileTemplateCall(compiler, 'traceableRenderBlock', true);
         }
     }
 
-    compileTemplateCall(compiler: TwingCompiler, method: string): TwingCompiler {
+    compileTemplateCall(compiler: TwingCompiler, method: string, needsOutputBuffer: boolean): TwingCompiler {
         compiler.write('await ');
 
         if (!this.hasNode('template')) {
@@ -47,16 +47,20 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
 
         compiler.raw(`.${method}(${this.getTemplateLine()}, this.getSourceContext())`);
 
-        this.compileBlockArguments(compiler);
+        this.compileBlockArguments(compiler, needsOutputBuffer);
 
         return compiler;
     }
 
-    compileBlockArguments(compiler: TwingCompiler) {
+    compileBlockArguments(compiler: TwingCompiler, needsOutputBuffer: boolean) {
         compiler
             .raw('(')
             .subcompile(this.getNode('name'))
             .raw(', context.clone()');
+
+        if (needsOutputBuffer) {
+            compiler.raw(', outputBuffer');
+        }
 
         if (!this.hasNode('template')) {
             compiler.raw(', blocks');

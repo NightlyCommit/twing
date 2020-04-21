@@ -19,7 +19,7 @@ tape('node/text', (test) => {
         let node = new TwingNodeText('foo', 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(\`foo\`);
 `);
 
         test.end();

@@ -1,5 +1,5 @@
 import * as tape from 'tape';
-import {TwingOutputBuffering} from "../../../../../src/lib/output-buffering";
+import {TwingOutputBuffer} from "../../../../../src/lib/output-buffer";
 import {TwingTemplate, TwingTemplateBlocksMap} from "../../../../../src/lib/template";
 import {TwingEnvironmentNode} from "../../../../../src/lib/environment/node";
 import {TwingLoaderArray} from "../../../../../src/lib/loader/array";
@@ -28,12 +28,12 @@ class TwingTestTemplateTemplate extends TwingTemplate {
         this.env = env;
     }
 
-    displayWithErrorHandling(context: any, blocks: TwingTemplateBlocksMap) {
-        return super.displayWithErrorHandling(context, blocks);
+    displayWithErrorHandling(context: any, outputBuffer: TwingOutputBuffer, blocks: TwingTemplateBlocksMap) {
+        return super.displayWithErrorHandling(context, outputBuffer, blocks);
     }
 
-    doDisplay(context: {}, blocks: TwingTemplateBlocksMap): Promise<void> {
-        TwingOutputBuffering.echo('foo');
+    doDisplay(context: {}, outputBuffer: TwingOutputBuffer, blocks: TwingTemplateBlocksMap): Promise<void> {
+        outputBuffer.echo('foo');
 
         return Promise.resolve();
     }
@@ -42,20 +42,20 @@ class TwingTestTemplateTemplate extends TwingTemplate {
         return super.doGetParent(context);
     }
 
-    displayParentBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<void> {
-        return super.displayParentBlock(name, context, blocks);
+    displayParentBlock(name: string, context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<void> {
+        return super.displayParentBlock(name, context, outputBuffer, blocks);
     }
 
-    displayBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<void> {
-        return super.displayBlock(name, context, blocks, useBlocks);
+    displayBlock(name: string, context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<void> {
+        return super.displayBlock(name, context, outputBuffer, blocks, useBlocks);
     }
 
-    renderParentBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<string> {
-        return super.renderParentBlock(name, context, blocks);
+    renderParentBlock(name: string, context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]> = new Map()): Promise<string> {
+        return super.renderParentBlock(name, context, outputBuffer, blocks);
     }
 
-    renderBlock(name: string, context: any, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<string> {
-        return super.renderBlock(name, context, blocks, useBlocks);
+    renderBlock(name: string, context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]> = new Map(), useBlocks: boolean = true): Promise<string> {
+        return super.renderBlock(name, context, outputBuffer, blocks, useBlocks);
     }
 }
 
@@ -70,7 +70,7 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
         return 'foo';
     }
 
-    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+    doDisplay(context: {}, outputBuffer: TwingOutputBuffer, blocks: Map<string, Array<any>>): Promise<void> {
         return this.loadTemplate('not_found').then(() => {
             return;
         });
@@ -140,7 +140,7 @@ tape('template', function (test) {
         stub.returns(Promise.resolve(false));
 
         try {
-            await template.displayParentBlock('foo', {});
+            await template.displayParentBlock('foo', {}, null);
 
             test.fail();
         } catch (e) {
@@ -157,7 +157,7 @@ tape('template', function (test) {
         stub.returns(Promise.resolve(false));
 
         try {
-            await template.displayBlock('foo', {});
+            await template.displayBlock('foo', {}, null);
         } catch (e) {
             test.true(e instanceof TwingErrorRuntime);
             test.same(e.rawMessage, 'Block "foo" on template "foo" does not exist.')
@@ -172,8 +172,8 @@ tape('template', function (test) {
 
         stub.returns(Promise.resolve('foo'));
 
-        test.same(await template.renderParentBlock('foo', {}, new Map()), 'foo');
-        test.same(await template.renderParentBlock('foo', {}), 'foo');
+        test.same(await template.renderParentBlock('foo', {}, new TwingOutputBuffer(), new Map()), 'foo');
+        test.same(await template.renderParentBlock('foo', {}, new TwingOutputBuffer()), 'foo');
 
         test.end();
     });
@@ -236,11 +236,13 @@ tape('template', function (test) {
     test.test('displayWithErrorHandling', async (test) => {
         let template = new TwingTestTemplateTemplate();
 
-        TwingOutputBuffering.obStart();
+        let outputBuffer = new TwingOutputBuffer();
 
-        await template.displayWithErrorHandling({}, undefined);
+        outputBuffer.start();
 
-        let content = TwingOutputBuffering.obGetContents();
+        await template.displayWithErrorHandling({}, outputBuffer, undefined);
+
+        let content = outputBuffer.getContents();
 
         test.same(content, 'foo');
 
@@ -248,7 +250,7 @@ tape('template', function (test) {
             sinon.stub(template, 'doDisplay').returns(Promise.reject(new Error('foo error')));
 
             try {
-                await template.displayWithErrorHandling({}, new Map());
+                await template.displayWithErrorHandling({}, outputBuffer, new Map());
 
                 test.fail();
             } catch (e) {

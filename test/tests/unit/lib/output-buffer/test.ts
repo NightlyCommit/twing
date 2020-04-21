@@ -1,20 +1,22 @@
 import * as tape from 'tape';
-import {TwingOutputBuffering} from "../../../../../src/lib/output-buffering";
+import {TwingOutputBuffer} from "../../../../../src/lib/output-buffer";
 
 const sinon = require('sinon');
 
+const outputBuffer = new TwingOutputBuffer();
+
 let reset = (restart = true) => {
-    while (TwingOutputBuffering.obGetLevel()) {
-        TwingOutputBuffering.obEndClean();
+    while (outputBuffer.getLevel()) {
+        outputBuffer.endAndClean();
     }
 
     if (restart) {
-        TwingOutputBuffering.obStart();
-        TwingOutputBuffering.echo('foo');
-        TwingOutputBuffering.obStart();
-        TwingOutputBuffering.echo('bar');
-        TwingOutputBuffering.obStart();
-        TwingOutputBuffering.echo('oof');
+        outputBuffer.start();
+        outputBuffer.echo('foo');
+        outputBuffer.start();
+        outputBuffer.echo('bar');
+        outputBuffer.start();
+        outputBuffer.echo('oof');
     }
 };
 
@@ -37,8 +39,8 @@ tape('TwingOutputBuffering', (test) => {
             return true;
         };
 
-        TwingOutputBuffering.echo('foo');
-        TwingOutputBuffering.echo('bar');
+        outputBuffer.echo('foo');
+        outputBuffer.echo('bar');
 
         test.same(data, 'foobar', 'process.stdout should contain "foobar"');
         test.end();
@@ -51,8 +53,8 @@ tape('TwingOutputBuffering', (test) => {
 
         let logSpy = sinon.spy(console, 'log');
 
-        TwingOutputBuffering.echo('foo');
-        TwingOutputBuffering.echo('bar');
+        outputBuffer.echo('foo');
+        outputBuffer.echo('bar');
 
         process.stdout = stdout;
 
@@ -61,22 +63,22 @@ tape('TwingOutputBuffering', (test) => {
     });
 
     test.test('obStart', (test) => {
-        TwingOutputBuffering.obStart();
+        outputBuffer.start();
 
-        test.equal(TwingOutputBuffering.obGetLevel(), 1, 'obGetLevel() should return 1');
+        test.equal(outputBuffer.getLevel(), 1, 'getLevel() should return 1');
 
-        TwingOutputBuffering.obStart();
+        outputBuffer.start();
 
-        test.equal(TwingOutputBuffering.obGetLevel(), 2, 'obGetLevel() should return 2');
+        test.equal(outputBuffer.getLevel(), 2, 'getLevel() should return 2');
         test.end();
     });
 
     test.test('obEndFlush', (test) => {
         reset();
-        TwingOutputBuffering.obEndFlush();
+        outputBuffer.endAndFlush();
 
-        test.equal(TwingOutputBuffering.obGetLevel(), 2, 'obGetLevel() should return 2');
-        test.same(TwingOutputBuffering.obGetContents(), 'baroof', `obGetContents() should return 'baroof'`);
+        test.equal(outputBuffer.getLevel(), 2, 'getLevel() should return 2');
+        test.same(outputBuffer.getContents(), 'baroof', `obGetContents() should return 'baroof'`);
 
         reset(false);
 
@@ -90,16 +92,16 @@ tape('TwingOutputBuffering', (test) => {
             return true;
         };
 
-        test.false(TwingOutputBuffering.obEndFlush());
+        test.false(outputBuffer.endAndFlush());
 
         test.end();
     });
 
     test.test('obFlush', (test) => {
         reset();
-        TwingOutputBuffering.obFlush();
+        outputBuffer.flush();
 
-        test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+        test.same(outputBuffer.getContents(), '', `obGetContents() should return ''`);
 
         reset(false);
 
@@ -113,7 +115,7 @@ tape('TwingOutputBuffering', (test) => {
             return true;
         };
 
-        test.false(TwingOutputBuffering.obFlush());
+        test.false(outputBuffer.flush());
 
         test.end();
     });
@@ -121,18 +123,18 @@ tape('TwingOutputBuffering', (test) => {
     test.test('obGetFlush', (test) => {
         reset();
 
-        test.same(TwingOutputBuffering.obGetFlush(), 'oof', `obGetFlush() should return 'oof'`);
-        test.same(TwingOutputBuffering.obGetContents(), 'baroof', `obGetContents() should return 'baroof'`);
+        test.same(outputBuffer.getAndFlush(), 'oof', `obGetFlush() should return 'oof'`);
+        test.same(outputBuffer.getContents(), 'baroof', `obGetContents() should return 'baroof'`);
 
         test.end();
     });
 
     test.test('obClean', (test) => {
         reset();
-        TwingOutputBuffering.obClean();
+        outputBuffer.clean();
 
-        test.equal(TwingOutputBuffering.obGetLevel(), 3, 'obGetLevel() should return 3');
-        test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+        test.equal(outputBuffer.getLevel(), 3, 'getLevel() should return 3');
+        test.same(outputBuffer.getContents(), '', `obGetContents() should return ''`);
 
         reset(false);
 
@@ -146,7 +148,7 @@ tape('TwingOutputBuffering', (test) => {
             return true;
         };
 
-        test.false(TwingOutputBuffering.obClean());
+        test.false(outputBuffer.clean());
 
         test.end();
     });
@@ -154,7 +156,7 @@ tape('TwingOutputBuffering', (test) => {
     test.test('obGetClean', (test) => {
         reset();
 
-        test.same(TwingOutputBuffering.obGetClean(), 'oof', `obGetClean() should return 'oof'`);
+        test.same(outputBuffer.getAndClean(), 'oof', `obGetClean() should return 'oof'`);
 
         test.end();
     });
@@ -162,9 +164,9 @@ tape('TwingOutputBuffering', (test) => {
     test.test('obEndClean', (test) => {
         reset();
 
-        test.true(TwingOutputBuffering.obEndClean(), `obEndClean() should return trusty`);
-        test.equal(TwingOutputBuffering.obGetLevel(), 2, 'obGetLevel() should return 2');
-        test.same(TwingOutputBuffering.obGetContents(), 'bar', `obGetContents() should return 'bar'`);
+        test.true(outputBuffer.endAndClean(), `obEndClean() should return trusty`);
+        test.equal(outputBuffer.getLevel(), 2, 'getLevel() should return 2');
+        test.same(outputBuffer.getContents(), 'bar', `obGetContents() should return 'bar'`);
 
         reset(false);
 
@@ -176,16 +178,16 @@ tape('TwingOutputBuffering', (test) => {
             return true;
         };
 
-        test.false(TwingOutputBuffering.obEndClean());
+        test.false(outputBuffer.endAndClean());
 
         test.end();
     });
 
     test.test('flush', (test) => {
         reset();
-        TwingOutputBuffering.flush();
+        outputBuffer.flush();
 
-        test.same(TwingOutputBuffering.obGetContents(), '', `obGetContents() should return ''`);
+        test.same(outputBuffer.getContents(), '', `obGetContents() should return ''`);
 
         test.end();
     });
@@ -202,7 +204,7 @@ tape('TwingOutputBuffering', (test) => {
                 return true;
             };
 
-            TwingOutputBuffering.echo(1);
+            outputBuffer.echo(1);
         }).then(function (actual) {
             process.stdout.write = w;
 
@@ -215,7 +217,7 @@ tape('TwingOutputBuffering', (test) => {
     test.test('obGetLevel', (test) => {
         reset(false);
 
-        test.equals(TwingOutputBuffering.obGetLevel(), 0);
+        test.equals(outputBuffer.getLevel(), 0);
 
         test.end();
     });
@@ -223,7 +225,7 @@ tape('TwingOutputBuffering', (test) => {
     test.test('obGetContents', (test) => {
         reset(false);
 
-        test.equals(TwingOutputBuffering.obGetContents(), false);
+        test.equals(outputBuffer.getContents(), false);
 
         test.end();
     });
