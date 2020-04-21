@@ -3,8 +3,8 @@ import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expres
 import {TwingNodeExpressionAssignName} from "../../../../../../src/lib/node/expression/assign-name";
 import {TwingNodeExpressionName} from "../../../../../../src/lib/node/expression/name";
 import {TwingNodePrint} from "../../../../../../src/lib/node/print";
-import {TwingNode, TwingNodeType} from "../../../../../../src/lib/node";
-import {TwingNodeFor} from "../../../../../../src/lib/node/for";
+import {TwingNode} from "../../../../../../src/lib/node";
+import {TwingNodeFor, type} from "../../../../../../src/lib/node/for";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/for', (test) => {
@@ -38,7 +38,7 @@ tape('node/for', (test) => {
         node.setAttribute('with_loop', false);
 
         test.same(node.getNode('else'), else_);
-        test.same(node.getType(), TwingNodeType.FOR);
+        test.same(node.type, type);
 
         test.end();
     });

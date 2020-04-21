@@ -1,9 +1,10 @@
 import * as tape from 'tape';
-import {TwingNode, TwingNodeType} from "../../../../../src/lib/node";
+import {TwingNode} from "../../../../../src/lib/node";
 import {TwingNodeExpressionConstant} from "../../../../../src/lib/node/expression/constant";
 import {TwingCompiler} from "../../../../../src/lib/compiler";
 import {MockEnvironment} from "../../../../mock/environment";
 import {MockLoader} from "../../../../mock/loader";
+import {TwingNodeBody} from "../../../../../src/lib/node/body";
 
 tape('compiler', (test) => {
     test.test('subcompile method', (test) => {
@@ -67,11 +68,9 @@ tape('compiler', (test) => {
             source_map: true
         }));
 
-        class CustomNode extends TwingNode {
+        class CustomNode extends TwingNodeBody {
             constructor(line: number, column: number) {
                 super(new Map(), new Map(), line, column);
-
-                this.type = TwingNodeType.BODY;
             }
 
             compile(compiler: TwingCompiler) {

@@ -1,52 +1,7 @@
 import {TwingCompiler} from "./compiler";
+import {TwingNodeType} from "./node-type";
 
 const var_export = require('locutus/php/var/var_export');
-
-export enum TwingNodeType {
-    AUTO_ESCAPE = 'auto_escape',
-    BLOCK = 'block',
-    BLOCK_REFERENCE = 'block_reference',
-    BODY = 'body',
-    COMMENT = 'comment',
-    DEPRECATED = 'deprecated',
-    DO = 'do',
-    EXPRESSION_ARRAY = 'expression_array',
-    EXPRESSION_ASSIGN_NAME = 'expression_assign_name',
-    EXPRESSION_BINARY = 'expression_binary',
-    EXPRESSION_BINARY_CONCAT = 'expression_binary_concat',
-    EXPRESSION_BINARY_RANGE = 'expression_binary_range',
-    EXPRESSION_BLOCK_REFERENCE = 'expression_block_reference',
-    EXPRESSION_CONDITIONAL = 'expression_conditional',
-    EXPRESSION_CONSTANT = 'expression_constant',
-    EXPRESSION_FILTER = 'expression_filter',
-    EXPRESSION_FUNCTION = 'expression_function',
-    EXPRESSION_GET_ATTR = 'expression_get_attr',
-    EXPRESSION_METHOD_CALL = 'expression_method_call',
-    EXPRESSION_NAME = 'expression_name',
-    EXPRESSION_NULL_COALESCE = 'expression_null_coalesce',
-    EXPRESSION_PARENT = 'expression_parent',
-    EXPRESSION_TEMP_NAME = 'expression_temp_name',
-    EXPRESSION_TEST = 'expression_test',
-    EXPRESSION_UNARY = 'expression_unary',
-    EXPRESSION_UNARY_NEG = 'expression_unary_neg',
-    EXPRESSION_UNARY_POS = 'expression_unary_pos',
-    FLUSH = 'flush',
-    FOR = 'for',
-    IF = 'if',
-    IMPORT = 'import',
-    INCLUDE = 'include',
-    INLINE_PRINT = 'inline_print',
-    LINE = 'line',
-    MACRO = 'macro',
-    MODULE = 'module',
-    PRINT = 'print',
-    SANDBOX = 'sandbox',
-    SET = 'set',
-    SPACELESS = 'spaceless',
-    TEXT = 'text',
-    VERBATIM = 'verbatim',
-    WITH = 'with'
-}
 
 export class TwingNode {
     protected nodes: Map<number | string, TwingNode>;
@@ -54,10 +9,7 @@ export class TwingNode {
     protected lineno: number;
     protected columnno: number;
     protected tag: string;
-    protected type: TwingNodeType;
     private name: string = null;
-    // todo: in Twing 3, replace this.type with this
-    private types: TwingNodeType[];
 
     /**
      * Constructor.
@@ -77,8 +29,6 @@ export class TwingNode {
         this.lineno = lineno;
         this.columnno = columnno;
         this.tag = tag;
-        this.type = null;
-        this.types = [];
     }
 
     /**
@@ -102,7 +52,6 @@ export class TwingNode {
         result.lineno = this.lineno;
         result.columnno = this.columnno;
         result.tag = this.tag;
-        result.type = this.type;
 
         return result;
     }
@@ -147,20 +96,16 @@ export class TwingNode {
         return repr.join('\n');
     }
 
-    getType(): TwingNodeType {
-        return this.type;
-    }
-
-    addType(type: TwingNodeType): void {
-        this.types.push(type);
+    get type(): TwingNodeType {
+        return null;
     }
 
     is(type: TwingNodeType): boolean {
-        return this.types.includes(type);
+        return this.type === type;
     }
 
-    compile(compiler: TwingCompiler): any {
-        for (let [k, node] of this.nodes) {
+    compile(compiler: TwingCompiler): void {
+        for (let node of this.nodes.values()) {
             node.compile(compiler);
         }
     }
@@ -254,5 +199,4 @@ export class TwingNode {
     getNodes() {
         return this.nodes;
     }
-
 }

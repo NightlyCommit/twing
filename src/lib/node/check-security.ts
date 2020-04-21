@@ -1,6 +1,8 @@
 import {TwingNode} from "../node";
-
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('check_security');
 
 export class TwingNodeCheckSecurity extends TwingNode {
     private usedFilters: Map<string, TwingNode | string>;
@@ -13,6 +15,10 @@ export class TwingNodeCheckSecurity extends TwingNode {
         this.usedFilters = usedFilters;
         this.usedTags = usedTags;
         this.usedFunctions = usedFunctions;
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

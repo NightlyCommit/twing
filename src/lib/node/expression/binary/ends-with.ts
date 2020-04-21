@@ -1,7 +1,14 @@
 import {TwingNodeExpressionBinary} from "../binary";
 import {TwingCompiler} from "../../../compiler";
+import {TwingNodeType} from "../../../node-type";
+
+export const type = new TwingNodeType('expression_binary_ends_with');
 
 export class TwingNodeExpressionBinaryEndsWith extends TwingNodeExpressionBinary {
+    get type() {
+        return type;
+    }
+
     compile(compiler: TwingCompiler) {
         compiler
             .raw('await (async () => {')

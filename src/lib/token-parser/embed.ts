@@ -1,8 +1,9 @@
 import {TwingTokenParserInclude} from "./include";
 import {TwingNodeEmbed} from "../node/embed";
 import {TwingNodeModule} from "../node/module";
-import {TwingNodeType} from "../node";
 import {Token, TokenType} from "twig-lexer";
+import {type as constantType} from "../node/expression/constant";
+import {type as nameType} from "../node/expression/name";
 
 export class TwingTokenParserEmbed extends TwingTokenParserInclude {
     parse(token: Token) {
@@ -21,10 +22,10 @@ export class TwingTokenParserEmbed extends TwingTokenParserInclude {
 
         parentToken = fakeParentToken = new Token(TokenType.STRING, '__parent__', token.line, token.column);
 
-        if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
+        if (parent.is(constantType)) {
             parentToken = new Token(TokenType.STRING, parent.getAttribute('value'), token.line, token.column);
         }
-        else if (parent.getType() === TwingNodeType.EXPRESSION_NAME) {
+        else if (parent.is(nameType)) {
             parentToken = new Token(TokenType.NAME, parent.getAttribute('name'), token.line, token.column);
         }
 

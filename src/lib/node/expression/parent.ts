@@ -1,7 +1,8 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_parent');
 
 export class TwingNodeExpressionParent extends TwingNodeExpression {
     constructor(name: string, lineno: number) {
@@ -11,8 +12,10 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
         attributes.set('name', name);
 
         super(new Map(), attributes, lineno);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_PARENT;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

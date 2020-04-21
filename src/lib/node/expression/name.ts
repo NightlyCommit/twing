@@ -1,7 +1,8 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_name');
 
 export class TwingNodeExpressionName extends TwingNodeExpression {
     private specialVars: Map<string, string>;
@@ -21,8 +22,10 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
             ['_context', 'context'],
             ['_charset', 'this.env.getCharset()']
         ]);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_NAME;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

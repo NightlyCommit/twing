@@ -1,7 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeText} from "../../../../../../src/lib/node/text";
-import {TwingNode, TwingNodeType} from "../../../../../../src/lib/node";
-import {TwingNodeAutoEscape} from "../../../../../../src/lib/node/auto-escape";
+import {TwingNode} from "../../../../../../src/lib/node";
+import {TwingNodeAutoEscape, type} from "../../../../../../src/lib/node/auto-escape";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/autoescape', (test) => {
@@ -15,7 +15,7 @@ tape('node/autoescape', (test) => {
 
         test.same(node.getNode('body'), body);
         test.true(node.getAttribute('value'));
-        test.same(node.getType(), TwingNodeType.AUTO_ESCAPE);
+        test.same(node.type, type);
 
         test.end();
     });

@@ -1,12 +1,16 @@
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('sandbox');
 
 export class TwingNodeSandbox extends TwingNode {
     constructor(body: TwingNode, lineno: number, columnno: number, tag: string = null) {
         super(new Map([['body', body]]), new Map(), lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.SANDBOX;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

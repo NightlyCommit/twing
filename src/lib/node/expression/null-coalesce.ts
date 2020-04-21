@@ -2,10 +2,14 @@ import {TwingNodeExpressionConditional} from "./conditional";
 import {TwingNodeExpression} from "../expression";
 import {TwingNodeExpressionTestDefined} from "./test/defined";
 import {TwingNodeExpressionUnaryNot} from "./unary/not";
-import {TwingNode, TwingNodeType} from "../../node";
+import {TwingNode} from "../../node";
 import {TwingNodeExpressionBinaryAnd} from "./binary/and";
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeExpressionTest} from "./test";
+import {type as nameType} from "./name";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_null_coalesce');
 
 export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditional {
     constructor(nodes: [TwingNode, TwingNode], lineno: number, columno: number) {
@@ -26,12 +30,23 @@ export class TwingNodeExpressionNullCoalesce extends TwingNodeExpressionConditio
         );
 
         super(test, left, right, lineno, columno);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_NULL_COALESCE;
+    get type() {
+        return type;
+    }
+
+    /**
+     * null-coallesce node is also a conditional node.
+     *
+     * @param type
+     */
+    is(type: TwingNodeType): boolean {
+        return (type === super.type) || super.is(type);
     }
 
     compile(compiler: TwingCompiler) {
-        if (this.getNode('expr2').getType() === TwingNodeType.EXPRESSION_NAME) {
+        if (this.getNode('expr2').is(nameType)) {
             this.getNode('expr2').setAttribute('always_defined', true);
         }
 

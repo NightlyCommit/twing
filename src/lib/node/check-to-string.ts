@@ -1,7 +1,9 @@
 import {TwingNode} from "../node";
-
 import {TwingNodeExpression} from "./expression";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('check_to_string');
 
 /**
  * Checks if casting an expression to toString() is allowed by the sandbox.
@@ -14,6 +16,10 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodeCheckToString extends TwingNode {
     constructor(expression: TwingNodeExpression) {
         super(new Map([['expr', expression]]), new Map(), expression.getTemplateLine(), expression.getTemplateColumn());
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,6 +1,8 @@
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('with');
 
 export class TwingNodeWith extends TwingNode {
     constructor(body: TwingNode, variables: TwingNode, only: boolean, lineno: number, columnno: number, tag: string = null) {
@@ -13,8 +15,10 @@ export class TwingNodeWith extends TwingNode {
         }
 
         super(nodes, new Map([['only', only]]), lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.WITH;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

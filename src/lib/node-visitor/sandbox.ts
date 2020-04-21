@@ -1,8 +1,17 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
 import {TwingEnvironment} from "../environment";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingNodeCheckSecurity} from "../node/check-security";
 import {TwingNodeCheckToString} from "../node/check-to-string";
+import {type as moduleType} from "../node/module";
+import {type as nameType} from "../node/expression/name";
+import {type as filterType} from "../node/expression/filter";
+import {type as functionType} from "../node/expression/function";
+import {type as rangeType} from "../node/expression/binary/range";
+import {type as concatType} from "../node/expression/binary/concat";
+import {type as getAttrType} from "../node/expression/get-attr";
+import {type as setType} from "../node/set";
+import {type as printType} from "../node/print";
 
 export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private tags: Map<string, TwingNode>;
@@ -21,7 +30,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             return node;
         }
 
-        if (node.getType() === TwingNodeType.MODULE) {
+        if (node.is(moduleType)) {
             this.tags = new Map();
             this.filters = new Map();
             this.functions = new Map();
@@ -34,43 +43,43 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             }
 
             // look for filters
-            if (node.getType() === TwingNodeType.EXPRESSION_FILTER && !this.filters.has(node.getNode('filter').getAttribute('value'))) {
+            if (node.is(filterType) && !this.filters.has(node.getNode('filter').getAttribute('value'))) {
                 this.filters.set(node.getNode('filter').getAttribute('value'), node);
             }
 
             // look for functions
-            if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && !this.functions.has(node.getAttribute('name'))) {
+            if (node.is(functionType) && !this.functions.has(node.getAttribute('name'))) {
                 this.functions.set(node.getAttribute('name'), node);
             }
 
             // the .. operator is equivalent to the range() function
-            if (node.getType() === TwingNodeType.EXPRESSION_BINARY_RANGE && !(this.functions.has('range'))) {
+            if (node.is(rangeType) && !(this.functions.has('range'))) {
                 this.functions.set('range', node);
             }
 
             // wrap print to check toString() calls
-            if (node.getType() === TwingNodeType.PRINT) {
+            if (node.is(printType)) {
                 this.needsToStringWrap = true;
                 this.wrapNode(node, 'expr');
             }
 
-            if (node.getType() === TwingNodeType.SET && !node.getAttribute('capture')) {
+            if (node.is(setType) && !node.getAttribute('capture')) {
                 this.needsToStringWrap = true;
             }
 
             // wrap outer nodes that can implicitly call toString()
             if (this.needsToStringWrap) {
-                if (node.getType() === TwingNodeType.EXPRESSION_BINARY_CONCAT) {
+                if (node.is(concatType)) {
                     this.wrapNode(node, 'left');
                     this.wrapNode(node, 'right');
                 }
 
-                if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+                if (node.is(filterType)) {
                     this.wrapNode(node, 'node');
                     this.wrapArrayNode(node, 'arguments');
                 }
 
-                if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION) {
+                if (node.is(functionType)) {
                     this.wrapArrayNode(node, 'arguments');
                 }
             }
@@ -84,7 +93,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
             return node;
         }
 
-        if (node.getType() === TwingNodeType.MODULE) {
+        if (node.is(moduleType)) {
             let nodes = new Map();
             let i: number = 0;
 
@@ -93,7 +102,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
 
             node.getNode('constructor_end').setNode('_security_check', new TwingNode(nodes));
         } else {
-            if (node.getType() === TwingNodeType.PRINT || node.getType() === TwingNodeType.SET) {
+            if (node.is(printType) || node.is(setType)) {
                 this.needsToStringWrap = false;
             }
         }
@@ -104,7 +113,7 @@ export class TwingNodeVisitorSandbox extends TwingBaseNodeVisitor {
     private wrapNode(node: TwingNode, name: string) {
         let expr = node.getNode(name);
 
-        if (expr.getType() === TwingNodeType.EXPRESSION_NAME || expr.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
+        if (expr.is(nameType) || expr.is(getAttrType)) {
             node.setNode(name, new TwingNodeCheckToString(expr));
         }
     }

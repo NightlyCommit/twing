@@ -1,6 +1,9 @@
 import {TwingNodeExpression} from "../expression";
 import {TwingCompiler} from "../../compiler";
 import {TwingNode} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_arrow_function');
 
 /**
  * Represents an arrow function.
@@ -13,6 +16,10 @@ export class TwingNodeExpressionArrowFunction extends TwingNodeExpression {
         ]);
 
         super(nodes, new Map(), lineno, columnno, tag);
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

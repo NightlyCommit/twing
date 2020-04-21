@@ -1,5 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeExpressionCall} from "../../../../../../../src/lib/node/expression/call";
+import {TwingNodeExpressionCall, type} from "../../../../../../../src/lib/node/expression/call";
 import {TwingNode} from "../../../../../../../src/lib/node";
 import {TwingCompiler} from "../../../../../../../src/lib/compiler";
 import {TwingEnvironmentNode} from "../../../../../../../src/lib/environment/node";
@@ -41,6 +41,13 @@ class Callable extends TwingNodeExpressionCall {
 }
 
 tape('node/expression/call', (test) => {
+    test.test('constructor', (test) => {
+        let node = new TwingTestsNodeExpressionCall(new Map(), new Map());
+
+        test.same(node.type, type);
+        test.end();
+    });
+
     test.test('getArguments', (test) => {
         let node = new TwingTestsNodeExpressionCall(new Map(), new Map([
             ['type', 'function'],

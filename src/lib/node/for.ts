@@ -1,10 +1,12 @@
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingNodeExpression} from "./expression";
-
 import {TwingNodeExpressionAssignName} from "./expression/assign-name";
 import {TwingNodeForLoop} from "./for-loop";
 import {TwingNodeIf} from "./if";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('for');
 
 export class TwingNodeFor extends TwingNode {
     private loop: TwingNodeForLoop;
@@ -48,8 +50,11 @@ export class TwingNodeFor extends TwingNode {
 
         super(nodes, attributes, lineno, columnno, tag);
 
-        this.type = TwingNodeType.FOR;
         this.loop = loop;
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,5 +1,5 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingEnvironment} from "../environment";
 import {TwingNodeVisitorSafeAnalysis} from "./safe-analysis";
 import {TwingNodeTraverser} from "../node-traverser";
@@ -10,6 +10,14 @@ import {TwingNodePrint} from "../node/print";
 import {TwingNodeDo} from "../node/do";
 import {TwingNodeExpressionConditional} from "../node/expression/conditional";
 import {TwingNodeInlinePrint} from "../node/inline-print";
+import {type as moduleType} from "../node/module";
+import {type as autoEscapeType} from "../node/auto-escape";
+import {type as blockType} from "../node/block";
+import {type as blockReferenceType} from "../node/block-reference";
+import {type as importType} from "../node/import";
+import {type as printType} from "../node/print";
+import {type as filterType} from "../node/expression/filter";
+import {type as conditionalType} from "../node/expression/conditional";
 
 export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     private statusStack: Array<TwingNode | string | false> = [];
@@ -28,15 +36,15 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     protected doEnterNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node.getType() === TwingNodeType.MODULE) {
+        if (node.is(moduleType)) {
             this.defaultStrategy = env.getCoreExtension().getDefaultStrategy(node.getTemplateName());
             this.safeVars = [];
             this.blocks = new Map();
-        } else if (node.getType() === TwingNodeType.AUTO_ESCAPE) {
+        } else if (node.is(autoEscapeType)) {
             this.statusStack.push(node.getAttribute('value'));
-        } else if (node.getType() === TwingNodeType.BLOCK) {
+        } else if (node.is(blockType)) {
             this.statusStack.push(this.blocks.has(node.getAttribute('name')) ? this.blocks.get(node.getAttribute('name')) : this.needEscaping());
-        } else if (node.getType() === TwingNodeType.IMPORT) {
+        } else if (node.is(importType)) {
             this.safeVars.push(node.getNode('var').getAttribute('name'));
         }
 
@@ -44,19 +52,19 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
     }
 
     protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node.getType() === TwingNodeType.MODULE) {
+        if (node.is(moduleType)) {
             this.defaultStrategy = false;
             this.safeVars = [];
             this.blocks = new Map();
-        } else if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+        } else if (node.is(filterType)) {
             return this.preEscapeFilterNode(node as TwingNodeExpressionFilter, env);
-        } else if (node.getType() === TwingNodeType.PRINT) {
+        } else if (node.is(printType)) {
             let type = this.needEscaping();
 
             if (type !== false) {
                 let expression: TwingNodeExpression = node.getNode('expr');
 
-                if (expression.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expression, env, type)) {
+                if ((expression.is(conditionalType)) && this.shouldUnwrapConditional(expression, env, type)) {
                     return new TwingNodeDo(this.unwrapConditional(expression, env, type), expression.getTemplateLine(), expression.getTemplateColumn());
                 }
 
@@ -64,9 +72,9 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
             }
         }
 
-        if (node.getType() === TwingNodeType.AUTO_ESCAPE || node.getType() === TwingNodeType.BLOCK) {
+        if (node.is(autoEscapeType) || node.is(blockType)) {
             this.statusStack.pop();
-        } else if (node.getType() === TwingNodeType.BLOCK_REFERENCE) {
+        } else if (node.is(blockReferenceType)) {
             this.blocks.set(node.getAttribute('name'), this.needEscaping());
         }
 
@@ -84,7 +92,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         // convert "echo a ? b : c" to "a ? echo b : echo c" recursively
         let expr2: TwingNodeExpression = expression.getNode('expr2');
 
-        if (expr2.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expr2, env, type)) {
+        if ((expr2.is(conditionalType)) && this.shouldUnwrapConditional(expr2, env, type)) {
             expr2 = this.unwrapConditional(expr2, env, type);
         } else {
             expr2 = this.escapeInlinePrintNode(new TwingNodeInlinePrint(expr2, expr2.getTemplateLine(), expr2.getTemplateColumn()), env, type);
@@ -92,7 +100,7 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
 
         let expr3: TwingNodeExpression = expression.getNode('expr3');
 
-        if (expr3.is(TwingNodeType.EXPRESSION_CONDITIONAL) && this.shouldUnwrapConditional(expr3, env, type)) {
+        if ((expr3.is(conditionalType)) && this.shouldUnwrapConditional(expr3, env, type)) {
             expr3 = this.unwrapConditional(expr3, env, type);
         } else {
             expr3 = this.escapeInlinePrintNode(new TwingNodeInlinePrint(expr3, expr3.getTemplateLine(), expr3.getTemplateColumn()), env, type);

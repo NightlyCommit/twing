@@ -4,8 +4,8 @@ import {TwingNodeBlock} from "./node/block";
 import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingErrorSyntax} from "./error/syntax";
-import {TwingNode, TwingNodeType} from "./node";
-import {TwingNodeText} from "./node/text";
+import {TwingNode} from "./node";
+import {TwingNodeText, type as textType} from "./node/text";
 import {TwingNodePrint} from "./node/print";
 import {TwingNodeExpression} from "./node/expression";
 import {TwingNodeBody} from "./node/body";
@@ -17,20 +17,24 @@ import {first} from "./helpers/first";
 import {push} from "./helpers/push";
 import {TwingNodeComment} from "./node/comment";
 import {ctypeSpace} from "./helpers/ctype-space";
-import {TwingNodeExpressionConstant} from "./node/expression/constant";
+import {TwingNodeExpressionConstant, type as constantType} from "./node/expression/constant";
 import {TwingNodeExpressionBinaryConcat} from "./node/expression/binary/concat";
 import {TwingNodeExpressionAssignName} from "./node/expression/assign-name";
 import {TwingNodeExpressionArrowFunction} from "./node/expression/arrow-function";
-import {TwingNodeExpressionName} from "./node/expression/name";
+import {TwingNodeExpressionName, type as nameType} from "./node/expression/name";
 import {TwingNodeExpressionParent} from "./node/expression/parent";
 import {TwingNodeExpressionBlockReference} from "./node/expression/block-reference";
 import {TwingNodeExpressionGetAttr} from "./node/expression/get-attr";
 import {TwingTemplate} from "./template";
-import {TwingNodeExpressionArray} from "./node/expression/array";
+import {TwingNodeExpressionArray, type as arrayType} from "./node/expression/array";
 import {TwingNodeExpressionMethodCall} from "./node/expression/method-call";
 import {TwingNodeExpressionHash} from "./node/expression/hash";
 import {TwingTest} from "./test";
 import {TwingNodeExpressionUnaryNot} from "./node/expression/unary/not";
+import {type as negType} from "./node/expression/unary/neg";
+import {type as posType} from "./node/expression/unary/pos";
+import {type as spacelessType} from "./node/spaceless";
+import {type as blockReferenceType} from "./node/block-reference";
 import {TwingNodeExpressionConditional} from "./node/expression/conditional";
 import {TwingOperator, TwingOperatorAssociativity} from "./operator";
 import {namePattern, Token, TokenType} from "twig-lexer";
@@ -417,8 +421,8 @@ export class TwingParser {
      */
     filterBodyNodes(node: TwingNode, nested: boolean = false): TwingNode {
         // check that the body does not contain non-empty output nodes
-        if ((node.getType() === TwingNodeType.TEXT && !ctypeSpace(node.getAttribute('data'))) ||
-            ((node.getType() !== TwingNodeType.TEXT) && (node.getType() !== TwingNodeType.BLOCK_REFERENCE) && ((node as any).TwingNodeOutputInterfaceImpl) && (node.getType() !== TwingNodeType.SPACELESS))) {
+        if ((node.is(textType) && !ctypeSpace(node.getAttribute('data'))) ||
+            (!node.is(textType) && !node.is(blockReferenceType) && ((node as any).TwingNodeOutputInterfaceImpl) && !node.is(spacelessType))) {
             if (node.toString().indexOf(String.fromCharCode(0xEF, 0xBB, 0xBF)) > -1) {
                 let nodeData: string = node.getAttribute('data') as string;
 
@@ -443,26 +447,26 @@ export class TwingParser {
         }
 
         // to be removed completely in Twig 3.0
-        if (!nested && (node.getType() === TwingNodeType.SPACELESS)) {
+        if (!nested && (node.is(spacelessType))) {
             console.warn(`Using the spaceless tag at the root level of a child template in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
         }
 
         // "block" tags that are not captured (see above) are only used for defining
         // the content of the block. In such a case, nesting it does not work as
         // expected as the definition is not part of the default template code flow.
-        if (nested && (node.getType() === TwingNodeType.BLOCK_REFERENCE)) {
+        if (nested && (node.is(blockReferenceType))) {
             console.warn(`Nesting a block definition under a non-capturing node in "${this.stream.getSourceContext().getName()}" at line ${node.getTemplateLine()} is deprecated since Twig 2.5.0 and will become a syntax error in Twig 3.0.`);
 
             return null;
         }
 
-        if ((node as any).TwingNodeOutputInterfaceImpl && (node.getType() !== TwingNodeType.SPACELESS)) {
+        if ((node as any).TwingNodeOutputInterfaceImpl && (node.type !== spacelessType)) {
             return null;
         }
 
         // here, nested means "being at the root level of a child template"
         // we need to discard the wrapping "TwingNode" for the "body" node
-        nested = nested || (node.getType() !== null);
+        nested = nested || (node.type !== null);
 
         for (let [k, n] of node.getNodes()) {
             if (n !== null && (this.filterBodyNodes(n, nested) === null)) {
@@ -887,7 +891,7 @@ export class TwingParser {
                 throw new TwingErrorSyntax('Expected name or number.', lineno, stream.getSourceContext());
             }
 
-            if ((node.getType() === TwingNodeType.EXPRESSION_NAME) && this.getImportedSymbol('template', node.getAttribute('name'))) {
+            if ((node.is(nameType)) && this.getImportedSymbol('template', node.getAttribute('name'))) {
                 let name = arg.getAttribute('value');
 
                 node = new TwingNodeExpressionMethodCall(node, name, arguments_, lineno, columnno);
@@ -971,7 +975,7 @@ export class TwingParser {
             testArguments = this.parseArguments(true);
         }
 
-        if ((name === 'defined') && (node.getType() === TwingNodeType.EXPRESSION_NAME)) {
+        if ((name === 'defined') && node.is(nameType)) {
             let alias = this.getImportedSymbol('function', node.getAttribute('name'));
 
             if (alias !== null) {
@@ -1079,7 +1083,7 @@ export class TwingParser {
             let name = null;
 
             if (namedArguments && (token = stream.nextIf(TokenType.OPERATOR, '='))) {
-                if (value.getType() !== TwingNodeType.EXPRESSION_NAME) {
+                if (value.type !== nameType) {
                     throw new TwingErrorSyntax(`A parameter name must be a string, "${value.constructor.name}" given.`, token.line, stream.getSourceContext());
                 }
                 name = value.getAttribute('name');
@@ -1162,14 +1166,12 @@ export class TwingParser {
 
     // checks that the node only contains "constant" elements
     checkConstantExpression(node: TwingNode) {
-        let self = this;
-
-        if (!(node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY || node.getType() === TwingNodeType.EXPRESSION_UNARY_NEG || node.getType() === TwingNodeType.EXPRESSION_UNARY_POS)) {
+        if (!(node.is(constantType) || node.is(arrayType) || node.is(negType) || node.is(posType))) {
             return false;
         }
 
         for (let [k, n] of node.getNodes()) {
-            if (!self.checkConstantExpression(n)) {
+            if (!this.checkConstantExpression(n)) {
                 return false;
             }
         }

@@ -4,7 +4,7 @@ import {join} from 'path';
 import {readFileSync} from 'fs';
 import {TwingTokenParser} from "../../../../../src/lib/token-parser";
 import {Token, TokenType} from "twig-lexer";
-import {TwingNode, TwingNodeType} from "../../../../../src/lib/node";
+import {TwingNode} from "../../../../../src/lib/node";
 import {TwingEnvironment, TwingTemplatesModule} from "../../../../../src/lib/environment";
 import {TwingExtension} from "../../../../../src/lib/extension";
 import {TwingFilter} from "../../../../../src/lib/filter";
@@ -31,6 +31,7 @@ import {TwingLoaderFilesystem} from "../../../../../src/lib/loader/filesystem";
 import {TwingNodeText} from "../../../../../src/lib/node/text";
 import {TwingSandboxSecurityPolicy} from "../../../../../src/lib/sandbox/security-policy";
 import {TwingOutputBuffer} from "../../../../../src/lib/output-buffer";
+import {type as spacelessType} from "../../../../../src/lib/node/spaceless";
 
 const tmp = require('tmp');
 
@@ -1258,7 +1259,7 @@ BAROOF</FOO></foo>oof`);
 
         let factories = env.getSourceMapNodeFactories();
 
-        test.true(factories.has(TwingNodeType.SPACELESS));
+        test.true(factories.has(spacelessType.toString()));
 
         test.end();
     });
