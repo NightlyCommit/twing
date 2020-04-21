@@ -21,7 +21,7 @@ import {TwingNodeModule} from "./node/module";
 import {TwingCacheNull} from "./cache/null";
 import {TwingErrorRuntime} from "./error/runtime";
 import {EventEmitter} from 'events';
-import {TwingOutputBuffering} from "./output-buffering";
+import {TwingOutputBuffer} from "./output-buffer";
 import {TwingSourceMapNode} from "./source-map/node";
 import {TwingOperator} from "./operator";
 import {TwingSandboxSecurityPolicy} from "./sandbox/security-policy";
@@ -914,9 +914,10 @@ return module.exports;
      * @param {number} column 1-based
      * @param {TwingNodeType} nodeType
      * @param {TwingSource} source
+     * @param {TwingOutputBuffer} outputBuffer
      */
-    enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource) {
-        TwingOutputBuffering.obStart();
+    enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource, outputBuffer: TwingOutputBuffer) {
+        outputBuffer.start();
 
         let sourceFQN = source.getFQN();
 
@@ -941,8 +942,11 @@ return module.exports;
         this.sourceMapNode = node;
     }
 
-    leaveSourceMapBlock() {
-        this.sourceMapNode.content = TwingOutputBuffering.obGetFlush() as string;
+    /**
+     * @param {TwingOutputBuffer} outputBuffer
+     */
+    leaveSourceMapBlock(outputBuffer: TwingOutputBuffer) {
+        this.sourceMapNode.content = outputBuffer.getAndFlush() as string;
 
         let parent = this.sourceMapNode.parent;
 

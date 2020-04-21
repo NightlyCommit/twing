@@ -109,7 +109,7 @@ tape('main and browser indexes', (test) => {
         'TwingOperator',
         'TwingOperatorType',
         'TwingOperatorAssociativity',
-        'TwingOutputBuffering',
+        'TwingOutputBuffer',
         'TwingOutputHandler',
         'TwingParser',
         'TwingSandboxSecurityError',

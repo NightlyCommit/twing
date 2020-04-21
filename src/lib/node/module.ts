@@ -275,7 +275,7 @@ export class TwingNodeModule extends TwingNode {
 
     protected compileDoDisplay(compiler: TwingCompiler) {
         compiler
-            .write("async doDisplay(context, blocks = new Map()) {\n")
+            .write("async doDisplay(context, outputBuffer, blocks = new Map()) {\n")
             .indent()
             .write('let aliases = this.aliases.clone();\n\n')
             .addSourceMapEnter(this)
@@ -284,7 +284,7 @@ export class TwingNodeModule extends TwingNode {
         ;
 
         if (this.hasNode('parent')) {
-            compiler.write('await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks));\n');
+            compiler.write('await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks), outputBuffer);\n');
         }
 
         compiler

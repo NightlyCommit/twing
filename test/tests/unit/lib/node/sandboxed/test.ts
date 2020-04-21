@@ -27,7 +27,7 @@ tape('node/sandboxed', (test) => {
     if (!alreadySandboxed) {
         this.env.enableSandbox();
     }
-    this.echo(\`foo\`);
+    outputBuffer.echo(\`foo\`);
     if (!alreadySandboxed) {
         this.env.disableSandbox();
     }

@@ -13,6 +13,7 @@ export type TwingCallableWrapperOptions = {
     needs_environment?: boolean;
     needs_context?: boolean;
     needs_source?: boolean;
+    needs_output_buffer?: boolean;
     is_variadic?: boolean;
     is_safe?: Array<any>;
     is_safe_callback?: Function;
@@ -38,6 +39,7 @@ export abstract class TwingCallableWrapper<T> {
             needs_environment: false,
             needs_context: false,
             needs_source: false,
+            needs_output_buffer: false,
             is_variadic: false,
             is_safe: null,
             is_safe_callback: null,
@@ -105,6 +107,10 @@ export abstract class TwingCallableWrapper<T> {
 
     needsSource(): boolean {
         return this.options.needs_source;
+    }
+
+    needsOutputBuffer(): boolean {
+        return this.options.needs_output_buffer;
     }
 
     getSafe(functionArgs: TwingNode): any[] {

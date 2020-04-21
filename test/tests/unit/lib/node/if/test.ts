@@ -45,7 +45,7 @@ tape('node/if', (test) => {
             let node = new TwingNodeIf(t, else_, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `if (true) {
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 `);
             test.end();
@@ -65,10 +65,10 @@ tape('node/if', (test) => {
             let node = new TwingNodeIf(t, else_, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `if (true) {
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else if (false) {
-    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    outputBuffer.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -86,10 +86,10 @@ else if (false) {
             let node = new TwingNodeIf(t, else_, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `if (true) {
-    this.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
+    outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else {
-    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    outputBuffer.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();
@@ -111,16 +111,16 @@ else {
             let node = new TwingNodeIf(t, else_, 1, 1);
 
             test.same(compiler.compile(node).getSource(), `if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
-    this.echo(\`a\`);
+    outputBuffer.echo(\`a\`);
 }
 else if ((context.has(\`b\`) ? context.get(\`b\`) : null)) {
-    this.echo(\`b\`);
+    outputBuffer.echo(\`b\`);
 }
 else if ((context.has(\`c\`) ? context.get(\`c\`) : null)) {
-    this.echo(\`c\`);
+    outputBuffer.echo(\`c\`);
 }
 else {
-    this.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
+    outputBuffer.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
             test.end();

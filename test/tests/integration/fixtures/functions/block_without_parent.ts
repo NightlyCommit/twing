@@ -5,6 +5,12 @@ export default class extends TestBase {
         return '"block" calling parent() with no definition in parent template';
     }
 
+    getEnvironmentOptions(): any {
+        return {
+            cache: 'tmp/bbb'
+        };
+    }
+
     getTemplates() {
         return {
             'index.twig': `

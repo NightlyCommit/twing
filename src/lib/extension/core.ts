@@ -493,6 +493,7 @@ export class TwingExtensionCore extends TwingExtension {
                 needs_context: true,
                 needs_environment: true,
                 needs_source: true,
+                needs_output_buffer: true,
                 is_safe: ['all']
             }),
             new TwingFunction('max', max, []),

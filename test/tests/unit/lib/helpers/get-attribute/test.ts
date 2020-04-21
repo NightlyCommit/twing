@@ -7,6 +7,7 @@ import {getAttribute} from "../../../../../../src/lib/helpers/get-attribute";
 import {TwingEnvironment} from "../../../../../../src/lib/environment";
 import {TwingLoaderNull} from "../../../../../../src/lib/loader/null";
 import {TwingEnvironmentNode} from "../../../../../../src/lib/environment/node";
+import {TwingOutputBuffer} from "../../../../../../src/lib/output-buffer";
 
 class Foo {
     oof: string;
@@ -53,7 +54,7 @@ class TwingTestExtensionCoreTemplate extends TwingTemplate {
         super(env);
     }
 
-    doDisplay(context: {}, blocks: Map<string, Array<any>>): Promise<void> {
+    doDisplay(context: {}, outputBuffer: TwingOutputBuffer, blocks: Map<string, Array<any>>): Promise<void> {
         return Promise.resolve();
     }
 

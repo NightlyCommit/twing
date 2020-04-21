@@ -22,16 +22,15 @@ export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
     compile(compiler: TwingCompiler) {
         let name = this.getAttribute('name');
         let function_ = compiler.getEnvironment().getFunction(name);
+        let callable = function_.getCallable();
 
         this.setAttribute('name', name);
         this.setAttribute('type', 'function');
         this.setAttribute('needs_environment', function_.needsEnvironment());
         this.setAttribute('needs_context', function_.needsContext());
         this.setAttribute('needs_source', function_.needsSource());
+        this.setAttribute('needs_output_buffer', function_.needsOutputBuffer());
         this.setAttribute('arguments', function_.getArguments());
-
-        let callable = function_.getCallable();
-
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', function_.isVariadic());
         this.setAttribute('accepted_arguments', function_.getAcceptedArgments());

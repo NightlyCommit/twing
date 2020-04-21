@@ -26,10 +26,14 @@ export class TwingOutputHandler {
     }
 }
 
-export class TwingOutputBuffering {
-    static handlers: Array<TwingOutputHandler> = [];
+export class TwingOutputBuffer {
+    private readonly _handlers: Array<TwingOutputHandler>;
 
-    static echo(string: any) {
+    constructor() {
+        this._handlers = [];
+    }
+
+    echo(string: any) {
         if (typeof string === 'boolean') {
             string = (string === true) ? '1' : '';
         }
@@ -37,7 +41,7 @@ export class TwingOutputBuffering {
             string = '';
         }
 
-        return TwingOutputBuffering.outputWrite(string);
+        return this.outputWrite(string);
     }
 
     /**
@@ -45,10 +49,10 @@ export class TwingOutputBuffering {
      *
      * @returns {boolean}
      */
-    static obStart() {
-        let handler = new TwingOutputHandler(TwingOutputBuffering.obGetLevel() + 1, 0);
+    start() {
+        let handler = new TwingOutputHandler(this.getLevel() + 1, 0);
 
-        TwingOutputBuffering.handlers.push(handler);
+        this._handlers.push(handler);
 
         return true;
     }
@@ -67,8 +71,8 @@ export class TwingOutputBuffering {
      * └─────────┘    └─────────┘
      *
      */
-    static obFlush() {
-        let active = TwingOutputBuffering.getActive();
+    flush() {
+        let active = this.getActive();
 
         if (!active) {
             process.stdout.write('Failed to flush buffer: no buffer to flush.');
@@ -76,23 +80,14 @@ export class TwingOutputBuffering {
             return false;
         }
 
-        TwingOutputBuffering.handlers.pop();
-        TwingOutputBuffering.outputWrite(active.getContent());
+        this._handlers.pop();
+        this.outputWrite(active.getContent());
 
         active.write('');
 
-        TwingOutputBuffering.handlers.push(active);
+        this._handlers.push(active);
 
         return true;
-    }
-
-    /**
-     * Alias for TwingOutputBuffering.obFlush
-     *
-     * @returns {boolean}
-     */
-    static flush() {
-        return TwingOutputBuffering.obFlush();
     }
 
     /**
@@ -110,15 +105,15 @@ export class TwingOutputBuffering {
      *
      * @returns {boolean}
      */
-    static obEndFlush(): boolean {
-        if (!TwingOutputBuffering.getActive()) {
+    endAndFlush(): boolean {
+        if (!this.getActive()) {
             process.stdout.write('Failed to delete and flush buffer: no buffer to delete or flush.');
 
             return false;
         }
 
-        TwingOutputBuffering.obFlush();
-        TwingOutputBuffering.handlers.pop();
+        this.flush();
+        this._handlers.pop();
 
         return true;
     }
@@ -138,10 +133,10 @@ export class TwingOutputBuffering {
      *
      * @returns {string | false}
      */
-    static obGetFlush(): string | false {
-        let content = TwingOutputBuffering.obGetContents();
+    getAndFlush(): string | false {
+        let content = this.getContents();
 
-        TwingOutputBuffering.obEndFlush();
+        this.endAndFlush();
 
         return content;
     }
@@ -160,8 +155,8 @@ export class TwingOutputBuffering {
      * └─────────┘    └─────────┘
      *
      */
-    static obClean() {
-        let active = TwingOutputBuffering.getActive();
+    clean() {
+        let active = this.getActive();
 
         if (!active) {
             process.stdout.write('Failed to clean buffer: no buffer to clean.');
@@ -189,9 +184,9 @@ export class TwingOutputBuffering {
      *
      * @returns {boolean}
      */
-    static obEndClean(): boolean {
-        if (TwingOutputBuffering.obClean()) {
-            TwingOutputBuffering.handlers.pop();
+    endAndClean(): boolean {
+        if (this.clean()) {
+            this._handlers.pop();
 
             return true;
         }
@@ -214,10 +209,10 @@ export class TwingOutputBuffering {
      *
      * @returns {string | false}
      */
-    static obGetClean(): string | false {
-        let content = TwingOutputBuffering.obGetContents();
+    getAndClean(): string | false {
+        let content = this.getContents();
 
-        TwingOutputBuffering.obEndClean();
+        this.endAndClean();
 
         return content;
     }
@@ -227,8 +222,8 @@ export class TwingOutputBuffering {
      *
      * @returns {number}
      */
-    static obGetLevel(): number {
-        return TwingOutputBuffering.handlers.length;
+    getLevel(): number {
+        return this._handlers.length;
     }
 
     /**
@@ -236,8 +231,8 @@ export class TwingOutputBuffering {
      *
      * @returns {string | false}
      */
-    static obGetContents(): string | false {
-        return TwingOutputBuffering.getActive() ? TwingOutputBuffering.getActive().getContent() : false;
+    getContents(): string | false {
+        return this.getActive() ? this.getActive().getContent() : false;
     }
 
     /**
@@ -245,8 +240,8 @@ export class TwingOutputBuffering {
      *
      * @param {string} string | void
      */
-    private static outputWrite(string: string): string | void {
-        let active = TwingOutputBuffering.getActive();
+    private outputWrite(string: string): string | void {
+        let active = this.getActive();
 
         if (active) {
             active.append(string);
@@ -261,9 +256,9 @@ export class TwingOutputBuffering {
         }
     }
 
-    private static getActive(): TwingOutputHandler {
-        if (TwingOutputBuffering.handlers.length > 0) {
-            return TwingOutputBuffering.handlers[TwingOutputBuffering.handlers.length - 1];
+    private getActive(): TwingOutputHandler {
+        if (this._handlers.length > 0) {
+            return this._handlers[this._handlers.length - 1];
         }
         else {
             return null;
@@ -271,10 +266,3 @@ export class TwingOutputBuffering {
     }
 }
 
-export const echo = TwingOutputBuffering.echo;
-export const obStart = TwingOutputBuffering.obStart;
-export const obEndClean = TwingOutputBuffering.obEndClean;
-export const obGetClean = TwingOutputBuffering.obGetClean;
-export const obGetContents = TwingOutputBuffering.obGetContents;
-export const obGetLevel = TwingOutputBuffering.obGetLevel;
-export const flush = TwingOutputBuffering.flush;

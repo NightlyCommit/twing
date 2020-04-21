@@ -173,7 +173,7 @@ export class TwingCompiler {
                 .raw(', ')
                 .string(node.getType())
                 .raw(', ')
-                .raw('this.getSourceContext());\n')
+                .raw('this.getSourceContext(), outputBuffer);\n')
         }
 
         return this;
@@ -187,7 +187,7 @@ export class TwingCompiler {
     addSourceMapLeave() {
         if (this.getEnvironment().isSourceMap()) {
             this
-                .write('this.env.leaveSourceMapBlock();\n')
+                .write('this.env.leaveSourceMapBlock(outputBuffer);\n')
             ;
         }
 

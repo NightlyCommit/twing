@@ -31,15 +31,16 @@ export class TwingNodeMacro extends TwingNode {
     compile(compiler: TwingCompiler) {
         compiler
             .raw(`async (`)
+            .raw('outputBuffer, ')
         ;
 
         let count = this.getNode('arguments').getNodes().size;
         let pos = 0;
 
-        for (let [name, default_] of this.getNode('arguments').getNodes()) {
+        for (let [name, defaultValue] of this.getNode('arguments').getNodes()) {
             compiler
                 .raw('__' + name + '__ = ')
-                .subcompile(default_)
+                .subcompile(defaultValue)
             ;
 
             if (++pos < count) {
@@ -93,12 +94,12 @@ export class TwingNodeMacro extends TwingNode {
             .write("let blocks = new Map();\n")
             .write('let result;\n')
             .write('let error;\n\n')
-            .write("this.startOutputBuffer();\n")
+            .write("outputBuffer.start();\n")
             .write("try {\n")
             .indent()
             .subcompile(this.getNode('body'))
             .raw("\n")
-            .write('let tmp = this.getOutputBufferContent();\n')
+            .write('let tmp = outputBuffer.getContents();\n')
             .write("result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());\n")
             .outdent()
             .write("}\n")
@@ -107,7 +108,7 @@ export class TwingNodeMacro extends TwingNode {
             .write('error = e;\n')
             .outdent()
             .write('}\n\n')
-            .write("this.endAndCleanOutputBuffer();\n\n")
+            .write("outputBuffer.endAndClean();\n\n")
             .write('if (error) {\n')
             .indent()
             .write('throw error;\n')

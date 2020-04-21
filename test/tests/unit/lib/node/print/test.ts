@@ -21,7 +21,7 @@ tape('node/print', (test) => {
         let node = new TwingNodePrint(new TwingNodeExpressionConstant('foo', 1, 1), 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `this.echo(\`foo\`);
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(\`foo\`);
 `);
 
         test.end();

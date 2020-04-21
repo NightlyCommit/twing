@@ -38,6 +38,7 @@ export class TwingNodeExpressionMethodCall extends TwingNodeExpression {
                 .repr(this.getNode('node').getAttribute('name'))
                 .raw('], ')
                 .repr(this.getAttribute('method'))
+                .raw(', outputBuffer')
                 .raw(', [')
             ;
             let first = true;

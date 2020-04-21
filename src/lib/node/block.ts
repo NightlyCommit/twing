@@ -11,7 +11,7 @@ export class TwingNodeBlock extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .raw(`async (context, blocks = new Map()) => {\n`)
+            .raw(`async (context, outputBuffer, blocks = new Map()) => {\n`)
             .indent()
             .write('let aliases = this.aliases.clone();\n')
         ;
