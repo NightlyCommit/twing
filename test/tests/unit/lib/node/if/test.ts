@@ -2,8 +2,8 @@ import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
 import {TwingNodePrint} from "../../../../../../src/lib/node/print";
 import {TwingNodeExpressionName} from "../../../../../../src/lib/node/expression/name";
-import {TwingNode, TwingNodeType} from "../../../../../../src/lib/node";
-import {TwingNodeIf} from "../../../../../../src/lib/node/if";
+import {TwingNode} from "../../../../../../src/lib/node";
+import {TwingNodeIf, type} from "../../../../../../src/lib/node/if";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/if', (test) => {
@@ -24,7 +24,7 @@ tape('node/if', (test) => {
         node = new TwingNodeIf(t, else_, 1, 1);
 
         test.same(node.getNode('else'), else_);
-        test.same(node.getType(), TwingNodeType.IF);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

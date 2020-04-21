@@ -41,7 +41,7 @@ export class TwingCompiler {
         return this;
     }
 
-    subcompile(node: TwingNode, raw: boolean = true): any {
+    subcompile(node: TwingNode, raw: boolean = true): TwingCompiler {
         if (raw === false) {
             this.source += ' '.repeat(this.indentation * 4);
         }
@@ -87,8 +87,7 @@ export class TwingCompiler {
             if (typeof value === 'string') {
                 value = '`' + addcslashes(value, "\0\t\\`").replace(/\${/g, '\\${') + '`';
             }
-        }
-        else {
+        } else {
             value = '``';
         }
 
@@ -100,14 +99,11 @@ export class TwingCompiler {
     repr(value: any): any {
         if (typeof value === 'number') {
             this.raw(value);
-        }
-        else if (isNullOrUndefined(value)) {
+        } else if (isNullOrUndefined(value)) {
             this.raw(`${value}`);
-        }
-        else if (typeof value === 'boolean') {
+        } else if (typeof value === 'boolean') {
             this.raw(value ? 'true' : 'false');
-        }
-        else if (value instanceof Map) {
+        } else if (value instanceof Map) {
             this.raw('new Map([');
 
             let first = true;
@@ -129,8 +125,7 @@ export class TwingCompiler {
             }
 
             this.raw('])');
-        }
-        else if (typeof value === 'object') {
+        } else if (typeof value === 'object') {
             this.raw('{');
 
             let first = true;
@@ -150,8 +145,7 @@ export class TwingCompiler {
             }
 
             this.raw('}');
-        }
-        else {
+        } else {
             this.string(value);
         }
 
@@ -171,7 +165,7 @@ export class TwingCompiler {
                 .raw(', ')
                 .raw(node.getTemplateColumn())
                 .raw(', ')
-                .string(node.getType())
+                .string(node.type.toString())
                 .raw(', ')
                 .raw('this.getSourceContext(), outputBuffer);\n')
         }

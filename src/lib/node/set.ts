@@ -1,7 +1,11 @@
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 import {TwingNodeExpressionConstant} from "./expression/constant";
 import {TwingNodeCaptureInterface} from "../node-capture-interface";
+import {type as textType} from "./text";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('set');
 
 export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface {
     TwingNodeCaptureInterfaceImpl: TwingNodeCaptureInterface;
@@ -19,8 +23,6 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
 
         super(nodes, attributes, lineno, columnno, tag);
 
-        this.type = TwingNodeType.SET;
-
         this.TwingNodeCaptureInterfaceImpl = this;
 
         /*
@@ -33,11 +35,15 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
 
             let values = this.getNode('values');
 
-            if (values.getType() === TwingNodeType.TEXT) {
+            if (values.is(textType)) {
                 this.setNode('values', new TwingNodeExpressionConstant(values.getAttribute('data'), values.getTemplateLine(), values.getTemplateColumn()));
                 this.setAttribute('capture', false);
             }
         }
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

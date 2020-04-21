@@ -1,8 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
 import {TwingNodeExpressionAssignName} from "../../../../../../src/lib/node/expression/assign-name";
-import {TwingNodeImport} from "../../../../../../src/lib/node/import";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeImport, type} from "../../../../../../src/lib/node/import";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/import', (test) => {
@@ -13,7 +12,7 @@ tape('node/import', (test) => {
 
         test.same(node.getNode('expr'), macro);
         test.same(node.getNode('var'), var_);
-        test.same(node.getType(), TwingNodeType.IMPORT);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

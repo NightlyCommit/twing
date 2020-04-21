@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
-import {TwingNodeDo} from "../../../../../../src/lib/node/do";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeDo, type} from "../../../../../../src/lib/node/do";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/do', (test) => {
@@ -10,7 +9,7 @@ tape('node/do', (test) => {
         let node = new TwingNodeDo(expr, 1, 1);
 
         test.same(node.getNode('expr'), expr);
-        test.same(node.getType(), TwingNodeType.DO);
+        test.same(node.type, type);
 
         test.end();
     });

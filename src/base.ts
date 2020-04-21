@@ -94,7 +94,6 @@ export {TwingNodeSet} from "./lib/node/set";
 export {TwingNodeSpaceless} from "./lib/node/spaceless";
 export {TwingNodeText} from "./lib/node/text";
 export {TwingNodeTraverser} from "./lib/node-traverser";
-export {TwingNodeType} from "./lib/node";
 export {TwingNodeVisitorEscaper} from "./lib/node-visitor/escaper";
 export {TwingNodeVisitorInterface} from "./lib/node-visitor-interface";
 export {TwingNodeVisitorOptimizer} from "./lib/node-visitor/optimizer";

@@ -1,6 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeVerbatim} from "../../../../../../src/lib/node/verbatim";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeVerbatim, type} from "../../../../../../src/lib/node/verbatim";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/verbatim', (test) => {
@@ -8,7 +7,7 @@ tape('node/verbatim', (test) => {
         let node = new TwingNodeVerbatim('foo', 1, 1, 'verbatim');
 
         test.same(node.getAttribute('data'), 'foo');
-        test.same(node.getType(), TwingNodeType.VERBATIM);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
         test.same(node.getNodeTag(), 'verbatim');

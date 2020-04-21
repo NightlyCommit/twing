@@ -1,7 +1,7 @@
 import {SourceNode} from "source-map";
 import {TwingSourceMapNode} from "../node";
 import {TwingSource} from "../../source";
-import {TwingNodeType} from "../../node";
+import {type as spacelessType} from "../../node/spaceless";
 
 export class TwingSourceMapNodeSpaceless extends TwingSourceMapNode {
     /**
@@ -12,7 +12,7 @@ export class TwingSourceMapNodeSpaceless extends TwingSourceMapNode {
      * @param {TwingSource} source
      */
     constructor(line: number, column: number, source: TwingSource) {
-        super(line, column, source, TwingNodeType.SPACELESS);
+        super(line, column, source, spacelessType.toString());
     }
 
     toSourceNode(): SourceNode {

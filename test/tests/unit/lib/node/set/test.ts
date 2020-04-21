@@ -1,8 +1,8 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
 import {TwingNodeExpressionAssignName} from "../../../../../../src/lib/node/expression/assign-name";
-import {TwingNode, TwingNodeType} from "../../../../../../src/lib/node";
-import {TwingNodeSet} from "../../../../../../src/lib/node/set";
+import {TwingNode} from "../../../../../../src/lib/node";
+import {TwingNodeSet, type} from "../../../../../../src/lib/node/set";
 import {MockCompiler} from "../../../../../mock/compiler";
 import {TwingNodePrint} from "../../../../../../src/lib/node/print";
 import {TwingNodeText} from "../../../../../../src/lib/node/text";
@@ -26,7 +26,7 @@ tape('node/set', (test) => {
         test.same(node.getNode('names'), namesNode);
         test.same(node.getNode('values'), valuesNode);
         test.false(node.getAttribute('capture'));
-        test.same(node.getType(), TwingNodeType.SET);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

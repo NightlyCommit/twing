@@ -1,18 +1,23 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingNode} from "../../node";
 import {TwingErrorSyntax} from "../../error/syntax";
 import {TwingNodeExpressionConstant} from "./constant";
 import {TwingNodeExpressionArray} from "./array";
 import {TwingCompiler} from "../../compiler";
 import {TwingCallableArgument} from "../../callable-wrapper";
-import {TwingSource} from "../../source";
+import {TwingNodeType} from "../../node-type";
 
 const array_merge = require('locutus/php/array/array_merge');
 const snakeCase = require('snake-case');
 const capitalize = require('capitalize');
 
+export const type = new TwingNodeType('expression_call');
+
 export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
+    get type() {
+        return type;
+    }
+
     protected compileCallable(compiler: TwingCompiler) {
         let callable = this.getAttribute('callable');
 

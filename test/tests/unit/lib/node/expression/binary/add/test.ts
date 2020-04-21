@@ -1,6 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../../src/lib/node/expression/constant";
-import {TwingNodeExpressionBinaryAdd} from "../../../../../../../../src/lib/node/expression/binary/add";
+import {TwingNodeExpressionBinaryAdd, type} from "../../../../../../../../src/lib/node/expression/binary/add";
 import {MockCompiler} from "../../../../../../../mock/compiler";
 
 tape('node/expression/binary/add', (test) => {
@@ -11,6 +11,7 @@ tape('node/expression/binary/add', (test) => {
 
         test.same(node.getNode('left'), left);
         test.same(node.getNode('right'), right);
+        test.same(node.type, type);
 
         test.end();
     });

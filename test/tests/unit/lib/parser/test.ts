@@ -2,7 +2,7 @@ import * as tape from 'tape';
 import * as sinon from 'sinon';
 import {TwingEnvironmentNode} from "../../../../../src/lib/environment/node";
 import {TwingParser} from "../../../../../src/lib/parser";
-import {TwingNode, TwingNodeType} from "../../../../../src/lib/node";
+import {TwingNode} from "../../../../../src/lib/node";
 import {TwingTokenStream} from "../../../../../src/lib/token-stream";
 import {TwingTokenParser} from "../../../../../src/lib/token-parser";
 import {Token, TokenType} from "twig-lexer";
@@ -24,6 +24,7 @@ import {MockLoader} from "../../../../mock/loader";
 import {MockEnvironment} from "../../../../mock/environment";
 import {TwingNodeExpressionHash} from "../../../../../src/lib/node/expression/hash";
 import {TwingNodeExpression} from "../../../../../src/lib/node/expression";
+import {type} from "../../../../../src/lib/node/comment";
 
 let testEnv = new TwingEnvironmentNode(null);
 
@@ -430,7 +431,7 @@ tape('parser', (test) => {
 
         let body = node.getNode('body');
 
-        test.same(body.getNode(0).getType(), TwingNodeType.COMMENT);
+        test.same(body.getNode(0).type, type);
         test.same(body.getNode(0).getAttribute('data'), 'test');
 
         test.end();

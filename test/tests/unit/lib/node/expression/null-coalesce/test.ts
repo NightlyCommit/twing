@@ -1,9 +1,8 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../src/lib/node/expression/constant";
 import {TwingNodeExpressionName} from "../../../../../../../src/lib/node/expression/name";
-import {TwingNodeExpressionNullCoalesce} from "../../../../../../../src/lib/node/expression/null-coalesce";
+import {TwingNodeExpressionNullCoalesce, type} from "../../../../../../../src/lib/node/expression/null-coalesce";
 import {MockCompiler} from "../../../../../../mock/compiler";
-import {TwingNodeType} from "../../../../../../../src/lib/node";
 
 tape('node/expression/null-coalesce', (test) => {
     test.test('constructor', function(test) {
@@ -25,7 +24,7 @@ tape('node/expression/null-coalesce', (test) => {
         let node = new TwingNodeExpressionNullCoalesce([left, right], 1, 1);
 
         test.same(compiler.compile(node).getSource(), `((!!((context.has(\`foo\`)) && !(await this.env.getTest(\'null\').traceableCallable(1, this.getSourceContext())(...[context.get(\`foo\`)])))) ? (context.get(\`foo\`)) : (2))`);
-        test.same(node.getType(), TwingNodeType.EXPRESSION_NULL_COALESCE);
+        test.same(node.type, type);
         test.end();
     });
 

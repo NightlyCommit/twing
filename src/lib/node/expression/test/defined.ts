@@ -1,9 +1,18 @@
 import {TwingNodeExpressionTest} from "../test";
-import {TwingNode, TwingNodeType} from "../../../node";
+import {TwingNode} from "../../../node";
 import {TwingNodeExpression} from "../../expression";
-import {TwingNodeExpressionConstant} from "../constant";
+import {TwingNodeExpressionConstant, type as constantType} from "../constant";
+import {type as nameType} from "../name";
+import {type as getAttrType} from "../get-attr";
+import {type as blockreferenceType} from "../block-reference";
+import {type as functionType} from "../function";
+import {type as arrayType} from "../array";
+import {type as methodCallType} from "../method-call";
 import {TwingErrorSyntax} from "../../../error/syntax";
 import {TwingCompiler} from "../../../compiler";
+import {TwingNodeType} from "../../../node-type";
+
+export const type = new TwingNodeType('expression_test_defined');
 
 /**
  * Checks if a variable is defined in the active context.
@@ -20,26 +29,20 @@ export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         let changeIgnoreStrictCheck = false;
         let error = null;
 
-        if (node.getType() === TwingNodeType.EXPRESSION_NAME) {
+        if (node.is(nameType)) {
             node.setAttribute('is_defined_test', true);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
+        } else if (node.is(getAttrType)) {
             node.setAttribute('is_defined_test', true);
             changeIgnoreStrictCheck = true;
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE) {
+        } else if (node.is(blockreferenceType)) {
             node.setAttribute('is_defined_test', true);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION && (node.getAttribute('name') === 'constant')) {
+        } else if (node.is(functionType) && (node.getAttribute('name') === 'constant')) {
             node.setAttribute('is_defined_test', true);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT || node.getType() === TwingNodeType.EXPRESSION_ARRAY) {
+        } else if (node.is(constantType) || node.is(arrayType)) {
             node = new TwingNodeExpressionConstant(true, node.getTemplateLine(), node.getTemplateColumn());
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_METHOD_CALL) {
+        } else if (node.is(methodCallType)) {
             node.setAttribute('is_defined_test', true);
-        }
-        else {
+        } else {
             error = 'The "defined" test only works with simple variables.';
         }
 
@@ -54,13 +57,17 @@ export class TwingNodeExpressionTestDefined extends TwingNodeExpressionTest {
         }
     }
 
+    get type() {
+        return type;
+    }
+
     changeIgnoreStrictCheck(node: TwingNodeExpression) {
         node.setAttribute('optimizable', false);
         node.setAttribute('ignore_strict_check', true);
 
         let exprNode = <TwingNodeExpression>node.getNode('node');
 
-        if (exprNode.getType() === TwingNodeType.EXPRESSION_GET_ATTR) {
+        if (exprNode.is(getAttrType)) {
             this.changeIgnoreStrictCheck(exprNode);
         }
     }

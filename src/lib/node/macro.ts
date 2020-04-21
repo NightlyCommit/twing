@@ -3,10 +3,12 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('macro');
 
 export class TwingNodeMacro extends TwingNode {
     static VARARGS_NAME = 'varargs';
@@ -24,8 +26,10 @@ export class TwingNodeMacro extends TwingNode {
         nodes.set('arguments', macroArguments);
 
         super(nodes, new Map([['name', name]]), lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.MACRO;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,8 +1,10 @@
-import {TwingNode, TwingNodeType} from "../../node";
+import {TwingNode} from "../../node";
 import {TwingNodeExpressionConstant} from "./constant";
-
 import {TwingNodeExpressionCall} from "./call";
 import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_filter');
 
 export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
     constructor(node: TwingNode, filterName: TwingNodeExpressionConstant, methodArguments: TwingNode, lineno: number, columnno: number, tag: string = null) {
@@ -13,8 +15,10 @@ export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
         nodes.set('arguments', methodArguments);
 
         super(nodes, new Map(), lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_FILTER;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

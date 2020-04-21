@@ -99,7 +99,6 @@ tape('main and browser indexes', (test) => {
         'TwingNodeSpaceless',
         'TwingNodeText',
         'TwingNodeTraverser',
-        'TwingNodeType',
         'TwingNodeVerbatim',
         'TwingNodeVisitorEscaper',
         'TwingNodeVisitorOptimizer',

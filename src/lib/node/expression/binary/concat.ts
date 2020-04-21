@@ -1,12 +1,12 @@
 import {TwingNodeExpressionBinary} from "../binary";
 import {TwingCompiler} from "../../../compiler";
-import {TwingNode, TwingNodeType} from "../../../node";
+import {TwingNodeType} from "../../../node-type";
+
+export const type = new TwingNodeType('expression_binary_concat');
 
 export class TwingNodeExpressionBinaryConcat extends TwingNodeExpressionBinary {
-    constructor(nodes: [TwingNode, TwingNode], lineno: number, columno: number) {
-        super(nodes, lineno, columno);
-
-        this.type = TwingNodeType.EXPRESSION_BINARY_CONCAT;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

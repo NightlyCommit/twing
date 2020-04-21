@@ -1,7 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../src/lib/node/expression/constant";
-import {TwingNodeExpressionTest} from "../../../../../../../src/lib/node/expression/test";
-import {TwingNode, TwingNodeType} from "../../../../../../../src/lib/node";
+import {TwingNodeExpressionTest, type} from "../../../../../../../src/lib/node/expression/test";
+import {TwingNode} from "../../../../../../../src/lib/node";
 import {MockLoader} from "../../../../../../mock/loader";
 import {MockEnvironment} from "../../../../../../mock/environment";
 import {TwingTest} from "../../../../../../../src/lib/test";
@@ -25,7 +25,7 @@ tape('node/expression/test', (test) => {
         test.same(node.getNode('node'), expr);
         test.same(node.getNode('arguments'), args);
         test.same(node.getAttribute('name'), name);
-        test.same(node.getType(), TwingNodeType.EXPRESSION_TEST);
+        test.same(node.type, type);
 
         test.end();
     });

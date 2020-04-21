@@ -27,8 +27,8 @@ import {TwingOperator} from "./operator";
 import {TwingSandboxSecurityPolicy} from "./sandbox/security-policy";
 import {TwingSandboxSecurityPolicyInterface} from "./sandbox/security-policy-interface";
 import {TwingEnvironmentOptions} from "./environment-options";
-import {TwingNodeType} from "./node";
 import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
+import {TwingNodeType} from "./node-type";
 
 const path = require('path');
 const sha256 = require('crypto-js/sha256');
@@ -821,14 +821,14 @@ return module.exports;
      *
      * @return TwingSourceMapNodeFactory
      */
-    getSourceMapNodeFactory(nodeType: TwingNodeType) {
+    getSourceMapNodeFactory(nodeType: string) {
         return this.extensionSet.getSourceMapNodeFactory(nodeType);
     }
 
     /**
-     * @return Map<TwingNodeType, TwingSourceMapNodeFactory>
+     * @return Map<string, TwingSourceMapNodeFactory>
      */
-    getSourceMapNodeFactories(): Map<TwingNodeType, TwingSourceMapNodeFactory> {
+    getSourceMapNodeFactories(): Map<string, TwingSourceMapNodeFactory> {
         return this.extensionSet.getSourceMapNodeFactories();
     }
 
@@ -909,11 +909,11 @@ return module.exports;
     /**
      * @param {number} line 0-based
      * @param {number} column 1-based
-     * @param {TwingNodeType} nodeType
+     * @param {string} nodeType
      * @param {TwingSource} source
      * @param {TwingOutputBuffer} outputBuffer
      */
-    enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource, outputBuffer: TwingOutputBuffer) {
+    enterSourceMapBlock(line: number, column: number, nodeType: string, source: TwingSource, outputBuffer: TwingOutputBuffer) {
         outputBuffer.start();
 
         let sourceName = source.getResolvedName();

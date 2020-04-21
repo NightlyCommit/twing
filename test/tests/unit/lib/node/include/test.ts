@@ -1,8 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
-import {TwingNodeInclude} from "../../../../../../src/lib/node/include";
+import {TwingNodeInclude, type} from "../../../../../../src/lib/node/include";
 import {TwingNodeExpressionArray} from "../../../../../../src/lib/node/expression/array";
-import {TwingNodeType} from "../../../../../../src/lib/node";
 import {MockCompiler} from "../../../../../mock/compiler";
 import {TwingNodeExpressionConditional} from "../../../../../../src/lib/node/expression/conditional";
 import {TwingNodeExpressionHash} from "../../../../../../src/lib/node/expression/hash";
@@ -26,7 +25,7 @@ tape('node/include', (test) => {
 
         test.same(node.getNode('variables'), vars);
         test.true(node.getAttribute('only'));
-        test.same(node.getType(), TwingNodeType.INCLUDE);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

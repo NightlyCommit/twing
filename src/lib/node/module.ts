@@ -1,6 +1,11 @@
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingSource} from "../source";
 import {TwingCompiler} from "../compiler";
+import {type as constantType} from "./expression/constant";
+import {type as bodyType} from "./body";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('module');
 
 /**
  * Represents a module node that compiles into a JavaScript module.
@@ -33,11 +38,14 @@ export class TwingNodeModule extends TwingNode {
 
         super(nodes, attributes, 1, 1);
 
-        this.type = TwingNodeType.MODULE;
         this.source = source;
 
         // populate the template name of all node children
         this.setTemplateName(this.source.getName());
+    }
+
+    get type() {
+        return type;
     }
 
     setIndex(index: number) {
@@ -253,7 +261,7 @@ export class TwingNodeModule extends TwingNode {
             ;
 
             // if the parent name is not dynamic, then we can cache the parent as it will never change
-            if (parent.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
+            if (parent.is(constantType)) {
                 compiler
                     .raw('.then((parent) => {\n')
                     .indent()
@@ -304,24 +312,22 @@ export class TwingNodeModule extends TwingNode {
         let traitable = !this.hasNode('parent') && (this.getNode('macros').getNodes().size === 0);
 
         if (traitable) {
-            let nodes: TwingNode;
+            let node: TwingNode = this.getNode('body');
 
-            if (this.getNode('body').getType() === TwingNodeType.BODY) {
-                nodes = this.getNode('body').getNode(0);
-            } else {
-                nodes = this.getNode('body');
+            if (node.is(bodyType)) {
+                node = node.getNode(0);
             }
 
-            if (!nodes.getNodes().size) {
+            if (!node.getNodes().size) {
                 let n = new Map();
 
-                n.set(0, nodes);
+                n.set(0, node);
 
-                nodes = new TwingNode(n);
+                node = new TwingNode(n);
             }
 
-            for (let [idx, node] of nodes.getNodes()) {
-                if (!node.getNodes().size) {
+            for (let [idx, subNode] of node.getNodes()) {
+                if (!subNode.getNodes().size) {
                     continue;
                 }
 
