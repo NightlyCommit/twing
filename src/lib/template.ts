@@ -442,24 +442,6 @@ export abstract class TwingTemplate {
         }
     }
 
-    /**
-     * @param lineno
-     * @param source
-     * @deprecated
-     */
-    public traceableDisplayBlock(lineno: number, source: TwingSource): TwingTemplateTraceableMethod<void> {
-        return this.traceableMethod(this.displayBlock.bind(this), lineno, source);
-    }
-
-    /**
-     * @param lineno
-     * @param source
-     * @deprecated
-     */
-    public traceableDisplayParentBlock(lineno: number, source: TwingSource): TwingTemplateTraceableMethod<void> {
-        return this.traceableMethod(this.displayParentBlock.bind(this), lineno, source);
-    }
-
     public traceableRenderBlock(lineno: number, source: TwingSource): TwingTemplateTraceableMethod<string> {
         return this.traceableMethod(this.renderBlock.bind(this), lineno, source);
     }
