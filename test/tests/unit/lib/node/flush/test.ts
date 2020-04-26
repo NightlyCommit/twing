@@ -1,6 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeFlush} from "../../../../../../src/lib/node/flush";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeFlush, type} from "../../../../../../src/lib/node/flush";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/flush', (test) => {
@@ -8,7 +7,7 @@ tape('node/flush', (test) => {
         let node = new TwingNodeFlush(1, 1, 'foo');
 
         test.same(node.getNodes(), new Map());
-        test.same(node.getType(), TwingNodeType.FLUSH);
+        test.same(node.type, type);
 
         test.end();
     });

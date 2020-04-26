@@ -1,5 +1,7 @@
-import {TwingNodeType} from "../node";
 import {TwingNodeText} from "./text";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('verbatim');
 
 /**
  * Represents a verbatim node.
@@ -7,9 +9,7 @@ import {TwingNodeText} from "./text";
  * @author Eric Morand <eric.morand@gmail.com>
  */
 export class TwingNodeVerbatim extends TwingNodeText {
-    constructor(data: string, lineno: number, columnno: number, tag: string) {
-        super(data, lineno, columnno, tag);
-
-        this.type = TwingNodeType.VERBATIM;
+    get type() {
+        return type;
     }
 }

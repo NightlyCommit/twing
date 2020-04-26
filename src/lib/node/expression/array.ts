@@ -1,12 +1,13 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingNodeExpressionConstant} from "./constant";
-
+import {TwingNodeExpressionConstant, type as constantType} from "./constant";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
 import {push} from "../../helpers/push";
 import {ctypeDigit} from "../../helpers/ctype-digit";
+import {TwingNodeType} from "../../node-type";
 
 let array_chunk = require('locutus/php/array/array_chunk');
+
+export const type = new TwingNodeType('expression_array');
 
 export class TwingNodeExpressionArray extends TwingNodeExpression {
     private index: number;
@@ -14,17 +15,19 @@ export class TwingNodeExpressionArray extends TwingNodeExpression {
     constructor(elements: Map<string | number, TwingNodeExpression>, lineno: number, columno: number) {
         super(elements, new Map(), lineno, columno);
 
-        this.type = TwingNodeType.EXPRESSION_ARRAY;
-
         this.index = -1;
 
         for (let pair of this.getKeyValuePairs()) {
             let expression = pair.key;
 
-            if ((expression.getType() === TwingNodeType.EXPRESSION_CONSTANT) && (ctypeDigit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
+            if ((expression.is(constantType)) && (ctypeDigit('' + expression.getAttribute('value'))) && (expression.getAttribute('value') > this.index)) {
                 this.index = expression.getAttribute('value');
             }
         }
+    }
+
+    get type() {
+        return type;
     }
 
     getKeyValuePairs(): Array<{ key: TwingNodeExpression, value: TwingNodeExpression }> {

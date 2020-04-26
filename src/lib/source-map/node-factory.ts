@@ -3,20 +3,19 @@
  */
 import {TwingSource} from "../source";
 import {TwingSourceMapNode} from "./node";
-import {TwingNodeType} from "../node";
 
 export class TwingSourceMapNodeFactory {
-    private readonly _type: TwingNodeType;
+    private readonly _name: string;
 
-    constructor(type: TwingNodeType) {
-        this._type = type;
+    constructor(name: string) {
+        this._name = name;
     }
 
     create(line: number, column: number, source: TwingSource): TwingSourceMapNode {
-        return new TwingSourceMapNode(line, column, source, this.nodeType);
+        return new TwingSourceMapNode(line, column, source, this.nodeName);
     }
 
-    get nodeType(): TwingNodeType {
-        return this._type;
+    get nodeName(): string {
+        return this._name;
     }
 }

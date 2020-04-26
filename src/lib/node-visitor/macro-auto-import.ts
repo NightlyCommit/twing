@@ -1,17 +1,20 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingEnvironment} from "../environment";
 import {TwingNodeImport} from "../node/import";
-import {TwingNodeExpressionName} from "../node/expression/name";
+import {TwingNodeExpressionName, type as nameType} from "../node/expression/name";
 import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeExpressionMethodCall} from "../node/expression/method-call";
 import {TwingNodeExpressionArray} from "../node/expression/array";
+import {type as moduleType} from "../node/module";
+import {type as getAttrType} from "../node/expression/get-attr";
+import {type as constantType} from "../node/expression/constant";
 
 export class TwingNodeVisitorMacroAutoImport extends TwingBaseNodeVisitor {
     private hasMacroCalls: boolean = false;
 
     public doEnterNode(node: TwingNode, env: TwingEnvironment) {
-        if (node.getType() == TwingNodeType.MODULE) {
+        if (node.type == moduleType) {
             this.hasMacroCalls = false;
         }
 
@@ -19,12 +22,12 @@ export class TwingNodeVisitorMacroAutoImport extends TwingBaseNodeVisitor {
     }
 
     public doLeaveNode(node: TwingNode, env: TwingEnvironment) {
-        if (node.getType() == TwingNodeType.MODULE) {
+        if (node.type == moduleType) {
             if (this.hasMacroCalls) {
                 node.getNode('constructor_end').setNode('_auto_macro_import', new TwingNodeImport(new TwingNodeExpressionName('_self', 0, 0), new TwingNodeExpressionAssignName('_self', 0, 0), 0, 0, 'import', true));
             }
         } else {
-            if ((node.getType() == TwingNodeType.EXPRESSION_GET_ATTR) && (node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME) && (node.getNode('node').getAttribute('name') === '_self') && (node.getNode('attribute').getType() === TwingNodeType.EXPRESSION_CONSTANT)) {
+            if ((node.type == getAttrType) && (node.getNode('node').is(nameType)) && (node.getNode('node').getAttribute('name') === '_self') && (node.getNode('attribute').is(constantType))) {
                 this.hasMacroCalls = true;
 
                 let name = node.getNode('attribute').getAttribute('value');

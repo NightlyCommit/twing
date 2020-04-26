@@ -1,6 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeExpressionAssignName} from "../../../../../../../src/lib/node/expression/assign-name";
-import {TwingNodeType} from "../../../../../../../src/lib/node";
+import {TwingNodeExpressionAssignName, type} from "../../../../../../../src/lib/node/expression/assign-name";
 import {MockCompiler} from "../../../../../../mock/compiler";
 
 tape('node/expression/assign-name', (test) => {
@@ -8,7 +7,7 @@ tape('node/expression/assign-name', (test) => {
         let node = new TwingNodeExpressionAssignName('foo', 1, 1);
 
         test.same(node.getAttribute('name'), 'foo');
-        test.same(node.getType(), TwingNodeType.EXPRESSION_ASSIGN_NAME);
+        test.same(node.type, type);
         test.end();
     });
 

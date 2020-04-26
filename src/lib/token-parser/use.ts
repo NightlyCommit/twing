@@ -1,16 +1,15 @@
 import {TwingTokenParser} from "../token-parser";
 import {TwingErrorSyntax} from "../error/syntax";
-import {TwingNodeExpressionConstant} from "../node/expression/constant";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNodeExpressionConstant, type as constantType} from "../node/expression/constant";
+import {TwingNode} from "../node";
 import {Token, TokenType} from "twig-lexer";
-
 
 export class TwingTokenParserUse extends TwingTokenParser {
     parse(token: Token) {
         let template = this.parser.parseExpression();
         let stream = this.parser.getStream();
 
-        if (template.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
+        if (template.type !== constantType) {
             throw new TwingErrorSyntax('The template references in a "use" statement must be a string.', stream.getCurrent().line, stream.getSourceContext());
         }
 

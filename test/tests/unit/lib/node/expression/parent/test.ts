@@ -1,6 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeExpressionParent} from "../../../../../../../src/lib/node/expression/parent";
-import {TwingNodeType} from "../../../../../../../src/lib/node";
+import {TwingNodeExpressionParent, type} from "../../../../../../../src/lib/node/expression/parent";
 import {MockCompiler} from "../../../../../../mock/compiler";
 
 tape('node/expression/parent', (test) => {
@@ -8,7 +7,7 @@ tape('node/expression/parent', (test) => {
         let node = new TwingNodeExpressionParent('foo', 1);
 
         test.same(node.getAttribute('name'), 'foo');
-        test.same(node.getType(), TwingNodeType.EXPRESSION_PARENT);
+        test.same(node.type, type);
 
         test.end();
     });

@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../src/lib/node/expression/constant";
-import {TwingNodeExpressionArray} from "../../../../../../../src/lib/node/expression/array";
-import {TwingNodeType} from "../../../../../../../src/lib/node";
+import {TwingNodeExpressionArray, type} from "../../../../../../../src/lib/node/expression/array";
 import {MockCompiler} from "../../../../../../mock/compiler";
 
 tape('node/expression/array', (test) => {
@@ -16,7 +15,7 @@ tape('node/expression/array', (test) => {
         let node = new TwingNodeExpressionArray(elements, 1, 1);
 
         test.same(node.getNode(1), foo);
-        test.same(node.getType(), TwingNodeType.EXPRESSION_ARRAY);
+        test.same(node.type, type);
         test.end();
     });
 

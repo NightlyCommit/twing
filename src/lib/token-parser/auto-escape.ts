@@ -2,10 +2,11 @@
  * Marks a section of a template to be escaped or not.
  */
 import {TwingTokenParser} from "../token-parser";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingErrorSyntax} from "../error/syntax";
 import {TwingNodeAutoEscape} from "../node/auto-escape";
 import {Token, TokenType} from "twig-lexer";
+import {type as constantType} from "../node/expression/constant";
 
 export class TwingTokenParserAutoEscape extends TwingTokenParser {
     parse(token: Token): TwingNode {
@@ -20,7 +21,7 @@ export class TwingTokenParserAutoEscape extends TwingTokenParser {
         else {
             let expr = this.parser.parseExpression();
 
-            if (expr.getType() !== TwingNodeType.EXPRESSION_CONSTANT) {
+            if (expr.type !== constantType) {
                 throw new TwingErrorSyntax('An escaping strategy must be a string or false.', stream.getCurrent().line, stream.getSourceContext());
             }
 

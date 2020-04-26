@@ -3,10 +3,13 @@
  *
  * @author Eric MORAND <eric.morand@gmail.com>
  */
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingNodeExpression} from "./expression";
-
 import {TwingCompiler} from "../compiler";
+import {type as nameType} from "./expression/name";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('import');
 
 export class TwingNodeImport extends TwingNode {
     constructor(expr: TwingNodeExpression, varName: TwingNodeExpression, lineno: number, columnno: number, tag: string = null, global: boolean = true) {
@@ -20,8 +23,10 @@ export class TwingNodeImport extends TwingNode {
         attributes.set('global', global);
 
         super(nodes, attributes, lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.IMPORT;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {
@@ -39,7 +44,7 @@ export class TwingNodeImport extends TwingNode {
             ;
         }
 
-        if (this.getNode('expr').getType() === TwingNodeType.EXPRESSION_NAME && this.getNode('expr').getAttribute('name') === '_self') {
+        if (this.getNode('expr').is(nameType) && this.getNode('expr').getAttribute('name') === '_self') {
             compiler.raw('this');
         } else {
             compiler

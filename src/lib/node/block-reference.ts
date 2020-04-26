@@ -1,7 +1,9 @@
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 import {TwingNodeOutputInterface} from "../node-output-interface";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('block_reference');
 
 /**
  * Represents a block call node.
@@ -14,9 +16,11 @@ export class TwingNodeBlockReference extends TwingNode implements TwingNodeOutpu
     constructor(name: string, lineno: number, columnno: number, tag: string = null) {
         super(new Map(), new Map([['name', name]]), lineno, columnno, tag);
 
-        this.type = TwingNodeType.BLOCK_REFERENCE;
-
         this.TwingNodeOutputInterfaceImpl = this;
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

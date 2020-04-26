@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../../src/lib/node/expression/constant";
-import {TwingNodeExpressionUnaryNeg} from "../../../../../../../../src/lib/node/expression/unary/neg";
-import {TwingNodeType} from "../../../../../../../../src/lib/node";
+import {TwingNodeExpressionUnaryNeg, type} from "../../../../../../../../src/lib/node/expression/unary/neg";
 import {MockCompiler} from "../../../../../../../mock/compiler";
 
 tape('node/expression/unary/neg', (test) => {
@@ -10,7 +9,7 @@ tape('node/expression/unary/neg', (test) => {
         let node = new TwingNodeExpressionUnaryNeg(expr, 1, 1);
 
         test.same(node.getNode('node'), expr);
-        test.same(node.getType(), TwingNodeType.EXPRESSION_UNARY_NEG);
+        test.same(node.type, type);
 
         test.end();
     });

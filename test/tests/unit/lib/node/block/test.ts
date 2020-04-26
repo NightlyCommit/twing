@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeText} from "../../../../../../src/lib/node/text";
-import {TwingNodeBlock} from "../../../../../../src/lib/node/block";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeBlock, type} from "../../../../../../src/lib/node/block";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/block', (test) => {
@@ -11,7 +10,7 @@ tape('node/block', (test) => {
 
         test.same(node.getNode('body'), body);
         test.same(node.getAttribute('name'), 'foo');
-        test.same(node.getType(), TwingNodeType.BLOCK);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

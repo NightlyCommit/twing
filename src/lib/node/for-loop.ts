@@ -1,6 +1,8 @@
 import {TwingNode} from "../node";
-
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('for_loop');
 
 export class TwingNodeForLoop extends TwingNode {
     constructor(lineno: number, columnno: number, tag: string = null) {
@@ -11,6 +13,10 @@ export class TwingNodeForLoop extends TwingNode {
         attributes.set('else', false);
 
         super(new Map(), attributes, lineno, columnno, tag);
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,12 +1,12 @@
 import {TwingNodeExpressionName} from "./name";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_assign_name');
 
 export class TwingNodeExpressionAssignName extends TwingNodeExpressionName {
-    constructor(name: string, lineno: number, columnno: number) {
-        super(name, lineno, columnno);
-
-        this.type = TwingNodeType.EXPRESSION_ASSIGN_NAME;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

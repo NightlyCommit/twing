@@ -1,8 +1,9 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingTemplate} from "../../template";
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_get_attr');
 
 export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number, columnno: number) {
@@ -23,8 +24,10 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
         nodeAttributes.set('optimizable', true);
 
         super(nodes, nodeAttributes, lineno, columnno);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_GET_ATTR;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

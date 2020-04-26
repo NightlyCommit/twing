@@ -1,6 +1,5 @@
 import * as tape from 'tape';
-import {TwingNodeBlockReference} from "../../../../../../src/lib/node/block-reference";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeBlockReference, type} from "../../../../../../src/lib/node/block-reference";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/block-reference', (test) => {
@@ -8,7 +7,7 @@ tape('node/block-reference', (test) => {
         let node = new TwingNodeBlockReference('foo', 1, 1);
 
         test.same(node.getAttribute('name'), 'foo');
-        test.same(node.getType(), TwingNodeType.BLOCK_REFERENCE);
+        test.same(node.type, type);
 
         test.end();
     });

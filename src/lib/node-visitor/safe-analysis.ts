@@ -1,6 +1,15 @@
 import {TwingBaseNodeVisitor} from "../base-node-visitor";
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingEnvironment} from "../environment";
+import {type as nameType} from "../node/expression/name";
+import {type as filterType} from "../node/expression/filter";
+import {type as functionType} from "../node/expression/function";
+import {type as constantType} from "../node/expression/constant";
+import {type as blockReferenceType} from "../node/expression/block-reference"
+import {type as parentType} from "../node/expression/parent";
+import {type as conditionalType} from "../node/expression/conditional";
+import {type as getAttrType} from "../node/expression/get-attr";
+import {type as callType} from "../node/expression/method-call";
 
 const objectHash = require('object-hash');
 
@@ -79,24 +88,20 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
     }
 
     protected doLeaveNode(node: TwingNode, env: TwingEnvironment): TwingNode {
-        if (node.getType() === TwingNodeType.EXPRESSION_CONSTANT) {
+        if (node.is(constantType)) {
             // constants are marked safe for all
             this.setSafe(node, ['all']);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_BLOCK_REFERENCE) {
+        } else if (node.is(blockReferenceType)) {
             // blocks are safe by definition
             this.setSafe(node, ['all']);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_PARENT) {
+        } else if (node.is(parentType)) {
             // parent block is safe by definition
             this.setSafe(node, ['all']);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_CONDITIONAL) {
+        } else if (node.is(conditionalType)) {
             // intersect safeness of both operands
             let safe = this.intersectSafe(this.getSafe(node.getNode('expr2')), this.getSafe(node.getNode('expr3')));
             this.setSafe(node, safe);
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_FILTER) {
+        } else if (node.is(filterType)) {
             // filter expression is safe when the filter is safe
             let name = node.getNode('filter').getAttribute('value');
             let filterArgs = node.getNode('arguments');
@@ -110,12 +115,10 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
                 }
 
                 this.setSafe(node, safe);
-            }
-            else {
+            } else {
                 this.setSafe(node, []);
             }
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_FUNCTION) {
+        } else if (node.is(functionType)) {
             // function expression is safe when the function is safe
             let name = node.getAttribute('name');
             let functionArgs = node.getNode('arguments');
@@ -123,30 +126,24 @@ export class TwingNodeVisitorSafeAnalysis extends TwingBaseNodeVisitor {
 
             if (functionNode) {
                 this.setSafe(node, functionNode.getSafe(functionArgs));
-            }
-            else {
+            } else {
                 this.setSafe(node, []);
             }
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_METHOD_CALL) {
+        } else if (node.is(callType)) {
             if (node.getAttribute('safe')) {
                 this.setSafe(node, ['all']);
-            }
-            else {
+            } else {
                 this.setSafe(node, []);
             }
-        }
-        else if (node.getType() === TwingNodeType.EXPRESSION_GET_ATTR && node.getNode('node').getType() === TwingNodeType.EXPRESSION_NAME) {
+        } else if (node.is(getAttrType) && node.getNode('node').is(nameType)) {
             let name = node.getNode('node').getAttribute('name');
 
             if (this.safeVars.includes(name)) {
                 this.setSafe(node, ['all']);
-            }
-            else {
+            } else {
                 this.setSafe(node, []);
             }
-        }
-        else {
+        } else {
             this.setSafe(node, []);
         }
 

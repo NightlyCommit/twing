@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeText} from "../../../../../../src/lib/node/text";
-import {TwingNodeSandbox} from "../../../../../../src/lib/node/sandbox";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeSandbox, type} from "../../../../../../src/lib/node/sandbox";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 tape('node/sandboxed', (test) => {
@@ -10,7 +9,7 @@ tape('node/sandboxed', (test) => {
         let node = new TwingNodeSandbox(body, 1, 1);
 
         test.same(node.getNode('body'), body);
-        test.same(node.getType(), TwingNodeType.SANDBOX);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 

@@ -4,10 +4,9 @@ import {TwingFunction} from "./function";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingTest} from "./test";
-import {merge} from "./helpers/merge";
 import {TwingOperator, TwingOperatorType} from "./operator";
-import {TwingNodeType} from "./node";
 import {TwingSourceMapNodeFactory} from "./source-map/node-factory";
+import {TwingNodeType} from "./node-type";
 
 export class TwingExtensionSet {
     private initialized: boolean = false;
@@ -19,7 +18,7 @@ export class TwingExtensionSet {
     private unaryOperators: Map<string, TwingOperator> = new Map();
     private binaryOperators: Map<string, TwingOperator> = new Map();
     private tokenParsers: Map<string, TwingTokenParserInterface> = new Map();
-    private sourceMapNodeFactories: Map<TwingNodeType, TwingSourceMapNodeFactory> = new Map();
+    private sourceMapNodeFactories: Map<string, TwingSourceMapNodeFactory> = new Map();
 
     readonly extensions: Map<string, TwingExtensionInterface>;
 
@@ -368,20 +367,20 @@ export class TwingExtensionSet {
 
     addSourceMapNodeFactory(factory: TwingSourceMapNodeFactory) {
         if (this.initialized) {
-            throw new Error(`Unable to add source-map node factory "${factory.nodeType}" as extensions have already been initialized.`);
+            throw new Error(`Unable to add source-map node factory "${factory.nodeName}" as extensions have already been initialized.`);
         }
 
-        if (this.sourceMapNodeFactories.has(factory.nodeType)) {
-            throw new Error(`Source-map node factory "${factory.nodeType}" is already registered.`);
+        if (this.sourceMapNodeFactories.has(factory.nodeName)) {
+            throw new Error(`Source-map node factory "${factory.nodeName}" is already registered.`);
         }
 
-        this.sourceMapNodeFactories.set(factory.nodeType, factory);
+        this.sourceMapNodeFactories.set(factory.nodeName, factory);
     }
 
     /**
      * @return Map<TwingNodeType, TwingSourceMapNodeFactory>
      */
-    getSourceMapNodeFactories(): Map<TwingNodeType, TwingSourceMapNodeFactory> {
+    getSourceMapNodeFactories(): Map<string, TwingSourceMapNodeFactory> {
         if (!this.initialized) {
             this.initExtensions();
         }
@@ -394,7 +393,7 @@ export class TwingExtensionSet {
      *
      * @return TwingSourceMapNodeFactory | null
      */
-    getSourceMapNodeFactory(nodeType: TwingNodeType) {
+    getSourceMapNodeFactory(nodeType: string) {
         return this.sourceMapNodeFactories.has(nodeType) ? this.sourceMapNodeFactories.get(nodeType) : null;
     }
 

@@ -1,6 +1,8 @@
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('auto_escape');
 
 /**
  * Represents an autoescape node.
@@ -16,8 +18,10 @@ import {TwingCompiler} from "../compiler";
 export class TwingNodeAutoEscape extends TwingNode {
     constructor(value: {}, body: TwingNode, lineno: number, columnno: number, tag = 'autoescape') {
         super(new Map([['body', body]]), new Map([['value', value]]), lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.AUTO_ESCAPE;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

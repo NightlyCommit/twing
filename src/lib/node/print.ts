@@ -1,8 +1,10 @@
-import {TwingNode, TwingNodeType} from "../node";
+import {TwingNode} from "../node";
 import {TwingNodeOutputInterface} from "../node-output-interface";
 import {TwingNodeExpression} from "./expression";
-
 import {TwingCompiler} from "../compiler";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('print');
 
 export class TwingNodePrint extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
@@ -15,8 +17,10 @@ export class TwingNodePrint extends TwingNode implements TwingNodeOutputInterfac
         super(nodes, new Map(), lineno, columnno, tag);
 
         this.TwingNodeOutputInterfaceImpl = this;
+    }
 
-        this.type = TwingNodeType.PRINT;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

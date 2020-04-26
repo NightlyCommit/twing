@@ -1,7 +1,8 @@
 import {TwingNodeExpression} from "../expression";
-
 import {TwingCompiler} from "../../compiler";
-import {TwingNodeType} from "../../node";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_conditional');
 
 export class TwingNodeExpressionConditional extends TwingNodeExpression {
     constructor(expr1: TwingNodeExpression, expr2: TwingNodeExpression, expr3: TwingNodeExpression, lineno: number, columnno: number) {
@@ -12,9 +13,10 @@ export class TwingNodeExpressionConditional extends TwingNodeExpression {
         nodes.set('expr3', expr3);
 
         super(nodes, new Map(), lineno, columnno);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_CONDITIONAL;
-        this.addType(TwingNodeType.EXPRESSION_CONDITIONAL);
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

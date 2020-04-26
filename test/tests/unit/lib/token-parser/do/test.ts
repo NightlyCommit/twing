@@ -2,7 +2,7 @@ import * as tape from 'tape';
 import {TwingTokenStream} from "../../../../../../src/lib/token-stream";
 import {TwingTokenParserDo} from "../../../../../../src/lib/token-parser/do";
 import {getParser} from "../../../../../mock-builder/parser";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {type} from "../../../../../../src/lib/node/do";
 
 const sinon = require('sinon');
 const {Token, TokenType} = require('twig-lexer');
@@ -21,7 +21,7 @@ tape('token-parser/do', (test) => {
 
         tokenParser.setParser(parser);
 
-        test.same(tokenParser.parse(new Token(TokenType.TAG_START, null, 1, 1)).getType(), TwingNodeType.DO);
+        test.same(tokenParser.parse(new Token(TokenType.TAG_START, null, 1, 1)).type, type);
 
         test.end();
     });

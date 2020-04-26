@@ -1,8 +1,9 @@
-import {TwingNode, TwingNodeType} from "../node";
-
+import {TwingNode} from "../node";
 import {TwingCompiler} from "../compiler";
 import {TwingNodeOutputInterface} from "../node-output-interface";
-import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
+import {TwingNodeType} from "../node-type";
+
+export const type = new TwingNodeType('spaceless');
 
 export class TwingNodeSpaceless extends TwingNode implements TwingNodeOutputInterface {
     TwingNodeOutputInterfaceImpl: TwingNodeOutputInterface;
@@ -14,9 +15,11 @@ export class TwingNodeSpaceless extends TwingNode implements TwingNodeOutputInte
 
         super(nodes, new Map(), lineno, columnno, tag);
 
-        this.type = TwingNodeType.SPACELESS;
-
         this.TwingNodeOutputInterfaceImpl = this;
+    }
+
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

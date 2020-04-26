@@ -1,6 +1,9 @@
 import {TwingNodeExpression} from "../expression";
-import {TwingNode, TwingNodeType} from "../../node";
+import {TwingNode} from "../../node";
 import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_block_reference');
 
 export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
     constructor(name: TwingNode, template: TwingNode, lineno: number, columnno: number, tag: string = null) {
@@ -18,8 +21,10 @@ export class TwingNodeExpressionBlockReference extends TwingNodeExpression {
         ]);
 
         super(nodes, attributes, lineno, columnno, tag);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_BLOCK_REFERENCE;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

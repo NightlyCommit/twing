@@ -1,7 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../../../src/lib/node/expression/constant";
 import {MockCompiler} from "../../../../../../../mock/compiler";
-import {TwingNodeExpressionBinaryLess} from "../../../../../../../../src/lib/node/expression/binary/less";
+import {TwingNodeExpressionBinaryLess, type} from "../../../../../../../../src/lib/node/expression/binary/less";
 
 tape('node/expression/binary/less', (test) => {
     test.test('constructor', (test) => {
@@ -11,6 +11,7 @@ tape('node/expression/binary/less', (test) => {
 
         test.same(node.getNode('left'), left);
         test.same(node.getNode('right'), right);
+        test.same(node.type, type);
 
         test.end();
     });

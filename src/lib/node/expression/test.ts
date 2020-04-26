@@ -1,7 +1,9 @@
 import {TwingNodeExpressionCall} from "./call";
-import {TwingNode, TwingNodeType} from "../../node";
-
+import {TwingNode} from "../../node";
 import {TwingCompiler} from "../../compiler";
+import {TwingNodeType} from "../../node-type";
+
+export const type = new TwingNodeType('expression_test');
 
 export class TwingNodeExpressionTest extends TwingNodeExpressionCall {
     constructor(node: TwingNode, name: string | TwingNode, nodeArguments: TwingNode, lineno: number, columnno: number) {
@@ -14,8 +16,10 @@ export class TwingNodeExpressionTest extends TwingNodeExpressionCall {
         }
 
         super(nodes, new Map([['name', name]]), lineno, columnno);
+    }
 
-        this.type = TwingNodeType.EXPRESSION_TEST;
+    get type() {
+        return type;
     }
 
     compile(compiler: TwingCompiler) {

@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
-import {TwingNodeDeprecated} from "../../../../../../src/lib/node/deprecated";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeDeprecated, type} from "../../../../../../src/lib/node/deprecated";
 import {MockCompiler} from "../../../../../mock/compiler";
 import {TwingNodeExpressionName} from "../../../../../../src/lib/node/expression/name";
 
@@ -11,7 +10,7 @@ tape('node/deprecated', (test) => {
         let node = new TwingNodeDeprecated(expr, 1, 1);
 
         test.same(node.getNode('expr'), expr);
-        test.same(node.getType(), TwingNodeType.DEPRECATED);
+        test.same(node.type, type);
 
         test.end();
     });

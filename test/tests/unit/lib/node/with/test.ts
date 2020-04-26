@@ -1,8 +1,7 @@
 import * as tape from 'tape';
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
 import {TwingNodeExpressionName} from "../../../../../../src/lib/node/expression/name";
-import {TwingNodeWith} from "../../../../../../src/lib/node/with";
-import {TwingNodeType} from "../../../../../../src/lib/node";
+import {TwingNodeWith, type} from "../../../../../../src/lib/node/with";
 import {MockCompiler} from "../../../../../mock/compiler";
 
 const sinon = require('sinon');
@@ -16,7 +15,7 @@ tape('node/with', (test) => {
 
         test.same(node.getNode('body'), bodyNode);
         test.same(node.getNode('variables'), variablesNode);
-        test.same(node.getType(), TwingNodeType.WITH);
+        test.same(node.type, type);
         test.same(node.getTemplateLine(), 1);
         test.same(node.getTemplateColumn(), 1);
 
