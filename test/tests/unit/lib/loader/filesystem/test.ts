@@ -85,7 +85,7 @@ tape('loader filesystem', (test) => {
         let source = await loader.getSourceContext('errors/index.html', null);
 
         test.same(source.getName(), 'errors/index.html');
-        test.same(source.getFQN(), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
+        test.same(source.getResolvedName(), nodePath.resolve(nodePath.join(path, '/errors/index.html')));
 
         try {
             await loader.getSourceContext('@foo/bar', null);

@@ -1,12 +1,12 @@
 export class TwingSource {
     private readonly code: string;
     private readonly name: string;
-    private readonly fqn: string;
+    private readonly resolvedName: string;
 
-    constructor(code: string, name: string, fqn?: string) {
+    constructor(code: string, name: string, resolvedName?: string) {
         this.code = code;
         this.name = name;
-        this.fqn = fqn || name;
+        this.resolvedName = resolvedName || name;
     }
 
     getCode() {
@@ -17,7 +17,7 @@ export class TwingSource {
         return this.name;
     }
 
-    getFQN() {
-        return this.fqn;
+    getResolvedName() {
+        return this.resolvedName;
     }
 }

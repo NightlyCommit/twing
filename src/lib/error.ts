@@ -105,7 +105,7 @@ export class TwingError extends Error {
         }
 
         if (this.source) {
-            this.message += ` in "${this.source.getFQN()}"`;
+            this.message += ` in "${this.source.getName()}"`;
         }
 
         if (this.lineno && this.lineno >= 0) {

@@ -16,7 +16,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     getSourceContext(name: string, from: TwingSource): Promise<TwingSource> {
         return this.findTemplate(name, true, from).then((path) => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 readFile(path, 'UTF-8', (err, data) => {
                     resolve(new TwingSource(data, name, path))
                 })
@@ -129,7 +129,7 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
 
     private resolvePath(name: string, from: TwingSource): string {
         if (name && from && !isAbsolutePath(name)) {
-            name = joinPath(dirname(from.getFQN()), name);
+            name = joinPath(dirname(from.getResolvedName()), name);
         }
 
         return name;

@@ -1,6 +1,6 @@
 import * as tape from 'tape';
 import * as sinon from 'sinon';
-import {join} from 'path';
+import {join, resolve} from 'path';
 import {readFileSync} from 'fs';
 import {TwingTokenParser} from "../../../../../src/lib/token-parser";
 import {Token, TokenType} from "twig-lexer";
@@ -30,6 +30,7 @@ import {MappingItem, SourceMapConsumer} from "source-map";
 import {TwingLoaderFilesystem} from "../../../../../src/lib/loader/filesystem";
 import {TwingNodeText} from "../../../../../src/lib/node/text";
 import {TwingSandboxSecurityPolicy} from "../../../../../src/lib/sandbox/security-policy";
+import {TwingLoaderRelativeFilesystem} from "../../../../../src/lib/loader/relative-filesystem";
 
 const tmp = require('tmp');
 
@@ -1359,6 +1360,34 @@ BAROOF</FOO></foo>oof`);
 
             test.end();
         });
+
+        test.end();
+    });
+
+    test.test('with relative filesystem loader', async (test) => {
+        const names: Array<string> = [];
+
+        class CustomCache extends TwingCacheNull {
+            generateKey(name: string, className: string): Promise<string> {
+                names.push(name);
+
+                return Promise.resolve(name);
+            }
+        }
+
+        const cache = new CustomCache();
+        const fixturesPath = 'test/tests/unit/lib/environment/fixtures';
+        const env = new TwingEnvironmentNode(new TwingLoaderRelativeFilesystem(), {
+            cache: cache
+        });
+
+        await env.render(resolve(fixturesPath, 'index.html.twig'), {partial: 'partials/foo.html.twig'});
+        await env.render(resolve(fixturesPath, 'index.html.twig'), {partial: 'partials/../partials/foo.html.twig'});
+
+        test.same(names, [
+            resolve(fixturesPath, 'index.html.twig'),
+            'partials/foo.html.twig'
+        ]);
 
         test.end();
     });

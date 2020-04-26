@@ -348,10 +348,7 @@ export abstract class TwingEnvironment extends EventEmitter {
             this.getTemplateHash(name, index, from)
         ];
 
-        return Promise.all(hashesPromises).then((hashes) => {
-            let mainTemplateHash = hashes[0];
-            let templateHash = hashes[1];
-
+        return Promise.all(hashesPromises).then(([mainTemplateHash, templateHash]) => {
             if (this.loadedTemplates.has(templateHash)) {
                 return Promise.resolve(this.loadedTemplates.get(templateHash));
             } else {
@@ -918,13 +915,13 @@ return module.exports;
     enterSourceMapBlock(line: number, column: number, nodeType: TwingNodeType, source: TwingSource) {
         TwingOutputBuffering.obStart();
 
-        let sourceFQN = source.getFQN();
+        let sourceName = source.getResolvedName();
 
-        if (path.isAbsolute(sourceFQN)) {
-            sourceFQN = path.relative('.', sourceFQN);
+        if (path.isAbsolute(sourceName)) {
+            sourceName = path.relative('.', sourceName);
         }
 
-        source = new TwingSource(source.getCode(), sourceFQN);
+        source = new TwingSource(source.getCode(), sourceName);
 
         let factory = this.getSourceMapNodeFactory(nodeType);
 

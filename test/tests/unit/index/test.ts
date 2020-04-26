@@ -162,7 +162,7 @@ tape('main and browser indexes', (test) => {
         test.true(expected.includes(key), `${key} is legit in browser index`);
     }
 
-    test.same(browserIndex.TwingLoaderFilesystem.name, 'TwingLoaderNull', 'browser export of TwingLoaderFilesystem is a noop');
+    test.same(browserIndex.TwingLoaderFilesystem.name, 'TwingLoaderNull', 'browser export of TwingLoaderRelativeFilesystem is a noop');
     test.same(browserIndex.TwingLoaderRelativeFilesystem.name, 'TwingLoaderNull', 'browser export of TwingLoaderRelativefilesystem is a noop');
     test.same(browserIndex.TwingCacheFilesystem.name, 'TwingCacheNull', 'browser export of TwingCacheFilesystem is a noop');
 
