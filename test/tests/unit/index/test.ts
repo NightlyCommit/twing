@@ -102,7 +102,6 @@ tape('main and browser indexes', (test) => {
         'TwingNodeType',
         'TwingNodeVerbatim',
         'TwingNodeVisitorEscaper',
-        'TwingNodeVisitorOptimizer',
         'TwingNodeVisitorSafeAnalysis',
         'TwingNodeVisitorSandbox',
         'TwingNodeWith',
