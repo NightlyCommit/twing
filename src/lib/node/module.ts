@@ -99,9 +99,7 @@ export class TwingNodeModule extends TwingNode {
             .write('this.sourceContext = new this.Source(')
             .string(compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ? this.source.getCode() : '')
             .raw(', ')
-            .string(this.source.getName())
-            .raw(', ')
-            .string(this.source.getFQN())
+            .string(this.source.getResolvedName())
             .raw(");\n\n")
             .write('let aliases = new this.Context();\n')
         ;

@@ -242,7 +242,7 @@ export class TwingNode {
     setTemplateName(name: string) {
         this.name = name;
 
-        for (let [k, node] of this.nodes) {
+        for (let node of this.nodes.values()) {
             node.setTemplateName(name);
         }
     }
