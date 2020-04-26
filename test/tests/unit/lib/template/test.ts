@@ -279,28 +279,6 @@ tape('template', function (test) {
         test.end();
     });
 
-    test.test('traceableDisplayBlock', async (test) => {
-        let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'displayBlock').returns(Promise.resolve());
-
-        await template.traceableDisplayBlock(1, null)();
-
-        test.same(stub.callCount, 1, 'should call displayBlock once');
-
-        test.end();
-    });
-
-    test.test('traceableDisplayParentBlock', async (test) => {
-        let template = new TwingTestTemplateTemplate();
-        let stub = sinon.stub(template, 'displayParentBlock').returns(Promise.resolve());
-
-        await template.traceableDisplayParentBlock(1, null)();
-
-        test.same(stub.callCount, 1, 'should call displayParentBlock once');
-
-        test.end();
-    });
-
     test.test('traceableRenderBlock', async (test) => {
         let template = new TwingTestTemplateTemplate();
         let stub = sinon.stub(template, 'renderBlock').returns(Promise.resolve(''));
