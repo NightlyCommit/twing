@@ -101,7 +101,6 @@ tape('main and browser indexes', (test) => {
         'TwingNodeTraverser',
         'TwingNodeVerbatim',
         'TwingNodeVisitorEscaper',
-        'TwingNodeVisitorOptimizer',
         'TwingNodeVisitorSafeAnalysis',
         'TwingNodeVisitorSandbox',
         'TwingNodeWith',
