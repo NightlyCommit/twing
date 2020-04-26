@@ -96,7 +96,6 @@ export {TwingNodeText} from "./lib/node/text";
 export {TwingNodeTraverser} from "./lib/node-traverser";
 export {TwingNodeVisitorEscaper} from "./lib/node-visitor/escaper";
 export {TwingNodeVisitorInterface} from "./lib/node-visitor-interface";
-export {TwingNodeVisitorOptimizer} from "./lib/node-visitor/optimizer";
 export {TwingNodeVisitorSafeAnalysis} from "./lib/node-visitor/safe-analysis";
 export {TwingNodeVisitorSandbox} from "./lib/node-visitor/sandbox";
 export {TwingNodeVerbatim} from "./lib/node/verbatim";
