@@ -4,15 +4,16 @@ node_js:
   - "9"
   - "10"
   - "11"
+  - "12"
 jobs:
   include:
     - stage: test & cover
-      node_js: "12"
+      node_js: "13"
       script:
         - npm run cover
         - npm run coverage
     - stage: test in web browser
-      node_js: "12"
+      node_js: "13"
       script:
         - npm run test:browser
       addons:
@@ -24,12 +25,12 @@ jobs:
         - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         - npm install
     - stage: test documentation
-      node_js: "12"
+      node_js: "13"
       script:
         - npm run test:docs
       install:
         - cd docs && bundle install --path ./vendor/bundle
     - stage: test code quality
-      node_js: "12"
+      node_js: "13"
       script:
         - npm run test:qc
