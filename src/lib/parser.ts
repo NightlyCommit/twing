@@ -24,7 +24,7 @@ import {TwingNodeExpressionArrowFunction} from "./node/expression/arrow-function
 import {TwingNodeExpressionName, type as nameType} from "./node/expression/name";
 import {TwingNodeExpressionParent} from "./node/expression/parent";
 import {TwingNodeExpressionBlockReference} from "./node/expression/block-reference";
-import {TwingNodeExpressionGetAttr} from "./node/expression/get-attr";
+import {TwingNodeExpressionGetAttribute} from "./node/expression/get-attribute";
 import {TwingTemplate} from "./template";
 import {TwingNodeExpressionArray, type as arrayType} from "./node/expression/array";
 import {TwingNodeExpressionMethodCall} from "./node/expression/method-call";
@@ -756,7 +756,7 @@ export class TwingParser {
                     throw new TwingErrorSyntax('The "attribute" function takes at least two arguments (the variable and the attributes).', line, this.getStream().getSourceContext());
                 }
 
-                return new TwingNodeExpressionGetAttr(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().size > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line, column);
+                return new TwingNodeExpressionGetAttribute(<TwingNodeExpression>attributeArgs.getNode(0), <TwingNodeExpression>attributeArgs.getNode(1), attributeArgs.getNodes().size > 2 ? <TwingNodeExpression>attributeArgs.getNode(2) : null, TwingTemplate.ANY_CALL, line, column);
             default:
                 let alias = this.getImportedSymbol('function', name);
 
@@ -937,7 +937,7 @@ export class TwingParser {
             stream.expect(TokenType.PUNCTUATION, ']');
         }
 
-        return new TwingNodeExpressionGetAttr(node, arg, arguments_, type, lineno, columnno);
+        return new TwingNodeExpressionGetAttribute(node, arg, arguments_, type, lineno, columnno);
     }
 
     parsePostfixExpression(node: TwingNodeExpression): TwingNodeExpression {

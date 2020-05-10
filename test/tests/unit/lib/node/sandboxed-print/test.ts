@@ -20,7 +20,7 @@ tape('node/sandboxed-print', (test) => {
         let node = new TwingNodeSandboxedPrint(new TwingNodeExpressionConstant('foo', 1, 1), 1, 1);
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(this.env.ensureToStringAllowed(\`foo\`));
+        test.same(compiler.compile(node).getSource(), `outputBuffer.echo(this.environment.ensureToStringAllowed(\`foo\`));
 `);
 
         test.end();

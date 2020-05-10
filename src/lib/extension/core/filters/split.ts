@@ -1,5 +1,3 @@
-import {TwingEnvironment} from "../../../environment";
-
 const explode = require('locutus/php/strings/explode');
 
 /**
@@ -19,14 +17,13 @@ const explode = require('locutus/php/strings/explode');
  *  {# returns [aa, bb, cc] #}
  * </pre>
  *
- * @param {TwingEnvironment} env
  * @param {string} value A string
  * @param {string} delimiter The delimiter
  * @param {number} limit The limit
  *
  * @returns {Promise<Array<string>>} The split string as an array
  */
-export function split(env: TwingEnvironment, value: string, delimiter: string, limit: number): Promise<Array<string>> {
+export function split(value: string, delimiter: string, limit: number): Promise<Array<string>> {
     let _do = (): Array<string> => {
         if (delimiter) {
             return !limit ? explode(delimiter, value) : explode(delimiter, value, limit);

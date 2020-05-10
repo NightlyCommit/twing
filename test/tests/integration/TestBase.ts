@@ -15,6 +15,8 @@ import {TwingLoaderArray} from "../../../src/lib/loader/array";
 import {escape} from "../../../src/lib/extension/core/filters/escape";
 import {TwingEnvironmentOptions} from "../../../src/lib/environment-options";
 import {TwingLoaderInterface} from "../../../src/lib/loader-interface";
+import {TwingTemplate} from "../../../src/lib/template";
+import {TwingOutputBuffer} from "../../../src/lib/output-buffer";
 
 class TwingTestTokenParserSection extends TwingTokenParser {
     parse(token: Token) {
@@ -50,8 +52,8 @@ class TwingTestExtension extends TwingExtension {
     getFilters() {
         return [
             new TwingFilter('escape_and_nl2br', escape_and_nl2br, [], {
-                'needs_environment': true,
-                'is_safe': ['html']
+                needs_template: true,
+                is_safe: ['html']
             }),
             // name this filter "nl2br_" to allow the core "nl2br" filter to be tested
             new TwingFilter('nl2br_', nl2br, [], {'pre_escape': 'html', 'is_safe': ['html']}),
@@ -86,6 +88,23 @@ class TwingTestExtension extends TwingExtension {
             new TwingFunction('anon_foo', function (name: string) {
                 return Promise.resolve('*' + name + '*');
             }, []),
+            new TwingFunction('createObject', function (attributes: Map<string, any>) {
+                const object: {[p: string]: any} = {};
+
+                for (let [key, value] of attributes) {
+                    object[key] = value;
+                }
+
+                return Promise.resolve(object);
+            }, []),
+            new TwingFunction('getMacro', function (template: TwingTemplate, outputBuffer: TwingOutputBuffer, name: string) {
+                return template.getMacro(name).then((macroHandler) => {
+                    return (...args: Array<any>) => macroHandler(outputBuffer, ...args);
+                });
+            }, [], {
+                needs_template: true,
+                needs_output_buffer: true
+            }),
         ];
     }
 
@@ -255,8 +274,8 @@ export default abstract class {
 /**
  * nl2br which also escapes, for testing escaper filters.
  */
-function escape_and_nl2br(env: TwingEnvironment, value: string, sep = '<br />') {
-    return escape(env, value, 'html').then((result) => {
+function escape_and_nl2br(template: TwingTemplate, value: string, sep = '<br />') {
+    return escape(template, value, 'html').then((result) => {
         return nl2br(result, sep);
     });
 }

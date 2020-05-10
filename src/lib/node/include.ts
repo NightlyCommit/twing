@@ -26,7 +26,7 @@ export class TwingNodeInclude extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         compiler
-            .write('outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, ');
+            .write('outputBuffer.echo(await this.include(context, outputBuffer, ');
 
         this.addGetTemplate(compiler);
 

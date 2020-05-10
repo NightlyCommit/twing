@@ -23,17 +23,17 @@ export class TwingNodeWith extends TwingNode {
 
     compile(compiler: TwingCompiler) {
         if (this.hasNode('variables')) {
-            let varsName = compiler.getVarName();
-
             compiler
-                .write(`let ${varsName} = `)
+                .write('{\n')
+                .indent()
+                .write(`let tmp = `)
                 .subcompile(this.getNode('variables'))
                 .raw(";\n")
-                .write(`if (typeof (${varsName}) !== 'object') {\n`)
+                .write(`if (typeof (tmp) !== 'object') {\n`)
                 .indent()
                 .write('throw new this.RuntimeError(\'Variables passed to the "with" tag must be a hash.\', ')
                 .repr(this.getTemplateLine())
-                .raw(", this.getSourceContext());\n")
+                .raw(", this.source);\n")
                 .outdent()
                 .write("}\n")
             ;
@@ -45,7 +45,10 @@ export class TwingNodeWith extends TwingNode {
                 compiler.write("context.set('_parent', context.clone());\n");
             }
 
-            compiler.write(`context = new this.Context(this.env.mergeGlobals(this.merge(context, this.convertToMap(${varsName}))));\n`);
+            compiler
+                .write(`context = new this.Context(this.environment.mergeGlobals(this.merge(context, this.convertToMap(tmp))));\n`)
+                .outdent()
+                .write('}\n\n')
         }
         else {
             compiler.write("context.set('_parent', context.clone());\n");

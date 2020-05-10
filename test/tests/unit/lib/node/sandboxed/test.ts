@@ -22,13 +22,13 @@ tape('node/sandboxed', (test) => {
         let compiler = new MockCompiler();
 
         test.same(compiler.compile(node).getSource(), `await (async () => {
-    let alreadySandboxed = this.env.isSandboxed();
+    let alreadySandboxed = this.environment.isSandboxed();
     if (!alreadySandboxed) {
-        this.env.enableSandbox();
+        this.environment.enableSandbox();
     }
     outputBuffer.echo(\`foo\`);
     if (!alreadySandboxed) {
-        this.env.disableSandbox();
+        this.environment.disableSandbox();
     }
 })();
 `);

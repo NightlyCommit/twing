@@ -330,7 +330,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'preserve_keys', defaultValue: true}
             ]),
             new TwingFilter('capitalize', capitalize, [], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('column', column, [
                 {name: 'name'}
@@ -346,12 +346,12 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'format', defaultValue: null},
                 {name: 'timezone', defaultValue: null}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('date_modify', dateModify, [
                 {name: 'modifier'}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('default', defaultFilter, [
                 {name: 'default'}
@@ -364,14 +364,14 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'strategy'},
                 {name: 'charset'}
             ], {
-                needs_environment: true,
+                needs_template: true,
                 is_safe_callback: this.escapeFilterIsSafe
             }),
             new TwingFilter('escape', escape, [
                 {name: 'strategy'},
                 {name: 'charset'}
             ], {
-                needs_environment: true,
+                needs_template: true,
                 is_safe_callback: this.escapeFilterIsSafe
             }),
             new TwingFilter('filter', filter, [
@@ -390,10 +390,10 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingFilter('keys', arrayKeys, []),
             new TwingFilter('last', last, []),
             new TwingFilter('length', length, [], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('lower', lower, [], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('map', map, [
                 {name: 'arrow'}
@@ -408,7 +408,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'decimal_point'},
                 {name: 'thousand_sep'}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFilter('raw', raw, [], {
                 is_safe: ['all']
@@ -422,9 +422,7 @@ export class TwingExtensionCore extends TwingExtension {
             ]),
             new TwingFilter('reverse', reverseFilter, [
                 {name: 'preserve_keys', defaultValue: false}
-            ], {
-                needs_environment: true
-            }),
+            ]),
             new TwingFilter('round', round, [
                 {name: 'precision', defaultValue: 0},
                 {name: 'method', defaultValue: 'common'}
@@ -441,22 +439,16 @@ export class TwingExtensionCore extends TwingExtension {
             new TwingFilter('split', split, [
                 {name: 'delimiter'},
                 {name: 'limit'}
-            ], {
-                needs_environment: true
-            }),
+            ]),
             new TwingFilter('striptags', striptags, [
                 {name: 'allowable_tags'}
             ]),
-            new TwingFilter('title', title, [], {
-                needs_environment: true
-            }),
+            new TwingFilter('title', title, []),
             new TwingFilter('trim', trim, [
                 {name: 'character_mask', defaultValue: null},
                 {name: 'side', defaultValue: 'both'}
             ]),
-            new TwingFilter('upper', upper, [], {
-                needs_environment: true
-            }),
+            new TwingFilter('upper', upper, []),
             new TwingFilter('url_encode', urlEncode, []),
         ];
     }
@@ -467,7 +459,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'name'},
                 {name: 'object', defaultValue: null}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFunction('cycle', cycle, [
                 {name: 'values'},
@@ -477,7 +469,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'date'},
                 {name: 'timezone'}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFunction('dump', dump, [], {
                 is_safe: ['html'],
@@ -490,9 +482,8 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'ignore_missing', defaultValue: false},
                 {name: 'sandboxed', defaultValue: false}
             ], {
+                needs_template: true,
                 needs_context: true,
-                needs_environment: true,
-                needs_source: true,
                 needs_output_buffer: true,
                 is_safe: ['all']
             }),
@@ -502,7 +493,7 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'values', defaultValue: null},
                 {name: 'max', defaultValue: null}
             ], {
-                needs_environment: true
+                needs_template: true
             }),
             new TwingFunction('range', range, [
                 {name: 'low'},
@@ -513,15 +504,14 @@ export class TwingExtensionCore extends TwingExtension {
                 {name: 'name'},
                 {name: 'ignore_missing', defaultValue: false}
             ], {
-                needs_environment: true,
-                needs_source: true,
+                needs_template: true,
                 is_safe: ['all']
             }),
             new TwingFunction('template_from_string', templateFromString, [
                 {name: 'template'},
                 {name: 'name', defaultValue: null}
             ], {
-                needs_environment: true
+                needs_template: true
             })
         ];
     }

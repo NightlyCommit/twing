@@ -17,7 +17,7 @@ import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeFor, type as forType} from "../node/for";
 import {Token, TokenType} from "twig-lexer";
 import {type as nameType} from "../node/expression/name";
-import {type as getAttrType} from "../node/expression/get-attr";
+import {type as getAttrType} from "../node/expression/get-attribute";
 import {type as constantType} from "../node/expression/constant";
 
 export class TwingTokenParserFor extends TwingTokenParser {

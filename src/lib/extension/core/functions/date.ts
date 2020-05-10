@@ -1,8 +1,8 @@
-import {TwingEnvironment} from "../../../environment";
 import {DateTime, Duration} from "luxon";
 import {modifyDate} from "../../../helpers/modify-date";
 import {TwingErrorRuntime} from "../../../error/runtime";
 import {formatDateTime} from "../../../helpers/format-date-time";
+import {TwingTemplate} from "../../../template";
 
 /**
  * Converts an input to a DateTime instance.
@@ -13,16 +13,16 @@ import {formatDateTime} from "../../../helpers/format-date-time";
  *    {% endif %}
  * </pre>
  *
- * @param {TwingEnvironment} env
+ * @param {TwingTemplate} template
  * @param {Date | DateTime | Duration | number | string} date A date or null to use the current time
  * @param {string | null | boolean} timezone The target timezone, null to use the default, false to leave unchanged
  *
  * @returns {Promise<DateTime | Duration>}
  */
-export function date(env: TwingEnvironment, date: Date | DateTime | Duration | number | string, timezone: string | null | false = null): Promise<DateTime | Duration> {
+export function date(template: TwingTemplate, date: Date | DateTime | Duration | number | string, timezone: string | null | false = null): Promise<DateTime | Duration> {
     let _do = (): DateTime | Duration => {
         let result: DateTime;
-        let core = env.getCoreExtension();
+        let core = template.environment.getCoreExtension();
 
         // determine the timezone
         if (timezone !== false) {

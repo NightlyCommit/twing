@@ -73,7 +73,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
 
             if (this.getAttribute('capture')) {
                 compiler
-                    .raw(" = (() => {let tmp = outputBuffer.getAndClean(); return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})()")
+                    .raw(" = (() => {let tmp = outputBuffer.getAndClean(); return tmp === '' ? '' : new this.Markup(tmp, this.environment.getCharset());})()")
                 ;
             }
         }
@@ -100,7 +100,7 @@ export class TwingNodeSet extends TwingNode implements TwingNodeCaptureInterface
                     compiler
                         .raw("await (async () => {let tmp = ")
                         .subcompile(this.getNode('values'))
-                        .raw("; return tmp === '' ? '' : new this.Markup(tmp, this.env.getCharset());})()")
+                        .raw("; return tmp === '' ? '' : new this.Markup(tmp, this.environment.getCharset());})()")
                     ;
                 } else {
                     compiler.subcompile(this.getNode('values'));

@@ -26,9 +26,9 @@ tape('node/expression/name', (test) => {
         let compiler = new MockCompiler(new MockEnvironment(loader, {strict_variables: true}));
         let compiler1 = new MockCompiler(new MockEnvironment(loader, {strict_variables: false}));
 
-        test.same(compiler.compile(node).getSource(), `(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { throw new this.RuntimeError('Variable \`foo\` does not exist.', 1, this.getSourceContext()); })())`);
+        test.same(compiler.compile(node).getSource(), `(context.has(\`foo\`) ? context.get(\`foo\`) : (() => { throw new this.RuntimeError('Variable \`foo\` does not exist.', 1, this.source); })())`);
         test.same(compiler1.compile(node).getSource(), `(context.has(\`foo\`) ? context.get(\`foo\`) : null)`);
-        test.same(compiler.compile(self).getSource(), `this.getTemplateName()`);
+        test.same(compiler.compile(self).getSource(), `this.templateName`);
         test.same(compiler.compile(context).getSource(), `context`);
 
         test.test('when "is_defined_test" is set to true', function(test) {

@@ -61,7 +61,7 @@ export class TwingNodeMacro extends TwingNode {
             .raw(") => {\n")
             .indent()
             .write('let aliases = this.aliases.clone();\n')
-            .write("let context = new this.Context(this.env.mergeGlobals(new Map([\n")
+            .write("let context = new this.Context(this.environment.mergeGlobals(new Map([\n")
             .indent()
         ;
 
@@ -104,7 +104,7 @@ export class TwingNodeMacro extends TwingNode {
             .subcompile(this.getNode('body'))
             .raw("\n")
             .write('let tmp = outputBuffer.getContents();\n')
-            .write("result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());\n")
+            .write("result = (tmp === '') ? '' : new this.Markup(tmp, this.environment.getCharset());\n")
             .outdent()
             .write("}\n")
             .write('catch (e) {\n')

@@ -16,7 +16,7 @@ tape('node/expression/test/constant', (test) => {
         );
         let compiler = new MockCompiler();
 
-        test.same(compiler.compile(node).getSource(), '(`foo` === this.constant(this.env, `Foo`))');
+        test.same(compiler.compile(node).getSource(), '(`foo` === this.constant(`Foo`))');
 
         node = new TwingNodeExpressionTestConstant(
             new TwingNodeExpressionConstant('foo', 1, 1),
@@ -28,7 +28,7 @@ tape('node/expression/test/constant', (test) => {
             1, 1
         );
 
-        test.same(compiler.compile(node).getSource(), '(`foo` === this.constant(this.env, `Foo`, `Bar`))');
+        test.same(compiler.compile(node).getSource(), '(`foo` === this.constant(`Foo`, `Bar`))');
 
         test.end();
     });
