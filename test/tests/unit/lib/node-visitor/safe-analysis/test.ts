@@ -7,7 +7,7 @@ import {TwingNode} from "../../../../../../src/lib/node";
 import {TwingNodeExpressionConstant} from "../../../../../../src/lib/node/expression/constant";
 import {TwingNodeExpressionFunction} from "../../../../../../src/lib/node/expression/function";
 import {TwingNodeExpressionMethodCall} from "../../../../../../src/lib/node/expression/method-call";
-import {TwingNodeExpressionGetAttr} from "../../../../../../src/lib/node/expression/get-attr";
+import {TwingNodeExpressionGetAttribute} from "../../../../../../src/lib/node/expression/get-attribute";
 import {TwingNodeExpressionName} from "../../../../../../src/lib/node/expression/name";
 import {TwingTemplate} from "../../../../../../src/lib/template";
 
@@ -64,7 +64,7 @@ tape('node-visitor/safe-analysis', (test) => {
             let visitor = new TwingNodeVisitorSafeAnalysis();
             let doLeaveNode = Reflect.get(visitor, 'doLeaveNode').bind(visitor);
             let env = new TwingEnvironmentNode(new TwingLoaderArray({}));
-            let filterNode = new TwingNodeExpressionGetAttr(new TwingNodeExpressionName('foo', 1, 1), null, null, TwingTemplate.ANY_CALL, 1, 1);
+            let filterNode = new TwingNodeExpressionGetAttribute(new TwingNodeExpressionName('foo', 1, 1), null, null, TwingTemplate.ANY_CALL, 1, 1);
 
             let setSafeStub = sinon.stub(visitor, 'setSafe');
 

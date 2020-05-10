@@ -64,7 +64,7 @@ export {TwingNodeExpressionConstant} from "./lib/node/expression/constant";
 export {TwingNodeExpressionFilterDefault} from "./lib/node/expression/filter/default";
 export {TwingNodeExpressionFilter} from "./lib/node/expression/filter";
 export {TwingNodeExpressionFunction} from "./lib/node/expression/function";
-export {TwingNodeExpressionGetAttr} from "./lib/node/expression/get-attr";
+export {TwingNodeExpressionGetAttribute} from "./lib/node/expression/get-attribute";
 export {TwingNodeExpressionHash} from "./lib/node/expression/hash";
 export {TwingNodeExpressionMethodCall} from "./lib/node/expression/method-call";
 export {TwingNodeExpressionName} from "./lib/node/expression/name";

@@ -6,7 +6,7 @@ import {TwingNodeExpressionConditional} from "../conditional";
 import {TwingNodeExpression} from "../../expression";
 import {TwingCompiler} from "../../../compiler";
 import {type as nameType} from "../name";
-import {type as getAttrType} from "../get-attr";
+import {type as getAttrType} from "../get-attribute";
 import {TwingNodeType} from "../../../node-type";
 
 export const type = new TwingNodeType('expression_filter');

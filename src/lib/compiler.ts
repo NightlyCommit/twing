@@ -3,18 +3,15 @@ import {TwingEnvironment} from "./environment";
 import {isNullOrUndefined} from "util";
 import {addcslashes} from "locutus/php/strings";
 
-const sha256 = require('crypto-js/sha256');
-const hex = require('crypto-js/enc-hex');
-
 export class TwingCompiler {
+    private readonly environment: TwingEnvironment;
     private lastLine: number;
     private source: string;
     private indentation: number;
-    private env: TwingEnvironment;
     private varNameSalt = 0;
 
-    constructor(env: TwingEnvironment) {
-        this.env = env;
+    constructor(environment: TwingEnvironment) {
+        this.environment = environment;
     }
 
     /**
@@ -23,7 +20,7 @@ export class TwingCompiler {
      * @returns TwingEnvironment
      */
     getEnvironment() {
-        return this.env;
+        return this.environment;
     }
 
     getSource() {
@@ -160,14 +157,14 @@ export class TwingCompiler {
     addSourceMapEnter(node: TwingNode) {
         if (this.getEnvironment().isSourceMap()) {
             this
-                .write('this.env.enterSourceMapBlock(')
+                .write('this.environment.enterSourceMapBlock(')
                 .raw(node.getTemplateLine())
                 .raw(', ')
                 .raw(node.getTemplateColumn())
                 .raw(', ')
                 .string(node.type.toString())
                 .raw(', ')
-                .raw('this.getSourceContext(), outputBuffer);\n')
+                .raw('this.source, outputBuffer);\n')
         }
 
         return this;
@@ -181,7 +178,7 @@ export class TwingCompiler {
     addSourceMapLeave() {
         if (this.getEnvironment().isSourceMap()) {
             this
-                .write('this.env.leaveSourceMapBlock(outputBuffer);\n')
+                .write('this.environment.leaveSourceMapBlock(outputBuffer);\n')
             ;
         }
 
@@ -219,9 +216,5 @@ export class TwingCompiler {
         this.indentation -= step;
 
         return this;
-    }
-
-    getVarName(prefix: string = '__internal_'): string {
-        return `${prefix}${hex.stringify(sha256('TwingCompiler::getVarName' + this.varNameSalt++))}`;
     }
 }

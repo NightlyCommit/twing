@@ -1,5 +1,5 @@
-import {TwingEnvironment} from "../../../environment";
 import {isNullOrUndefined} from "util";
+import {TwingTemplate} from "../../../template";
 
 const locutusNumberFormat = require('locutus/php/strings/number_format');
 
@@ -10,7 +10,7 @@ const locutusNumberFormat = require('locutus/php/strings/number_format');
  * be used.  Supplying any of the parameters will override the defaults set in the
  * environment object.
  *
- * @param {TwingEnvironment} env
+ * @param {TwingTemplate} template
  * @param {*} number A float/int/string of the number to format
  * @param {number} decimal the number of decimal points to display
  * @param {string} decimalPoint the character(s) to use for the decimal point
@@ -18,7 +18,8 @@ const locutusNumberFormat = require('locutus/php/strings/number_format');
  *
  * @returns {Promise<string>} The formatted number
  */
-export function numberFormat(env: TwingEnvironment, number: any, decimal: number, decimalPoint: string, thousandSep: string): Promise<string> {
+export function numberFormat(template: TwingTemplate, number: any, decimal: number, decimalPoint: string, thousandSep: string): Promise<string> {
+    let env = template.environment;
     let coreExtension = env.getCoreExtension();
     let defaults = coreExtension.getNumberFormat();
 

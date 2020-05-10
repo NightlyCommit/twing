@@ -49,10 +49,10 @@ tape('node/module', (test) => {
             test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
     return new Map([
         [0, class extends TwingTemplate {
-            constructor(env) {
-                super(env);
+            constructor(environment) {
+                super(environment);
 
-                this.sourceContext = new this.Source(\`\`, \`foo.twig\`);
+                this._source = new this.Source(\`\`, \`foo.twig\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }
@@ -90,10 +90,10 @@ tape('node/module', (test) => {
             test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
     return new Map([
         [0, class extends TwingTemplate {
-            constructor(env) {
-                super(env);
+            constructor(environment) {
+                super(environment);
 
-                this.sourceContext = new this.Source(\`\`, \`foo.twig\`);
+                this._source = new this.Source(\`\`, \`foo.twig\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }
@@ -113,7 +113,7 @@ tape('node/module', (test) => {
                 await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks), outputBuffer);
             }
 
-            isTraitable() {
+            get isTraitable() {
                 return false;
             }
 
@@ -161,10 +161,10 @@ tape('node/module', (test) => {
             test.same(compiler.compile(node).getSource(), `module.exports = (TwingTemplate) => {
     return new Map([
         [0, class extends TwingTemplate {
-            constructor(env) {
-                super(env);
+            constructor(environment) {
+                super(environment);
 
-                this.sourceContext = new this.Source(\`{{ foo }}\`, \`foo.twig\`);
+                this._source = new this.Source(\`{{ foo }}\`, \`foo.twig\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
             }
@@ -180,7 +180,7 @@ tape('node/module', (test) => {
                 await (await this.getParent(context)).display(context, this.merge(await this.getBlocks(), blocks), outputBuffer);
             }
 
-            isTraitable() {
+            get isTraitable() {
                 return false;
             }
 

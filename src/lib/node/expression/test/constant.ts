@@ -13,7 +13,7 @@ export class TwingNodeExpressionTestConstant extends TwingNodeExpressionTest {
         compiler
             .raw('(')
             .subcompile(this.getNode('node'))
-            .raw(' === this.constant(this.env, ')
+            .raw(' === this.constant(')
             .subcompile(this.getNode('arguments').getNode(0));
 
         if (this.getNode('arguments').hasNode(1)) {

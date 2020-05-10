@@ -78,7 +78,7 @@ tape('compiler', (test) => {
             }
         }
 
-        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.env.enterSourceMapBlock(1, 1, `body`, this.getSourceContext(), outputBuffer);\n');
+        test.same(compiler.compile(new CustomNode(1, 1)).getSource(), 'this.environment.enterSourceMapBlock(1, 1, `body`, this.source, outputBuffer);\n');
 
         test.end();
     });

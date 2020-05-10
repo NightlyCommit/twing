@@ -39,7 +39,7 @@ tape('node/include', (test) => {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1, 1);
             let node = new TwingNodeInclude(expr, null, false, false, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, \`foo.twig\`, undefined, true, false, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, \`foo.twig\`, undefined, true, false, 1));
 `);
             test.end();
         });
@@ -53,7 +53,7 @@ tape('node/include', (test) => {
             );
             let node = new TwingNodeInclude(expr, null, false, false, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, ((true) ? (\`foo\`) : (\`foo\`)), undefined, true, false, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, ((true) ? (\`foo\`) : (\`foo\`)), undefined, true, false, 1));
 `);
             test.end();
         });
@@ -69,7 +69,7 @@ tape('node/include', (test) => {
             let vars = new TwingNodeExpressionHash(hashNodes, 1, 1);
             let node = new TwingNodeInclude(expr, vars, false, false, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), true, false, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), true, false, 1));
 `);
             test.end();
         });
@@ -86,7 +86,7 @@ tape('node/include', (test) => {
 
             let node = new TwingNodeInclude(expr, vars, true, false, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), false, false, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), false, false, 1));
 `);
             test.end();
         });
@@ -95,7 +95,7 @@ tape('node/include', (test) => {
             let expr = new TwingNodeExpressionConstant('foo.twig', 1, 1);
             let node = new TwingNodeInclude(expr, null, true, false, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, \`foo.twig\`, undefined, false, false, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, \`foo.twig\`, undefined, false, false, 1));
 `);
             test.end();
         });
@@ -112,7 +112,7 @@ tape('node/include', (test) => {
 
             let node = new TwingNodeInclude(expr, vars, true, true, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, this.getSourceContext(), outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), false, true, 1));
+            test.same(compiler.compile(node).getSource(), `outputBuffer.echo(await this.include(context, outputBuffer, \`foo.twig\`, new Map([[\`foo\`, true]]), false, true, 1));
 `);
             test.end();
         });

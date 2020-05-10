@@ -40,7 +40,7 @@ tape('node/expression/filter', (test) => {
         let loader = new MockLoader();
         let environment = new MockEnvironment(loader);
 
-        environment.addFilter(new TwingFilter('bar', twig_tests_filter_dummy, [], {needs_environment: true}));
+        environment.addFilter(new TwingFilter('bar', twig_tests_filter_dummy, [], {needs_template: true}));
         environment.addFilter(new TwingFilter('barbar', twig_tests_filter_barbar, [
             {name: 'arg1', defaultValue: null},
             {name: 'arg2', defaultValue: null}
@@ -64,7 +64,7 @@ tape('node/expression/filter', (test) => {
 
             node = createFilter(node, 'number_format', argsNodes);
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'number_format\').traceableCallable(1, this.getSourceContext())(...[this.env, await this.env.getFilter(\'upper\').traceableCallable(1, this.getSourceContext())(...[this.env, \`foo\`]), 2, \`.\`, \`,\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'number_format\').traceableCallable(1, this.source)(...[this, await this.environment.getFilter(\'upper\').traceableCallable(1, this.source)(...[\`foo\`]), 2, \`.\`, \`,\`])');
 
             test.end();
         });
@@ -76,7 +76,7 @@ tape('node/expression/filter', (test) => {
                 ['format', new TwingNodeExpressionConstant('d/m/Y H:i:s P', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'date\').traceableCallable(1, this.getSourceContext())(...[this.env, 0, \`d/m/Y H:i:s P\`, \`America/Chicago\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'date\').traceableCallable(1, this.source)(...[this, 0, \`d/m/Y H:i:s P\`, \`America/Chicago\`])');
 
             test.end();
         });
@@ -87,7 +87,7 @@ tape('node/expression/filter', (test) => {
                 ['timezone', new TwingNodeExpressionConstant('America/Chicago', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'date\').traceableCallable(1, this.getSourceContext())(...[this.env, 0, null, \`America/Chicago\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'date\').traceableCallable(1, this.source)(...[this, 0, null, \`America/Chicago\`])');
 
             test.end();
         });
@@ -98,14 +98,14 @@ tape('node/expression/filter', (test) => {
                 ['preserve_keys', new TwingNodeExpressionConstant(true, 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'reverse\').traceableCallable(1, this.getSourceContext())(...[this.env, \`abc\`, true])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'reverse\').traceableCallable(1, this.source)(...[\`abc\`, true])');
 
             string = new TwingNodeExpressionConstant('abc', 1, 1);
             node = createFilter(string, 'reverse', new Map([
                 ['preserveKeys', new TwingNodeExpressionConstant(true, 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'reverse\').traceableCallable(1, this.getSourceContext())(...[this.env, \`abc\`, true])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'reverse\').traceableCallable(1, this.source)(...[\`abc\`, true])');
 
             test.end();
         });
@@ -113,7 +113,7 @@ tape('node/expression/filter', (test) => {
         test.test('filter as an anonymous function', (test) => {
             let node = createFilter(new TwingNodeExpressionConstant('foo', 1, 1), 'anonymous');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'anonymous\').traceableCallable(1, this.getSourceContext())(...[\`foo\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'anonymous\').traceableCallable(1, this.source)(...[\`foo\`])');
 
             test.end();
         });
@@ -122,7 +122,7 @@ tape('node/expression/filter', (test) => {
             let string = new TwingNodeExpressionConstant('abc', 1, 1);
             let node = createFilter(string, 'bar');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'bar\').traceableCallable(1, this.getSourceContext())(...[this.env, \`abc\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'bar\').traceableCallable(1, this.source)(...[this, \`abc\`])');
 
             let argsNodes = new Map([
                 [0, new TwingNodeExpressionConstant('bar', 1, 1)]
@@ -130,7 +130,7 @@ tape('node/expression/filter', (test) => {
 
             node = createFilter(string, 'bar', argsNodes);
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'bar\').traceableCallable(1, this.getSourceContext())(...[this.env, \`abc\`, \`bar\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'bar\').traceableCallable(1, this.source)(...[this, \`abc\`, \`bar\`])');
 
             test.end();
         });
@@ -139,15 +139,15 @@ tape('node/expression/filter', (test) => {
             let string = new TwingNodeExpressionConstant('abc', 1, 1);
             let node = createFilter(string, 'barbar');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'barbar\').traceableCallable(1, this.getSourceContext())(...[context, \`abc\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`])');
 
             node = createFilter(string, 'barbar', new Map([['foo', new TwingNodeExpressionConstant('bar', 1, 1)]]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'barbar\').traceableCallable(1, this.getSourceContext())(...[context, \`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
 
             node = createFilter(string, 'barbar', new Map([['arg2', new TwingNodeExpressionConstant('bar', 1, 1)]]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'barbar\').traceableCallable(1, this.getSourceContext())(...[context, \`abc\`, null, \`bar\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, null, \`bar\`])');
 
             node = createFilter(string, 'barbar', new Map<any, any>([
                 [0, new TwingNodeExpressionConstant('1', 1, 1)],
@@ -156,7 +156,7 @@ tape('node/expression/filter', (test) => {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getFilter(\'barbar\').traceableCallable(1, this.getSourceContext())(...[context, \`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getFilter(\'barbar\').traceableCallable(1, this.source)(...[context, \`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
             test.end();
         });

@@ -3,9 +3,9 @@ import {TwingTemplate} from "../../template";
 import {TwingCompiler} from "../../compiler";
 import {TwingNodeType} from "../../node-type";
 
-export const type = new TwingNodeType('expression_get_attr');
+export const type = new TwingNodeType('expression_get_attribute');
 
-export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
+export class TwingNodeExpressionGetAttribute extends TwingNodeExpression {
     constructor(node: TwingNodeExpression, attribute: TwingNodeExpression, methodArguments: TwingNodeExpression, type: string, lineno: number, columnno: number) {
         let nodes = new Map();
 
@@ -38,14 +38,11 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             && (!env.isStrictVariables() || this.getAttribute('ignore_strict_check'))
             && !this.getAttribute('is_defined_test')
             && this.getAttribute('type') === TwingTemplate.ARRAY_CALL) {
-            let var_ = compiler.getVarName();
 
             compiler
-                .raw('await (async () => {let ' + var_ + ' = ')
+                .raw('await (async () => {let object = ')
                 .subcompile(this.getNode('node'))
-                .raw('; return this.get(')
-                .raw(var_)
-                .raw(', ')
+                .raw('; return this.get(object, ')
                 .subcompile(this.getNode('attribute'))
                 .raw(');})()')
             ;
@@ -53,7 +50,7 @@ export class TwingNodeExpressionGetAttr extends TwingNodeExpression {
             return;
         }
 
-        compiler.raw(`await this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.getSourceContext())(this.env, `);
+        compiler.raw(`await this.traceableMethod(this.getAttribute, ${this.getTemplateLine()}, this.source)(this.environment, `);
 
         if (this.getAttribute('ignore_strict_check')) {
             this.getNode('node').setAttribute('ignore_strict_check', true);

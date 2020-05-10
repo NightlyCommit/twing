@@ -3,7 +3,7 @@ import {TwingNode} from "../../../node";
 import {TwingNodeExpression} from "../../expression";
 import {TwingNodeExpressionConstant, type as constantType} from "../constant";
 import {type as nameType} from "../name";
-import {type as getAttrType} from "../get-attr";
+import {type as getAttrType} from "../get-attribute";
 import {type as blockreferenceType} from "../block-reference";
 import {type as functionType} from "../function";
 import {type as arrayType} from "../array";

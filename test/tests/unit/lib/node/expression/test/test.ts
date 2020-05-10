@@ -50,7 +50,7 @@ tape('node/expression/test', (test) => {
                 [0, new TwingNodeExpressionConstant('foo', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'anonymous\').traceableCallable(1, this.getSourceContext())(...[\`foo\`, \`foo\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getTest(\'anonymous\').traceableCallable(1, this.source)(...[\`foo\`, \`foo\`])');
 
             test.end();
         });
@@ -60,13 +60,13 @@ tape('node/expression/test', (test) => {
 
             let node = createTest(string, 'barbar');
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`])');
 
             node = createTest(string, 'barbar', new Map([
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, null, null, new Map([[\`foo\`, \`bar\`]])])');
 
             node = createTest(string, 'barbar', new Map<any, TwingNode>([
                 [0, new TwingNodeExpressionConstant('1', 1, 1)],
@@ -75,7 +75,7 @@ tape('node/expression/test', (test) => {
                 ['foo', new TwingNodeExpressionConstant('bar', 1, 1)]
             ]));
 
-            test.same(compiler.compile(node).getSource(), 'await this.env.getTest(\'barbar\').traceableCallable(1, this.getSourceContext())(...[\`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
+            test.same(compiler.compile(node).getSource(), 'await this.environment.getTest(\'barbar\').traceableCallable(1, this.source)(...[\`abc\`, \`1\`, \`2\`, new Map([[0, \`3\`], [\`foo\`, \`bar\`]])])');
 
             test.end();
         });

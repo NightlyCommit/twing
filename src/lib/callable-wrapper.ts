@@ -10,9 +10,8 @@ export type TwingCallableArgument = {
 };
 
 export type TwingCallableWrapperOptions = {
-    needs_environment?: boolean;
+    needs_template?: boolean;
     needs_context?: boolean;
-    needs_source?: boolean;
     needs_output_buffer?: boolean;
     is_variadic?: boolean;
     is_safe?: Array<any>;
@@ -36,9 +35,8 @@ export abstract class TwingCallableWrapper<T> {
         this.acceptedArguments = acceptedArguments;
 
         this.options = Object.assign({}, {
-            needs_environment: false,
+            needs_template: false,
             needs_context: false,
-            needs_source: false,
             needs_output_buffer: false,
             is_variadic: false,
             is_safe: null,
@@ -97,16 +95,12 @@ export abstract class TwingCallableWrapper<T> {
         return this.options.deprecated ? true : false;
     }
 
-    needsEnvironment(): boolean {
-        return this.options.needs_environment;
+    needsTemplate(): boolean {
+        return this.options.needs_template;
     }
 
     needsContext(): boolean {
         return this.options.needs_context;
-    }
-
-    needsSource(): boolean {
-        return this.options.needs_source;
     }
 
     needsOutputBuffer(): boolean {

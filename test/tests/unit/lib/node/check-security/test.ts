@@ -22,7 +22,7 @@ let filters = new Map([[\`bar\`, null]]);
 let functions = new Map([[\`bar\`, null]]);
 
 try {
-    this.env.checkSecurity(
+    this.environment.checkSecurity(
         [\'bar\'],
         [\'bar\'],
         [\'bar\']
@@ -30,7 +30,7 @@ try {
 }
 catch (e) {
     if (e instanceof this.SandboxSecurityError) {
-        e.setSourceContext(this.getSourceContext());
+        e.setSourceContext(this.source);
 
         if (e instanceof this.SandboxSecurityNotAllowedTagError && tags.has(e.getTagName())) {
             e.setTemplateLine(tags.get(e.getTagName()));

@@ -88,7 +88,6 @@ export const getAttribute = (env: TwingEnvironment, object: any, item: any, _arg
 
         // ANY_CALL or METHOD_CALL
         if ((object === null) || (!isObject(object)) || (isMap(object))) {
-            // object is a primitive
             if (isDefinedTest) {
                 return false;
             }

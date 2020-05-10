@@ -1,6 +1,6 @@
-import {TwingEnvironment} from "../../../environment";
 import {TwingMarkup} from "../../../markup";
 import {TwingErrorRuntime} from "../../../error/runtime";
+import {TwingTemplate} from "../../../template";
 
 const bin2hex = require('locutus/php/strings/bin2hex');
 const strlen = require('utf8-binary-cutter').getBinarySize;
@@ -14,7 +14,7 @@ const array_merge = require('locutus/php/array/array_merge');
 /**
  * Escapes a string.
  *
- * @param {TwingEnvironment} env
+ * @param {TwingTemplate} template
  * @param {*} string The value to be escaped
  * @param {string} strategy The escaping strategy
  * @param {string} charset The charset
@@ -22,8 +22,10 @@ const array_merge = require('locutus/php/array/array_merge');
  *
  * @returns {Promise<string>}
  */
-export function escape(env: TwingEnvironment, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false): Promise<string> {
+export function escape(template: TwingTemplate, string: any, strategy: string = 'html', charset: string = null, autoescape: boolean = false): Promise<string> {
     let _do:() => string = () => {
+        let env = template.environment;
+
         if (autoescape && string && string instanceof TwingMarkup) {
             return string;
         }

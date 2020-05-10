@@ -30,9 +30,8 @@ export class TwingNodeExpressionFunction extends TwingNodeExpressionCall {
 
         this.setAttribute('name', name);
         this.setAttribute('type', 'function');
-        this.setAttribute('needs_environment', function_.needsEnvironment());
+        this.setAttribute('needs_template', function_.needsTemplate());
         this.setAttribute('needs_context', function_.needsContext());
-        this.setAttribute('needs_source', function_.needsSource());
         this.setAttribute('needs_output_buffer', function_.needsOutputBuffer());
         this.setAttribute('arguments', function_.getArguments());
         this.setAttribute('callable', callable);

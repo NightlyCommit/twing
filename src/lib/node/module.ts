@@ -100,11 +100,11 @@ export class TwingNodeModule extends TwingNode {
 
     protected compileConstructor(compiler: TwingCompiler) {
         compiler
-            .write('constructor(env) {\n')
+            .write('constructor(environment) {\n')
             .indent()
             .subcompile(this.getNode('constructor_start'))
-            .write('super(env);\n\n')
-            .write('this.sourceContext = new this.Source(')
+            .write('super(environment);\n\n')
+            .write('this._source = new this.Source(')
             .string(compiler.getEnvironment().isDebug() || compiler.getEnvironment().isSourceMap() ? this.source.getCode() : '')
             .raw(', ')
             .string(this.source.getResolvedName())
@@ -195,13 +195,13 @@ export class TwingNodeModule extends TwingNode {
                 ;
 
                 compiler
-                    .write(`if (!trait_${i}.isTraitable()) {\n`)
+                    .write(`if (!trait_${i}.isTraitable) {\n`)
                     .indent()
                     .write('throw new this.RuntimeError(\'Template ')
                     .subcompile(trait.getNode('template'))
                     .raw(' cannot be used as a trait.\', ')
                     .repr(node.getTemplateLine())
-                    .raw(", this.getSourceContext());\n")
+                    .raw(", this.source);\n")
                     .outdent()
                     .write('}\n\n')
                     .write(`let traits_${i} = this.cloneMap(await trait_${i}.getBlocks());\n\n`)
@@ -219,7 +219,7 @@ export class TwingNodeModule extends TwingNode {
                         .subcompile(trait.getNode('template'))
                         .raw('.\', ')
                         .repr(value.getTemplateLine())
-                        .raw(', this.getSourceContext());\n')
+                        .raw(', this.source);\n')
                         .outdent()
                         .write('}\n\n')
                         .write(`traits_${i}.set(`)
@@ -342,7 +342,7 @@ export class TwingNodeModule extends TwingNode {
         }
 
         compiler
-            .write("isTraitable() {\n")
+            .write("get isTraitable() {\n")
             .indent()
             .write('return false;\n')
             .outdent()
