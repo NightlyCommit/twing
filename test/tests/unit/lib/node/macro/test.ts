@@ -39,7 +39,7 @@ tape('node/macro', (test) => {
 
         test.same(compiler.compile(node).getSource(), `async (outputBuffer, __foo__ = null, __bar__ = \`Foo\`, ...__varargs__) => {
     let aliases = this.aliases.clone();
-    let context = new this.Context(this.env.mergeGlobals(new Map([
+    let context = new this.Context(this.environment.mergeGlobals(new Map([
         [\`foo\`, __foo__],
         [\`bar\`, __bar__],
         [\`varargs\`, __varargs__]
@@ -54,7 +54,7 @@ tape('node/macro', (test) => {
         outputBuffer.echo(\`foo\`);
 
         let tmp = outputBuffer.getContents();
-        result = (tmp === '') ? '' : new this.Markup(tmp, this.env.getCharset());
+        result = (tmp === '') ? '' : new this.Markup(tmp, this.environment.getCharset());
     }
     catch (e) {
         error = e;

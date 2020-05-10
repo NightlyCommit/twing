@@ -7,7 +7,7 @@ import {TwingNodeExpressionAssignName} from "../node/expression/assign-name";
 import {TwingNodeExpressionMethodCall} from "../node/expression/method-call";
 import {TwingNodeExpressionArray} from "../node/expression/array";
 import {type as moduleType} from "../node/module";
-import {type as getAttrType} from "../node/expression/get-attr";
+import {type as getAttrType} from "../node/expression/get-attribute";
 import {type as constantType} from "../node/expression/constant";
 
 export class TwingNodeVisitorMacroAutoImport extends TwingBaseNodeVisitor {

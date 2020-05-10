@@ -22,7 +22,7 @@ export class TwingNodeExpressionParent extends TwingNodeExpression {
         let name = this.getAttribute('name');
 
         compiler
-            .raw(`await this.traceableRenderParentBlock(${this.getTemplateLine()}, this.getSourceContext())(`)
+            .raw(`await this.traceableRenderParentBlock(${this.getTemplateLine()}, this.source)(`)
             .string(name)
             .raw(', context, outputBuffer, blocks)')
         ;

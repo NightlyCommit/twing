@@ -23,6 +23,10 @@ export class TwingNodeDeprecated extends TwingNode {
     compile(compiler: TwingCompiler) {
         let expr = this.getNode('expr');
 
+        compiler
+            .write('{\n')
+            .indent();
+
         if (expr.is(constantType)) {
             compiler
                 .write('console.warn(')
@@ -30,13 +34,10 @@ export class TwingNodeDeprecated extends TwingNode {
             ;
         }
         else {
-            let varName = compiler.getVarName();
-
-            compiler
-                .write(`let ${varName} = `)
+            compiler.write(`let message = `)
                 .subcompile(expr)
                 .raw(';\n')
-                .write(`console.warn(${varName}`)
+                .write(`console.warn(message`)
             ;
         }
 
@@ -44,6 +45,8 @@ export class TwingNodeDeprecated extends TwingNode {
             .raw(' + ')
             .string(` ("${this.getTemplateName()}" at line ${this.getTemplateLine()})`)
             .raw(');\n')
+            .outdent()
+            .write('}\n')
         ;
     }
 }

@@ -3,6 +3,7 @@ import {MockEnvironment} from "../../../../../../../mock/environment";
 import {MockLoader} from "../../../../../../../mock/loader";
 import {escape} from "../../../../../../../../src/lib/extension/core/filters/escape";
 import {TwingEnvironment} from "../../../../../../../../src/lib/environment";
+import {MockTemplate} from "../../../../../../../mock/template";
 
 function foo_escaper_for_test(env: TwingEnvironment, string: string, charset: string) {
     return (string ? string : '') + charset;
@@ -162,8 +163,8 @@ let codepointToUtf8 = function (codepoint: number) {
     throw new Error('Codepoint requested outside of Unicode range.');
 };
 
-let getEnvironment = function () {
-    return new MockEnvironment(new MockLoader());
+let getTemplate = function () {
+    return new MockTemplate(new MockEnvironment(new MockLoader()));
 };
 
 tape('escaping', (test) => {
@@ -171,7 +172,7 @@ tape('escaping', (test) => {
         for (let key in htmlSpecialChars) {
             let value = htmlSpecialChars[key];
 
-            test.same(await escape(getEnvironment(), key, 'html'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getTemplate(), key, 'html'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
@@ -181,7 +182,7 @@ tape('escaping', (test) => {
         for (let key in htmlAttrSpecialChars) {
             let value = htmlAttrSpecialChars[key];
 
-            test.same(await escape(getEnvironment(), key, 'html_attr'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getTemplate(), key, 'html_attr'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
@@ -191,20 +192,20 @@ tape('escaping', (test) => {
         for (let key in jsSpecialChars) {
             let value = jsSpecialChars[key];
 
-            test.same(await escape(getEnvironment(), key, 'js'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getTemplate(), key, 'js'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
     test.test('javascriptEscapingReturnsStringIfZeroLength', async (test) => {
-        test.same(await escape(getEnvironment(), '', 'js'), '', 'Succeed at escaping: ""');
+        test.same(await escape(getTemplate(), '', 'js'), '', 'Succeed at escaping: ""');
 
         test.end();
     });
 
     test.test('javascriptEscapingReturnsStringIfContainsOnlyDigits', async (test) => {
-        test.same(await escape(getEnvironment(), '123', 'js'), '123', 'Succeed at escaping: "123"');
+        test.same(await escape(getTemplate(), '123', 'js'), '123', 'Succeed at escaping: "123"');
 
         test.end();
     });
@@ -213,20 +214,20 @@ tape('escaping', (test) => {
         for (let key in cssSpecialChars) {
             let value = cssSpecialChars[key];
 
-            test.same(await escape(getEnvironment(), key, 'css'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getTemplate(), key, 'css'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
     });
 
     test.test('cssEscapingReturnsStringIfZeroLength', async (test) => {
-        test.same(await escape(getEnvironment(), '', 'css'), '', 'Succeed at escaping: ""');
+        test.same(await escape(getTemplate(), '', 'css'), '', 'Succeed at escaping: ""');
 
         test.end();
     });
 
     test.test('cssEscapingReturnsStringIfContainsOnlyDigits', async (test) => {
-        test.same(await escape(getEnvironment(), '123', 'css'), '123', 'Succeed at escaping: "123"');
+        test.same(await escape(getTemplate(), '123', 'css'), '123', 'Succeed at escaping: "123"');
 
         test.end();
     });
@@ -235,7 +236,7 @@ tape('escaping', (test) => {
         for (let key in urlSpecialChars) {
             let value = urlSpecialChars[key];
 
-            test.same(await escape(getEnvironment(), key, 'url'), value, 'Succeed at escaping: ' + key);
+            test.same(await escape(getTemplate(), key, 'url'), value, 'Succeed at escaping: ' + key);
         }
 
         test.end();
@@ -272,14 +273,14 @@ tape('escaping', (test) => {
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(await escape(getEnvironment(), literal, 'js'), literal);
+                test.same(await escape(getTemplate(), literal, 'js'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
                 if (immune.includes(literal)) {
-                    test.same(await escape(getEnvironment(), literal, 'js'), literal);
+                    test.same(await escape(getTemplate(), literal, 'js'), literal);
                 } else {
-                    test.notSame(await escape(getEnvironment(), literal, 'js'), literal);
+                    test.notSame(await escape(getTemplate(), literal, 'js'), literal);
                 }
             }
         }
@@ -296,14 +297,14 @@ tape('escaping', (test) => {
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(await escape(getEnvironment(), literal, 'html_attr'), literal);
+                test.same(await escape(getTemplate(), literal, 'html_attr'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
                 if (immune.includes(literal)) {
-                    test.same(await escape(getEnvironment(), literal, 'html_attr'), literal);
+                    test.same(await escape(getTemplate(), literal, 'html_attr'), literal);
                 } else {
-                    test.notSame(await escape(getEnvironment(), literal, 'html_attr'), literal);
+                    test.notSame(await escape(getTemplate(), literal, 'html_attr'), literal);
                 }
             }
         }
@@ -318,11 +319,11 @@ tape('escaping', (test) => {
                 || chr >= 0x61 && chr <= 0x7A) {
                 let literal = codepointToUtf8(chr);
 
-                test.same(await escape(getEnvironment(), literal, 'css'), literal);
+                test.same(await escape(getTemplate(), literal, 'css'), literal);
             } else {
                 let literal = codepointToUtf8(chr);
 
-                test.notSame(await escape(getEnvironment(), literal, 'css'), literal);
+                test.notSame(await escape(getTemplate(), literal, 'css'), literal);
             }
         }
 
@@ -337,11 +338,11 @@ tape('escaping', (test) => {
         ];
 
         for (let customEscaperCase of customEscaperCases) {
-            let twing = new MockEnvironment(new MockLoader());
+            let template = getTemplate();
 
-            twing.getCoreExtension().setEscaper('foo', foo_escaper_for_test);
+            template.environment.getCoreExtension().setEscaper('foo', foo_escaper_for_test);
 
-            test.same(await escape(twing, customEscaperCase[1], customEscaperCase[2], customEscaperCase[3]), customEscaperCase[0]);
+            test.same(await escape(template, customEscaperCase[1], customEscaperCase[2], customEscaperCase[3]), customEscaperCase[0]);
         }
 
         test.end();
@@ -349,7 +350,7 @@ tape('escaping', (test) => {
 
     test.test('customUnknownEscaper', async (test) => {
         try {
-            await escape(new MockEnvironment(new MockLoader()), 'foo', 'bar');
+            await escape(getTemplate(), 'foo', 'bar');
 
             test.fail();
         } catch (e) {

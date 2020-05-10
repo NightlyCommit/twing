@@ -28,9 +28,8 @@ export class TwingNodeExpressionFilter extends TwingNodeExpressionCall {
 
         this.setAttribute('name', name);
         this.setAttribute('type', 'filter');
-        this.setAttribute('needs_environment', filter.needsEnvironment());
+        this.setAttribute('needs_template', filter.needsTemplate());
         this.setAttribute('needs_context', filter.needsContext());
-        this.setAttribute('needs_source', filter.needsSource());
         this.setAttribute('arguments', filter.getArguments());
         this.setAttribute('callable', callable);
         this.setAttribute('is_variadic', filter.isVariadic());

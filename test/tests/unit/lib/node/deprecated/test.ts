@@ -23,7 +23,9 @@ tape('node/deprecated', (test) => {
 
             node.setTemplateName('bar');
 
-            test.same(compiler.compile(node).getSource(), `console.warn(\`foo\` + \` ("bar" at line 1)\`);
+            test.same(compiler.compile(node).getSource(), `{
+    console.warn(\`foo\` + \` ("bar" at line 1)\`);
+}
 `);
 
             test.end();
@@ -36,8 +38,10 @@ tape('node/deprecated', (test) => {
 
             node.setTemplateName('bar');
 
-            test.same(compiler.compile(node).getSource(), `let __internal_480b6d2e4b70b4ccce4936e035b2ead64f8213fee7b9a90a92d1f2d0fee68eaa = (context.has(\`foo\`) ? context.get(\`foo\`) : null);
-console.warn(__internal_480b6d2e4b70b4ccce4936e035b2ead64f8213fee7b9a90a92d1f2d0fee68eaa + \` ("bar" at line 1)\`);
+            test.same(compiler.compile(node).getSource(), `{
+    let message = (context.has(\`foo\`) ? context.get(\`foo\`) : null);
+    console.warn(message + \` ("bar" at line 1)\`);
+}
 `);
 
             test.end();

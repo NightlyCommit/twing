@@ -18,9 +18,9 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
         super(new Map(), attributes, lineno, columnno);
 
         this.specialVars = new Map([
-            ['_self', 'this.getTemplateName()'],
+            ['_self', 'this.templateName'],
             ['_context', 'context'],
-            ['_charset', 'this.env.getCharset()']
+            ['_charset', 'this.environment.getCharset()']
         ]);
     }
 
@@ -69,7 +69,7 @@ export class TwingNodeExpressionName extends TwingNodeExpression {
                     .string(name)
                     .raw(' does not exist.\', ')
                     .repr(this.lineno)
-                    .raw(', this.getSourceContext()); })()')
+                    .raw(', this.source); })()')
                     .raw(')')
                 ;
             }

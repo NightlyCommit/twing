@@ -17,12 +17,12 @@ tape('node/expression/parent', (test) => {
 
         let node = new TwingNodeExpressionParent('foo', 1);
 
-        test.same(compiler.compile(node).getSource(), 'await this.traceableRenderParentBlock(1, this.getSourceContext())(\`foo\`, context, outputBuffer, blocks)');
+        test.same(compiler.compile(node).getSource(), 'await this.traceableRenderParentBlock(1, this.source)(\`foo\`, context, outputBuffer, blocks)');
 
         test.test('with special character', (test) => {
             let node = new TwingNodeExpressionParent('£', 1);
 
-            test.same(compiler.compile(node).getSource(), 'await this.traceableRenderParentBlock(1, this.getSourceContext())(\`£\`, context, outputBuffer, blocks)');
+            test.same(compiler.compile(node).getSource(), 'await this.traceableRenderParentBlock(1, this.source)(\`£\`, context, outputBuffer, blocks)');
 
             test.end();
         });

@@ -71,7 +71,7 @@ tape('main and browser indexes', (test) => {
         'TwingNodeExpressionFilter',
         'TwingNodeExpressionFilterDefault',
         'TwingNodeExpressionFunction',
-        'TwingNodeExpressionGetAttr',
+        'TwingNodeExpressionGetAttribute',
         'TwingNodeExpressionHash',
         'TwingNodeExpressionMethodCall',
         'TwingNodeExpressionName',

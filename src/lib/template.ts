@@ -47,29 +47,36 @@ export abstract class TwingTemplate {
     static ARRAY_CALL = 'array';
     static METHOD_CALL = 'method';
 
+    private readonly _environment: TwingEnvironment;
+    private _source: TwingSource;
+
     protected parent: TwingTemplate | false;
     protected parents: Map<TwingTemplate | string, TwingTemplate>;
-    protected env: TwingEnvironment;
     protected blocks: TwingTemplateBlocksMap;
     protected blockHandlers: Map<string, TwingTemplateBlockHandler>;
     protected macroHandlers: Map<string, TwingTemplateMacroHandler>;
     protected traits: TwingTemplateBlocksMap;
     protected macros: TwingTemplateMacrosMap;
     protected aliases: TwingTemplateAliasesMap;
-    protected extensions: Map<string, TwingExtensionInterface>;
-    protected sourceContext: TwingSource;
 
-    constructor(env: TwingEnvironment) {
-        this.env = env;
+    constructor(environment: TwingEnvironment) {
+        this._environment = environment;
+
         this.parents = new Map();
         this.aliases = new TwingContext();
-        this.extensions = env.getExtensions();
         this.blockHandlers = new Map();
         this.macroHandlers = new Map();
     }
 
     get environment(): TwingEnvironment {
-        return this.env;
+        return this._environment;
+    }
+
+    /**
+     * @returns {TwingSource}
+     */
+    get source(): TwingSource {
+        return this._source;
     }
 
     /**
@@ -77,15 +84,12 @@ export abstract class TwingTemplate {
      *
      * @returns {string} The template name
      */
-    getTemplateName(): string {
-        return this.getSourceContext().getName();
+    get templateName(): string {
+        return this.source.getName();
     }
 
-    /**
-     * @returns {TwingSource}
-     */
-    getSourceContext(): TwingSource {
-        return this.sourceContext;
+    get isTraitable(): boolean {
+        return true;
     }
 
     /**
@@ -95,7 +99,7 @@ export abstract class TwingTemplate {
      *
      * @returns {Promise<TwingTemplate|false>} The parent template or false if there is no parent
      */
-    getParent(context: any = {}): Promise<TwingTemplate | false> {
+    public getParent(context: any = {}): Promise<TwingTemplate | false> {
         if (this.parent) {
             return Promise.resolve(this.parent);
         }
@@ -104,7 +108,7 @@ export abstract class TwingTemplate {
             .then((parent) => {
                 if (parent === false || parent instanceof TwingTemplate) {
                     if (parent instanceof TwingTemplate) {
-                        this.parents.set(parent.getSourceContext().getName(), parent);
+                        this.parents.set(parent.source.getName(), parent);
                     }
 
                     return parent;
@@ -129,7 +133,7 @@ export abstract class TwingTemplate {
      *
      * @returns {Promise<TwingTemplateBlocksMap>} A map of blocks
      */
-    getBlocks(): Promise<TwingTemplateBlocksMap> {
+    public getBlocks(): Promise<TwingTemplateBlocksMap> {
         if (this.blocks) {
             return Promise.resolve(this.blocks);
         } else {
@@ -139,10 +143,6 @@ export abstract class TwingTemplate {
                 return this.blocks;
             });
         }
-    }
-
-    isTraitable() {
-        return true;
     }
 
     /**
@@ -173,9 +173,9 @@ export abstract class TwingTemplate {
                     if (parent) {
                         return parent.displayBlock(name, context, outputBuffer, merge(ownBlocks, blocks), false);
                     } else if (blocks.has(name)) {
-                        throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].getTemplateName()}" as the block does not exist in the parent template "${this.getTemplateName()}".`, -1, blocks.get(name)[0].getSourceContext());
+                        throw new TwingErrorRuntime(`Block "${name}" should not call parent() in "${blocks.get(name)[0].templateName}" as the block does not exist in the parent template "${this.templateName}".`, -1, blocks.get(name)[0].source);
                     } else {
-                        throw new TwingErrorRuntime(`Block "${name}" on template "${this.getTemplateName()}" does not exist.`, -1, this.getSourceContext());
+                        throw new TwingErrorRuntime(`Block "${name}" on template "${this.templateName}" does not exist.`, -1, this.source);
                     }
                 });
 
@@ -202,7 +202,7 @@ export abstract class TwingTemplate {
                     if (template !== false) {
                         return template.displayBlock(name, context, outputBuffer, blocks, false);
                     } else {
-                        throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, -1, this.getSourceContext());
+                        throw new TwingErrorRuntime(`The template has no parent and no traits defining the "${name}" block.`, -1, this.source);
                     }
                 });
             }
@@ -259,7 +259,7 @@ export abstract class TwingTemplate {
      *
      * @return {Promise<boolean>} true if the block exists, false otherwise
      */
-    hasBlock(name: string, context: any, blocks: TwingTemplateBlocksMap = new Map()): Promise<boolean> {
+    public hasBlock(name: string, context: any, blocks: TwingTemplateBlocksMap = new Map()): Promise<boolean> {
         if (blocks.has(name)) {
             return Promise.resolve(true);
         } else {
@@ -280,24 +280,38 @@ export abstract class TwingTemplate {
     }
 
     /**
-     * @param {string} name The macro name
+     * @param {string} name The name of the macro
      *
      * @return {Promise<boolean>}
      */
-    hasMacro(name: string): Promise<boolean> {
+    public hasMacro(name: string): Promise<boolean> {
         // @see https://github.com/twigphp/Twig/issues/3174 as to why we don't check macro existence in parents
         return Promise.resolve(this.macroHandlers.has(name));
     }
 
-    loadTemplate(templates: TwingTemplate | Map<number, TwingTemplate> | string, line: number = null, index: number = 0): Promise<TwingTemplate> {
+    /**
+     * @param name The name of the macro
+     */
+    public getMacro(name: string): Promise<TwingTemplateMacroHandler> {
+       return this.hasMacro(name).then((hasMacro) => {
+           if (hasMacro) {
+               return this.macroHandlers.get(name);
+           }
+           else {
+               return null;
+           }
+       })
+    }
+
+    public loadTemplate(templates: TwingTemplate | Map<number, TwingTemplate> | string, line: number = null, index: number = 0): Promise<TwingTemplate> {
         let promise: Promise<TwingTemplate>;
 
         if (typeof templates === 'string') {
-            promise = this.env.loadTemplate(templates, index, this.getSourceContext());
+            promise = this.environment.loadTemplate(templates, index, this.source);
         } else if (templates instanceof TwingTemplate) {
             promise = Promise.resolve(templates);
         } else {
-            promise = this.env.resolveTemplate([...templates.values()], this.getSourceContext());
+            promise = this.environment.resolveTemplate([...templates.values()], this.source);
         }
 
         return promise.catch((e: TwingError) => {
@@ -318,7 +332,7 @@ export abstract class TwingTemplate {
      *
      * @returns {Promise<TwingTemplateBlocksMap>} A map of traits
      */
-    getTraits(): Promise<TwingTemplateBlocksMap> {
+    public getTraits(): Promise<TwingTemplateBlocksMap> {
         if (this.traits) {
             return Promise.resolve(this.traits);
         } else {
@@ -334,7 +348,7 @@ export abstract class TwingTemplate {
         return Promise.resolve(new Map());
     }
 
-    display(context: any, blocks: TwingTemplateBlocksMap = new Map(), outputBuffer?: TwingOutputBuffer): Promise<void> {
+    public display(context: any, blocks: TwingTemplateBlocksMap = new Map(), outputBuffer?: TwingOutputBuffer): Promise<void> {
         if (!outputBuffer) {
             outputBuffer = new TwingOutputBuffer();
         }
@@ -347,7 +361,7 @@ export abstract class TwingTemplate {
             context = iteratorToMap(context);
         }
 
-        context = new TwingContext(this.env.mergeGlobals(context));
+        context = new TwingContext(this.environment.mergeGlobals(context));
 
         return this.getBlocks().then((ownBlocks) => this.displayWithErrorHandling(context, outputBuffer, merge(ownBlocks, blocks)));
     }
@@ -356,17 +370,17 @@ export abstract class TwingTemplate {
         return this.doDisplay(context, outputBuffer, blocks).catch((e) => {
             if (e instanceof TwingError) {
                 if (!e.getSourceContext()) {
-                    e.setSourceContext(this.getSourceContext());
+                    e.setSourceContext(this.source);
                 }
             } else {
-                e = new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, -1, this.getSourceContext(), e);
+                e = new TwingErrorRuntime(`An exception has been thrown during the rendering of a template ("${e.message}").`, -1, this.source, e);
             }
 
             throw e;
         });
     }
 
-    render(context: any, outputBuffer?: TwingOutputBuffer): Promise<string> {
+    public render(context: any, outputBuffer?: TwingOutputBuffer): Promise<string> {
         if (!outputBuffer) {
             outputBuffer = new TwingOutputBuffer();
         }
@@ -420,7 +434,7 @@ export abstract class TwingTemplate {
             if (handler) {
                 return handler(outputBuffer, ...args);
             } else {
-                throw new TwingErrorRuntime(`Macro "${name}" is not defined in template "${template.getTemplateName()}".`, lineno, source);
+                throw new TwingErrorRuntime(`Macro "${name}" is not defined in template "${template.templateName}".`, lineno, source);
             }
         });
     }
@@ -454,6 +468,18 @@ export abstract class TwingTemplate {
         return this.traceableMethod(this.hasBlock.bind(this), lineno, source);
     }
 
+    protected concatenate(object1: any, object2: any): string {
+        if (isNullOrUndefined(object1)) {
+            object1 = '';
+        }
+
+        if (isNullOrUndefined(object2)) {
+            object2 = '';
+        }
+
+        return String(object1) + String(object2);
+    }
+
     protected get cloneMap(): <K, V>(m: Map<K, V>) => Map<K, V> {
         return cloneMap;
     }
@@ -462,8 +488,10 @@ export abstract class TwingTemplate {
         return compare;
     }
 
-    protected get constant(): (env: TwingEnvironment, name: string, object: any) => any {
-        return constant;
+    protected get constant(): (name: string, object: any) => any {
+        return (name: string, object: any) => {
+            return constant(this, name, object);
+        }
     }
 
     protected get convertToMap(): (iterable: any) => Map<any, any> {
@@ -494,9 +522,9 @@ export abstract class TwingTemplate {
         return getAttribute;
     }
 
-    protected get include(): (context: any, from: TwingSource, outputBuffer: TwingOutputBuffer, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number) => Promise<string> {
-        return (context, from, outputBuffer, templates, variables, withContext, ignoreMissing, line) => {
-            return include(this.env, context, from, outputBuffer, templates, variables, withContext, ignoreMissing).catch((e: TwingError) => {
+    protected get include(): (context: any, outputBuffer: TwingOutputBuffer, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any, withContext: boolean, ignoreMissing: boolean, line: number) => Promise<string> {
+        return (context, outputBuffer, templates, variables, withContext, ignoreMissing, line) => {
+            return include(this, context, outputBuffer, templates, variables, withContext, ignoreMissing).catch((e: TwingError) => {
                 if (e.getTemplateLine() === -1) {
                     e.setTemplateLine(line);
                 }
@@ -512,18 +540,6 @@ export abstract class TwingTemplate {
 
     protected get isIn(): (a: any, b: any) => boolean {
         return isIn;
-    }
-
-    protected concatenate(object1: any, object2: any): string {
-        if (isNullOrUndefined(object1)) {
-            object1 = '';
-        }
-
-        if (isNullOrUndefined(object2)) {
-            object2 = '';
-        }
-
-        return String(object1) + String(object2);
     }
 
     protected get iterate(): (it: any, cb: IterateCallback) => Promise<void> {

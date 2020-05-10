@@ -8,7 +8,7 @@ import {type as constantType} from "../node/expression/constant";
 import {type as blockReferenceType} from "../node/expression/block-reference"
 import {type as parentType} from "../node/expression/parent";
 import {type as conditionalType} from "../node/expression/conditional";
-import {type as getAttrType} from "../node/expression/get-attr";
+import {type as getAttrType} from "../node/expression/get-attribute";
 import {type as callType} from "../node/expression/method-call";
 
 const objectHash = require('object-hash');

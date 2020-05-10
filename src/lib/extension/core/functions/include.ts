@@ -1,20 +1,19 @@
 import {iteratorToMap} from "../../../helpers/iterator-to-map";
 import {merge} from "../../../helpers/merge";
 import {TwingErrorLoader} from "../../../error/loader";
-import {TwingEnvironment} from "../../../environment";
-import {TwingSource} from "../../../source";
 import {TwingTemplate} from "../../../template";
 import {isTraversable} from "../../../helpers/is-traversable";
 import {TwingErrorRuntime} from "../../../error/runtime";
 import {isNullOrUndefined} from "util";
 import {isPlainObject} from "../../../helpers/is-plain-object";
 import {TwingOutputBuffer} from "../../../output-buffer";
+import {TwingContext} from "../../../context";
 
 /**
  * Renders a template.
  *
- * @param {TwingEnvironment} env
- * @param {any} context
+ * @param {TwingTemplate} template
+ * @param {TwingContext<any, any>} context
  * @param {TwingSource} from
  * @param {TwingOutputBuffer} outputBuffer
  * @param {string | Map<number, string | TwingTemplate>} templates The template to render or an array of templates to try consecutively
@@ -25,7 +24,9 @@ import {TwingOutputBuffer} from "../../../output-buffer";
  *
  * @returns {Promise<string>} The rendered template
  */
-export function include(env: TwingEnvironment, context: any, from: TwingSource, outputBuffer: TwingOutputBuffer, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): Promise<string> {
+export function include(template: TwingTemplate, context: TwingContext<any, any>, outputBuffer: TwingOutputBuffer, templates: string | Map<number, string | TwingTemplate> | TwingTemplate, variables: any = {}, withContext: boolean = true, ignoreMissing: boolean = false, sandboxed: boolean = false): Promise<string> {
+    let env = template.environment;
+    let from = template.source;
     let alreadySandboxed = env.isSandboxed();
 
     if (!isPlainObject(variables) && !isTraversable(variables)) {

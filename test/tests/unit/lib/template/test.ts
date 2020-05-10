@@ -8,24 +8,24 @@ import {TwingSource} from "../../../../../src/lib/source";
 import {TwingErrorRuntime} from "../../../../../src/lib/error/runtime";
 import {TwingErrorLoader} from "../../../../../src/lib/error/loader";
 import {TwingEnvironment} from "../../../../../src/lib/environment";
+import {MockEnvironment} from "../../../../mock/environment";
+import {MockTemplate} from "../../../../mock/template";
 
 const sinon = require('sinon');
 
 class TwingTestTemplateTemplate extends TwingTemplate {
-    constructor() {
-        super(new TwingEnvironmentNode(new TwingLoaderArray({
+    protected _mySource: TwingSource;
+
+    constructor(environment?: TwingEnvironment) {
+        super(environment !== undefined ? environment : new TwingEnvironmentNode(new TwingLoaderArray({
             foo: '{% block foo %}foo{% endblock %}'
         })));
 
-        this.sourceContext = new TwingSource('', 'foo');
+        this._mySource = new TwingSource('', 'foo');
     }
 
-    getEnv(): TwingEnvironment {
-        return this.env;
-    }
-
-    setEnv(env: TwingEnvironment) {
-        this.env = env;
+    get source() {
+        return this._mySource;
     }
 
     displayWithErrorHandling(context: any, outputBuffer: TwingOutputBuffer, blocks: TwingTemplateBlocksMap) {
@@ -66,7 +66,7 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
         ])));
     }
 
-    getTemplateName() {
+    get templateName() {
         return 'foo';
     }
 
@@ -76,16 +76,17 @@ class TwingTestTemplateTemplateWithInvalidLoadTemplate extends TwingTemplate {
         });
     }
 
-    getSourceContext() {
+    get source() {
         return new TwingSource('code', 'path');
     }
 }
 
 tape('template', function (test) {
     test.test('environment accessor', function (test) {
-        let template = new TwingTestTemplateTemplate();
+        let environment = new MockEnvironment();
+        let template = new TwingTestTemplateTemplate(environment);
 
-        test.same(template.environment, template.getEnv());
+        test.same(template.environment, environment);
 
         test.end();
     });
@@ -93,7 +94,7 @@ tape('template', function (test) {
     test.test('getSourceContext', function (test) {
         let template = new TwingTestTemplateTemplate();
 
-        test.same(template.getSourceContext(), new TwingSource('', 'foo'));
+        test.same(template.source.getName(), 'foo');
 
         test.end();
     });
@@ -179,9 +180,7 @@ tape('template', function (test) {
     });
 
     test.test('loadTemplate', async (test) => {
-        let template = new TwingTestTemplateTemplate();
-
-        template.setEnv(null);
+        let template = new TwingTestTemplateTemplate(null);
 
         try {
             await template.loadTemplate('foo');
@@ -308,6 +307,33 @@ tape('template', function (test) {
         await template.traceableHasBlock(1, null)();
 
         test.same(stub.callCount, 1, 'should call hasBlock once');
+
+        test.end();
+    });
+
+    test.test('getMacro', async (test) => {
+        const fooHandler = () => {
+            return Promise.resolve('');
+        };
+
+        class TemplateWithMacros extends TwingTemplate {
+            constructor() {
+                super(new MockEnvironment());
+
+                this.macroHandlers = new Map([
+                    ['foo', fooHandler]
+                ])
+            }
+
+            protected doDisplay(context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]>): Promise<void> {
+                return;
+            }
+        }
+
+        let template = new TemplateWithMacros();
+
+        test.same(await template.getMacro('foo'), fooHandler);
+        test.same(await template.getMacro('bar'), null);
 
         test.end();
     });

@@ -9,7 +9,7 @@ import {type as filterType} from "../node/expression/filter";
 import {type as functionType} from "../node/expression/function";
 import {type as rangeType} from "../node/expression/binary/range";
 import {type as concatType} from "../node/expression/binary/concat";
-import {type as getAttrType} from "../node/expression/get-attr";
+import {type as getAttrType} from "../node/expression/get-attribute";
 import {type as setType} from "../node/set";
 import {type as printType} from "../node/print";
 

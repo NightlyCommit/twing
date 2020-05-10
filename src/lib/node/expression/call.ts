@@ -22,27 +22,23 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         let callable = this.getAttribute('callable');
 
         if (typeof callable === 'string') {
-            compiler
-                .raw(callable)
-                .raw('(...')
-            ;
+            compiler.raw(callable);
+        } else {
+            compiler.raw(`await this.environment.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.source)`);
         }
-        else {
-            compiler.raw(`await this.env.get${capitalize(this.getAttribute('type'))}('${this.getAttribute('name')}').traceableCallable(${this.getTemplateLine()}, this.getSourceContext())(...`);
-        }
+
+        compiler.raw('(...[');
 
         this.compileArguments(compiler);
 
-        compiler.raw(')');
+        compiler.raw('])');
     }
 
     protected compileArguments(compiler: TwingCompiler) {
-        compiler.raw('[');
+        let first: boolean = true;
 
-        let first = true;
-
-        if (this.hasAttribute('needs_environment') && this.getAttribute('needs_environment')) {
-            compiler.raw('this.env');
+        if (this.hasAttribute('needs_template') && this.getAttribute('needs_template')) {
+            compiler.raw('this');
 
             first = false;
         }
@@ -53,16 +49,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             }
 
             compiler.raw('context');
-
-            first = false;
-        }
-
-        if (this.hasAttribute('needs_source') && this.getAttribute('needs_source')) {
-            if (!first) {
-                compiler.raw(', ');
-            }
-
-            compiler.raw('this.getSourceContext()');
 
             first = false;
         }
@@ -113,8 +99,6 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 first = false;
             }
         }
-
-        compiler.raw(']');
     }
 
     protected getArguments(callable: Function, argumentsNode: TwingNode): Array<TwingNode> {
@@ -128,8 +112,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             if (typeof name !== 'number') {
                 named = true;
                 name = this.normalizeName(name);
-            }
-            else if (named) {
+            } else if (named) {
                 throw new TwingErrorSyntax(`Positional arguments cannot be used after named arguments for ${callType} "${callName}".`, this.getTemplateLine());
             }
 
@@ -147,8 +130,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
         if (!callable) {
             if (named) {
                 message = `Named arguments are not supported for ${callType} "${callName}".`;
-            }
-            else {
+            } else {
                 message = `Arbitrary positional arguments are not supported for ${callType} "${callName}".`;
             }
 
@@ -177,18 +159,15 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
                 arguments_.push(parameters.get(name));
                 parameters.delete(name);
                 optionalArguments = [];
-            }
-            else if (parameters.has(pos)) {
+            } else if (parameters.has(pos)) {
                 arguments_ = array_merge(arguments_, optionalArguments);
                 arguments_.push(parameters.get(pos));
                 parameters.delete(pos);
                 optionalArguments = [];
                 ++pos;
-            }
-            else if (callableParameter.defaultValue !== undefined) {
+            } else if (callableParameter.defaultValue !== undefined) {
                 optionalArguments.push(new TwingNodeExpressionConstant(callableParameter.defaultValue, -1, -1));
-            }
-            else {
+            } else {
                 throw new TwingErrorSyntax(`Value for argument "${name}" is required for ${callType} "${callName}".`, this.getTemplateLine());
             }
         }
@@ -200,8 +179,7 @@ export abstract class TwingNodeExpressionCall extends TwingNodeExpression {
             for (let [key, value] of parameters) {
                 if (Number.isInteger(key as number)) {
                     arbitraryArguments.addElement(value);
-                }
-                else {
+                } else {
                     arbitraryArguments.addElement(value, new TwingNodeExpressionConstant(key, -1, -1));
                 }
 

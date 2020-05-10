@@ -1014,7 +1014,7 @@ tape('environment', (test) => {
 
         test.test('handle templates compiled without source map support', async (test) => {
             class CustomTemplate extends TwingTemplate {
-                getTemplateName() {
+                get templateName() {
                     return 'foo';
                 }
 
@@ -1205,11 +1205,11 @@ BAROOF</FOO></foo>oof`);
 
         let template = await env.createTemplate('foo');
 
-        test.same(template.getTemplateName(), '__string_template__2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae');
+        test.same(template.templateName, '__string_template__2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae');
 
         template = await env.createTemplate('foo', 'foo.twig');
 
-        test.same(template.getTemplateName(), 'foo.twig (string template 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae)');
+        test.same(template.templateName, 'foo.twig (string template 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae)');
 
         test.end();
     });
@@ -1228,7 +1228,7 @@ BAROOF</FOO></foo>oof`);
                         return Promise.resolve();
                     }
 
-                    getTemplateName() {
+                    get templateName() {
                         return 'main';
                     }
                 }],
@@ -1237,7 +1237,7 @@ BAROOF</FOO></foo>oof`);
                         return Promise.resolve();
                     }
 
-                    getTemplateName() {
+                    get templateName() {
                         return 'embedded';
                     }
                 }]
@@ -1248,8 +1248,8 @@ BAROOF</FOO></foo>oof`);
         let actualEmbeddedTemplate = await env.loadTemplate('foo', 1);
 
         test.true(loaderSpy.notCalled, 'Loader should not be queried');
-        test.equal(actualTemplate.getTemplateName(), 'main', 'Main template should be loaded successfully');
-        test.equal(actualEmbeddedTemplate.getTemplateName(), 'embedded', 'Embedded template should be loaded successfully');
+        test.equal(actualTemplate.templateName, 'main', 'Main template should be loaded successfully');
+        test.equal(actualEmbeddedTemplate.templateName, 'embedded', 'Embedded template should be loaded successfully');
 
         test.end();
     });
