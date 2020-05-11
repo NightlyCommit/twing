@@ -1,3 +1,13 @@
+5.0.0
+
+ * #508 Allows functions, filters and tests to use the template itself
+ * #502 Relatively loaded templates are cached under multiple keys
+ * #501 Add support for node@13
+ * #499 Remove the deprecated classes and functions
+ * #498 Remove the native "optimizer" extension
+ * #479 Binary nodes all share the same type
+ * #497 Output buffering doesn't support concurrent rendering
+
 4.0.6
 
 * #495 Relative filesystem loader fails to resolve template included from a relatively resolved template
