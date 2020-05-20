@@ -34,7 +34,7 @@ tape('cache filesystem', (test: Test) => {
         });
 
         try {
-            await cache.write('foo', null);
+            await cache.write('foo', 'bar');
 
             test.fail();
         }
@@ -49,7 +49,7 @@ tape('cache filesystem', (test: Test) => {
         });
 
         try {
-            await cache.write('foo', null);
+            await cache.write('foo', 'bar');
 
             test.fail();
         }

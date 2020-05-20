@@ -106,7 +106,13 @@ export class TwingLoaderRelativeFilesystem implements TwingLoaderInterface {
             throw new TwingErrorLoader(this.errorCache.get(name), -1, from);
         };
 
-        return Promise.resolve(_do());
+        return new Promise((resolve, reject) => {
+            try {
+                resolve(_do());
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     protected normalizeName(name: string) {

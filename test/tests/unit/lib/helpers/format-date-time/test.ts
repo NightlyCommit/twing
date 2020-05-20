@@ -1,7 +1,9 @@
 import * as tape from 'tape';
 import {formatDateTime} from "../../../../../../src/lib/helpers/format-date-time";
 
-const {DateTime} = require('luxon');
+const {DateTime, Settings} = require('luxon');
+
+Settings.defaultLocale = 'en';
 
 // Thursday, January 1, 1970 4:12:29 PM
 let date = DateTime.fromMillis(58349457, {zone: 'UTC'});
