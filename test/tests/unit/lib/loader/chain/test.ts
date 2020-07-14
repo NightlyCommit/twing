@@ -5,6 +5,7 @@ import {resolve, join} from "path";
 import {TwingLoaderChain} from "../../../../../../src/lib/loader/chain";
 import {TwingLoaderArray} from "../../../../../../src/lib/loader/array";
 import {TwingLoaderFilesystem} from "../../../../../../src/lib/loader/filesystem";
+import {TwingLoaderRelativeFilesystem} from "../../../../../../src/lib/loader/relative-filesystem";
 import {TwingErrorLoader} from "../../../../../../src/lib/error/loader";
 import {TwingError} from "../../../../../../src/lib/error";
 
@@ -350,6 +351,17 @@ tape('loader chain', (test) => {
             ]);
 
             test.equals(await loader.resolve('bar', null), 'bar');
+
+            test.end();
+        });
+
+        test.test('when a relative filesystem loader throws an error in findTemplate', async (test) => {
+            let loader = new TwingLoaderChain([
+                new TwingLoaderRelativeFilesystem(),
+                new TwingLoaderArray({'foo': 'bar'}),
+            ]);
+
+            test.equals(await loader.resolve('foo', null), 'foo');
 
             test.end();
         });
