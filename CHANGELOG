@@ -1,3 +1,11 @@
+5.0.2
+
+ * #513 Fix errors in relative filesystem loader
+
+5.0.1
+
+ * Fix an issue with node/module test
+
 5.0.0
 
  * #508 Allows functions, filters and tests to use the template itself
