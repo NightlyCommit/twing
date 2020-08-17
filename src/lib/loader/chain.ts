@@ -86,7 +86,7 @@ export class TwingLoaderChain implements TwingLoaderInterface {
                     }
                 });
             } else {
-                return Promise.resolve(null);
+                return Promise.resolve(false);
             }
         };
 

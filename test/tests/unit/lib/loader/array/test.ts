@@ -27,6 +27,32 @@ tape('loader array', (test) => {
         test.end();
     });
 
+    test.test('resolve', async (test) => {
+        let loader = new TwingLoaderArray({
+            foo: 'bar',
+            bar: 'foo'
+        });
+
+        test.same(await loader.resolve('foo', null), 'foo');
+        test.same(await loader.resolve('bar', null), 'bar');
+
+        loader = new TwingLoaderArray(1);
+
+        test.same(await loader.resolve('foo', null), null);
+        test.same(await loader.resolve('bar', null), null);
+
+        try {
+            await loader.resolve('foo', null, true);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Template "foo" is not defined.');
+        }
+
+        test.end();
+    });
+
     test.test('getSourceContextWhenTemplateDoesNotExist', async (test) => {
         let loader = new TwingLoaderArray({});
 

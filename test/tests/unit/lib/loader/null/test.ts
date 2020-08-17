@@ -1,7 +1,7 @@
 import * as tape from 'tape';
 import {TwingLoaderNull} from "../../../../../../src/lib/loader/null";
 
-tape('loader array', (test) => {
+tape('loader null', (test) => {
     test.test('getSourceContext', async (test) => {
         let loader = new TwingLoaderNull();
 
@@ -44,7 +44,16 @@ tape('loader array', (test) => {
     test.test('resolve', async (test) => {
         let loader = new TwingLoaderNull();
 
-        test.same(await loader.resolve('foo', null), 'foo');
+        test.same(await loader.resolve('foo', null), null);
+
+        try {
+            await loader.resolve('foo', null, true);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Template "foo" is not defined.');
+        }
 
         test.end();
     });
