@@ -54,7 +54,17 @@ export class TwingLoaderArray implements TwingLoaderInterface {
         });
     }
 
-    resolve(name: string, from: TwingSource): Promise<string> {
-        return Promise.resolve(name);
+    resolve(name: string, from: TwingSource, shouldThrow: boolean = false): Promise<string> {
+        return this.exists(name, from).then((exists) => {
+            if (exists) {
+                return name;
+            }
+
+            if (shouldThrow) {
+                throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
+            }
+
+            return null;
+        });
     }
 }
