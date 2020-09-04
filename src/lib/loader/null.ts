@@ -24,7 +24,11 @@ export class TwingLoaderNull implements TwingLoaderInterface {
         return Promise.resolve(true);
     }
 
-    resolve(name: string, from: TwingSource): Promise<string> {
-        return Promise.resolve(name);
+    resolve(name: string, from: TwingSource, shouldThrow: boolean = false): Promise<string> {
+        if (shouldThrow) {
+            throw new TwingErrorLoader(`Template "${name}" is not defined.`, -1, from);
+        }
+
+        return Promise.resolve(null);
     }
 }

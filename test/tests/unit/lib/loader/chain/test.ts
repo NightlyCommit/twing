@@ -324,6 +324,15 @@ tape('loader chain', (test) => {
 
         test.equals(await loader.resolve('bar', null), 'bar');
 
+        try {
+            await loader.resolve('foobar', null);
+
+            test.fail();
+        }
+        catch (e) {
+            test.same(e.message, 'Template "foobar" is not defined (TwingLoaderArray: Template "foobar" is not defined., TwingLoaderArray: Template "foobar" is not defined.).');
+        }
+
         test.test('when some loaders throw an error', async (test) => {
             let loader1 = new TwingLoaderArray({});
             sinon.stub(loader1, 'resolve').returns(Promise.reject(new TwingError('foo')));
