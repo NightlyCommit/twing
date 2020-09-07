@@ -22,7 +22,7 @@
   "module": "dist/es",
   "types": "dist/types/main.d.ts",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "scripts": {
     "precover": "rimraf coverage .nyc_output",

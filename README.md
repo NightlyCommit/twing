@@ -15,7 +15,7 @@ That's what Twing is. A maintainability-first engine that pass 100% of the TwigP
 
 ## Prerequisites
 
-Twing needs at least **node.js 8.0.0** to run.
+Twing needs at least **node.js 10.0.0** to run.
 
 ## Installation
 
