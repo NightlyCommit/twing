@@ -29,7 +29,7 @@ export interface TwingLoaderInterface {
 
     /**
      * Returns true if the template is still fresh.
-     *l
+     *
      * @param {string} name The template name
      * @param {number} time Timestamp of the last modification time of the cached template
      * @param {TwingSource} from The source that initiated the template loading
