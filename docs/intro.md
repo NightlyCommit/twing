@@ -144,6 +144,32 @@ _Credit for this example goes to [stela5](https://github.com/stela5)._
 
         ![Hello Bob!][hello-bob-image]
 
+### Setting Twing as Express template engine
+_Credit for this example goes to [bernard-ng](https://github.com/bernard-ng)._
+
+  ```javascript
+    const app = express();
+    const loader = new TwingLoaderFilesystem(app.get('views'));
+    const twig = new TwingEnvironment(loader)
+
+    app.engine('twig', async (path, options, callback) => {
+        try {
+            const results = await twig.render(path.replace(app.get('views'), ''), options);
+            return callback(null, results);
+        } catch (e) {
+            return callback(e);
+        }
+    });
+
+   
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'twig');
+    
+  
+    app.get('/', function (req, res) {
+      res.render('index.twig', {'name': 'World'});
+    });
+  ```
 {% endraw %}
 
 [back][back-url]
