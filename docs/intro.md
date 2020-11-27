@@ -149,8 +149,9 @@ _Credit for this example goes to [bernard-ng](https://github.com/bernard-ng)._
 
   ```javascript
     const app = express();
-    const loader = new TwingLoaderFilesystem(app.get('views'));
-    const twig = new TwingEnvironment(loader)
+    const views = path.join(__dirname, 'views');
+    const loader = new TwingLoaderFilesystem(views);
+    const twig = new TwingEnvironment(loader);
 
     app.engine('twig', async (path, options, callback) => {
         try {
@@ -162,7 +163,7 @@ _Credit for this example goes to [bernard-ng](https://github.com/bernard-ng)._
     });
 
    
-    app.set('views', path.join(__dirname, 'views'));
+    app.set('views', views);
     app.set('view engine', 'twig');
     
   
