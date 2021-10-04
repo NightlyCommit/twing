@@ -39,6 +39,8 @@ import {TwingNodeExpressionConditional} from "./node/expression/conditional";
 import {TwingOperator, TwingOperatorAssociativity} from "./operator";
 import {namePattern, Token, TokenType} from "twig-lexer";
 import {typeToEnglish} from "./lexer";
+import {TwingNodeExpressionFunction} from "./node/expression/function";
+import {TwingNodeExpressionFilter} from "./node/expression/filter";
 
 const sha256 = require('crypto-js/sha256');
 const hex = require('crypto-js/enc-hex');
@@ -74,6 +76,10 @@ type TwingParserImportedSymbolAlias = {
 type TwingParserImportedSymbolType = Map<string, TwingParserImportedSymbolAlias>;
 type TwingParserImportedSymbol = Map<string, TwingParserImportedSymbolType>;
 
+export type TwingParserOptions = {
+    strict: boolean;
+};
+
 export class TwingParser {
     private stack: Array<TwingParserStackEntry> = [];
     private stream: TwingTokenStream;
@@ -92,10 +98,15 @@ export class TwingParser {
     private unaryOperators: Map<string, TwingOperator>;
     private binaryOperators: Map<string, TwingOperator>;
 
-    constructor(env: TwingEnvironment) {
+    protected readonly options: TwingParserOptions;
+
+    constructor(env: TwingEnvironment, options?: TwingParserOptions) {
         this.env = env;
         this.unaryOperators = env.getUnaryOperators();
         this.binaryOperators = env.getBinaryOperators();
+        this.options = Object.assign({}, {
+            strict: true
+        }, options);
     }
 
     getVarName(prefix: string = '__internal_'): string {
@@ -1188,6 +1199,8 @@ export class TwingParser {
     }
 
     private getTest(line: number): Array<any> {
+        const {strict} = this.options;
+
         let stream = this.getStream();
         let name = stream.expect(TokenType.NAME).value;
 
@@ -1208,6 +1221,20 @@ export class TwingParser {
 
                 return [name, test];
             }
+            else {
+                // non-existing two-words test
+                if (!strict) {
+                    stream.next();
+
+                    return [name, new TwingTest(name, null, [])];
+                }
+            }
+        }
+        else {
+            // non-existing one-word test
+            if (!strict) {
+                return [name, new TwingTest(name, null, [])];
+            }
         }
 
         let e = new TwingErrorSyntax(`Unknown "${name}" test.`, line, stream.getSourceContext());
@@ -1218,66 +1245,84 @@ export class TwingParser {
     }
 
     private getFunctionExpressionFactory(name: string, line: number, column: number) {
+        const {strict} = this.options;
+
         let function_ = this.env.getFunction(name);
 
-        if (!function_) {
-            let e = new TwingErrorSyntax(`Unknown "${name}" function.`, line, this.getStream().getSourceContext());
+        if (function_) {
+            if (function_.isDeprecated()) {
+                let message = `Twing Function "${function_.getName()}" is deprecated`;
 
-            e.addSuggestions(name, Array.from(this.env.getFunctions().keys()));
+                if (function_.getDeprecatedVersion() !== true) {
+                    message += ` since version ${function_.getDeprecatedVersion()}`;
+                }
 
-            throw e;
-        }
+                if (function_.getAlternative()) {
+                    message += `. Use "${function_.getAlternative()}" instead`;
+                }
 
-        if (function_.isDeprecated()) {
-            let message = `Twing Function "${function_.getName()}" is deprecated`;
+                let src = this.getStream().getSourceContext();
 
-            if (function_.getDeprecatedVersion() !== true) {
-                message += ` since version ${function_.getDeprecatedVersion()}`;
+                message += ` in "${src.getName()}" at line ${line}.`;
+
+                process.stdout.write(message);
             }
 
-            if (function_.getAlternative()) {
-                message += `. Use "${function_.getAlternative()}" instead`;
+            return function_.getExpressionFactory();
+        }
+        else {
+            if (strict) {
+                let e = new TwingErrorSyntax(`Unknown "${name}" function.`, line, this.getStream().getSourceContext());
+
+                e.addSuggestions(name, Array.from(this.env.getFunctions().keys()));
+
+                throw e;
             }
 
-            let src = this.getStream().getSourceContext();
-
-            message += ` in "${src.getName()}" at line ${line}.`;
-
-            process.stdout.write(message);
+            return (name: string, functionArguments: TwingNode, line: number, columnno: number) => {
+                return new TwingNodeExpressionFunction(name, functionArguments, line, columnno);
+            };
         }
-
-        return function_.getExpressionFactory();
     }
 
     private getFilterExpressionFactory(name: string, line: number, column: number) {
+        const {strict} = this.options;
+
         let filter = this.env.getFilter(name);
 
-        if (!filter) {
-            let e = new TwingErrorSyntax(`Unknown "${name}" filter.`, line, this.getStream().getSourceContext());
+        if (filter) {
+            if (filter.isDeprecated()) {
+                let message = `Twing Filter "${filter.getName()}" is deprecated`;
 
-            e.addSuggestions(name, Array.from(this.env.getFilters().keys()));
+                if (filter.getDeprecatedVersion() !== true) {
+                    message += ` since version ${filter.getDeprecatedVersion()}`;
+                }
 
-            throw e;
-        }
+                if (filter.getAlternative()) {
+                    message += `. Use "${filter.getAlternative()}" instead`;
+                }
 
-        if (filter.isDeprecated()) {
-            let message = `Twing Filter "${filter.getName()}" is deprecated`;
+                let src = this.getStream().getSourceContext();
 
-            if (filter.getDeprecatedVersion() !== true) {
-                message += ` since version ${filter.getDeprecatedVersion()}`;
+                message += ` in "${src.getName()}" at line ${line}.`;
+
+                process.stdout.write(message);
             }
 
-            if (filter.getAlternative()) {
-                message += `. Use "${filter.getAlternative()}" instead`;
+            return filter.getExpressionFactory();
+        }
+        else {
+            if (strict) {
+                let e = new TwingErrorSyntax(`Unknown "${name}" filter.`, line, this.getStream().getSourceContext());
+
+                e.addSuggestions(name, Array.from(this.env.getFilters().keys()));
+
+                throw e;
             }
 
-            let src = this.getStream().getSourceContext();
-
-            message += ` in "${src.getName()}" at line ${line}.`;
-
-            process.stdout.write(message);
+            return (node: TwingNode, filterName: TwingNodeExpressionConstant, filterArguments: TwingNode, line: number, column: number, tag: string = null) => {
+                return new TwingNodeExpressionFilter(node, filterName, filterArguments, line, column, tag);
+            }
         }
-
-        return filter.getExpressionFactory();
     }
 }
