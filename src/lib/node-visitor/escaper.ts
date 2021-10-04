@@ -129,24 +129,30 @@ export class TwingNodeVisitorEscaper extends TwingBaseNodeVisitor {
         return new TwingNodePrint(this.getEscaperFilter(type, expression), node.getTemplateLine(), node.getTemplateColumn());
     }
 
-    private preEscapeFilterNode(filter: TwingNodeExpressionFilter, env: TwingEnvironment) {
-        let name = filter.getNode('filter').getAttribute('value');
+    private preEscapeFilterNode(filterNode: TwingNodeExpressionFilter, env: TwingEnvironment) {
+        let name = filterNode.getNode('filter').getAttribute('value');
+
+        const filter = env.getFilter(name);
+
+        if (!filter) {
+            return filterNode;
+        }
 
         let type = env.getFilter(name).getPreEscape();
 
         if (type === null) {
-            return filter;
+            return filterNode;
         }
 
-        let node = filter.getNode('node');
+        let node = filterNode.getNode('node');
 
         if (this.isSafeFor(type, node, env)) {
-            return filter;
+            return filterNode;
         }
 
-        filter.setNode('node', this.getEscaperFilter(type, node));
+        filterNode.setNode('node', this.getEscaperFilter(type, node));
 
-        return filter;
+        return filterNode;
     }
 
     private isSafeFor(type: TwingNode | string | false, expression: TwingNode, env: TwingEnvironment) {

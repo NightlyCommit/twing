@@ -25,6 +25,9 @@ import {MockEnvironment} from "../../../../mock/environment";
 import {TwingNodeExpressionHash} from "../../../../../src/lib/node/expression/hash";
 import {TwingNodeExpression} from "../../../../../src/lib/node/expression";
 import {type} from "../../../../../src/lib/node/comment";
+import {TwingNodeExpressionFunction} from "../../../../../src/lib/node/expression/function";
+import {TwingNodeExpressionFilter} from "../../../../../src/lib/node/expression/filter";
+import {TwingNodeExpressionTest} from "../../../../../src/lib/node/expression/test";
 
 let testEnv = new TwingEnvironmentNode(null);
 
@@ -781,23 +784,61 @@ tape('parser', (test) => {
         test.end();
     });
 
-    test.test('unknownFunction', (test) => {
-        let loader = new MockLoader();
-        let env = new MockEnvironment(loader, {cache: false, autoescape: false});
-        let source = new TwingSource('{{ cycl() }}', 'index');
-        let stream = env.tokenize(source);
-        let parser = new TwingParser(env);
+    test.test('unknownFunction', ({test}) => {
+        test('strict mode', ({same, fail, end}) => {
+            let loader = new MockLoader();
+            let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+            let source = new TwingSource('{{ cycl() }}', 'index');
 
-        try {
-            parser.parse(stream);
+            for (let parser of [
+                new TwingParser(env),
+                new TwingParser(env, {
+                    strict: true
+                })
+            ]) {
+                try {
+                    let stream = env.tokenize(source);
 
-            test.fail();
-        } catch (e) {
-            test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'Unknown "cycl" function. Did you mean "cycle" in "index" at line 1?');
-        }
+                    parser.parse(stream);
 
-        test.end();
+                    fail();
+                } catch (e) {
+                    same(e.name, 'TwingErrorSyntax');
+                    same(e.message, 'Unknown "cycl" function. Did you mean "cycle" in "index" at line 1?');
+                }
+
+            }
+
+            end();
+        });
+
+        test('loose mode', ({same, fail, end}) => {
+            let loader = new MockLoader();
+            let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+            let source = new TwingSource('{{ cycl(5) }}', 'index');
+            let stream = env.tokenize(source);
+            let parser = new TwingParser(env, {
+                strict: false
+            });
+
+            try {
+                const ast = parser.parse(stream);
+
+                const expressionNode = ast.getNode('body').getNode(0).getNode('expr');
+
+                same(expressionNode instanceof TwingNodeExpressionFunction, true);
+                same(expressionNode.getAttribute('name'), 'cycl');
+
+                const expressionArguments = expressionNode.getNode('arguments');
+                const firstArgumentNode = expressionArguments.getNode(0);
+
+                same(firstArgumentNode.getAttribute('value') , 5);
+            } catch (e) {
+                fail();
+            }
+
+            end();
+        });
     });
 
     test.test('unknownFunctionWithoutSuggestions', (test) => {
@@ -819,23 +860,63 @@ tape('parser', (test) => {
         test.end();
     });
 
-    test.test('unknownFilter', (test) => {
-        let loader = new MockLoader();
-        let env = new MockEnvironment(loader, {cache: false, autoescape: false});
-        let source = new TwingSource('{{  1|lowe }}', 'index');
-        let stream = env.tokenize(source);
-        let parser = new TwingParser(env);
+    test.test('unknownFilter', ({test}) => {
+        test('strict mode', ({fail, same, end}) => {
+            let loader = new MockLoader();
+            let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+            let source = new TwingSource('{{  1|lowe }}', 'index');
 
-        try {
-            parser.parse(stream);
+            for (let parser of [
+                new TwingParser(env),
+                new TwingParser(env, {
+                    strict: true
+                })
+            ]) {
+                let stream = env.tokenize(source);
 
-            test.fail();
-        } catch (e) {
-            test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'Unknown "lowe" filter. Did you mean "lower" in "index" at line 1?');
-        }
+                try {
+                    parser.parse(stream);
 
-        test.end();
+                    fail();
+                } catch (e) {
+                    same(e.name, 'TwingErrorSyntax');
+                    same(e.message, 'Unknown "lowe" filter. Did you mean "lower" in "index" at line 1?');
+                }
+            }
+
+            end();
+        });
+
+        test('loose mode', ({same, fail, end}) => {
+            let loader = new MockLoader();
+            let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+            let source = new TwingSource('{{  1|lowe(5) }}', 'index');
+            let stream = env.tokenize(source);
+            let parser = new TwingParser(env, {
+                strict: false
+            });
+
+            try {
+                const ast = parser.parse(stream);
+
+                const expressionNode = ast.getNode('body').getNode(0).getNode('expr');
+
+                same(expressionNode instanceof TwingNodeExpressionFilter, true);
+
+                const filterNode = expressionNode.getNode('filter');
+
+                same(filterNode.getAttribute('value'), 'lowe');
+
+                const expressionArguments = expressionNode.getNode('arguments');
+                const firstArgumentNode = expressionArguments.getNode(0);
+
+                same(firstArgumentNode.getAttribute('value') , 5);
+            } catch (e) {
+                fail();
+            }
+
+            end();
+        });
     });
 
     test.test('unknownFilterWithoutSuggestions', (test) => {
@@ -857,23 +938,88 @@ tape('parser', (test) => {
         test.end();
     });
 
-    test.test('unknownTest', (test) => {
-        let loader = new MockLoader();
-        let env = new MockEnvironment(loader, {cache: false, autoescape: false});
-        let source = new TwingSource('{{  1 is nul }}', 'index');
-        let stream = env.tokenize(source);
-        let parser = new TwingParser(env);
+    test.test('unknownTest', ({test}) => {
+        test('strict mode', ({same, fail, end}) => {
+            let loader = new MockLoader();
+            let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+            let source = new TwingSource('{{  1 is nul }}', 'index');
 
-        try {
-            parser.parse(stream);
+            for (let parser of [
+                new TwingParser(env),
+                new TwingParser(env, {
+                    strict: true
+                })
+            ]) {
+                let stream = env.tokenize(source);
 
-            test.fail();
-        } catch (e) {
-            test.same(e.name, 'TwingErrorSyntax');
-            test.same(e.message, 'Unknown "nul" test. Did you mean "null" in "index" at line 1?');
-        }
+                try {
+                    parser.parse(stream);
 
-        test.end();
+                    fail();
+                } catch (e) {
+                    same(e.name, 'TwingErrorSyntax');
+                    same(e.message, 'Unknown "nul" test. Did you mean "null" in "index" at line 1?');
+                }
+            }
+
+            end();
+        });
+
+        test('loose mode', ({test}) => {
+            test('one word', ({same, fail, end}) => {
+                let loader = new MockLoader();
+                let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+                let source = new TwingSource('{{  1 is nul }}', 'index');
+                let stream = env.tokenize(source);
+                let parser = new TwingParser(env, {
+                    strict: false
+                });
+
+                try {
+                    const ast = parser.parse(stream);
+
+                    const expressionNode = ast.getNode('body').getNode(0).getNode('expr');
+
+                    same(expressionNode instanceof TwingNodeExpressionTest, true);
+                    same(expressionNode.getAttribute('name'), 'nul');
+
+                    const argumentNode = expressionNode.getNode('node');
+
+                    same(argumentNode.getAttribute('value'), 1);
+                } catch (e) {
+                    fail();
+                }
+
+                end();
+            });
+
+            test('two words', ({same, fail, end}) => {
+                let loader = new MockLoader();
+                let env = new MockEnvironment(loader, {cache: false, autoescape: false});
+                let source = new TwingSource('{{  1 is so nul }}', 'index');
+                let stream = env.tokenize(source);
+                let parser = new TwingParser(env, {
+                    strict: false
+                });
+
+                try {
+                    const ast = parser.parse(stream);
+
+                    const expressionNode = ast.getNode('body').getNode(0).getNode('expr');
+
+                    same(expressionNode instanceof TwingNodeExpressionTest, true);
+                    same(expressionNode.getAttribute('name'), 'so nul');
+
+                    const argumentNode = expressionNode.getNode('node');
+
+                    same(argumentNode.getAttribute('value'), 1);
+                } catch (e) {
+                    fail();
+                }
+
+                end();
+            });
+        });
     });
 
     test.test('unknownTestWithoutSuggestions', (test) => {

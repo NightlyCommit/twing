@@ -7,6 +7,11 @@
     ".ts"
   ],
   "include": "src",
+  "exclude": [
+    "src/base.ts",
+    "src/browser.ts",
+    "src/main.ts"
+  ],
   "reporter": [
     "text-summary",
     "html"

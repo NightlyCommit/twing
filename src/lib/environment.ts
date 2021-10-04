@@ -5,7 +5,7 @@ import {TwingExtensionCore} from "./extension/core";
 import {TwingExtensionInterface} from "./extension-interface";
 import {TwingFilter} from "./filter";
 import {TwingLexer} from "./lexer";
-import {TwingParser} from "./parser";
+import {TwingParser, TwingParserOptions} from "./parser";
 import {TwingTokenStream} from "./token-stream";
 import {TwingSource} from "./source";
 import {TwingLoaderInterface} from "./loader-interface";
@@ -535,13 +535,14 @@ export abstract class TwingEnvironment extends EventEmitter {
      * Converts a token list to a template.
      *
      * @param {TwingTokenStream} stream
+     * @param {TwingParserOptions} options
      * @return {TwingNodeModule}
      *
      * @throws {TwingErrorSyntax} When the token stream is syntactically or semantically wrong
      */
-    parse(stream: TwingTokenStream): TwingNodeModule {
+    parse(stream: TwingTokenStream, options?: TwingParserOptions): TwingNodeModule {
         if (!this.parser) {
-            this.parser = new TwingParser(this);
+            this.parser = new TwingParser(this, options);
         }
 
         return this.parser.parse(stream);
