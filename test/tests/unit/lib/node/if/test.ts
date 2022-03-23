@@ -44,7 +44,7 @@ tape('node/if', (test) => {
             let else_ = null;
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `if (true) {
+            test.same(compiler.compile(node).getSource(), `if (this.evaluate(true)) {
     outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 `);
@@ -64,10 +64,10 @@ tape('node/if', (test) => {
 
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `if (true) {
+            test.same(compiler.compile(node).getSource(), `if (this.evaluate(true)) {
     outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
-else if (false) {
+else if (this.evaluate(false)) {
     outputBuffer.echo((context.has(\`bar\`) ? context.get(\`bar\`) : null));
 }
 `);
@@ -85,7 +85,7 @@ else if (false) {
 
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `if (true) {
+            test.same(compiler.compile(node).getSource(), `if (this.evaluate(true)) {
     outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
 }
 else {
@@ -110,13 +110,13 @@ else {
 
             let node = new TwingNodeIf(t, else_, 1, 1);
 
-            test.same(compiler.compile(node).getSource(), `if ((context.has(\`a\`) ? context.get(\`a\`) : null)) {
+            test.same(compiler.compile(node).getSource(), `if (this.evaluate((context.has(\`a\`) ? context.get(\`a\`) : null))) {
     outputBuffer.echo(\`a\`);
 }
-else if ((context.has(\`b\`) ? context.get(\`b\`) : null)) {
+else if (this.evaluate((context.has(\`b\`) ? context.get(\`b\`) : null))) {
     outputBuffer.echo(\`b\`);
 }
-else if ((context.has(\`c\`) ? context.get(\`c\`) : null)) {
+else if (this.evaluate((context.has(\`c\`) ? context.get(\`c\`) : null))) {
     outputBuffer.echo(\`c\`);
 }
 else {

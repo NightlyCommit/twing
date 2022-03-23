@@ -28,6 +28,7 @@ import {constant} from "./helpers/constant";
 import {get} from "./helpers/get";
 import {include} from "./extension/core/functions/include";
 import {isNullOrUndefined} from "util";
+import {evaluate} from "./helpers/evaluate";
 
 type TwingTemplateMacrosMap = Map<string, TwingTemplateMacroHandler>;
 type TwingTemplateAliasesMap = TwingContext<string, TwingTemplate>;
@@ -552,6 +553,10 @@ export abstract class TwingTemplate {
 
     protected get parseRegExp(): (input: string) => RegExp {
         return parseRegex;
+    }
+
+    protected get evaluate(): (a: any) => boolean {
+        return evaluate;
     }
 
     protected get Context(): typeof TwingContext {
