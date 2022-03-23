@@ -221,7 +221,7 @@ context.set('loop', new Map([
 await this.iterate(context.get('_seq'), async (__key__, __value__) => {
     context.proxy[\`k\`] = __key__;
     context.proxy[\`v\`] = __value__;
-    if (true) {
+    if (this.evaluate(true)) {
         outputBuffer.echo((context.has(\`foo\`) ? context.get(\`foo\`) : null));
         (() => {
             let loop = context.get('loop');

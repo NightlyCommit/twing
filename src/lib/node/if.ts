@@ -29,17 +29,17 @@ export class TwingNodeIf extends TwingNode {
                 compiler
                     .outdent()
                     .write('}\n')
-                    .write('else if (')
+                    .write('else if (this.evaluate(')
                 ;
             } else {
                 compiler
-                    .write('if (')
+                    .write('if (this.evaluate(')
                 ;
             }
 
             compiler
                 .subcompile(this.getNode('tests').getNode(i))
-                .raw(") {\n")
+                .raw(")) {\n")
                 .indent()
                 .subcompile(this.getNode('tests').getNode(i + 1))
             ;
