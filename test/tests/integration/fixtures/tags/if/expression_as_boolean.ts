@@ -2,7 +2,7 @@ import TestBase from "../../../TestBase";
 
 export class EmptyString extends TestBase {
     getDescription(): string {
-        return 'if interprets an empty string as true';
+        return 'if interprets an empty string as false';
     }
 
     getTemplates() {
@@ -163,6 +163,28 @@ export class AnObject extends TestBase {
     getContext(): any {
         return {
             object: {}
+        };
+    }
+}
+
+export class Undefined extends TestBase {
+    getDescription(): string {
+        return 'if interprets undefined as false';
+    }
+
+    getTemplates() {
+        return {
+            'index.twig': `{% if (undefined) %}FAILURE{% else %}SUCCESS{% endif %}`
+        };
+    }
+
+    getExpected() {
+        return `SUCCESS`;
+    }
+
+    getContext(): any {
+        return {
+            undefined: undefined
         };
     }
 }

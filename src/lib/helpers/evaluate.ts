@@ -4,7 +4,7 @@ export const evaluate = (value: any): boolean => {
     if (value === '0' || (isMap(value) && value.size === 0)) {
         return false;
     }
-    else if (isNaN(value)) {
+    else if (Number.isNaN(value)) {
         return true;
     }
     else {
