@@ -6,7 +6,7 @@ export async function map(map: any, callback: (...args: Array<any>) => Promise<a
     map = iteratorToMap(map);
 
     for (let [k, v] of map) {
-        v = await callback(v);
+        v = await callback(v, k);
 
         result.set(k, v);
     }
