@@ -20,7 +20,9 @@ export class TwingTokenParserVerbatim extends TwingTokenParser {
 
         stream.expect(TokenType.TAG_END);
 
-        return new TwingNodeVerbatim(text.getAttribute('data'), token.line, token.column, this.getTag());
+        const content = text.hasAttribute('data') ? text.getAttribute('data') : '';
+
+        return new TwingNodeVerbatim(content, token.line, token.column, this.getTag());
     }
 
     decideBlockEnd(token: Token) {
