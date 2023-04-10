@@ -26,7 +26,7 @@
   },
   "scripts": {
     "precover": "rimraf coverage .nyc_output",
-    "prepack": "rimraf dist && npm run build && replace-in-file '__VERSION__' $npm_package_version 'dist/**' --verbose && npm run bundle",
+    "prepare": "rimraf dist && npm run build && replace-in-file '__VERSION__' $npm_package_version 'dist/**' --verbose && npm run bundle",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "ts-node node_modules/tape/bin/tape 'test/tests/integration/test.ts' | tap-spec",
     "test:unit": "ts-node node_modules/tape/bin/tape 'test/tests/unit/**/test.ts' | tap-spec",
