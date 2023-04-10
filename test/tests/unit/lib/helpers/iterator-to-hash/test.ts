@@ -5,7 +5,7 @@ class Foo {
 
 }
 
-tape('iterator-to-array', (test) => {
+tape('iterator-to-hash', (test) => {
     let obj = {foo: 'bar'};
 
     test.equals(iteratorToHash(obj), obj);

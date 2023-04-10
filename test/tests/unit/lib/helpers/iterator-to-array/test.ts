@@ -31,7 +31,7 @@ tape('iterator-to-array', (test) => {
 
     let foo = new Foo();
 
-    test.same(iteratorToArray(foo), foo);
+    test.same(iteratorToArray(foo), []);
 
     test.end();
 });
