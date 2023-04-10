@@ -8,6 +8,7 @@ import {isNullOrUndefined} from "util";
 import {isPlainObject} from "../../../helpers/is-plain-object";
 import {TwingOutputBuffer} from "../../../output-buffer";
 import {TwingContext} from "../../../context";
+import {isMap} from "../../../helpers/is-map";
 
 /**
  * Renders a template.
@@ -45,7 +46,7 @@ export function include(template: TwingTemplate, context: TwingContext<any, any>
         }
     }
 
-    if (typeof templates === 'string' || templates instanceof TwingTemplate) {
+    if (!isMap(templates)) {
         templates = new Map([[0, templates]]);
     }
 

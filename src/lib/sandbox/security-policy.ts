@@ -4,7 +4,6 @@ import {TwingSandboxSecurityNotAllowedTagError} from "./security-not-allowed-tag
 import {TwingSandboxSecurityNotAllowedFunctionError} from "./security-not-allowed-function-error";
 import {TwingSandboxSecurityNotAllowedPropertyError} from "./security-not-allowed-property-error";
 import {TwingSandboxSecurityNotAllowedMethodError} from "./security-not-allowed-method-error";
-import {TwingTemplate} from "../template";
 import {TwingMarkup} from "../markup";
 
 export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInterface {
@@ -73,7 +72,7 @@ export class TwingSandboxSecurityPolicy implements TwingSandboxSecurityPolicyInt
     }
 
     checkMethodAllowed(obj: any, method: string): void {
-        if (obj instanceof TwingTemplate || obj instanceof TwingMarkup) {
+        if (obj instanceof TwingMarkup) {
             return;
         }
 

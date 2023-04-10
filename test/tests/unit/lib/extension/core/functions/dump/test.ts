@@ -56,15 +56,5 @@ string(3) "bar"
 }
 `);
 
-    class FooTemplate extends TwingTemplate {
-        protected doDisplay(context: any, outputBuffer: TwingOutputBuffer, blocks: Map<string, [TwingTemplate, string]>): Promise<void> {
-            return undefined;
-        }
-    }
-
-    test.same(await dump({foo: new FooTemplate(new TwingEnvironmentNode(new TwingLoaderArray({})))}), `array(0) {
-}
-`);
-
     test.end();
 });

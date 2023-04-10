@@ -107,10 +107,6 @@ export const getAttribute = (env: TwingEnvironment, object: any, item: any, _arg
             throw new TwingErrorRuntime(message);
         }
 
-        if (object instanceof TwingTemplate) {
-            throw new TwingErrorRuntime('Accessing TwingTemplate attributes is forbidden.');
-        }
-
         // object property
         if (type !== TwingTemplate.METHOD_CALL) {
             if (Reflect.has(object, item) && (typeof object[item] !== 'function')) {

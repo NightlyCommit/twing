@@ -289,11 +289,11 @@ export abstract class TwingEnvironment extends EventEmitter {
      * @return {Promise<TwingTemplate>}
      */
     load(name: string | TwingTemplate): Promise<TwingTemplate> {
-        if (name instanceof TwingTemplate) {
-            return Promise.resolve(name);
+        if (typeof name === "string") {
+            return this.loadTemplate(name);
         }
 
-        return this.loadTemplate(name);
+        return Promise.resolve(name);
     }
 
     /**
@@ -334,7 +334,7 @@ export abstract class TwingEnvironment extends EventEmitter {
      * @throws {TwingErrorRuntime} When a previously generated cache is corrupted
      * @throws {TwingErrorSyntax}  When an error occurred during compilation
      */
-    loadTemplate(name: string, index: number = 0, from: TwingSource = null): Promise<TwingTemplate> {
+    loadTemplate(name: string | null, index: number = 0, from: TwingSource = null): Promise<TwingTemplate> {
         this.emit('template', name, from);
 
         let cacheKey: string = name + (index !== 0 ? '_' + index : '');
@@ -465,8 +465,8 @@ export abstract class TwingEnvironment extends EventEmitter {
      * @throws {TwingErrorLoader} When none of the templates can be found
      * @throws {TwingErrorSyntax} When an error occurred during compilation
      */
-    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate>, from: TwingSource): Promise<TwingTemplate> {
-        let namesArray: Array<any>;
+    resolveTemplate(names: string | TwingTemplate | Array<string | TwingTemplate> | null, from: TwingSource): Promise<TwingTemplate> {
+        let namesArray: Array<string | TwingTemplate | null>;
 
         if (!Array.isArray(names)) {
             namesArray = [names];
@@ -480,10 +480,13 @@ export abstract class TwingEnvironment extends EventEmitter {
             if (index < namesArray.length) {
                 let name = namesArray[index];
 
-                if (name instanceof TwingTemplate) {
+                console.log('NAME', name);
+
+                if ((name !== null) && (typeof name !== "string")) {
                     return Promise.resolve(name);
-                } else {
-                    return this.loadTemplate(name, 0, from).catch((e) => {
+                }
+                else {
+                    return this.loadTemplate(name as string | null, 0, from).catch((e) => {
                         if (e instanceof TwingErrorLoader) {
                             error = e;
 

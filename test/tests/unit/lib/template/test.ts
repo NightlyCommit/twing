@@ -109,7 +109,7 @@ tape('template', function (test) {
 
         stub.returns(Promise.resolve('foo'));
 
-        test.true(await template.getParent() instanceof TwingTemplate);
+        test.true(await template.getParent() !== false);
 
         stub.returns(Promise.resolve('bar'));
 

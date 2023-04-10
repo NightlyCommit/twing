@@ -170,14 +170,6 @@ tape('get-attribute', (test) => {
         }
 
         try {
-            await getAttribute(env, new TwingTestExtensionCoreTemplate(env), 'foo');
-
-            test.fail();
-        } catch (e) {
-            test.same(e.message, 'Accessing TwingTemplate attributes is forbidden.');
-        }
-
-        try {
             await getAttribute(env, new Foo(), 'ooof', new Map(), TwingTemplate.ANY_CALL, false, false, false);
 
             test.fail();
