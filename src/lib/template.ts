@@ -107,8 +107,8 @@ export abstract class TwingTemplate {
 
         return this.doGetParent(context)
             .then((parent) => {
-                if (parent === false || parent instanceof TwingTemplate) {
-                    if (parent instanceof TwingTemplate) {
+                if (parent === false || typeof parent !== "string") {
+                    if (parent !== false) {
                         this.parents.set(parent.source.getName(), parent);
                     }
 
@@ -309,10 +309,10 @@ export abstract class TwingTemplate {
 
         if (typeof templates === 'string') {
             promise = this.environment.loadTemplate(templates, index, this.source);
-        } else if (templates instanceof TwingTemplate) {
-            promise = Promise.resolve(templates);
-        } else {
+        } else if (isMap(templates)) {
             promise = this.environment.resolveTemplate([...templates.values()], this.source);
+        } else {
+            promise = Promise.resolve(templates);
         }
 
         return promise.catch((e: TwingError) => {
