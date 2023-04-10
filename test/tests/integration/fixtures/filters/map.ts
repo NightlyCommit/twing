@@ -1,6 +1,6 @@
 import TestBase from "../../TestBase";
 
-export default class extends TestBase {
+class Test extends TestBase {
     getDescription() {
         return '"map" filter';
     }
@@ -36,6 +36,7 @@ export default class extends TestBase {
 {% endfor %}
 
 {{ peoples|map(people => people.first_name)|join(', ') }}
+{{ peoples|map((value, key) => "#{key} #{value.first_name}")|join(', ') }}
 `
         };
     }
@@ -52,6 +53,9 @@ b = 2*
 1 = 4
 
 Bob, Patrick
+0 Bob, 1 Patrick
 `;
     }
 }
+
+export default Test;
