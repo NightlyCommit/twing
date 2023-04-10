@@ -7,6 +7,6 @@ import {TwingMarkup} from "../../../markup";
  *
  * @return {Promise<string>}
  */
-export function raw(string: string | TwingMarkup): Promise<string> {
-    return Promise.resolve(string.toString());
+export function raw(string: string | TwingMarkup | null): Promise<string> {
+    return Promise.resolve(string !== null ? string.toString() : '');
 }
