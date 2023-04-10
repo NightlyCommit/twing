@@ -1,6 +1,6 @@
 import TestBase from "../../../TestBase";
 
-export default class extends TestBase {
+class Test extends TestBase {
     getTemplates() {
         return {
             'bar.twig': `
@@ -19,3 +19,5 @@ foo
     }
 
 }
+
+export default Test;
