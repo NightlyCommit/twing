@@ -188,7 +188,16 @@ tape('template', function (test) {
             test.fail('should throw an Error');
         } catch (e) {
             test.true(e instanceof Error);
-            test.same(e.message, 'Cannot read property \'loadTemplate\' of null')
+            // Node.js v16 and later use a newer error message for properties of null.
+            // TODO: Remove the Node.js v15 and earlier test after EOL on 2023-04-30.
+            const oldErrorMessage = 'Cannot read property \'loadTemplate\' of null';
+            if (e.message === oldErrorMessage) {
+                // Node v15 and earlier.
+                test.same(e.message, oldErrorMessage);
+            } else {
+                // Node v16 and later.
+                test.same(e.message, 'Cannot read properties of null (reading \'loadTemplate\')');
+            }
         }
 
         test.test('should return an error with full source information when templateName is set', async (test) => {
