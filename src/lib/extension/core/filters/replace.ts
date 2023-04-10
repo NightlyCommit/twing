@@ -20,6 +20,10 @@ export function replace(str: string, from: any): Promise<string> {
             throw new TwingErrorRuntime(`The "replace" filter expects an hash or "Iterable" as replace values, got "${typeof from}".`);
         }
 
+        if (str === undefined) {
+            str = '';
+        }
+
         return strtr(str, from);
     };
 

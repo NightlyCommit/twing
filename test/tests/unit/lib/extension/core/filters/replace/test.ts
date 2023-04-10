@@ -3,6 +3,7 @@ import {replace} from "../../../../../../../../src/lib/extension/core/filters/re
 
 tape('replace', async (test) => {
     test.same(await replace('foo', null), 'foo');
+    test.same(await replace(undefined, null), '');
 
     test.end();
 });
