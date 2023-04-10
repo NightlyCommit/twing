@@ -55,6 +55,7 @@ tape('node/module', (test) => {
                 this._source = new this.Source(\`\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
+                aliases.proxy[\`_self\`] = this.aliases.proxy[\`_self\`] = this;
             }
 
             async doDisplay(context, outputBuffer, blocks = new Map()) {
@@ -96,6 +97,7 @@ tape('node/module', (test) => {
                 this._source = new this.Source(\`\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
+                aliases.proxy[\`_self\`] = this.aliases.proxy[\`_self\`] = this;
             }
 
             doGetParent(context) {
@@ -167,6 +169,7 @@ tape('node/module', (test) => {
                 this._source = new this.Source(\`{{ foo }}\`, \`foo.twig\`);
 
                 let aliases = new this.Context();
+                aliases.proxy[\`_self\`] = this.aliases.proxy[\`_self\`] = this;
             }
 
             doGetParent(context) {

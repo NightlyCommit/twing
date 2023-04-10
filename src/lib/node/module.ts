@@ -13,7 +13,15 @@ export const type = new TwingNodeType('module');
 export class TwingNodeModule extends TwingNode {
     public source: TwingSource;
 
-    constructor(body: TwingNode, parent: TwingNode, blocks: TwingNode, macros: TwingNode, traits: TwingNode, embeddedTemplates: Array<{}>, source: TwingSource) {
+    constructor(
+        body: TwingNode,
+        parent: TwingNode,
+        blocks: TwingNode,
+        macros: TwingNode,
+        traits: TwingNode,
+        embeddedTemplates: Array<{}>,
+        source: TwingSource
+    ) {
         let nodes = new Map();
 
         nodes.set('body', body);
@@ -167,6 +175,9 @@ export class TwingNodeModule extends TwingNode {
                 .outdent()
                 .write(']);\n');
         }
+
+        compiler
+            .write('aliases.proxy[`_self`] = this.aliases.proxy[`_self`] = this;\n');
 
         compiler
             .subcompile(this.getNode('constructor_end'))
