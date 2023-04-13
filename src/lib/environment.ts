@@ -480,8 +480,6 @@ export abstract class TwingEnvironment extends EventEmitter {
             if (index < namesArray.length) {
                 let name = namesArray[index];
 
-                console.log('NAME', name);
-
                 if ((name !== null) && (typeof name !== "string")) {
                     return Promise.resolve(name);
                 }
