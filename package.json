@@ -15,7 +15,7 @@
   "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/nightlycommit/twing"
+    "url": "https://github.com/NightlyCommit/twing"
   },
   "main": "dist/cjs/main.js",
   "browser": "dist/es/browser.js",
